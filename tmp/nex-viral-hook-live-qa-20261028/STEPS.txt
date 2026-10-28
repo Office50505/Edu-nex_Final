@@ -1,0 +1,31 @@
+Viral Hook Formula final live QA — READY, NOT APPROVED.
+
+Backend: http://127.0.0.1:3129
+Course: 6ae1b4694e1af14d4adc9e2b / viral-hook-formula
+Source revision: accad21b7b4d2690515de8b47473f529fc2c0de18be385fb4a672c62e0f60090
+Simulator authenticated and entitled; selected conversation preserved.
+27 records verified via authenticated normal retrieval; 2 exact templates verified via chat.
+Shared pipeline and course-scoped history verified. No business/cartoon contract applied.
+
+Maximum 4 provider attempts TOTAL, INCLUDING retries and repairs.
+Expiry: 30 minutes FROM APPROVAL. Current use: 0; remaining: 4.
+No approval exists and no timer has started. Never reset a ledger.
+Questions, follow-ups and conversations are not frozen; all share this budget.
+
+Only when ready to start live testing, run:
+node "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/tmp/nex-viral-hook-live-qa-20261028/control.cjs" approve --sha256 503cc64e58c620a7fef0889c670c8935452b42557488c21e8e23a7cba66bf5de
+
+The approval command performs readiness checks and starts the timer but submits no AI question.
+After it succeeds, enter your question and press Send manually in the simulator.
+If approval fails because source changed, prepare/restart the profile; do not edit its frozen manifest.
+
+Read-only raw-provider versus delivered-answer inspection after a question:
+node "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/tmp/nex-viral-hook-live-qa-20261028/inspect.cjs" --last
+Use --all instead of --last to inspect all exchanges.
+Includes actual raw response bodies, final delivered text and validation results by request ID.
+
+Read-only current approval/budget check:
+node "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/tmp/nex-viral-hook-live-qa-20261028/control.cjs" status
+
+Prior 44 approval/accounting artifacts preserved. No paid calls during preparation.
+Provider availability and answer quality remain for authorized manual live verification.

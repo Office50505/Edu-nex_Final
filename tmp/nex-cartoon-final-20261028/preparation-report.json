@@ -1,0 +1,165 @@
+{
+  "courseBinding": {
+    "publishedCourseId": "6ae09ebee4ac0b60c08276bc",
+    "slug": "ai-cartoon-series",
+    "previousBlocker": "The October 24 catalog lookup found no published matching ID/slug; the pack was intentionally staged.",
+    "currentStatus": "Verified real metadata registered in isolated QA runtime; real course and eight real lesson IDs copied only to localhost QA MongoDB.",
+    "productionRegistryChanged": false,
+    "productionDataModified": false,
+    "simulatorSelectedRealCourse": true,
+    "syntheticAccountPermanentCourseEntitlement": true
+  },
+  "readiness": {
+    "checkedAt": "2026-10-28T09:38:33.860Z",
+    "backendReady": true,
+    "isolatedDatabaseReady": true,
+    "updatedCodeLoaded": true,
+    "simulatorAuthenticated": true,
+    "simulatorCourseEntitled": true,
+    "sourceRevisionSHA256": "b64e272c4ebb07ab89b20ba78ce8297706afd9a1bd1380597f69a7d039c8be36",
+    "protections": {
+      "normalAuthentication": true,
+      "normalRateLimiting": true,
+      "billingClassifier": true,
+      "cartoonDomainPolicy": true,
+      "courseIsolation": true,
+      "durableAttemptAccounting": true
+    },
+    "history": {
+      "conversationCount": 1,
+      "preservedConversations": [],
+      "currentMessageCount": 1
+    },
+    "backendUrl": "http://127.0.0.1:3129",
+    "currentConversationId": "nai-1793180028478-zvtcnmq",
+    "arbitraryQuestionsAndConversationsAllowed": true,
+    "previousLedgersPreserved": true,
+    "providerKeyConfigured": true,
+    "pipeline": {
+      "domain": "cartoon-series",
+      "requestContractLoaded": true,
+      "taskPreservingValidationLoaded": true,
+      "sharedServiceExportsVerified": true,
+      "deterministicStartupCheckPassed": true,
+      "providerCalls": 0,
+      "courseId": "6ae09ebee4ac0b60c08276bc",
+      "courseSlug": "ai-cartoon-series",
+      "lessonsVerified": 8,
+      "exactPromptBodiesVerified": 18,
+      "businessAdvertisingRulesApplied": false,
+      "requestContractFunctionSHA256": "7f390c476d1fbe8728071cf2802484c857706360402ba06001facf37373cf8fb",
+      "taskAssessmentFunctionSHA256": "448a9655b11f6f349c8b874de8ce942dacf4b7e158a0e5625f1e8a29e6f669d7",
+      "routeTaskPipelineLoaded": true
+    },
+    "entitlementSource": "admin",
+    "sessionId": "ed82feda-a0c9-4999-9e87-df02650d8179",
+    "sessionSHA256": "223555d27b88f02af30be3f5449ef77a356d12fc3ffb45e655118214a57f1a77",
+    "approvalStatus": "manual_qa_awaiting_approval",
+    "approved": false,
+    "providerAttempts": 0,
+    "maximumProviderAttempts": 4,
+    "remainingProviderAttempts": 4,
+    "expiresAt": null,
+    "durationMinutes": 30,
+    "model": "google/gemini-2.5-flash",
+    "userId": "6addcefc5d47d548973c29b9",
+    "courseId": "6ae09ebee4ac0b60c08276bc",
+    "blocker": "manual_qa_awaiting_approval"
+  },
+  "knowledge": {
+    "lessons": 8,
+    "records": 33,
+    "coursePromptBodies": 17,
+    "separateMasterStyle": 1,
+    "exactBodies": 18,
+    "originalSourcesAndHashesVerified": true,
+    "approvedPromptBytesChanged": false,
+    "realSelectedLessonToKnowledgeMappingVerified": true
+  },
+  "implementation": [
+    "Cartoon-specific request contract and assessment use the existing shared route, single bounded repair, revalidation and provider accounting.",
+    "Cartoon fiction bypasses business-advertising grounding rules. New story development remains allowed while learner canon and authorized exact assets are preserved.",
+    "Per-scene cast is separate from the series cast; absent sheets are omitted and unknown participation is made conditional.",
+    "Known appearance conflicts are corrected without discarding safe fictional content; demo-cast substitution can use one bounded repair.",
+    "Natural character facts and labelled corrections persist through the existing course/conversation state; failed provider turns still do not establish memory.",
+    "Real lesson-ID registration maps the published English lesson titles to authoritative eight-lesson knowledge headings."
+  ],
+  "filesChanged": [
+    "edunex-b/services/cartoonTutorPipeline.js",
+    "edunex-b/services/courseKnowledgePacks.js",
+    "edunex-b/services/aiTutorService.js",
+    "edunex-b/services/tutorKnowledge.js",
+    "edunex-b/routes/ai.js",
+    "edunex-b/tests/cartoon-series.test.cjs",
+    "edunex-b/tests/cartoon-task-preserving.test.cjs"
+  ],
+  "focusedCartoonTests": {
+    "tests": 65,
+    "pass": 65,
+    "fail": 0
+  },
+  "realBindingAndBudgetTests": {
+    "tests": 56,
+    "pass": 56,
+    "fail": 0
+  },
+  "savedResponseGradingTests": {
+    "tests": 16,
+    "pass": 16,
+    "fail": 0
+  },
+  "knownCompatibilityFailures": {
+    "cartoonMemory": "Fixed the test setup to use a successful mocked provider response; production failure-persistence policy unchanged. Both successful rolling memory and failed-turn isolation now pass.",
+    "refundRouting": "Outside Cartoon scope; classifier function byte-for-byte unchanged, verified against before-task source."
+  },
+  "historicalCS11": {
+    "source": "edunex-b/reports/cartoon-series-cs11-final-retest/last_results.json",
+    "status": "PASS",
+    "recordedProviderCalls": 2,
+    "newPaidCalls": 0,
+    "historicalReportAndLedgersPreserved": true
+  },
+  "preexistingAuditMismatch": {
+    "test": "test_all_preserved_files_still_match_snapshot",
+    "observedBeforeCodeChanges": true,
+    "detail": "Historical CS-11 v2 manifest expects a different index.json hash. Current index, authoritative sources and all approved prompt bytes were preserved; the legacy manifest was not rewritten.",
+    "functionalImpactObserved": false
+  },
+  "authorizedSimulatorExactPrompt": {
+    "templateId": "ai-cartoon-series:exact-template:025",
+    "bodyMatchesVerbatim": true,
+    "provider": "course-knowledge-rule",
+    "providerStatus": "not_requested",
+    "correctCourseOnly": true
+  },
+  "unauthenticatedProtectedPromptHttpStatus": 401,
+  "providerSession": {
+    "model": "google/gemini-2.5-flash",
+    "maximumAttempts": 4,
+    "used": 0,
+    "remaining": 4,
+    "expiry": "30 minutes from explicit approval; timer has not started",
+    "retriesAndRepairsCount": true,
+    "differentQuestionsAndFollowupsAllowed": true,
+    "approved": false
+  },
+  "approvalCommand": "node \"/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/tmp/nex-cartoon-final-20261028/control.cjs\" approve --sha256 223555d27b88f02af30be3f5449ef77a356d12fc3ffb45e655118214a57f1a77",
+  "inspectionCommand": "node \"/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/tmp/nex-cartoon-final-20261028/inspect.cjs\" --last",
+  "simulatorInstructions": "Already signed in and open in Nex AI with Cartoon selected. If selection changes, open Courses, choose AI Cartoon Series, then open Nex AI. Keep the running app; the pre-existing Keychain issue can require another local sign-in after restarting it.",
+  "criticalRuntimeBlockers": [],
+  "executionBlocker": "Explicit approval pending, as requested",
+  "limitations": [
+    "These conservative local checks are not a universal semantic story validator. Live Gemini quality, nuanced multilingual canon and unseen questions still need the bounded manual acceptance session.",
+    "A legacy historical-index audit mismatch remains documented separately from functional checks.",
+    "Production binding remains staged; this task registered only the isolated QA runtime and did not deploy."
+  ],
+  "protectedArtifactsChecked": 1813,
+  "protectedArtifactsChanged": [],
+  "paidCallsExecuted": 0,
+  "approvalExecuted": false,
+  "approvedKnowledgeModified": false,
+  "productionWrites": false,
+  "deployed": false,
+  "committedOrPushed": false,
+  "zipGenerated": false
+}

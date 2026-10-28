@@ -5,6 +5,9 @@ test('lesson chat survives switching lessons and keeps late replies in their ori
   const a = chatKey('user', 'session', 'course', 'a');
   const b = chatKey('user', 'session', 'course', 'b');
   const entry = readChat(a);
+  assert.ok(entry.conversationId);
+  assert.equal(readChat(a).conversationId, entry.conversationId);
+  assert.notEqual(readChat(b).conversationId, entry.conversationId);
   updateChat(a, entry, [{ role: 'user', content: 'Explain A' }], true);
   assert.deepEqual(readChat(b).messages, []);
   updateChat(a, entry, [...entry.messages, { role: 'assistant', content: 'Answer A' }], false);

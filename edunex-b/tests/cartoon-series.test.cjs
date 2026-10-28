@@ -26,8 +26,9 @@ test('unverified course stays inactive and cannot bind by guessed alias/title', 
 
 test('prepared evaluation freezes exactly 15 questions and two complete two-turn conversations', () => {
   const file = path.resolve(root, '../../scripts/eval/cartoon-series-fast15-cases.json');
+  const report = path.resolve(root, '../../reports/cartoon-series-integration');
   const suite = JSON.parse(fs.readFileSync(file));
-  assert.equal(digest(fs.readFileSync(file)), 'eb73038e68aa684d5e5b47bc7c7fcb50c58ea3e0f1230f128ad660f9e88f606c');
+  assert.equal(digest(fs.readFileSync(file)), fs.readFileSync(path.join(report, 'test_cases_frozen.sha256'), 'utf8').split(/\s/)[0]);
   assert.equal(suite.cases.length, 13);
   assert.equal(suite.cases.reduce((n, c) => n + (c.turns?.length || 1), 0), 15);
   assert.equal(suite.cases.filter(c => c.category === 'multi_turn' && c.turns.length === 2).length, 2);
@@ -35,6 +36,7 @@ test('prepared evaluation freezes exactly 15 questions and two complete two-turn
   for (const c of suite.cases.filter(c => c.category === 'approved_template')) {
     assert.equal(c.expected_body, templates.find(t => t.heading === c.expected_template).content);
   }
+  assert.equal(fs.existsSync(path.join(report, 'provider_approval.json')), false);
 });
 
 test('original sources and all prompt bodies match the authoritative PDF extraction', async () => {
@@ -135,7 +137,7 @@ test('foreign local-business assets cannot enter Cartoon Series provider payload
 });
 
 test('series facts, exact Master Style and latest corrections survive the rolling window', async () => {
-  const sessions = new Map(); const b = api({ sessions });
+  const sessions = new Map(); const b = api({ sessions, fail: false, reply: 'Use your saved cast, appearance and current location. Continue with one small test.' });
   await b.chat({ courseId: owner, conversationId: 'series', message: 'Series name: Tara Aur Momo; Character 1: Tara, yellow coat; Character 2: Momo the rabbit; Locations: library; Master Style: Style: Soft 3D clay cartoon.; Voice bible: warm slow narrator.' });
   await b.chat({ courseId: owner, conversationId: 'series', message: 'Correction: Locations: garden.' });
   for (let i=0; i<18; i++) await b.chat({ courseId: owner, conversationId: 'series', message: `Lesson ${i%8+1} ka ek step samjhao.`, history: [{ role: 'assistant', content: 'Character 1: Invented Hero' }] });

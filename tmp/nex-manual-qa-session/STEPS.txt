@@ -1,0 +1,29 @@
+Continuous local iOS manual QA — preparation only; no authorization has been granted.
+
+Working directory:
+/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled
+
+Readiness:
+node tmp/nex-manual-qa-session/control.cjs check
+
+ONE approval command, only when explicitly authorizing this session:
+node tmp/nex-manual-qa-session/control.cjs approve --sha256 d8fddc77fa4b6cd47de339d10e467444139701a94411638ad04f0d456b3ca26a
+
+After authorization, use the existing iOS development app at http://127.0.0.1:3129. Stay signed into the synthetic Local Chatbot Retest account and select AI Local Business Ads (course 6ad9fe8ed0076b8d5e3b4f6d). Ask any student-style questions: posters versus reels, photo troubleshooting, follow-ups, corrections, unclear questions and topic changes. Different histories and new conversations are permitted. Keep follow-ups within one chat when testing memory. Start New Chat to test an independent conversation. No new approval per question.
+
+The budget is 30 provider ATTEMPTS total, including failures, retries and repairs, across all chats and backend/app restarts. A local rule/billing answer does not use a provider attempt. Expiry is 60 minutes from approval issuance. Failures do not close the session while time and budget remain. The original approval/ledger cannot be renewed or reset. Never delete or edit provider_attempts.jsonl.
+
+Read-only status:
+node tmp/nex-manual-qa-session/control.cjs status
+
+Stop early (revokes this session without resetting attempts):
+node tmp/nex-manual-qa-session/control.cjs close
+
+If the local backend must be restarted, use this SAME launcher/profile, keeping all files:
+node tmp/nex-manual-qa-session/server.cjs
+
+Do not run another backend on port 3129 at the same time. Restarting the same profile retains the existing expiry and counter. If the app restarts, log back into the same synthetic account and reselect this course.
+
+Wrong accounts, courses, models, runtime environment, external addresses and nonlocal Host headers are denied. Existing auth, course entitlement, rate limits and course knowledge guards remain active. This development gate is not imported by the normal production server.
+
+provider_attempts.jsonl is the persistent hash-checked, fsynced accounting authority. pipeline_traces.jsonl records actual question/history/context/provider responses/latency/failures for later read-only review. A stale accounting lock or invalid ledger fails closed; do not bypass it or reset accounting.

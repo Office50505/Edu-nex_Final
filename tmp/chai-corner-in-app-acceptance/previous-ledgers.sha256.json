@@ -1,0 +1,14 @@
+{
+  "tmp/chai-junction-live-retest/case.json": "97daf3d00f862b3fd01cc55513951fafa32db586f0fb3558fc72b6a64c7fee81",
+  "tmp/chai-junction-live-retest/case.sha256": "2973eb2cf0b5d6903e2a1e1989b057f851d10fa7e3fa5ca181633197405109cc",
+  "tmp/chai-junction-live-retest/provider_approval.json": "f51a9a86ff0b6d54c16633900f3ed62686e78268d7ced73b89afd1582d1dfdd6",
+  "tmp/chai-junction-live-retest/pipeline_traces.jsonl": "882ece7d3642ecdc2cb6884aa2a2931740b5f896cf8315a113bb0fe8d68d5748",
+  "tmp/chai-junction-live-retest/live-result.json": "552ea8bd0458f90d2fd401031e1a54255ed43ea768e4b4caf261d9f40944406a",
+  "tmp/chai-junction-memory-test/case.json": "4d664925069fd6af734cad4cc423ddba55f1ecd0f9aaf4a7f5e628e1b2240410",
+  "tmp/chai-junction-memory-test/case.sha256": "961d15da1de09b77f2a34e7c203c01fdde32188fda20818ee300005d7579a5b5",
+  "tmp/chai-junction-memory-test/provider_approval.json": "b19bb4524f1536b7bf58766131de45b2ca51a099fc8145e7ff8216d146fa6201",
+  "tmp/chai-junction-memory-test/pipeline_traces.jsonl": "c1eab3a4d33c049d74171dfeb468ece2a000e46654fea6f5e8b3dffca789f03c",
+  "tmp/chai-junction-memory-test/live-result.json": "c46816d8a6e2ce5757e1f080876964eda885e33c686e70f0c425a49cb6598a63",
+  "tmp/chai-junction-memory-test/turn-1.json": "2aad6d4f87b5656142322538e36ea3f6aeaf1637ea1c7ebf289e31aa12af76cb",
+  "tmp/chai-junction-memory-test/turn-2.json": "f0eb9fa42e89c552e81e9198a33fc4f15dac973a7f5742f5f209c7d02e94d073"
+}

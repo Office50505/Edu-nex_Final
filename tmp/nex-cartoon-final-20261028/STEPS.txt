@@ -1,0 +1,22 @@
+AI Cartoon Series final local readiness — NOT APPROVED.
+
+Real course: 6ae09ebee4ac0b60c08276bc / ai-cartoon-series
+Backend: http://127.0.0.1:3129
+Simulator: authenticated, Cartoon selected, course entitlement verified.
+Knowledge: 8 lessons, 17 course messages plus Master Style = 18 exact bodies.
+
+Maximum 4 total provider attempts including retries/repairs; 30 minutes FROM APPROVAL.
+Current usage: 0; remaining: 4. Never reset the original ledger.
+Approval (no question is submitted by this command):
+node "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/tmp/nex-cartoon-final-20261028/control.cjs" approve --sha256 223555d27b88f02af30be3f5449ef77a356d12fc3ffb45e655118214a57f1a77
+
+Readiness:
+node "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/tmp/nex-cartoon-final-20261028/control.cjs" check
+
+Raw provider responses and final deliveries:
+node "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/tmp/nex-cartoon-final-20261028/inspect.cjs" --last
+Use --all for every exchange.
+
+Simulator: choose Courses > AI Cartoon Series > Nex AI if selection changes.
+Keep the current signed-in app running; after an app restart the existing Keychain issue can require sign-in again.
+No paid execution, production changes, commits, pushes or knowledge edits performed.

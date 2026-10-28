@@ -1,0 +1,9 @@
+✔ versioned CS-11 cases bind to the existing eight-lesson fixture without a DB/provider (9.93625ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 187.907459

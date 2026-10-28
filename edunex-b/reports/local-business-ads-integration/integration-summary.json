@@ -1,0 +1,94 @@
+{
+  "course": "AI Local Business Ads",
+  "actual_course_id": null,
+  "actual_course_lookup": {
+    "scope": "read_only_configured_catalog",
+    "matches": []
+  },
+  "configured_slug": "ai-local-business-ads",
+  "integration_status": "implemented_locally; published course record and live quality validation pending",
+  "synthetic_course_id": "6ada01bef57a92b37ef5b56d",
+  "synthetic_database": "skillomate_mvp_eval_20261017_1792672190608",
+  "indexed_lessons": 10,
+  "indexed_records": 58,
+  "approved_prompts": 25,
+  "tutor_rules_and_faq_source": "Original Chatbot Knowledge Base TXT",
+  "lesson_source": "Course Notes PDF",
+  "exact_prompt_authority": "All Prompts PDF",
+  "local_node_tests": {
+    "PASS": 737,
+    "FAIL": 0
+  },
+  "local_python_tests": {
+    "PASS": 175,
+    "FAIL": 0
+  },
+  "terminal_30_scenarios": {
+    "PASS": 9,
+    "FAIL": 0,
+    "UNTESTED": 21,
+    "accuracy_among_executed_pct": 100.0,
+    "critical_security_failures": 0,
+    "average_response_ms": 129.46,
+    "provider_invocations": 0,
+    "blocked_provider_attempts": 54
+  },
+  "terminal_category_counts": {
+    "lesson_specific": {
+      "UNTESTED": 6
+    },
+    "approved_template": {
+      "PASS": 6
+    },
+    "multilingual": {
+      "UNTESTED": 5
+    },
+    "multi_turn": {
+      "UNTESTED": 5
+    },
+    "troubleshooting_ethics": {
+      "UNTESTED": 5
+    },
+    "authorization_isolation": {
+      "PASS": 3
+    }
+  },
+  "provider_requests_sent": 0,
+  "paid_cost_incurred_usd": 0,
+  "live_estimate": {
+    "model": "google/gemini-2.5-flash",
+    "expected_first_attempt_calls": 27,
+    "max_attempts_with_retries": 54,
+    "estimated_input_tokens_at_3_to_4_chars": {
+      "low": 157587,
+      "high": 210116
+    },
+    "max_output_tokens_per_call": 900,
+    "estimated_base_model_cost_usd_one_attempt": [
+      0.11,
+      0.15
+    ],
+    "estimated_base_model_cost_with_retries_usd": [
+      0.22,
+      0.3
+    ],
+    "pricing_basis": "Google Gemini 2.5 Flash standard text: $0.30/M input and $2.50/M output including thinking. Approximate token estimate, not a dollar cap; fal/OpenRouter fees, taxes and actual tokenization are not verified.",
+    "pricing_reference": "https://ai.google.dev/gemini-api/docs/pricing",
+    "gateway_reference": "https://fal.ai/models/openrouter/router"
+  },
+  "launch_blockers": [
+    "No real AI Local Business Ads published course ID/slug/lesson IDs available in the configured course database. No real course registration was created.",
+    "21 provider-dependent scenarios remain UNTESTED until explicit paid-inference approval and semantic review."
+  ],
+  "constraints_observed": {
+    "production_writes": false,
+    "deployment": false,
+    "commit": false,
+    "push": false,
+    "paid_provider_execution": false,
+    "existing_course_sources_overwritten": false
+  },
+  "run_id": "1be41ba90c914c3690fff3bc405c62ea",
+  "live_command": "python3 -B chatbot_eval.py --cases scripts/eval/local-business-ads-cases.json --report reports/local-business-ads-integration --mode live",
+  "live_command_requires_explicit_approval_gate": true
+}

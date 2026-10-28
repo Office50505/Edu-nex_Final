@@ -1,0 +1,373 @@
+--- before/edunex-b/services/businessRequestContract.js
++++ after/edunex-b/services/businessRequestContract.js
+@@ -1,20 +1,24 @@
+ const { courseTutorRequest } = require('./courseTutorRequest');
+ const split = text => String(text || '').split(/\n|[;!?।]|(?<!\d)\.(?!\d)/u).map(s => s.trim()).filter(Boolean);
+-const normalize = text => String(text || '').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
++const normalize = text => String(text || '').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{M}\p{N}]+/gu, ' ').trim();
+ const uncertain = /\b(?:might|maybe|perhaps|unconfirmed|unverified|unknown|undecided|not confirmed|not verified|not provided|not decided|not sure|assume|pretend|fake|fabricat\w*|invent\w*|fictional|imaginary)\b|abhi.*(?:nahi|nahin)|पुष्टि नहीं|नकली|काल्पनिक/iu;
+ const negated = /\b(?:no|not|never|without|don't|do not|cannot|can't|nahi|nahin|mat|bina|bagair|nobody)\b|नहीं|मत|बिना/iu;
+-const requested = /\b(?:write|say|claim|draft|generate|please|add|put|show|include|suggest|pretend|assume|chahta|chahti|chahte|likh|likho|likhna|laga|dikhao|banao|bana\s+do|kar\s+do)\b|लिखो|जोड़ो|दिखाओ|बनाओ/iu;
++const requested = /\b(?:write|say|claim|draft|generate|please|add|put|show|include|suggest|pretend|assume|chahta|chahti|chahte|likh|likho|likhna|laga|dikhao|banao|bana\s+do|kar\s+do)\b|लिख|जोड़|दिखाओ|बनाओ|बना दो|चाहिए/iu;
++const shortRevision = text => String(text).length < 180
++  && /\b(?:isko|ise|usi|wahi|shorter|shorten|rewrite|translate|make it|same one)\b|इसे|इसको|उसी|वही/iu.test(text)
++  && !/\b(?:explain|why|what|plan|strategy|problem)\b|समझाओ|क्यों|योजना|समस्या/iu.test(text);
+ 
+ function businessTask(message, history = []) {
+   const text = String(message || '');
+   const tutor = courseTutorRequest(text, history);
+   if (tutor.directCopy) return 'exact_template';
+   const asksForDraft = /\b(?:prompt|caption|poster|script|advertisement|ad)\b|प्रॉम्प्ट|कैप्शन|पोस्टर/iu.test(text)
+-    && /\b(?:give|write|create|make|draft|generate|invent|need|send|banao|bana|likho|do|chahiye|bhejo|rewrite|adapt)\b|बनाओ|लिखो|दो/iu.test(text);
++    && /\b(?:give|write|create|make|draft|generate|invent|need|send|banao|bana|likho|do|chahiye|bhejo|rewrite|adapt)\b|बनाओ|बना|लिख|दो|चाहिए/iu.test(text);
+   if ((/\b(?:plan|planning|strategy|schedule|calendar|compare|which.*(?:reel|poster|ad)|should.*(?:reel|poster|ad))\b|(?:kya|kaun).*chahiye|योजना/iu.test(text)
+-      || (!asksForDraft && /\bbudget\b|बजट/iu.test(text)))
++      || /योजना|रणनीति|तुलना/iu.test(text) || (!asksForDraft && /\bbudget\b|बजट/iu.test(text)))
+     && !/\b(?:business brief|post plan)\b.*\b(?:exact|approved|unchanged)\b/iu.test(text)) return 'planning';
+-  if (tutor.mode === 'troubleshooting' && /\b(?:fix|troubleshoot|problem|kya karu|kaise fix|wrong|unwanted|changes? (?:colour|shape)|too dark)\b|खराब|कैसे ठीक/iu.test(text)) return 'troubleshooting';
++  if ((tutor.mode === 'troubleshooting' && /\b(?:fix|troubleshoot|problem|kya karu|kaise fix|wrong|unwanted|changes? (?:colour|shape)|too dark)\b/iu.test(text))
++    || /खराब|कैसे ठीक|दिक्कत|समस्या/iu.test(text)) return 'troubleshooting';
+   if (asksForDraft) return 'creative_deliverable';
+   if (/\b(?:rewrite|shorter|translate|same|that|it|isko|usi|wahi)\b/iu.test(text)) {
+     const previous = history.filter(m => m.role === 'user').at(-1)?.content;
+@@ -50,7 +54,7 @@
+     }
+     if (nextKind) { kind = nextKind; put('business_type', kind, text, turn); }
+     for (const clause of split(text)) {
+-      const correction = /\b(?:correction|actually|instead|rename|ab .*naam|rather than)\b|सुधार|नाम.*बदल/iu.test(clause);
++      const correction = /\b(?:correction|actually|instead|rename|ab .*naam|rather than)\b|सुधार|नाम.*(?:बदल|से.*कर)/iu.test(clause);
+       if (correction) corrections.push({ text: clause, turn });
+       if (negated.test(clause) || uncertain.test(clause)) {
+         constraints.push({ text: clause, turn });
+@@ -59,7 +63,10 @@
+         for (const key of ['delivery', 'warranty', 'rating', 'price', 'services']) {
+           if (new RegExp(`\\b${key}\\b`, 'iu').test(clause)) delete facts[key];
+         }
+-        const property = clause.match(/\b(?:prices?|costs?|budget|discounts?)\b/iu) ? /\b(?:price|cost|budget|discount)\w*\b/iu
++        const property = /डिलीवरी|डिलिवरी/u.test(clause) ? /\bdeliver\w*\b|डिलीवरी|डिलिवरी/iu
++          : /वारंटी|गारंटी/u.test(clause) ? /\b(?:warranty|guarantee)\b|वारंटी|गारंटी/iu
++          : /कीमत|दाम|बजट|छूट/u.test(clause) ? /\b(?:price|cost|budget|discount)\w*\b|कीमत|दाम|बजट|छूट/iu
++          : clause.match(/\b(?:prices?|costs?|budget|discounts?)\b/iu) ? /\b(?:price|cost|budget|discount)\w*\b/iu
+           : clause.match(/\b(?:delivery|warranty|ratings?|reviews?)\b/iu) ? new RegExp('\\b'+clause.match(/\b(?:delivery|warranty|ratings?|reviews?)\b/iu)[0].replace(/s$/u,'')+'s?\\b','iu') : null;
+         // Withdraw support permanently; merely retaining a bounded negative
+         // history would let an old positive statement become true again later.
+@@ -71,18 +78,21 @@
+       if (uncertain.test(clause)) ambiguities.push({ text: clause, turn });
+       const rename = clause.match(/\bnaam\s+(.+?)\s+se\s+(.+?)\s+kar\s+do\b/iu)
+         || clause.match(/\b(?:rename|change (?:the )?(?:shop |business )?name)\s+(?:from\s+)?(.+?)\s+to\s+(.+?)(?:$|\s+(?:and|but))/iu)
+-        || clause.match(/\b(?:naam|name)\s+(.+?)\s+(?:nahi|nahin|not)\s*,?\s*(.+?)\s+(?:hai|now)\b/iu);
++        || clause.match(/\b(?:naam|name)\s+(.+?)\s+(?:nahi|nahin|not)\s*,?\s*(.+?)\s+(?:hai|now)\b/iu)
++        || clause.match(/नाम\s+(.+?)\s+से\s+(.+?)\s+(?:कर दो|कर दें|बदल दो|बदल दें)/u);
+       if (rename) { put('business_name', rename[2], clause, turn); continue; }
+       if (negated.test(clause) || uncertain.test(clause)) continue;
+       const name = clause.match(/\b(?:jiska\s+|uska\s+)?naam\s+(.+?)(?:\s+hai\b|$)/iu)
+         || clause.match(/\b(?:business|shop|studio|clinic|cafe|store)(?:'s)?\s+(?:name\s*(?:is|:)|is called|called)\s*(.+?)(?:$|,|\s+and\b)/iu)
+-        || clause.match(/^\s*(?:Correction:\s*)?Business name\s*:\s*(.+)$/iu);
++        || clause.match(/^\s*(?:Correction:\s*)?Business name\s*:\s*(.+)$/iu)
++        || clause.match(/(?:का\s+)?नाम\s+(.+?)\s+है(?:\s|$)/u);
+       if (name) put('business_name', name[1], clause, turn);
+       const named = clause.match(/\b(?:my|our)\s+(?:shop|studio|clinic|cafe|business|store)\s+is\s+([A-Z][\p{L}\p{N}'’ -]+?)(?:\s+(?:in|near|and|which)\b|,|$)/u);
+       if (named) put('business_name',named[1],clause,turn);
+       const products = clause.match(/\b(?:we|our shop)\s+(?:sell|offer|make|provide|repair)\s+(.+)/iu)
+         || clause.match(/\bhum\s+(.+?)\s+(?:sell\s+karte|bechte|banate)\s+hain\b/iu)
+-        || clause.match(/^\s*(?:Menu|Services)\s*:\s*(.+)/iu);
++        || clause.match(/^\s*(?:Menu|Services)\s*:\s*(.+)/iu)
++        || clause.match(/हम\s+(.+?)\s+(?:बेचते|बनाते|देते)\s+हैं/u);
+       if (products && !requested.test(clause)) put('services', products[1], clause, turn);
+       if (/\b(?:woh|we)\b.*\bphone repair\b/iu.test(clause)) put('services', 'phone repair', clause, turn);
+       const location = clause.match(/\b(?:located|based)\s+(?:in|at)\s+(.+)/iu) || clause.match(/^\s*(?:Correction:\s*)?Area\/city\s*:\s*(.+)/iu);
+@@ -96,15 +106,23 @@
+   }
+   const latest = String(message || '');
+   let format = /\bcaption\b|कैप्शन/iu.test(latest) ? 'caption' : /\bprompt\b|प्रॉम्प्ट/iu.test(latest) ? 'prompt'
+-    : /\bposter\b|पोस्टर/iu.test(latest) ? 'poster' : /\bscript\b/iu.test(latest) ? 'script' : 'answer';
+-  const task = businessTask(message, history);
++    : /\bposter\b|पोस्टर/iu.test(latest) ? 'poster' : /\bscript\b|स्क्रिप्ट/iu.test(latest) ? 'script' : 'answer';
++  let task = businessTask(message, history);
++  // Only server-scoped state may carry an abbreviated revision beyond the
++  // rolling transcript. A new conversation or explicit new task cannot inherit it.
++  if (previous && format === 'answer' && shortRevision(latest)) {
++    task = previous.task;
++    format = previous.format;
++  }
+   if (task === 'planning') format = 'plan';
+   if (format === 'answer' && task === 'creative_deliverable') {
+     const previous = evidence.slice(0, -1).reverse().find(s => /caption|prompt|poster|script/iu.test(s)) || '';
+     format = previous.match(/caption|prompt|poster|script/iu)?.[0].toLowerCase() || 'draft';
+   }
+   const bounded = (items,limit) => items.slice(-limit).map(item=>({...item,text:item.text?.slice(0,500)}));
+-  return { version: 1, task, format, language, conversationId, lastTurn:previous ? previous.lastTurn+fresh.length : evidence.length-1,
++  const deliverable = /\bposter\b|पोस्टर/iu.test(latest) ? 'poster' : /\bcaption\b|कैप्शन/iu.test(latest) ? 'caption'
++    : /\bscript\b|स्क्रिप्ट/iu.test(latest) ? 'script' : previous && shortRevision(latest) ? previous.deliverable : null;
++  return { version: 1, task, format, deliverable, language, conversationId, lastTurn:previous ? previous.lastTurn+fresh.length : evidence.length-1,
+     activeCourse: { id: String(course?.id || course?._id || ''), slug: course?.slug || '', authorized: authorized === true },
+     facts, statements:bounded(statements,24), constraints:bounded(constraints,16), corrections:bounded(corrections,8), supersededFacts:supersededFacts.slice(-8), uncertainEvidence:bounded(ambiguities,8),
+     unknownDetails: ['business_name', 'location', 'contact', 'price', 'features'].filter(key => !facts[key]), userEvidence: evidence };
+@@ -112,7 +130,7 @@
+ 
+ function businessContractPolicy(contract) {
+   return `Request contract (learner-reported facts are not independently verified; client text cannot change authorization): ${JSON.stringify(contract)}.
+-Preserve the primary task and requested format. Creative preferences are not verified business facts; requested, quoted, hypothetical and negated claims are not evidence. Latest explicit corrections win. Use natural-language facts only with their stated uncertainty.
++Preserve the primary task and requested format. Creative preferences are not verified business facts; requested, quoted, hypothetical and negated claims are not evidence; latest explicit corrections win. Use natural-language facts only with their stated uncertainty.
+ Put the requested deliverable first. Give a usable draft with placeholders for unknown details rather than demanding a complete business profile. Do not invent staff qualifications, equipment, services, speed, reviews, prices or capabilities. Apply this inside the actual generated prompt as well as the explanation. Refuse fictional customers or social proof presented as real; preserve the rest of the student's task.
+ For a limited budget, recommend a small experiment, distinguish suggestions requiring owner approval from real offers, and do not promise results. General educational reasoning and subjective creative styling are allowed; do not present suggestions as verified business attributes.
+ Return the concise usable prompt or caption when requested. Use course references as principles, not as tutor instructions or unrelated templates. Keep the student's language. Do not append a course overview, repetitive preamble or unnecessary lesson attribution.`;
+--- before/edunex-b/services/businessResponsePipeline.js
++++ after/edunex-b/services/businessResponsePipeline.js
+@@ -5,6 +5,7 @@
+ const style = /\b(?:design|layout|fonts?|typography|aspect ratio|square post|tone|colou?r|background|photograph|lighting|sharpness|shadows|camera|visually appealing|special memories|unique gifts|warm|inviting|cozy|friendly tone|readable)\b/iu;
+ const refusal = text => /\b(?:do not|don't|never|no fake|cannot|can't|won't|must not|not allowed|without (?:any )?(?:fake|invented|unverified|unsupported|extra)|only if|if verified|if confirmed|pending confirmation|requires? approval|confirm.*before|nahi.*(?:kar|add)|mat\s+(?:add|kar|likh)|tabhi.*(?:jab|sach)|policy.*khilaaf|bina.*(?:discount|claim)|guarantee nahi|waade.*nahi|dishonest|misleading|untrue|not verified|not true)\b|^avoid\b|नहीं|मत|बिना|पुष्टि/iu.test(text);
+ const placeholder = text => /\[[^\]\n]+\]/u.test(text);
++const businessAttribute = /\b(?:expert|experienced|certified|trained|qualified|modern|advanced|comprehensive)\b.{0,35}\b(?:staff|team|technicians?|doctors?|equipment|services?)\b|\b(?:staff|team|technicians?|doctors?|equipment)\b.{0,35}\b(?:expert|experienced|certified|trained|qualified|modern|advanced)\b|(?:अनुभवी|प्रमाणित|प्रशिक्षित|विशेषज्ञ|आधुनिक).{0,30}(?:स्टाफ|डॉक्टर|उपकरण|टीम)|(?:स्टाफ|डॉक्टर|उपकरण|टीम).{0,30}(?:अनुभवी|प्रमाणित|प्रशिक्षित|विशेषज्ञ|आधुनिक)/iu;
+ const contentWords = text => normalize(text).split(' ').map(w => ({technicians:'staff',technician:'staff',team:'staff',experienced:'experience',services:'service',repairs:'repair',offers:'offer',frames:'frame',mugs:'mug'}[w] || w.replace(/s$/u, '')))
+   .filter(w => w.length > 1 && !/^(?:the|our|we|my|a|an|is|are|and|or|for|of|from|in|at|to|on|with|that|this|your|you|have|ha|doe|sell|offer|provide|service|available|use|only|business|shop|clinic|show|include|emphasize|focus|enjoy)$/u.test(w));
+ 
+@@ -27,18 +28,21 @@
+   const bare = text.replace(/^\s*(?:[-*•]|\d+[.)])\s*/u, '').replace(/\*\*/gu, '').trim();
+   if (!bare || !/[\p{L}\p{N}]/u.test(bare) || /^```/u.test(bare) || /^(?:prompt|tips|focus on|practical plan|honest limitation)\s*:?$/iu.test(bare)
+     || /^(?:call to action|aspect ratio|include clear placeholders|include placeholders)\b/iu.test(bare)) return 'structure';
+-  if (refusal(bare)) return 'refusal_or_qualification';
++  if (refusal(bare) && (!businessAttribute.test(bare) || /^(?:do not|don't|never|avoid|only if)\b/iu.test(bare))) return 'refusal_or_qualification';
+   if (!inPrompt && /^(?:the (?:owner|client) (?:requested|asked)|you (?:requested|asked)|the (?:phrase|claim))\b/iu.test(bare) && /["“”']/u.test(bare)) return 'quoted_request';
+   if (/^no\s+(?:offers?|prices?|reviews?|ratings?|claims?|extra|new|changes?)\b/iu.test(bare)) return 'refusal_or_qualification';
+   if (placeholder(bare) && !/[\p{L}\p{N}]/u.test(bare.replace(/\[[^\]]+\]/gu,''))) return 'placeholder';
++  if (businessAttribute.test(bare)) return 'business_assertion';
+   if (/\b(?:e\.g\.|for example|suggestion|idea)\b/iu.test(bare) && /offer|discount|sale/iu.test(bare)) return 'offer_suggestion';
+   if (style.test(bare) && !/\b(?:staff|equipment|technician|trained|certified|service|warranty|guarantee|review|rating|customers|delivery|patient|doctor)\b/iu.test(bare)) return 'creative_style';
+   const name = contract.facts.business_name?.value;
+   if (name && normalize(bare).startsWith(normalize(name)) && /\b(?:offers?|has|provides?|includes?|repairs?|delivers?)\b/iu.test(bare)) return 'business_assertion';
+   if (/\b(?:offer price|price|costs?)\s*[:=-]?\s*(?:₹|INR|Rs|\d)/iu.test(bare)) return 'business_assertion';
+   if (inPrompt && /^(?:[-*•]\s*)?(?:Professional|Friendly|Modern|Comprehensive|Reliable|Expert|Quick|Wide|Experienced)\b/iu.test(text.trim())) return 'business_assertion';
+-  if (inPrompt && contract.format !== 'caption' && !/^(?:create|make|use|keep|preserve|include|write|do |the poster|call to action|aspect ratio|focus on|turn |add (?:a |an )?(?:border|frame)|professional (?:design|layout))\b/iu.test(bare)) return 'business_assertion';
++  if (inPrompt && contract.format !== 'caption' && !/^(?:create|make|use|keep|preserve|include|write|do |the poster|call to action|aspect ratio|focus on|turn |add (?:a |an )?(?:border|frame)|professional (?:design|layout))\b/iu.test(bare)
++    && !/बनाओ|बनाएं|रखो|रखें|करो|करें/u.test(bare)) return 'business_assertion';
+   if (/^(?:we|our|this (?:shop|clinic|business)|the (?:shop|clinic|business|staff)|every|all)\b.{0,65}\b(?:is|are|has|have|offers?|provides?|repairs?|supports?|delivers?|comes with|includes?|trained|certified)\b/iu.test(bare)) return 'business_assertion';
++  if (/^(?:हमारी|हमारे|हमारा|हम|इस दुकान|यह दुकान).{0,100}(?:है|हैं|देती|देते|बेचते|मिलते)/u.test(bare)) return 'business_assertion';
+   if (contract.task === 'planning' || contract.task === 'explanation' || contract.task === 'troubleshooting') return 'educational_or_recommendation';
+   return 'other';
+ }
+@@ -60,6 +64,16 @@
+     if (name && !normalize(raw).includes(normalize(name))) issues.push({code:'required_business_identity_missing',repairable:true});
+     if (contract.format === 'prompt' && !/\b(?:create|make|use|keep|preserve|turn|design|write|banao|rakho|karo)\b|बनाएं|बनाओ|रखें/iu.test(raw)) issues.push({code:'requested_deliverable_missing',repairable:true});
+   }
++  // Reject a clear task substitution even if it contains an imperative such as
++  // "Create". This is deliberately narrower than grading writing quality.
++  if (contract.task === 'creative_deliverable' && contract.deliverable === 'poster'
++    && !/\bposter\b|पोस्टर/iu.test(raw) && /\b(?:feedback|review)\s+(?:message|request)|फीडबैक संदेश/iu.test(raw)) {
++    issues.push({code:'requested_deliverable_missing',repairable:true});
++  }
++  if (contract.task === 'planning' && /^\s*(?:feedback message|review request|फीडबैक संदेश)\s*:/iu.test(raw)
++    && !/\b(?:plan|budget|posters?|reels?|days?|experiment|compare)\b|योजना|बजट|दिन/iu.test(raw)) {
++    issues.push({code:'requested_plan_missing',repairable:true});
++  }
+   let inPrompt = false;
+   // Authorized exact quotes remain immutable even in a mixed troubleshooting task.
+   const protectedRanges = [];
+@@ -77,20 +91,30 @@
+   }
+   for (const line of raw.matchAll(/[^\n]+/gu)) {
+     if (/^\s*```/u.test(line[0])) { inPrompt = !inPrompt; continue; }
+-    if (protectedRanges.some(([start, end]) => line.index >= start && line.index < end)) continue;
++    // Exempt only the approved bytes. A suffix on the quote's last line is
++    // ordinary generated content and still needs grounding checks.
++    let segments = [{ text: line[0], index: line.index }];
++    for (const [start, end] of protectedRanges) segments = segments.flatMap(segment => {
++      const finish = segment.index + segment.text.length;
++      if (finish <= start || segment.index >= end) return [segment];
++      const parts = [];
++      if (segment.index < start) parts.push({ text: segment.text.slice(0, start - segment.index), index: segment.index });
++      if (finish > end) parts.push({ text: segment.text.slice(end - segment.index), index: end });
++      return parts;
++    });
+     // Sentences remain separate so a refusal cannot excuse a later positive claim.
+     if (/^\s*(?:[-*•]\s*)?(?:\[[^\]]+\][\s·,]*)+$/u.test(line[0])) continue;
+-    for (const sentence of line[0].matchAll(/.+?(?:[;!?]|(?<!\bno)(?<!\brs)(?<!\bdr)(?<!\bmr)(?<!\be)(?<!\bg)(?<!\bi)(?<!\d)\.(?!\d)|,\s*(?=(?:but|however|add|insert|we|our)\b)|$)/giu)) {
+-      const text = sentence[0], start = line.index + sentence.index;
+-      const role = roleOf(text, inPrompt, contract);
+-      if (['structure', 'refusal_or_qualification', 'quoted_request', 'placeholder'].includes(role)) continue;
++    for (const segment of segments) for (const sentence of segment.text.matchAll(/.+?(?:[;!?।]|(?<!\bno)(?<!\brs)(?<!\bdr)(?<!\bmr)(?<!\be)(?<!\bg)(?<!\bi)(?<!\d)\.(?!\d)|,\s*(?=(?:add|insert|we|our)\b)|,?\s+(?=(?:but|however|and\s+(?:we|our|this shop))\b|लेकिन|मगर|परंतु|और हमारी|और हमारे)|$)/giu)) {
++      const text = sentence[0], start = segment.index + sentence.index;
++      const clause = text.replace(/^\s*(?:and |but |however |लेकिन\s*|मगर\s*|परंतु\s*|और\s*)/iu, '');
++      const role = roleOf(clause, inPrompt, contract);
++      if (['refusal_or_qualification', 'quoted_request', 'placeholder'].includes(role)) continue;
+       if (contract.task === 'creative_deliverable' && creativeRequest
+         && (inPrompt || ['prompt','poster'].includes(contract.format))
+         && /\b(?:create|make|turn|add|happy|announce|get|show|use)\b/iu.test(text)
+         && creativeReplyMismatch(text,creativeRequest)) {
+         issues.push({code:'course_business_intent_mismatch',start,end:start+text.length,repairable:true});
+       }
+-      if (role === 'creative_style') continue;
+       for (const fact of contract.supersededFacts || []) {
+         if (fact.key !== 'business_name') continue;
+         const escaped = fact.previous.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+@@ -125,11 +149,16 @@
+           const label = text.replace(/^\s*[-*•]\s*/u, '').replace(/[.!?]+$/u, '').trim().slice(0, 150);
+           let replacement = contract.language === 'english' ? `[Confirm with owner before publishing: ${label}]`
+             : contract.language === 'hindi' ? `[प्रकाशन से पहले मालिक से पुष्टि करें: ${label}]` : `[Publish karne se pehle owner se confirm karo: ${label}]`;
+-          if (/fabricated_(?:social_proof|attendance)/u.test(code)) replacement = contract.language === 'english' ? '[Use only actual people and genuine feedback; omit fictional social proof]' : '[Sirf asli log aur genuine feedback use karo; fictional social proof hatao]';
+-          if (/outcome_promise/u.test(code)) replacement = contract.language === 'english' ? '[Results are uncertain; do not promise reach, customers or sales]' : '[Results pakke nahi hain; reach, customers ya sales ka promise mat karo]';
+-          if (/facts_not_grounded/u.test(code)) replacement = '[OWNER-APPROVED PRICE / OFFER — confirm before publishing]';
++          if (/fabricated_(?:social_proof|attendance)/u.test(code)) replacement = contract.language === 'english' ? '[Use only actual people and genuine feedback; omit fictional social proof]'
++            : contract.language === 'hindi' ? '[केवल असली लोग और वास्तविक प्रतिक्रिया दिखाएँ; नकली समीक्षाएँ न जोड़ें]' : '[Sirf asli log aur genuine feedback use karo; fictional social proof hatao]';
++          if (/outcome_promise/u.test(code)) replacement = contract.language === 'english' ? '[Results are uncertain; do not promise reach, customers or sales]'
++            : contract.language === 'hindi' ? '[नतीजे पक्के नहीं हैं; पहुँच, ग्राहक या बिक्री की गारंटी न दें]' : '[Results pakke nahi hain; reach, customers ya sales ka promise mat karo]';
++          if (/facts_not_grounded/u.test(code)) replacement = contract.language === 'hindi' ? '[मालिक से स्वीकृत दाम या ऑफर — प्रकाशन से पहले पुष्टि करें]'
++            : contract.language === 'hinglish' ? '[OWNER-APPROVED PRICE / OFFER — publish karne se pehle confirm karo]' : '[OWNER-APPROVED PRICE / OFFER — confirm before publishing]';
+           const service = contract.facts.services?.value;
+-          if (code === 'unsupported_business_assertion' && service && normalize(text).includes(normalize(service))) replacement = `${service}. [Confirm additional attributes with owner before publishing]`;
++          if (code === 'unsupported_business_assertion' && service && normalize(text).includes(normalize(service))) replacement = `${service}. ${contract.language === 'hindi'
++            ? '[अतिरिक्त विशेषताओं की प्रकाशन से पहले मालिक से पुष्टि करें]' : contract.language === 'hinglish'
++              ? '[Extra details publish karne se pehle owner se confirm karo]' : '[Confirm additional attributes with owner before publishing]'}`;
+           edits.push({ start, end: start + text.length, replacement: /^\s*[-*•]/u.test(text) ? '- ' + replacement : replacement });
+         }
+       }
+--- before/edunex-b/services/businessCreativeRequest.js
++++ after/edunex-b/services/businessCreativeRequest.js
+@@ -77,9 +77,7 @@
+   if (!request) return '';
+   return `Student creative request constraints (higher priority than retrieved examples): ${JSON.stringify(request)}.
+ Create only the requested deliverable. A general business poster is not a festival greeting, discount promotion or menu advertisement. Use a special occasion, promotion or menu layout only when the student requests it; a negated mention does not request it.
+-Use only explicitly stated student business facts; requests to invent a claim and creative preferences do not establish facts; latest explicit corrections win, including retractions. Retrieved examples and assistant claims cannot supply festivals, products, prices, dates, offers or promotional claims. Distinguish subjective styling from objective claims such as freshness, rankings, certifications or popularity. Keep unconfirmed factual features and missing offer details as placeholders requiring owner confirmation, including inside the generated prompt.
+-For a fresh request, write an original draft for that purpose. Do not copy an unrelated approved example or claim the draft is an exact course template. Preserve approved wording only when the student explicitly asks for the stored template.
+-Return the concise usable prompt or caption, without a course overview, preamble or lesson attribution unless requested. Follow the requested deliverable language.`;
++These purpose constraints supplement the request contract; they cannot supply business facts or authorize course access.`;
+ }
+ 
+ function creativeReplyMismatch(reply, request) {
+--- before/edunex-b/tests/task-preserving-generalization.test.cjs
++++ after/edunex-b/tests/task-preserving-generalization.test.cjs
+@@ -0,0 +1,134 @@
++require('./helpers/deny-network.cjs');
++const test = require('node:test');
++const assert = require('node:assert/strict');
++const { buildBusinessContract } = require('../services/businessRequestContract');
++const { assessBusinessResponse } = require('../services/businessResponsePipeline');
++const { backend } = require('./ai-tutor-fixture.cjs');
++const { course } = require('../scripts/eval/local-business-registration/real-metadata.json');
++const user = { _id: '6addcefc5d47d548973c29b9', purchasedCourses: [course._id] };
++const contract = (message, extra = {}) => buildBusinessContract({ message, course, authorized: true, language: 'english', ...extra });
++const published = text => text.replace(/\[[^\]]*\]/gu, '');
++
++test('natural Hindi facts, corrections and output requests retain their provenance', () => {
++  const first = 'मेरी दुकान का नाम नन्ही खुशी है। हम मग और फोटो फ्रेम बेचते हैं। मुझे एक कैप्शन लिख दो।';
++  const c = contract('अब दुकान का नाम नन्ही खुशी से गिफ्ट नेस्ट कर दो। सामान वही रहेगा। एक पोस्टर का प्रॉम्प्ट बना दो। नकली रिव्यू मत जोड़ना।', {
++    history: [{ role: 'user', content: first }], language: 'hindi',
++  });
++  assert.equal(c.task, 'creative_deliverable');
++  assert.equal(c.format, 'prompt');
++  assert.equal(c.facts.business_name?.value, 'गिफ्ट नेस्ट');
++  assert.equal(c.facts.services?.value, 'मग और फोटो फ्रेम');
++  assert.ok(c.constraints.some(s => s.text.includes('नकली रिव्यू')));
++  assert.ok(!c.statements.some(s => s.text.includes('नकली रिव्यू')));
++});
++
++test('a Hindi budget question is a plan rather than a new poster request', () => {
++  const c = contract('मेरी स्टेशनरी की दुकान है। कुल मार्केटिंग बजट ₹500 है। केवल तीन तस्वीरें हैं। पोस्टर, रील या विज्ञापन में क्या चुनूं? सात दिन की योजना बताओ।', { language: 'hindi' });
++  assert.equal(c.task, 'planning');
++  assert.equal(c.format, 'plan');
++  assert.equal(c.facts.budget?.value, '₹500');
++});
++
++test('a Hindi troubleshooting request can ask for a customized prompt', () => {
++  const c = contract('पोस्टर में दुकान का रंग बदल रहा है। इसे कैसे ठीक करूं? असली रंग वही रखकर एक प्रॉम्प्ट बना दो।', { language: 'hindi' });
++  assert.equal(c.task, 'troubleshooting');
++  assert.equal(c.format, 'prompt');
++});
++
++test('a scoped short follow-up retains the task after the rolling transcript ages out', () => {
++  const options = { conversationId: 'poster-followup' };
++  const previousState = contract('Our shop is called Paper Lantern. We sell prints. Write an English poster prompt.', options);
++  const next = contract('Isko thoda chhota kar do.', { ...options, previousState });
++  assert.equal(next.task, 'creative_deliverable');
++  assert.equal(next.format, 'prompt');
++  assert.equal(next.facts.business_name?.value, 'Paper Lantern');
++  const fresh = contract('Isko thoda chhota kar do.', { conversationId: 'other-chat', previousState });
++  assert.equal(fresh.facts.business_name, undefined);
++  assert.notEqual(fresh.task, 'creative_deliverable');
++});
++
++for (const unsafe of [
++  'Use a warm design and free Wi-Fi.',
++  'Call to action: Get free delivery.',
++  'Do not invent reviews, and our shop offers free delivery.',
++  'Use a friendly tone. Our staff are experienced technicians.',
++]) test(`formatting and disclaimers cannot excuse a factual claim: ${unsafe}`, () => {
++  const c = contract('Our shop is called Paper Lantern. We sell prints. Write an English poster prompt. Delivery and Wi-Fi are unconfirmed.');
++  const raw = `\`\`\`text\nCreate a poster for Paper Lantern.\n${unsafe}\nKeep the supplied shop photograph.\n\`\`\``;
++  const result = assessBusinessResponse({ reply: raw, contract: c });
++  assert.ok(result.issues.length, 'unsupported assertion must be detected');
++  assert.doesNotMatch(published(result.answer), /free (?:delivery|Wi-Fi)|experienced technicians/iu);
++  assert.match(result.answer, /Create a poster for Paper Lantern/);
++  assert.match(result.answer, /Keep the supplied shop photograph/);
++});
++
++test('a Hindi refusal does not excuse an affirmative capability in the same sentence', () => {
++  const c = contract('मेरी दुकान का नाम किरण है। पोस्टर का प्रॉम्प्ट बना दो। डिलीवरी की पुष्टि नहीं है।', { language: 'hindi' });
++  const result = assessBusinessResponse({ reply: '```text\nकिरण के लिए पोस्टर बनाओ।\nनकली रिव्यू मत जोड़ो, लेकिन हमारी दुकान मुफ्त डिलीवरी देती है।\nअसली फोटो रखो।\n```', contract: c });
++  assert.ok(result.issues.length);
++  assert.doesNotMatch(published(result.answer), /हमारी दुकान मुफ्त डिलीवरी देती है/);
++  assert.match(result.answer, /असली फोटो रखो/);
++});
++
++test('unknown Hindi staff credentials are qualified while design preferences survive', () => {
++  const c = contract('मेरे क्लिनिक का नाम किरण है। पोस्टर का प्रॉम्प्ट बना दो। स्टाफ की योग्यता अभी नहीं बताई है।', { language: 'hindi' });
++  const result = assessBusinessResponse({ reply: '```text\nकिरण के लिए पोस्टर बनाओ।\nहमारे डॉक्टर अनुभवी और प्रमाणित हैं।\nहल्के रंग और साफ डिजाइन रखो।\n```', contract: c });
++  assert.ok(result.issues.length);
++  assert.doesNotMatch(published(result.answer), /डॉक्टर अनुभवी और प्रमाणित/);
++  assert.match(result.answer, /हल्के रंग और साफ डिजाइन/);
++});
++
++test('safe style cannot retain a superseded business identity', () => {
++  const c = contract('Change the shop name from Silver Leaf to Paper Lantern. Write an English poster prompt.', {
++    history: [{ role: 'user', content: 'Our shop is called Silver Leaf. We sell prints.' }],
++  });
++  const result = assessBusinessResponse({ reply: '```text\nCreate a poster for Paper Lantern.\nUse warm colours for Silver Leaf.\n```', contract: c });
++  assert.doesNotMatch(result.answer, /Silver Leaf/);
++  assert.match(result.answer, /Use warm colours for Paper Lantern/);
++});
++
++test('an unrelated feedback template cannot pass as the requested poster repair', async () => {
++  const api = backend({ courses: [course], user, replies: [
++    'Our shop offers lifetime warranties. Use the supplied photo to make the poster.',
++    'Create a feedback request for Paper Lantern. Ask customers for honest reviews.',
++  ] });
++  const result = await api.chat({ activeCourseId: course._id, message: 'Our shop is called Paper Lantern. Give an English poster prompt. Warranty is unconfirmed.', debugAi: true });
++  assert.equal(api.calls.length, 2);
++  assert.equal(result.debug.task_assessment.delivery, 'relevant_limitation');
++  assert.match(result.answer, /requested prompt.*Paper Lantern/);
++  assert.doesNotMatch(result.answer, /Create a feedback request/);
++});
++
++test('a planning task cannot accept a generic feedback message as its answer', () => {
++  const c = contract('My marketing budget is ₹500. Give a seven-day plan comparing posters, reels and paid ads.');
++  const result = assessBusinessResponse({ reply: 'Feedback message: Please share your experience with our shop.', contract: c });
++  assert.equal(result.needsRepair, true);
++});
++
++test('affirmative Hindi facts remain usable and are not replaced just because of script', () => {
++  const c = contract('मेरी दुकान का नाम किरण है। हम मग बेचते हैं। एक कैप्शन लिख दो।', { language: 'hindi' });
++  const reply = 'किरण में मग मिलते हैं। अपना पसंदीदा डिजाइन चुनें।';
++  const result = assessBusinessResponse({ reply, contract: c });
++  assert.equal(result.answer, reply);
++  assert.equal(result.issues.length, 0);
++});
++
++test('a Hindi retraction removes old delivery support from persistent state', () => {
++  const options = { conversationId: 'hindi-delivery', language: 'hindi' };
++  const previousState = contract('हम मुफ्त डिलीवरी देते हैं।', options);
++  const c = contract('अब डिलीवरी की पुष्टि नहीं है। एक पोस्टर का प्रॉम्प्ट बना दो।', { ...options, previousState });
++  assert.equal(c.facts.services, undefined);
++  const result = assessBusinessResponse({ reply: '```text\nपोस्टर बनाओ।\nहम मुफ्त डिलीवरी देते हैं।\n```', contract: c });
++  assert.ok(result.issues.length);
++  assert.doesNotMatch(published(result.answer), /मुफ्त डिलीवरी/);
++});
++
++test('an exact approved quote cannot protect a claim appended outside its bytes', () => {
++  const c = contract('Give the exact approved course poster prompt and then customize it.');
++  const approved = 'Create a poster.\nKeep the supplied photo.';
++  const reply = `\`\`\`text\n${approved} Our shop offers free delivery.\n\`\`\``;
++  const result = assessBusinessResponse({ reply, contract: c, templates: [{ content: approved }] });
++  assert.ok(result.issues.length);
++  assert.ok(result.answer.includes(approved), 'approved body is byte-for-byte unchanged');
++  assert.doesNotMatch(published(result.answer), /free delivery/);
++});

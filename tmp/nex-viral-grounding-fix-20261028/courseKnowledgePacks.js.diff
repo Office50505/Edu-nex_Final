@@ -1,0 +1,28 @@
+--- edunex-b/services/courseKnowledgePacks.js (before task)
+
++++ edunex-b/services/courseKnowledgePacks.js
+
+@@ -7,7 +7,7 @@
+
+ const { buildBusinessContract, businessContractPolicy } = require('./businessRequestContract');
+ const { assessBusinessResponse, taskLimitation: businessTaskLimitation } = require('./businessResponsePipeline');
+ const { cartoonFacts, buildCartoonContract, cartoonContractPolicy, assessCartoonResponse, cartoonTaskLimitation } = require('./cartoonTutorPipeline');
+-const { viralHookFacts, viralHookLanguage, viralHookPolicyContext } = require('./viralHookTutor');
++const { viralHookFacts, viralHookLanguage, viralHookPolicyContext, validateViralHookReply } = require('./viralHookTutor');
+ const root = path.resolve(__dirname, '../knowledge');
+ const registry = JSON.parse(fs.readFileSync(path.join(root, 'course-packs.json'), 'utf8'));
+ // Staged packs stay inaccessible until a published catalog owner is verified.
+@@ -115,6 +115,12 @@
+
+     return { reply: assessment.needsRepair ? taskLimitation(assessment.contract) : assessment.answer,
+       issue: assessment.issues[0]?.code || null, assessment };
+   }
++  if (pack.domain === 'viral-hook-formula') {
++    const retrieved = new Set((knowledge.records || []).map(r => r.chunkId));
++    const templates = knowledge.tutorRequest?.copyRequested ? pack.records.filter(r => r.contentType === 'exact-template' && retrieved.has(r.chunkId)) : [];
++    const grounding = validateViralHookReply({reply, knowledge, templates});
++    if (grounding.issue) return grounding;
++  }
+   const customIssue = customSolutionIssue(reply, knowledge.tutorRequest, pack.records.filter(record => record.contentType === 'exact-template'));
+   if (customIssue) {
+     const language = knowledge.courseContext?.language;

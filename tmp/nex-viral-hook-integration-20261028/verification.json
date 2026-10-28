@@ -1,0 +1,125 @@
+{
+  "course": {
+    "id": "6ae1b4694e1af14d4adc9e2b",
+    "slug": "viral-hook-formula",
+    "publishedCatalogVerified": true,
+    "registryBindingEnabled": true,
+    "isolatedDatabaseRegistered": true,
+    "productionDatabaseChanged": false,
+    "realLessonIdsPreserved": true
+  },
+  "knowledgeImport": {
+    "completeTxtCopiedByteForByte": true,
+    "txtSHA256": "940c2aeac8fd7b73966a7aad2081202cec9e3b8c26c1d2b5b4c9b210cb395708",
+    "supplementaryPdfCopiedByteForByte": true,
+    "supplementaryPdf": "Viral_Hook_Formula_Course_Notes.pdf",
+    "requestedParenthesizedFilenameFound": false,
+    "supplementaryPdfPages": 6,
+    "lessons": 10,
+    "hookCategories": [
+      "curiosity",
+      "pattern_interrupt",
+      "bold",
+      "question",
+      "story",
+      "visual",
+      "list",
+      "pov"
+    ],
+    "indexedRecords": 27,
+    "exactTemplates": 2,
+    "templatesAuthoritativeSource": "Part F of the supplied TXT; raw UTF-8 byte ranges stored for both bodies",
+    "indexRebuildDeterministic": true,
+    "derivedIndexTransform": "Page furniture removed only in derived non-template chunks; source originals and exact bodies preserved."
+  },
+  "filesModified": [
+    "edunex-b/knowledge/course-packs.json",
+    "edunex-b/services/courseKnowledgePacks.js",
+    "edunex-b/services/tutorKnowledge.js"
+  ],
+  "filesAdded": [
+    "edunex-b/services/viralHookTutor.js",
+    "edunex-b/scripts/prepare-viral-hook-knowledge.py",
+    "edunex-b/tests/viral-hook-integration.test.cjs",
+    "edunex-b/knowledge/viral-hook-formula/Viral_Hook_Formula_Course_Notes.pdf",
+    "edunex-b/knowledge/viral-hook-formula/course-binding.json",
+    "edunex-b/knowledge/viral-hook-formula/course-notes.txt",
+    "edunex-b/knowledge/viral-hook-formula/index.json",
+    "edunex-b/knowledge/viral-hook-formula/preparation.json",
+    "edunex-b/knowledge/viral-hook-formula/training.txt"
+  ],
+  "architecture": {
+    "mechanismsReused": [
+      "Existing schemaVersion-1 course-pack registry and owner/slug binding",
+      "Existing authorization, entitlements and protected-course retrieval",
+      "Existing lesson-ID mapping and exact-template route",
+      "Existing scoped courseContext facts/evidence memory",
+      "Existing provider/generation/repair path"
+    ],
+    "newCourseAdapter": "Creator niche/audience/topic extraction and language selection feed the existing courseContext facts store. Per-pack retrieval metadata prevents unsolicited raw templates and bundled example answers from choosing a custom hook task.",
+    "sharedGenerationAndRepairPipelineUnchanged": true,
+    "existingValidationFunctionsUnchanged": true,
+    "coreFilesByteForByteUnchangedThisTask": [
+      "edunex-b/services/aiTutorService.js",
+      "edunex-b/routes/ai.js",
+      "edunex-b/services/aiCompliance.js",
+      "edunex-b/services/tutorProvider.js",
+      "edunex-b/models/AiTutorSession.js"
+    ],
+    "existingRegistryEntriesUnchanged": true,
+    "businessOrCartoonValidationAppliedToViral": false
+  },
+  "focusedTests": {
+    "tests": 40,
+    "pass": 40,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "localChecks": [
+    "All ten real lesson IDs map to their authoritative lesson summaries",
+    "Eight hook-category records retrieve correctly",
+    "Unknown niches, comparison/improvement, requested counts and truthful alternatives reach mocked tutoring with correct instructions",
+    "Niche/audience/topic corrections survive rolling history within the same authorized conversation",
+    "Two exact template bodies match original TXT byte ranges and authenticated simulator responses",
+    "Unauthorized/expired/other-course learners cannot receive protected Viral assets",
+    "Other-course protected material is excluded from Viral payloads and Viral exact assets are forbidden in other-course scope",
+    "Ordinary hook, interrupt, break, viral and pattern vocabulary reaches tutoring without a safety refusal"
+  ],
+  "simulator": {
+    "selectedCourseId": "6ae1b4694e1af14d4adc9e2b",
+    "authenticated": true,
+    "entitlementState": "ACTIVE",
+    "sourceRevisionSHA256": "d722570747a60a5dcd578559db2d72c6273896ed16d13ca46a43cb646290fd39",
+    "backendUrl": "http://127.0.0.1:3129",
+    "exactTemplatesVerifiedThroughActualRoute": 2,
+    "localCourseAndTemplateVerificationReady": true,
+    "liveGeneratedAnswerVerificationReady": false,
+    "reason": "The verification-only process has no provider credentials and blocks external transport. A separately approved, source-bound live QA profile is required."
+  },
+  "limitations": [
+    "Deterministic generation tests use injected mock provider responses and verify routing/context/policy delivery, not actual Gemini creativity or output accuracy. Live behavior remains untested.",
+    "Creator fact extraction is conservative; ambiguous language is retained as learner evidence rather than treated as independently verified facts.",
+    "The requested notes filename with (1) was absent; the available matching six-page Course Notes PDF was imported and its exact name/hash recorded.",
+    "The existing public-course comparison mechanism can include public catalog overviews in comparison wording; protected retrieval remains confined to the authorized owner and the mechanism was left unchanged."
+  ],
+  "remainingBlockers": [
+    "Live generated-answer testing requires a separately approved provider session; none was created or authorized."
+  ],
+  "protectedExistingArtifactsChecked": 1794,
+  "protectedExistingArtifactsChanged": [],
+  "paidInferenceCalls": 0,
+  "approvalExecuted": false,
+  "oldApprovalLedgersModified": false,
+  "productionWrites": false,
+  "deployed": false,
+  "committedOrPushed": false,
+  "zipGenerated": false,
+  "evidence": {
+    "tests": "focused-tests.log",
+    "actualSimulatorTemplates": "simulator-exact-prompts.json",
+    "simulatorSelection": "simulator-selection.json",
+    "runtime": "runtime-readiness.json",
+    "diff": "changes.diff"
+  }
+}

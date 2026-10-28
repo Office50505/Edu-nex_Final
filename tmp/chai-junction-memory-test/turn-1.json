@@ -1,0 +1,130 @@
+{
+  "number": 1,
+  "request": {
+    "message": "Meri shop ka naam Chai Junction hai, Vijay Nagar Indore mein hai. Hum chai, Maggi aur sandwiches bechte hain. Abhi koi discount nahi chal raha. Mujhe ek simple Instagram poster ka prompt do, English mein. Real shop photo use karna hai, aur koi fake offer ya price add mat karna.",
+    "activeCourseId": "6ad9fe8ed0076b8d5e3b4f6d",
+    "history": [],
+    "conversationId": "lba-memory-50c5d4bb-fb0b-4fd7-9536-fc50d104a063",
+    "assistantName": "Nex AI",
+    "debugAi": true
+  },
+  "httpStatus": 200,
+  "response": {
+    "answer": "Okay, I can help you with a prompt for a simple Instagram poster for your shop, Chai Junction, in Vijay Nagar, Indore. You want to use a real shop photo and not include any fake offers or prices.\n\nHere is a prompt you can use:\n\n**Prompt for a simple Instagram poster:**\n\n\"Use this photo of our shop front as the main image. Turn it into a clean, modern Instagram poster for our shop. Keep the shop, the building and the \"Chai Junction\" signboard exactly the same — do not change the shop itself.\nWrite ONLY this text, spelled exactly like this:\n- Top, big bold: \"Chai Junction\"\n- Below it: \"Vijay Nagar, Indore\"\n- Bottom: \"Chai, Maggi, Sandwiches\"\nWarm colours, easy-to-read bold fonts, clean layout with the shop clearly visible. Do not add any other words, discounts, percentages, logos or claims.\"\n\nThis prompt is designed to create a poster that highlights your shop and its offerings without inventing any discounts or prices, as you requested. This aligns with the principles taught in the AI Local Business Ads course, especially in Lesson 05, which focuses on creating posters with exact text and no fake offers.",
+    "reply": "Okay, I can help you with a prompt for a simple Instagram poster for your shop, Chai Junction, in Vijay Nagar, Indore. You want to use a real shop photo and not include any fake offers or prices.\n\nHere is a prompt you can use:\n\n**Prompt for a simple Instagram poster:**\n\n\"Use this photo of our shop front as the main image. Turn it into a clean, modern Instagram poster for our shop. Keep the shop, the building and the \"Chai Junction\" signboard exactly the same — do not change the shop itself.\nWrite ONLY this text, spelled exactly like this:\n- Top, big bold: \"Chai Junction\"\n- Below it: \"Vijay Nagar, Indore\"\n- Bottom: \"Chai, Maggi, Sandwiches\"\nWarm colours, easy-to-read bold fonts, clean layout with the shop clearly visible. Do not add any other words, discounts, percentages, logos or claims.\"\n\nThis prompt is designed to create a poster that highlights your shop and its offerings without inventing any discounts or prices, as you requested. This aligns with the principles taught in the AI Local Business Ads course, especially in Lesson 05, which focuses on creating posters with exact text and no fake offers.",
+    "provider": "fal-openrouter",
+    "sources": [],
+    "messageId": "a5ffa75a-57cf-4409-853c-a65f3c9677c1",
+    "notice": null,
+    "outcome": {
+      "type": "live_model",
+      "liveModelAnswer": true,
+      "providerStatus": "success",
+      "responseIssue": null
+    },
+    "knowledge": "course-materials",
+    "debug": {
+      "conversation_id": "lba-memory-50c5d4bb-fb0b-4fd7-9536-fc50d104a063",
+      "request_active_course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+      "resolved_active_course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+      "current_topic": "",
+      "current_intent": "",
+      "rewritten_retrieval_query": "Meri shop ka naam Chai Junction hai, Vijay Nagar Indore mein hai. Hum chai, Maggi aur sandwiches bechte hain. Abhi koi discount nahi chal raha. Mujhe ek simple Instagram poster ka prompt do, English mein. Real shop photo use karna hai, aur koi fake offer ya price add mat karna.",
+      "retrieved_chunk_ids": [
+        "ai-local-business-ads:overview:013",
+        "ai-local-business-ads:example-answers:015",
+        "ai-local-buisness-ads:lesson-overview:Offer and Festival Posters:0",
+        "ai-local-business-ads:lesson-summary:007",
+        "ai-local-business-ads:course-rules:012",
+        "ai-local-business-ads:lesson-summary:001"
+      ],
+      "retrieved_chunk_hashes": [
+        "c8b29308009ccbb0c8d88e0dfaf11aa462858ed72128e2957862d864cb532a92",
+        "44c67106750a1ee8d4083c9e4e0690327a7daa302c9a58e0bd05a7aae969d7b0",
+        "",
+        "4bb5a122c7f0ee5e376df865f6fcc5ddd47c486fd2c7407f4a44c45d4cc71346",
+        "22451952b12f2353aeb8c774eba9054100c1f11511f756d9adb07c86bf3fda2d",
+        "7905eec3af53db0e15640e135159c2f40eef9c0256e38bec98d165f3e5ebab42"
+      ],
+      "retrieved_source_hashes": [
+        "8add7ed8a46602116e471dca839296be6ed7eaca7306502f874d1c695f9e358e",
+        "6e06f7ec4425616ccaf215ae95f629a1d75d1798c3c22b1b6c25178607082395"
+      ],
+      "retrieved_translation_hashes": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "retrieved_course_ids": [
+        "6ad9fe8ed0076b8d5e3b4f6d"
+      ],
+      "retrieved_course_names": [
+        "AI Local Buisness ADS"
+      ],
+      "scores_ranks": [
+        {
+          "rank": 1,
+          "score": "15.1882",
+          "course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+          "section": "Course overview and demo business facts"
+        },
+        {
+          "rank": 2,
+          "score": "11.8345",
+          "course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+          "section": "Reviewed tutor example answers"
+        },
+        {
+          "rank": 3,
+          "score": "8.7373",
+          "course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+          "section": "Offer and Festival Posters"
+        },
+        {
+          "rank": 4,
+          "score": "8.7250",
+          "course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+          "section": "Lesson 07 — Hindi Voiceover Wali Reel"
+        },
+        {
+          "rank": 5,
+          "score": "8.1966",
+          "course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+          "section": "Tutor instructions and honest advertising"
+        },
+        {
+          "rank": 6,
+          "score": "7.8554",
+          "course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+          "section": "Lesson 01 — Course Intro"
+        }
+      ],
+      "selected_exact_prompt_template_id": "",
+      "provider_model_path": "fal-openrouter",
+      "response_selection": null,
+      "history_restored": false,
+      "provider": {
+        "status": "success",
+        "attempts": [
+          {
+            "attempt": 1,
+            "status": "success",
+            "httpStatus": 200,
+            "durationMs": 2785
+          }
+        ],
+        "durationMs": 2785,
+        "finishReason": "stop",
+        "usage": {
+          "prompt_tokens": 6082,
+          "completion_tokens": 258
+        }
+      },
+      "validation_repair": null
+    }
+  },
+  "providerAttemptsSoFar": 1
+}

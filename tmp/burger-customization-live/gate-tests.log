@@ -1,0 +1,19 @@
+✔ single native gate rejects absent approval (2.323708ms)
+✔ single native gate rejects expired approval (0.845291ms)
+✔ single native gate rejects changed question (1.06075ms)
+✔ single native gate rejects different conversation (0.918042ms)
+✔ single native gate rejects different course (0.724166ms)
+✔ single native gate rejects different account (0.870041ms)
+✔ single native gate rejects different model (0.727291ms)
+✔ single native gate rejects changed initial history (0.680875ms)
+✔ single native gate rejects attempt limit raised to four (0.731083ms)
+✔ single native gate durably permits only two total attempts including a retry (13.760083ms)
+✔ completed native single question cannot be replayed (0.856084ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 61.966709

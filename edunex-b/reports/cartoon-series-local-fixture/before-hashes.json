@@ -1,0 +1,9 @@
+{
+  "scripts/eval/mvp-local-backend.cjs": "0bc530e1905247635dbafad5ed317e6223d91b7ed821001d0db45d5871913a3f",
+  "chatbot_eval.py": "eca5212e442b0cb03530e8e868f617abb7273e0f1b780e91e5a4aeefad849bbe",
+  "knowledge/course-packs.json": "8843cb3993867b735b8555f08e890c048effd13fa034eb1bfad8366c1db25846",
+  "knowledge/ai-cartoon-series/index.json": "66c28ccfb8e922d23e1f41f3909a2fa85f5602ec858443199d29d858298f5c2f",
+  "scripts/eval/cartoon-series-fast15-cases.json": "eb73038e68aa684d5e5b47bc7c7fcb50c58ea3e0f1230f128ad660f9e88f606c",
+  "reports/local-business-ads-final-local/pipeline_traces.jsonl": "c023b08eadb6607df816a0b03e44159e6f4668c46ba7376f7c6e31d9fcf90ef0",
+  "reports/local-business-ads-final-local/provider_approval.json": "36e72759890c873ae7d5c944c9c88560516baf3f9215dddc9af997fd7cdfa064"
+}

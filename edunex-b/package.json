@@ -16,6 +16,7 @@
     "k6:api:common:single": "k6 run tests/k6/common-api-load.js",
     "k6:complete:local": "node scripts/run-k6-complete-local.mjs",
     "test:ai": "node --test tests/ai-chat-history.test.cjs tests/tutor-knowledge.test.cjs",
+    "test:ai:reliability": "node --test tests/tutor-reliability.test.cjs tests/mobile-tutor-reliability.test.cjs tests/billing-intent-routing.test.cjs tests/tutor-course-isolation.test.cjs tests/mobile-course-ai-cache.test.cjs tests/mobile-course-ai.test.cjs tests/native-session.test.cjs",
     "eval:ai": "node scripts/eval-tutor.cjs",
     "eval:platform-ai": "node scripts/eval-platform-ai.cjs",
     "test:integrations": "node --test tests/auth-navigation.test.cjs tests/otp.test.cjs tests/password-reset.test.cjs tests/razorpay.test.cjs",

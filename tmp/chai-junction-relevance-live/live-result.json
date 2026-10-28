@@ -1,0 +1,47 @@
+{
+  "reviewedAt": "2026-10-25T12:00:09.165Z",
+  "backendUrl": "http://127.0.0.1:3129",
+  "model": "google/gemini-2.5-flash",
+  "casesSHA256": "d6945a7ddcb9b9c0b9656d8058d726b7a2649b8b5a834c476adfbf7366f13201",
+  "conversationId": "nai-1792929329693-ddv62zf",
+  "providerAttempts": 1,
+  "maximumProviderAttempts": 2,
+  "genuineProviderAnswer": true,
+  "nativeAnswerMatchesBackend": true,
+  "authorizedCourseScopeMatches": true,
+  "frozenInitialHistoryMatches": true,
+  "actualAnswer": "Here is a general Instagram poster prompt for Chai Junction:\n\n\"Create an Instagram poster for Chai Junction in Vijay Nagar, Indore. Use the provided real shop photo, ensuring the shop's identity and signboard are preserved. The poster should highlight that we serve chai, Maggi, and sandwiches. The tone should be general and inviting, without any festival themes, discounts, offers, prices, or unsupported promotional claims.\"",
+  "extractedPosterPrompt": "Here is a general Instagram poster prompt for Chai Junction:\n\n\"Create an Instagram poster for Chai Junction in Vijay Nagar, Indore. Use the provided real shop photo, ensuring the shop's identity and signboard are preserved. The poster should highlight that we serve chai, Maggi, and sandwiches. The tone should be general and inviting, without any festival themes, discounts, offers, prices, or unsupported promotional claims.\"",
+  "latencyMs": 2178,
+  "providerLatencyMs": [
+    2026
+  ],
+  "providerFailures": [],
+  "reviewSignals": {
+    "shopName": true,
+    "location": true,
+    "chai": true,
+    "maggi": true,
+    "sandwiches": true,
+    "realPhoto": true,
+    "signboard": true,
+    "unrequestedCreativePurpose": false,
+    "numericPriceOrDiscount": false,
+    "pricePlaceholder": false,
+    "billingOrCourseSummary": false,
+    "wordsForContextualReview": [
+      "festival",
+      "discounts",
+      "offers"
+    ],
+    "wordCount": 64
+  },
+  "manualReviewRequired": true,
+  "assessment": "REQUIRES CONTENT REVIEW",
+  "reviewCriteria": [
+    "Direct, usable English general Instagram poster prompt.",
+    "Actual Chai Junction identity, Vijay Nagar/Indore, chai, Maggi and sandwiches retained; real shop photo and signboard preserved.",
+    "No unrequested festival theme, discount, offer, price or unsupported product/promotional claim.",
+    "No billing answer, course summary or fallback replacement. Inspect actual claims; negated words alone are not a violation."
+  ]
+}

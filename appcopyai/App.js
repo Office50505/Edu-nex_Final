@@ -134,14 +134,15 @@ function aiChatOwner(user) {
   return String(user?._id || user?.id || "guest");
 }
 
-function aiChatScope(mode, fixedCourse) {
+function aiChatScope(mode, fixedCourse, activeCourseHint) {
+  if (mode !== "course" && activeCourseHint) return `master:${aiChatScope("course", activeCourseHint)}`;
   if (mode !== "course") return "master";
   const courseKey = fixedCourse?._id || fixedCourse?.id || fixedCourse?.slug || fixedCourse?.title || "course";
   return `course:${String(courseKey).replace(/[^a-z0-9._:-]+/gi, "_")}`;
 }
 
-function aiChatStorageKey(user, mode, fixedCourse) {
-  return `${AI_CHAT_STORAGE_PREFIX}:${aiChatOwner(user)}:${aiChatScope(mode, fixedCourse)}`;
+function aiChatStorageKey(user, mode, fixedCourse, activeCourseHint) {
+  return `${AI_CHAT_STORAGE_PREFIX}:${aiChatOwner(user)}:${aiChatScope(mode, fixedCourse, activeCourseHint)}`;
 }
 
 function newAiChatId() {
@@ -173,6 +174,8 @@ function sanitizeAiChatMessage(message) {
     id: typeof message.id === "string" ? message.id.slice(0, 120) : null,
     content: message.content.slice(0, 4000),
     failed: Boolean(message.failed),
+    provider: typeof message.provider === "string" ? message.provider : null,
+    outcome: message.outcome || null,
     createdAt: Number(message.createdAt || Date.now()),
   };
 }
@@ -6902,11 +6905,11 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
     const question = promptText.trim();
     if (!question || courseAiEntry.pending) return;
     if (!AI_FEATURE_ENABLED) {
-      updateCourseAi([...courseAiEntry.messages, { role: "assistant", content: "AI is paused for now." }]);
+      updateCourseAi([...courseAiEntry.messages, { role: "assistant", failed: true, content: "AI is paused for now." }]);
       return;
     }
     if (!user?._id || !user?.sessionId) {
-      updateCourseAi([...courseAiEntry.messages, { role: "assistant", content: "Please log in again before using Course AI." }]);
+      updateCourseAi([...courseAiEntry.messages, { role: "assistant", failed: true, content: "Please log in again before using Course AI." }]);
       return;
     }
     const messagesWithQuestion = [...courseAiEntry.messages, { role: "user", content: question }];
@@ -6919,14 +6922,17 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
       return;
     }
     try {
-      const data = await session.requestJson("/api/course-ai/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: user._id, courseId, videoTitle: activeTitle, videoDescription: activeDescription, question, messages: courseAiMessages }),
+      const data = await requestTutor({
+        baseUrl: API_BASE, user, question, courseId,
+        lessonId: activeVideo?._id || activeVideo?.id,
+        conversationId: courseAiEntry.conversationId,
+        messages: courseAiMessages, assistantName: "Course AI", session,
       });
-      updateCourseAi([...messagesWithQuestion, { role: "assistant", id: data.messageId, content: data.answer }], false);
-    } catch {
-      updateCourseAi([...messagesWithQuestion, { role: "assistant", content: "AI is unavailable right now. Please try again." }], false);
+      updateCourseAi([...messagesWithQuestion, { role: "assistant", id: data.messageId, content: data.answer, provider: data.provider, outcome: data.outcome }], false);
+    } catch (error) {
+      if (["SESSION_CHANGED", "SESSION_EXPIRED"].includes(error.code)) { updateCourseAi(messagesWithQuestion, false); return; }
+      updateCourseAi([...messagesWithQuestion, { role: "assistant", failed: true, outcome: error.outcome,
+        content: error.name === "AbortError" ? "Nex AI took too long. Please try again." : error.message || "Nex AI is temporarily unavailable. Please try again." }], false);
     }
   }
 
@@ -11102,9 +11108,10 @@ function AiAssistantScreen({
   const [historyOpen, setHistoryOpen] = useState(false);
   const listRef = useRef(null);
   const aiGeneration = useRef(0);
+  const [loadedChatStorageKey, setLoadedChatStorageKey] = useState(null);
   const chatStorageKey = useMemo(
-    () => aiChatStorageKey(user, mode, fixedCourse),
-    [fixedCourse?._id, fixedCourse?.id, fixedCourse?.slug, fixedCourse?.title, mode, user?._id, user?.id]
+    () => aiChatStorageKey(user, mode, fixedCourse, activeCourseHint),
+    [fixedCourse?._id, fixedCourse?.id, fixedCourse?.slug, fixedCourse?.title, activeCourseHint?._id, activeCourseHint?.id, activeCourseHint?.slug, mode, user?._id, user?.id]
   );
   const activeCourseHintId = isCourseMode
     ? null
@@ -11118,30 +11125,14 @@ function AiAssistantScreen({
     createdAt: Date.now(),
   }], [fixedCourse?.title, isCourseMode]);
 
-  const replaceActiveConversationMessages = useCallback((nextMessages) => {
-    const normalizedMessages = nextMessages.map(message => ({
-      ...message,
-      createdAt: message.createdAt || Date.now(),
-    })).slice(-MAX_AI_CHAT_MESSAGES);
-    setMessages(normalizedMessages);
-    if (!activeConversationId) return;
-    setConversations(current => {
-      const next = current.map(session => (
-        session.id === activeConversationId
-          ? { ...session, messages: normalizedMessages, updatedAt: Date.now() }
-          : session
-      ));
-      writeAiChatSessions(chatStorageKey, next);
-      return next;
-    });
-  }, [activeConversationId, chatStorageKey]);
-
   const appendAiConversationMessage = useCallback((sessionId, message) => {
     const record = {
       role: message.role,
       id: message.id || null,
       content: String(message.content || "").slice(0, 4000),
       failed: Boolean(message.failed),
+      provider: message.provider || null,
+      outcome: message.outcome || null,
       createdAt: Date.now(),
     };
     setMessages(current => [...current, record].slice(-MAX_AI_CHAT_MESSAGES));
@@ -11215,6 +11206,8 @@ function AiAssistantScreen({
 
   useEffect(() => {
     let cancelled = false;
+    aiGeneration.current += 1;
+    setLoadedChatStorageKey(null);
     AsyncStorage.getItem(chatStorageKey)
       .then(raw => {
         if (cancelled) return;
@@ -11227,6 +11220,7 @@ function AiAssistantScreen({
         setMessages(initial.messages);
         setInput("");
         setHistoryOpen(false);
+        setLoadedChatStorageKey(chatStorageKey);
       })
       .catch(() => {
         if (cancelled) return;
@@ -11234,6 +11228,7 @@ function AiAssistantScreen({
         setConversations([initial]);
         setActiveConversationId(initial.id);
         setMessages(initial.messages);
+        setLoadedChatStorageKey(chatStorageKey);
       });
     return () => { cancelled = true; };
   }, [chatStorageKey, introMessages]);
@@ -11256,25 +11251,17 @@ function AiAssistantScreen({
     if (!AI_FEATURE_ENABLED) {
       setStatus("offline");
       setCourseScopeReady(false);
-      replaceActiveConversationMessages([
-        {
-          role: "assistant",
-          content: "AI is paused for now.",
-        },
-      ]);
       return;
     }
 
     if (!user?._id || !user?.sessionId) {
       setStatus("offline");
       setCourseScopeReady(false);
-      replaceActiveConversationMessages([{
-        role: "assistant",
-        content: "Please log in again before using Nex AI.",
-      }]);
       return;
     }
 
+    let cancelled = false;
+    if (isCourseMode) { setCourseId(null); setCourseScopeReady(false); }
     Promise.all([
       fetch(`${API_BASE}/api/health/db`).then(async res => {
         const data = await res.json();
@@ -11288,45 +11275,30 @@ function AiAssistantScreen({
       }),
     ])
       .then(([health, data]) => {
+        if (cancelled) return;
         setStatus(health.ok ? "online" : "offline");
         const nextCourses = Array.isArray(data) ? data : [];
         if (isCourseMode) {
           const matchedCourse = findIndexedAiCourse(fixedCourse, nextCourses);
           if (matchedCourse) {
-            setCourseId(matchedCourse.id);
+            setCourseId(String(matchedCourse._id || matchedCourse.id));
             setCourseName(formatAiCourseName(matchedCourse));
-            replaceActiveConversationMessages([
-              {
-                role: "assistant",
-                content: `Ask doubts from ${fixedCourse?.title || formatAiCourseName(matchedCourse)}. I will answer only from this course.`,
-              },
-            ]);
           } else {
             setCourseId(null);
             setCourseName(fixedCourse?.title || "Course AI");
-            replaceActiveConversationMessages([
-              {
-                role: "assistant",
-                content: "This course is not indexed for AI yet. Add its transcript to the AI knowledge base to enable course-specific answers.",
-              },
-            ]);
           }
           setCourseScopeReady(Boolean(matchedCourse));
         }
       })
       .catch(() => {
+        if (cancelled) return;
         setStatus("offline");
         if (isCourseMode) {
           setCourseScopeReady(false);
-          replaceActiveConversationMessages([
-            {
-              role: "assistant",
-              content: "I could not load the AI course index. Check that the AI service is running.",
-            },
-          ]);
         }
       });
-  }, [fixedCourse, isCourseMode, isRootTabActive, replaceActiveConversationMessages, user?._id, user?.sessionId]);
+    return () => { cancelled = true; };
+  }, [fixedCourse?._id, fixedCourse?.id, fixedCourse?.slug, isCourseMode, isRootTabActive, user?._id, user?.sessionId]);
 
   const scrollAiToEnd = useCallback((animated = true) => {
     requestAnimationFrame(() => listRef.current?.scrollToEnd?.({ animated }));
@@ -11391,18 +11363,18 @@ function AiAssistantScreen({
 
   async function sendAiMessage(value = input) {
     const question = value.trim();
-    if (!question || loading || aiInFlight.current) return;
+    if (!question || loading || aiInFlight.current || loadedChatStorageKey !== chatStorageKey) return;
     if (!AI_FEATURE_ENABLED) {
       setInput("");
       const targetSessionId = activeConversationId || createAiConversationSession(introMessages()).id;
       appendAiConversationMessage(targetSessionId, { role: "user", content: question });
-      appendAiConversationMessage(targetSessionId, { role: "assistant", content: "AI is paused for now." });
+      appendAiConversationMessage(targetSessionId, { role: "assistant", failed: true, content: "AI is paused for now." });
       return;
     }
     if (isCourseMode && !courseId) {
       const targetSessionId = activeConversationId || createAiConversationSession(introMessages()).id;
       appendAiConversationMessage(targetSessionId, {
-        role: "assistant",
+        role: "assistant", failed: true,
         content: "I cannot answer for this course yet because it is not indexed in the AI knowledge base.",
       });
       return;
@@ -11429,12 +11401,12 @@ function AiAssistantScreen({
       });
       if (!aiMounted.current || requestGeneration !== aiGeneration.current) return;
       setStatus("online");
-      appendAiConversationMessage(requestSessionId, { id: data.messageId, role: "assistant", content: data.answer });
+      appendAiConversationMessage(requestSessionId, { id: data.messageId, role: "assistant", content: data.answer, provider: data.provider, outcome: data.outcome });
     } catch (error) {
       if (!aiMounted.current || requestGeneration !== aiGeneration.current || ["SESSION_CHANGED", "SESSION_EXPIRED"].includes(error.code)) return;
       setInput(question);
       appendAiConversationMessage(requestSessionId, {
-        role: "assistant", failed: true,
+        role: "assistant", failed: true, outcome: error.outcome,
         content: error.name === "AbortError" ? "Nex AI took too long. Please try again." : error.message || "I could not reach Nex AI. Please try again.",
       });
       setStatus("offline");
@@ -11644,17 +11616,17 @@ function AiAssistantScreen({
               onChangeText={setInput}
               placeholder="Ask about your course or project..."
               placeholderTextColor={C.textMuted}
-              editable={!loading}
+              editable={!loading && loadedChatStorageKey === chatStorageKey}
               multiline
               accessibilityLabel={`Message ${assistantName}`}
             />
             <TouchableOpacity
-              style={[s.aiSend, (!input.trim() || loading) && s.aiSendDisabled]}
+              style={[s.aiSend, (!input.trim() || loading || loadedChatStorageKey !== chatStorageKey) && s.aiSendDisabled]}
               onPress={() => sendAiMessage()}
-              disabled={!input.trim() || loading}
+              disabled={!input.trim() || loading || loadedChatStorageKey !== chatStorageKey}
               accessibilityRole="button"
               accessibilityLabel="Send message"
-              accessibilityState={{ disabled: !input.trim() || loading }}
+              accessibilityState={{ disabled: !input.trim() || loading || loadedChatStorageKey !== chatStorageKey }}
             >
               <Ionicons name="arrow-up" size={20} color="#17130B" />
           </TouchableOpacity>

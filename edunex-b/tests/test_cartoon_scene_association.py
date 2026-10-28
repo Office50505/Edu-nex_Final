@@ -9,6 +9,9 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = json.loads((ROOT / 'tests/fixtures/cartoon-cs11-v2-live-response.json').read_text())
+REPORT_PATH = ROOT / FIXTURE['source_report']
+RECORDED = json.loads(REPORT_PATH.read_text())
+RECORDED_CASE = next(c for c in RECORDED['results'] if c['id'] == FIXTURE['case_id'])
 SUITE = json.loads((ROOT / 'scripts/eval/cartoon-series-fast15-cases-v2.json').read_text())
 CASE = next(c for c in SUITE['cases'] if c['id'] == FIXTURE['case_id'])
 RULE = CASE['turns'][1]
@@ -19,21 +22,19 @@ evaluator = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(evaluator)
 
 
-def replay_turn(turn, criteria):
-    events = [{'type': 'provider_response', 'status': status}
-              for status in turn['recorded_provider_response_statuses']]
-    response = {'answer': turn['answer'], 'provider': turn['recorded_provider'],
-                'outcome': turn['recorded_outcome']}
-    return evaluator.grade(criteria, response, events, turn['http_status'], [])
-
-
 def recorded_regrade():
+    events = [json.loads(line) for line in (REPORT_PATH.parent / 'pipeline_traces.jsonl').read_text().splitlines() if line.strip()]
     results = []
-    for i, turn in enumerate(FIXTURE['turns'], 1):
-        status, errors, critical = replay_turn(turn, {**CASE, **CASE['turns'][i-1]})
-        results.append(dict(turn=i, original_grade=turn['original_grade'], corrected_grade=status,
+    for i, turn in enumerate(RECORDED_CASE['turns'], 1):
+        observed = [e for e in events if e.get('run') == FIXTURE['run_id']
+                    and e.get('case') == FIXTURE['case_id'] and e.get('turn') == str(i)]
+        status, errors, critical = evaluator.grade({**CASE, **CASE['turns'][i-1]}, turn['response'],
+                                                 observed, turn['http_status'],
+                                                 turn['scope_inspection']['authorized_course_ids'])
+        results.append(dict(turn=i, original_grade=turn['status'], corrected_grade=status,
                             errors=errors, critical_security_failures=critical,
-                            successful_recorded_provider_responses=turn['recorded_provider_response_statuses'].count(200)))
+                            successful_recorded_provider_responses=sum(e['type'] == 'provider_response'
+                                                                      and e.get('status') == 200 for e in observed)))
     return results
 
 
@@ -42,10 +43,11 @@ class CartoonSceneAssociationTests(unittest.TestCase):
         return evaluator.grade(criteria or RULE, {'answer': answer, 'provider': 'deterministic-regression'}, [], 200, [])
 
     def test_fixture_preserves_exact_questions_and_answers(self):
-        for turn in FIXTURE['turns']:
-            self.assertEqual(hashlib.sha256(turn['query'].encode()).hexdigest(), turn['query_sha256'])
-            self.assertEqual(hashlib.sha256(turn['answer'].encode()).hexdigest(), turn['answer_sha256'])
-        self.assertEqual(FIXTURE['original_scenario_grade'], 'FAIL')
+        self.assertEqual(hashlib.sha256(REPORT_PATH.read_bytes()).hexdigest(), FIXTURE['source_report_sha256'])
+        for fixture, turn in zip(FIXTURE['turns'], RECORDED_CASE['turns']):
+            self.assertEqual(fixture['query'], turn['query'])
+            self.assertEqual(fixture['answer'], turn['answer'])
+        self.assertEqual(RECORDED_CASE['status'], 'FAIL', 'Historical result must remain unchanged.')
 
     def test_exact_existing_response_passes_with_actual_recorded_provider_evidence(self):
         with patch('socket.socket', side_effect=AssertionError('No network permitted during local replay')):
@@ -127,13 +129,19 @@ class CartoonSceneAssociationTests(unittest.TestCase):
 
     def test_saved_genuine_response_quality_failure_remains_a_failure(self):
         fixture = json.loads((ROOT / 'tests/fixtures/cartoon-cs11-scene-participation.json').read_text())
-        turn = fixture['turns'][1]
-        self.assertEqual(hashlib.sha256(turn['answer'].encode()).hexdigest(), turn['answer_sha256'])
+        source = ROOT / fixture['source_report']
+        self.assertEqual(hashlib.sha256(source.read_bytes()).hexdigest(), fixture['source_report_sha256'])
+        recorded = next(c for c in json.loads(source.read_text())['results'] if c['id'] == 'CS-11')
+        events = [json.loads(line) for line in (source.parent / 'pipeline_traces.jsonl').read_text().splitlines() if line.strip()]
+        turn = recorded['turns'][1]
+        observed = [e for e in events if e.get('run') == fixture['run_id'] and e.get('case') == 'CS-11' and e.get('turn') == '2']
         with patch('socket.socket', side_effect=AssertionError('No network permitted during local replay')):
-            status, errors, critical = replay_turn(turn, RULE)
+            status, errors, critical = evaluator.grade(RULE, turn['response'], observed,
+                                                       turn['http_status'], turn['scope_inspection']['authorized_course_ids'])
         self.assertEqual(status, 'FAIL')
         self.assertEqual(errors, ['Unconditional reference sheet required for character not confirmed in scene: Momo'])
         self.assertEqual(critical, [])
+        self.assertEqual(fixture['turns'][1]['answer'], turn['answer'])
 
     def test_conditional_sheet_guidance_does_not_require_changing_frozen_v2_criteria(self):
         # A hand-authored policy example, not a claim about a new model response.

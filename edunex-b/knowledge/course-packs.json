@@ -8,5 +8,9 @@
     "index": "index.json",
     "enabled": false,
     "reason": "Awaiting verified published course ID and slug; never attach by title or a guessed alias."
+  },
+  {
+    "dir": "viral-hook-formula",
+    "index": "index.json"
   }
 ]

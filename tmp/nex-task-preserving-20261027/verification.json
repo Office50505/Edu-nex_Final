@@ -1,0 +1,68 @@
+{
+  "implementation": "One task-preserving request-contract / response-assessment pipeline for AI Local Business Ads. Existing authorization, exact-template path and specialized tutors retained.",
+  "filesChanged": [
+    "edunex-b/services/businessRequestContract.js",
+    "edunex-b/services/businessResponsePipeline.js",
+    "edunex-b/services/businessAdvertisingPolicy.js",
+    "edunex-b/services/businessCreativeRequest.js",
+    "edunex-b/services/courseKnowledgePacks.js",
+    "edunex-b/services/tutorKnowledge.js",
+    "edunex-b/services/aiTutorService.js",
+    "edunex-b/routes/ai.js",
+    "edunex-b/models/AiTutorSession.js",
+    "edunex-b/tests/ai-tutor-fixture.cjs",
+    "edunex-b/tests/business-advertising-quality.test.cjs",
+    "edunex-b/tests/business-poster-relevance.test.cjs",
+    "edunex-b/tests/course-tutor-customization.test.cjs",
+    "edunex-b/tests/task-preserving-response.test.cjs",
+    "edunex-b/tests/fixtures/task-preserving-live-failures.json"
+  ],
+  "focusedTests": {
+    "tests": 538,
+    "pass": 538,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "realNetworkDisabled": true,
+  "historicalReplay": {
+    "dental": {
+      "corrected": true,
+      "delivery": "Original Instagram prompt retained; unsupported staff, equipment and service assertions become owner-confirmation placeholders.",
+      "providerRepairAttempts": 0
+    },
+    "mobileRepair": {
+      "corrected": true,
+      "delivery": "Original poster format and known phone-repair service retained; unprovided expertise, speed and model coverage qualified.",
+      "providerRepairAttempts": 0
+    },
+    "stationery500": {
+      "corrected": true,
+      "delivery": "Planning task preserved, including channels, budget and uncertainty; offer suggestions explicitly require owner approval.",
+      "providerRepairAttempts": 0
+    },
+    "giftNest": {
+      "corrected": true,
+      "delivery": "Corrected name, original products, truthful refusal and poster preserved; no feedback-template substitution.",
+      "providerRepairAttempts": 0
+    }
+  },
+  "contractPersistence": "Compact server-owned state saved inside existing course/conversation context. Corrections survive rolling history, while new conversations or unauthorized scopes cannot inherit facts.",
+  "repairAccounting": "At most one repair with maxAttempts=1 under remaining total deadline. Actual durable 12-attempt gate exercised in disposable fixtures for generation, repairs, exhaustion, awaiting approval and failed transport. Original approval files never authorized or edited.",
+  "protectedFilesChecked": 1877,
+  "protectedFilesChanged": [],
+  "approvedPromptsUnchanged": true,
+  "remainingLimitations": [
+    "Natural-language extraction and assertion assessment are conservative local parsers with evidence/provenance checks, not a universal semantic or independent business-fact verifier.",
+    "Complex or ambiguous wording can require one gated provider repair or a relevant limitation. Real model behavior and nuanced language quality remain unverified by deterministic replay.",
+    "The running isolated QA backend retains the old frozen source revision. It was not restarted or reauthorized; the source-bound gate now needs fresh preparation before live execution.",
+    "Previously identified simulator Keychain login-persistence limitation remains; no mobile binary changes were made."
+  ],
+  "readyForSmallControlledLiveCheckAfterFreshPreparation": true,
+  "runningBackendUpdated": false,
+  "paidProviderCalls": 0,
+  "productionDatabaseModified": false,
+  "deployed": false,
+  "committedOrPushed": false,
+  "zipGenerated": false
+}

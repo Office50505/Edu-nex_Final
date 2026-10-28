@@ -1,0 +1,44 @@
+{
+  "profile": "VIRAL-HOOK-LOCAL-VERIFICATION",
+  "backendUrl": "http://127.0.0.1:3129",
+  "sourceRevisionSHA256": "72e24a65ba7cc3e86cd6e32058f63c347dcefe3f91acffa702699f13779fd378",
+  "sources": {
+    "edunex-b/services/aiTutorService.js": "309a03127a2c0ee2ef05ec7f519a824ee752a7ed6ef432e478aa3d11f82010f3",
+    "edunex-b/routes/ai.js": "da1b24760ce3b821fc8abfad97d17781cb340ff0c92be1b47e77e75fae273047",
+    "edunex-b/services/aiCompliance.js": "c0694b27f9341c2b6fcc31139fb3bdf0974aee545d26ad29b19107e6f0529023",
+    "edunex-b/services/tutorProvider.js": "2c9ce991d6f722af6b8262caa923d3b54e6b98ecaecd4fba01a711291f84041b",
+    "edunex-b/models/AiTutorSession.js": "457dd91041257ff7b1bece5e267655d604e9309f558de20c04e88c75c6561dbf",
+    "edunex-b/services/courseKnowledgePacks.js": "dae13ae5f2135eb4b9a613f3a4758433d1628cc936b177647732c76c46f5690b",
+    "edunex-b/services/tutorKnowledge.js": "faa2b0d5e9c6ec40fd37b249ed4a57e87af8efaab9daf05074f962269c1c4abb",
+    "edunex-b/services/viralHookTutor.js": "7cb6f5fc7ba953752b12ee93025c894bfe8a27fbba353a3853daae176bc663fc",
+    "edunex-b/knowledge/course-packs.json": "07ec1eba612036cc35beb710e2e0d2047364422bc431193461cb414f1ef9efb6",
+    "edunex-b/knowledge/viral-hook-formula/index.json": "3e70b4adb360e3bab7b61130e91dd640544a220692c470c95f5de77fb877d773",
+    "edunex-b/knowledge/viral-hook-formula/training.txt": "940c2aeac8fd7b73966a7aad2081202cec9e3b8c26c1d2b5b4c9b210cb395708",
+    "edunex-b/knowledge/viral-hook-formula/course-notes.txt": "34c87ed1fa31188f84b05cee47c319a26d4f15213b87d0562c7a77886e7a5f25",
+    "edunex-b/knowledge/viral-hook-formula/course-binding.json": "d2327ea7c114d0d19ebaab9ddcf859e62a238bc1f9f951e0999894450cd4f370"
+  },
+  "sourceUnchanged": true,
+  "courseId": "6ae1b4694e1af14d4adc9e2b",
+  "slug": "viral-hook-formula",
+  "lessons": 10,
+  "hookCategories": 8,
+  "exactTemplates": 2,
+  "inferenceEnabled": false,
+  "providerCredentialsLoaded": false,
+  "approvalExecuted": false,
+  "paidProviderCalls": 0,
+  "registeredLocalPacks": [
+    {
+      "courseId": "6ad9fe8ed0076b8d5e3b4f6d"
+    },
+    {
+      "domain": "viral-hook-formula",
+      "courseId": "6ae1b4694e1af14d4adc9e2b"
+    },
+    {
+      "domain": "cartoon-series",
+      "courseId": "6ae09ebee4ac0b60c08276bc"
+    }
+  ],
+  "productionConfigLoaded": false
+}

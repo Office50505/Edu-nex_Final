@@ -1,0 +1,11 @@
+Nex AI Local Business Ads — restored with current source.
+Backend: http://127.0.0.1:3129
+Simulator authenticated; existing conversations preserved.
+247 focused offline checks passed.
+Previous session: 5 calls used; approval expired; original ledger unchanged.
+New session: 0 calls; explicit approval pending; maximum 12 attempts for 60 minutes from issuance.
+Failures, repairs and retries each consume the same durable attempt budget.
+Approval command (does not submit questions):
+node tmp/nex-testing-resume-20261028/control.cjs approve --sha256 4f6d21deee452eb811cb5ec5e3dfb003e41016559ecefaee1343cdf9ed3514ce
+Readiness command:
+node tmp/nex-testing-resume-20261028/control.cjs check

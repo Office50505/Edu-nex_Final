@@ -1,0 +1,30 @@
+Final single-question in-app creative-relevance verification. No paid execution during preparation.
+
+Working directory:
+/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled
+
+Read-only readiness check:
+node tmp/chai-junction-relevance-live/control.cjs check
+
+Only when explicitly authorizing this frozen case:
+node tmp/chai-junction-relevance-live/control.cjs approve --sha256 d6945a7ddcb9b9c0b9656d8058d726b7a2649b8b5a834c476adfbf7366f13201
+
+Budget: at most 2 actual provider attempts TOTAL, including failures, retries and any repair. Normally 1 attempt. Expiry: 30 minutes from approval creation. Persistent append/fsync debit happens before outgoing transport; no prior ledger reuse or reset. Approval automatically closes after this one native response.
+
+Model: google/gemini-2.5-flash
+Backend: http://127.0.0.1:3129
+Course: 6ad9fe8ed0076b8d5e3b4f6d
+Frozen actual native conversation: nai-1792929329693-ddv62zf
+
+After authorization only: keep the currently prepared iOS chat open. Do not start a different chat, switch course/account, or restart the app. Paste and send this exact question ONCE:
+
+Create a general Instagram poster prompt in English for Chai Junction in Vijay Nagar, Indore. We sell chai, Maggi and sandwiches. Use the real shop photo and preserve the actual shop identity and signboard. Include the supplied products. No festival themes, discounts, offers, prices or unsupported promotional claims. Return only the ready-to-use English poster prompt.
+
+Wait for the completed answer. If it errors or says unavailable, stop; do not press Send repeatedly.
+
+Save the actual app/backend/provider answer, request scope, latency and failure evidence:
+node tmp/chai-junction-relevance-live/control.cjs review
+
+Read live-result.json and pipeline_traces.jsonl. The result must be a genuine configured-provider response matching what the app displayed. A local template, fallback or policy replacement is not a live success.
+
+Human review: concise usable English general Instagram poster prompt, actual Chai Junction shop/photo/signboard identity, Vijay Nagar/Indore and all three products. No unrequested festival theme, discounts, offers, prices, extra products or unsupported claims; no course summary or billing answer. A negated word in a prohibition is not itself an invented promotional claim.

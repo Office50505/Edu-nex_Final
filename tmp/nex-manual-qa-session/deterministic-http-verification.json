@@ -1,0 +1,68 @@
+{
+  "backendUrl": "http://127.0.0.1:3129",
+  "userId": "6addcefc5d47d548973c29b9",
+  "activeCourseId": "6ad9fe8ed0076b8d5e3b4f6d",
+  "unauthenticatedStatus": 401,
+  "wrongCourse": {
+    "status": 403,
+    "data": {
+      "error": "Manual QA is limited to the configured synthetic account and course.",
+      "code": "TUTOR_UNAVAILABLE",
+      "outcome": {
+        "type": "unavailable",
+        "liveModelAnswer": false,
+        "providerStatus": "manual_qa_scope_denied",
+        "failureClass": "authorization"
+      }
+    }
+  },
+  "wrongAccount": {
+    "status": 403,
+    "data": {
+      "error": "Manual QA is limited to the configured synthetic account and course.",
+      "code": "TUTOR_UNAVAILABLE",
+      "outcome": {
+        "type": "unavailable",
+        "liveModelAnswer": false,
+        "providerStatus": "manual_qa_scope_denied",
+        "failureClass": "authorization"
+      }
+    }
+  },
+  "unapprovedDifferentQuestions": [
+    {
+      "status": 503,
+      "data": {
+        "error": "Manual QA is awaiting session approval. Authorize the prepared session before testing.",
+        "code": "TUTOR_UNAVAILABLE",
+        "outcome": {
+          "type": "unavailable",
+          "liveModelAnswer": false,
+          "providerStatus": "manual_qa_awaiting_approval",
+          "failureClass": "approval"
+        },
+        "messageId": "9263b2ed-fa63-4a2a-8312-5c0db136f49b",
+        "provider": "unavailable"
+      }
+    },
+    {
+      "status": 503,
+      "data": {
+        "error": "Manual QA is awaiting session approval. Authorize the prepared session before testing.",
+        "code": "TUTOR_UNAVAILABLE",
+        "outcome": {
+          "type": "unavailable",
+          "liveModelAnswer": false,
+          "providerStatus": "manual_qa_awaiting_approval",
+          "failureClass": "approval"
+        },
+        "messageId": "6089b49e-71ef-4c03-81b0-21c4988bb256",
+        "provider": "unavailable"
+      }
+    }
+  ],
+  "providerAttempts": 0,
+  "remainingProviderAttempts": 30,
+  "approved": false,
+  "paidProviderCalls": 0
+}

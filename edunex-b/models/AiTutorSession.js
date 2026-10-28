@@ -15,6 +15,7 @@ const aiTutorSessionSchema = new mongoose.Schema({
     language: {type:String,maxlength:24},
     userEvidence: [{type:String,maxlength:2000}],
     facts: {type:Map,of:String},
+    businessState: {type:mongoose.Schema.Types.Mixed,default:null},
   },
   productContext: {
     schemaVersion: { type: Number, enum: [2] },

@@ -1,0 +1,13 @@
+test_approved_body_must_be_complete (test_chatbot_mvp_eval.MvpGradingTests.test_approved_body_must_be_complete) ... ok
+test_blocked_inference_never_passes (test_chatbot_mvp_eval.MvpGradingTests.test_blocked_inference_never_passes) ... ok
+test_claimed_live_answer_needs_successful_provider_evidence (test_chatbot_mvp_eval.MvpGradingTests.test_claimed_live_answer_needs_successful_provider_evidence) ... ok
+test_product_identity_and_alternative_concept_groups (test_chatbot_mvp_eval.MvpGradingTests.test_product_identity_and_alternative_concept_groups) ... ok
+test_product_identity_requires_the_full_string (test_chatbot_mvp_eval.MvpGradingTests.test_product_identity_requires_the_full_string) ... ok
+test_security_failure_overrides_provider_fallback (test_chatbot_mvp_eval.MvpGradingTests.test_security_failure_overrides_provider_fallback) ... ok
+test_security_http_success_cannot_hide_protected_answer_or_payload (test_chatbot_mvp_eval.MvpGradingTests.test_security_http_success_cannot_hide_protected_answer_or_payload) ... ok
+test_security_only_denial_can_pass_without_claiming_live_answer_quality (test_chatbot_mvp_eval.MvpGradingTests.test_security_only_denial_can_pass_without_claiming_live_answer_quality) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.001s
+
+OK

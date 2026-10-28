@@ -1,0 +1,88 @@
+{
+  "confirmedFalsePositive": true,
+  "conversationId": "nai-1793180446806-fihnl9a",
+  "courseId": "6ae09ebee4ac0b60c08276bc",
+  "courseBindingCorrect": true,
+  "trace": "tmp/nex-cartoon-final-20261028/pipeline_traces.jsonl",
+  "requests": [
+    {
+      "requestId": "6dfef955-b739-46eb-98dd-4bda25a2512b",
+      "time": "2026-10-28T09:40:57.797Z",
+      "provider": "safety-filter",
+      "providerStatus": "not_requested",
+      "httpStatus": 200
+    },
+    {
+      "requestId": "a0002e1b-fa14-48a3-9aa3-f75ae558fad1",
+      "time": "2026-10-28T09:41:12.809Z",
+      "provider": "safety-filter",
+      "providerStatus": "not_requested",
+      "httpStatus": 200
+    }
+  ],
+  "actualStudentMessage": "Main apni original kids cartoon series banana chahta hoon. Mere characters hain Rohan, 7 saal ka curious boy jo red hoodie pehenta hai, aur Bittu, ek naughty blue parrot. Location ek small village school hai. Episode mein Bittu galti se school ki bell baja deta hai aur sabko lagta hai lunch break ho gaya. Mujhe 3 scenes ki funny story, har scene ka 8-second Google Flow video prompt, aur character consistency ke tips do. Golu aur Chiku use mat karna.",
+  "origin": {
+    "module": "edunex-b/services/aiCompliance.js",
+    "condition": "FILTER_BYPASS_PATTERN.test(message) in checkAiInput",
+    "route": "handleTutorChat inputCheck.blocked branch in edunex-b/routes/ai.js",
+    "type": "direct local input safety rule; not Gemini, answer validation or fallback"
+  },
+  "rootCause": {
+    "ambiguousWord": "break (in lunch break)",
+    "nearbyProviderName": "Google Flow",
+    "oldPatternAllowedCharactersBetweenTerms": 80,
+    "exactRegexMatch": "break ho gaya. Mujhe 3 scenes ki funny story, har scene ka 8-second Google Flow",
+    "matchStart": 292,
+    "matchEnd": 371
+  },
+  "retrieval": {
+    "executed": false,
+    "retrievedContext": null,
+    "evidence": "No context or provider payload event exists for either request; the blocked-input branch returns before buildContext."
+  },
+  "geminiReached": false,
+  "providerAttemptsConsumedByIncident": 0,
+  "correction": "Separate explicit evasion actions from ambiguous creative words. Ambiguous verbs require a safety-control target rather than merely a nearby Flow/Veo name; direct trick/beat-provider evasions remain blocked. Other input controls and their ordering are unchanged.",
+  "productionCodeFilesChanged": [
+    "edunex-b/services/aiCompliance.js"
+  ],
+  "regressionFilesAdded": [
+    "edunex-b/tests/cartoon-safety-routing.test.cjs",
+    "edunex-b/tests/fixtures/cartoon-false-safety-refusal.json"
+  ],
+  "focusedTests": {
+    "tests": 67,
+    "pass": 67,
+    "fail": 0
+  },
+  "networkDisabled": true,
+  "testScope": [
+    "Exact saved request reaches authorized Cartoon context and mocked provider",
+    "Benign Flow/Veo, 8-second scenes, lunch break, magic trick, drum beat, avoid appearance changes and disable background music",
+    "Explicit filter evasion and direct trick-provider attempts remain blocked without transport",
+    "Sexualized-minor, explicit sexual content, prompt secrecy, authentication and entitlement controls",
+    "Existing focused filmmaking workflow/safety regressions"
+  ],
+  "session": {
+    "id": "ed82feda-a0c9-4999-9e87-df02650d8179",
+    "used": 0,
+    "remaining": 4,
+    "originalExpiry": "2026-10-28T10:10:42.896Z",
+    "approvalUnchanged": true,
+    "ledgerUnchanged": true,
+    "canContinueAsIs": false,
+    "sourceGuardStatusAfterCorrection": "manual_qa_invalid_session",
+    "reason": "The existing approval binds the old aiCompliance.js hash and the existing process has the old module loaded. Restart and explicit approval bound to the corrected source are required; do not rewrite the original session or extend its expiry.",
+    "conversationMayBeRetained": true
+  },
+  "protectedArtifactsChecked": 1770,
+  "protectedArtifactsChanged": [],
+  "paidCallsExecuted": 0,
+  "approvalLedgersReset": false,
+  "approvalModifiedOrRenewed": false,
+  "productionDataModified": false,
+  "approvedKnowledgeModified": false,
+  "deployed": false,
+  "committedOrPushed": false,
+  "stoppedAfterLocalVerification": true
+}

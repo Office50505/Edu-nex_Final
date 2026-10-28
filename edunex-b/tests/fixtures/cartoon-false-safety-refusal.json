@@ -1,0 +1,80 @@
+{
+  "source": "tmp/nex-cartoon-final-20261028/pipeline_traces.jsonl",
+  "traceSHA256": "6cf74769524d1b250372a0cf78bd53d95efba3281ff3861c8f39d81452aef54e",
+  "events": [
+    {
+      "time": "2026-10-28T09:40:57.797Z",
+      "session_id": "ed82feda-a0c9-4999-9e87-df02650d8179",
+      "type": "chat_response",
+      "request_id": "6dfef955-b739-46eb-98dd-4bda25a2512b",
+      "durationMs": 18,
+      "conversation_id": "nai-1793180446806-fihnl9a",
+      "httpStatus": 200,
+      "user_id": "6addcefc5d47d548973c29b9",
+      "request": {
+        "message": "Main apni original kids cartoon series banana chahta hoon. Mere characters hain Rohan, 7 saal ka curious boy jo red hoodie pehenta hai, aur Bittu, ek naughty blue parrot. Location ek small village school hai. Episode mein Bittu galti se school ki bell baja deta hai aur sabko lagta hai lunch break ho gaya. Mujhe 3 scenes ki funny story, har scene ka 8-second Google Flow video prompt, aur character consistency ke tips do. Golu aur Chiku use mat karna.",
+        "activeCourseId": "6ae09ebee4ac0b60c08276bc",
+        "history": [
+          {
+            "role": "assistant",
+            "content": "Ask anything from your indexed courses. I can search across all course lessons."
+          }
+        ],
+        "conversationId": "nai-1793180446806-fihnl9a"
+      },
+      "response": {
+        "answer": "I cannot help bypass Flow, Veo, or other provider safety filters. I can help rewrite the idea into a safe, policy-compliant version.",
+        "reply": "I cannot help bypass Flow, Veo, or other provider safety filters. I can help rewrite the idea into a safe, policy-compliant version.",
+        "messageId": "2a53f90b-aba3-4ea1-a559-8ddb0fcd26fb",
+        "provider": "safety-filter",
+        "sources": [],
+        "outcome": {
+          "type": "local_rule",
+          "liveModelAnswer": false,
+          "providerStatus": "not_requested"
+        }
+      }
+    },
+    {
+      "time": "2026-10-28T09:41:12.809Z",
+      "session_id": "ed82feda-a0c9-4999-9e87-df02650d8179",
+      "type": "chat_response",
+      "request_id": "a0002e1b-fa14-48a3-9aa3-f75ae558fad1",
+      "durationMs": 44,
+      "conversation_id": "nai-1793180446806-fihnl9a",
+      "httpStatus": 200,
+      "user_id": "6addcefc5d47d548973c29b9",
+      "request": {
+        "message": "Main apni original kids cartoon series banana chahta hoon. Mere characters hain Rohan, 7 saal ka curious boy jo red hoodie pehenta hai, aur Bittu, ek naughty blue parrot. Location ek small village school hai. Episode mein Bittu galti se school ki bell baja deta hai aur sabko lagta hai lunch break ho gaya. Mujhe 3 scenes ki funny story, har scene ka 8-second Google Flow video prompt, aur character consistency ke tips do. Golu aur Chiku use mat karna.",
+        "activeCourseId": "6ae09ebee4ac0b60c08276bc",
+        "history": [
+          {
+            "role": "assistant",
+            "content": "Ask anything from your indexed courses. I can search across all course lessons."
+          },
+          {
+            "role": "user",
+            "content": "Main apni original kids cartoon series banana chahta hoon. Mere characters hain Rohan, 7 saal ka curious boy jo red hoodie pehenta hai, aur Bittu, ek naughty blue parrot. Location ek small village school hai. Episode mein Bittu galti se school ki bell baja deta hai aur sabko lagta hai lunch break ho gaya. Mujhe 3 scenes ki funny story, har scene ka 8-second Google Flow video prompt, aur character consistency ke tips do. Golu aur Chiku use mat karna."
+          },
+          {
+            "role": "assistant",
+            "content": "I cannot help bypass Flow, Veo, or other provider safety filters. I can help rewrite the idea into a safe, policy-compliant version."
+          }
+        ],
+        "conversationId": "nai-1793180446806-fihnl9a"
+      },
+      "response": {
+        "answer": "I cannot help bypass Flow, Veo, or other provider safety filters. I can help rewrite the idea into a safe, policy-compliant version.",
+        "reply": "I cannot help bypass Flow, Veo, or other provider safety filters. I can help rewrite the idea into a safe, policy-compliant version.",
+        "messageId": "d70f5fdd-753d-4007-9b18-dd6720c6b42e",
+        "provider": "safety-filter",
+        "sources": [],
+        "outcome": {
+          "type": "local_rule",
+          "liveModelAnswer": false,
+          "providerStatus": "not_requested"
+        }
+      }
+    }
+  ]
+}

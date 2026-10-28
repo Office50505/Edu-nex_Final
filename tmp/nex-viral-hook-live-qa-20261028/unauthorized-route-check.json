@@ -1,0 +1,10 @@
+[
+  {
+    "route": "/api/ai/__qa/knowledge",
+    "status": 401
+  },
+  {
+    "route": "/api/ai/courses",
+    "status": 401
+  }
+]

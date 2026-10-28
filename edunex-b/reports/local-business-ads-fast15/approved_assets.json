@@ -1,0 +1,482 @@
+{
+  "templates": [
+    {
+      "chunkId": "ai-local-business-ads:exact-template:034",
+      "heading": "Lesson 02 — Step 1: Details → customers, time, ad angles",
+      "content": "I run a small [cafe / salon / bakery / shop] in [area, city]. Details:\n- Menu / services: [list]\n- Price range: [₹ – ₹]\n- Timing: [opening – closing]\n- Seating / size: [if any]\n- Who usually comes: [students, office people, families...]\n- What's special: [only write what is true]\nMake a simple business brief:\n1. Types of customers and what time of day they come\n2. What each type cares about most\n3. One ad angle for each type\nKeep it short, in simple Hinglish.",
+      "contentType": "exact-template",
+      "lessonNumber": 2,
+      "lessonId": "lesson_2",
+      "lessonName": "Lesson 02 — Step 1: Details → customers, time, ad angles",
+      "sourceDocument": "approved-prompts.txt",
+      "contentHash": "022a60b659f8ecd02564b4acd5c2040e9ef1781067e34c39280a06e07fa57d6e",
+      "aliases": [
+        "Step 1: Details → customers, time, ad angles"
+      ],
+      "placeholders": [
+        "[cafe / salon / bakery / shop]",
+        "[area, city]",
+        "[list]",
+        "[₹ – ₹]",
+        "[opening – closing]",
+        "[if any]",
+        "[students, office people, families...]",
+        "[only write what is true]"
+      ],
+      "sourceHash": "0f65dffce29aeeb6ba0f9046c499540adf31bfc87093ff77fdfadf8198212e58"
+    },
+    {
+      "chunkId": "ai-local-business-ads:exact-template:035",
+      "heading": "Lesson 02 — Step 2: 5 offers",
+      "content": "Suggest 5 offer ideas for this [shop] that are simple and won't hurt profit much — like\ncombos, a happy hour, or a student deal. For each one, say who it is for and the best day\nor time to run it. Don't decide prices — write [price] wherever the owner should fill it\nin.",
+      "contentType": "exact-template",
+      "lessonNumber": 2,
+      "lessonId": "lesson_2",
+      "lessonName": "Lesson 02 — Step 2: 5 offers",
+      "sourceDocument": "approved-prompts.txt",
+      "contentHash": "c7cb50d93e7632098866ff8f826ce44ad168dbaf37b57b30d9ccf4d61ef1c319",
+      "aliases": [
+        "Step 2: 5 offers"
+      ],
+      "placeholders": [
+        "[shop]",
+        "[price]"
+      ],
+      "sourceHash": "0f65dffce29aeeb6ba0f9046c499540adf31bfc87093ff77fdfadf8198212e58"
+    },
+    {
+      "chunkId": "ai-local-business-ads:exact-template:036",
+      "heading": "Lesson 02 — Step 3: 30 din ka post plan",
+      "content": "Make a 30-day post plan for this [shop] starting [date]. For each week, tell me what to\npost on Instagram and WhatsApp status — a food/product photo, an offer poster, a short\nreel, or a behind-the-counter moment. Include any Indian festivals in these dates and mark\nthem clearly with \"(check date)\" so I can verify them.",
+      "contentType": "exact-template",
+      "lessonNumber": 2,
+      "lessonId": "lesson_2",
+      "lessonName": "Lesson 02 — Step 3: 30 din ka post plan",
+      "sourceDocument": "approved-prompts.txt",
+      "contentHash": "c234c97483b55344db30d9f19e4be5e1651b36e6bb2e17c2c120bd43e23b56b9",
+      "aliases": [
+        "Step 3: 30 din ka post plan"
+      ],
+      "placeholders": [
+        "[shop]",
+        "[date]"
+      ],
+      "sourceHash": "0f65dffce29aeeb6ba0f9046c499540adf31bfc87093ff77fdfadf8198212e58"
+    },
+    {
+      "chunkId": "ai-local-business-ads:exact-template:037",
+      "heading": "Lesson 02 — Step 4: Ek page ka Business Brief",
+      "content": "Now put everything into one short Business Brief I can save and reuse: business details,\ncustomer types, 3 ad angles, 5 offers, and the 30-day plan. Clean headings, no extra text.",
+      "contentType": "exact-template",
+      "lessonNumber": 2,
+      "lessonId": "lesson_2",
+      "lessonName": "Lesson 02 — Step 4: Ek page ka Business Brief",
+      "sourceDocument": "approved-prompts.txt",
+      "contentHash": "e666ec51d35a662ea6dd599711695bc85cf7f94442a2c13794589898d77a532b",
+      "aliases": [
+        "Step 4: Ek page ka Business Brief"
+      ],
+      "placeholders": [],
+      "sourceHash": "0f65dffce29aeeb6ba0f9046c499540adf31bfc87093ff77fdfadf8198212e58"
+    },
+    {
+      "chunkId": "ai-local-business-ads:exact-template:038",
+      "heading": "Lesson 03 — Andar ki photo upgrade",
+      "content": "Turn this phone photo of my [shop] into a professional interior photograph, like one shot\nby a good photographer for Instagram and Google Maps. Keep the same room, same furniture,\nsame counter, same boards and same layout — do not add or remove any furniture.\nMake these improvements boldly:\n- Lighting: replace the harsh tube-light look with warm, soft, inviting light\n- Colours: rich and warm, clean walls, natural shine on surfaces\n- Camera: straighten the photo, fix the tilt and the stretched wide-angle look, frame it\nat normal eye level\n- Clean-up: tables wiped clean, chairs neatly pushed in, floor clean, remove clutter,\nwires and stains\n- Quality: sharp focus, no grain, natural depth, looks like a real DSLR photo\nNo people, no new decorations, no plants, no text added. Realistic, not AI-looking.",
+      "contentType": "exact-template",
+      "lessonNumber": 3,
+      "lessonId": "lesson_3",
+      "lessonName": "Lesson 03 — Andar ki photo upgrade",
+      "sourceDocument": "approved-prompts.txt",
+      "contentHash": "a52852fd2155a243e1662514b1fe04f4a4499a9990b28ff610f54fbbdbd1a5c9",
+      "aliases": [
+        "Andar ki photo upgrade"
+      ],
+      "placeholders": [
+        "[shop]"
+      ],
+      "sourceHash": "0f65dffce29aeeb6ba0f9046c499540adf31bfc87093ff77fdfadf8198212e58"
+    },
+    {
+      "chunkId": "ai-local-business-ads:exact-template:039",
+      "heading": "Lesson 03 — Shop front, shaam ka look",
+      "content": "Turn this phone photo of my [shop]'s front into a professional evening photograph. Keep\nthe same building, same door, same chairs outside and the same signboard — the text \"[SHOP\nNAME]\" must stay exactly the same, do not change, re-write or translate it.\nMake these improvements boldly:\n- Time: early evening, soft deep-blue sky, warm golden light glowing from inside\n- Camera: straighten the photo, fix the tilt, frame the shop front centred and balanced\n- Clean-up: remove parked vehicles, wrappers and dust, tidy the overhead wires, clean\nfootpath\n- Colours: rich and warm, sharp focus, no grain, looks like a real DSLR photo\nNo people, no new signs, no new lights or decorations added. Realistic, not AI-looking.",
+      "contentType": "exact-template",
+      "lessonNumber": 3,
+      "lessonId": "lesson_3",
+      "lessonName": "Lesson 03 — Shop front, shaam ka look",
+      "sourceDocument": "approved-prompts.txt",
+      "contentHash": "d9f2fda72d906d5574d174d6e8b4edd0482b9b99bfcccd9199c063f9627de54b",
+      "aliases": [
+        "Shop front, shaam ka look"
+      ],
+      "placeholders": [
+        "[shop]",
+        "[SHOP\nNAME]"
+      ],
+      "sourceHash": "0f65dffce29aeeb6ba0f9046c499540adf31bfc87093ff77fdfadf8198212e58"
+    },
+    {
+      "chunkId": "ai-local-business-ads:exact-template:040",
+      "heading": "Lesson 03 — WhatsApp status version (9:16)",
+      "content": "Use this [shop] photo. Make a vertical 9:16 version of the same [shop] for WhatsApp status\n— same interior, same furniture, nothing new added. Keep clean empty space in the top\nthird (a plain warm wall or soft blur) so text can be added later. Do not write any text.",
+      "contentType": "exact-template",
+      "lessonNumber": 3,
+      "lessonId": "lesson_3",
+      "lessonName": "Lesson 03 — WhatsApp status version (9:16)",
+      "sourceDocument": "approved-prompts.txt",
+      "contentHash": "d0010d092187de392d7ffaf6f118cd6afb77892d4c577030f1030bbc391d4485",
+      "aliases": [
+        "WhatsApp status version (9:16)"
+      ],
+      "placeholders": [
+        "[shop]"
+      ],
+      "sourceHash": "0f65dffce29aeeb6ba0f9046c499540adf31bfc87093ff77fdfadf8198212e58"
+    },
+    {
+      "chunkId": "ai-local-business-ads:exact-template:041",
+      "heading": "Lesson 04 — Dish re-shoot",
+      "content": "Use this phone photo only as a reference for what our dish looks like. Now re-shoot this\nsame dish from scratch as a professional food photographer would, for our menu and\nInstagram.\nThe dish: [describe it exactly — e.g. one normal single portion of masala Maggi on a round\nsteel plate with a steel fork] — exactly the ingredients you see in the reference, nothing\nextra.\nThe new shot:\n- Freshly plated, hot and glossy, with light natural steam rising\n- Soft warm window light from the left, gentle shadows, rich appetising colours\n- 45-degree food angle, close-up, shallow depth of field, sharp focus on the food\n- Set on a clean warm wooden table, softly blurred cosy background\nDo NOT add cheese, vegetables, coriander, egg or any garnish that is not in the reference.\nSame portion size, not bigger. No text, no people. Must look like a real DSLR food photo,\nnot AI.",
+      "contentType": "exact-template",
+      "lessonNumber": 4,
+      "lessonId": "lesson_4",
+      "lessonName": "Lesson 04 — Dish re-shoot",
+      "sourceDocument": "approved-prompts.txt",
+      "contentHash": "07393c50bc169d1f13f1935ebf74c7cfa62310d9e5ca6dcc27c98cfb42a530a1",
+      "aliases": [
+        "Dish re-shoot"
+      ],
+      "placeholders": [
+        "[describe it exactly — e.g. one normal single portion of masala Maggi on a round\nsteel plate with a steel fork]"
+      ],
+      "sourceHash": "0f65dffce29aeeb6ba0f9046c499540adf31bfc87093ff77fdfadf8198212e58"
+    },
+    {
+      "chunkId": "ai-local-business-ads:exact-template:042",
+      "heading": "Lesson 04 — Drink re-shoot",
+      "content": "Use this phone photo only as a reference for what our drink looks like. Now re-shoot this\nsame drink from scratch as a professional drink photographer would, for our menu and\nInstagram.\nThe drink: [describe it exactly — e.g. one tall plain glass of cold coffee with a little\nfoam on top and a straw] — exactly as in the reference, nothing extra.\nThe new shot:\n- Freshly poured, rich colour, light cold condensation drops on the glass\n- Soft bright light from behind and the side so the glass glows\n- Straight-on eye-level angle, close-up, shallow depth of field\n- Set on a clean warm wooden table, softly blurred cosy background\nDo NOT add ice cream, whipped cream, syrup, ice on top or any garnish that is not in the\nreference. Same glass size, same amount. No text, no people. Must look like a real DSLR\ndrink photo, not AI.",
+      "contentType": "exact-template",
+      "lessonNumber": 4,
+      "lessonId": "lesson_4",
+      "lessonName": "Lesson 04 — Drink re-shoot",
+      "sourceDocument": "approved-prompts.txt",
+      "contentHash": "fd4e88c525d0c3931e6353695b0e7e0dac07a7e9514a0ce3a3143044c76cbf40",
+      "aliases": [
+        "Drink re-shoot"
+      ],
+      "placeholders": [
+        "[describe it exactly — e.g. one tall plain glass of cold coffee with a little\nfoam on top and a straw]"
+      ],
+      "sourceHash": "0f65dffce29aeeb6ba0f9046c499540adf31bfc87093ff77fdfadf8198212e58"
+    },
+    {
+      "chunkId": "ai-local-business-ads:exact-template:043",
+      "heading": "Lesson 04 — Combo photo (dono results upload karke)",
+      "content": "Use these two photos as reference for the dishes. Re-shoot them together as one\nprofessional \"[combo name]\" photo: this same [item 1] and this same [item 2] placed side\nby side on one clean warm wooden table. Same portions, nothing extra added. Soft warm\nwindow light, 45-degree angle, both sharp, softly blurred background. Leave clean empty\nspace at the top for text later. Do not write any text. Real DSLR photo, not AI.",
+      "contentType": "exact-template",
+      "lessonNumber": 4,
+      "lessonId": "lesson_4",
+      "lessonName": "Lesson 04 — Combo photo (dono results upload karke)",
+      "sourceDocument": "approved-prompts.txt",
+      "contentHash": "2b9ca8af05a7d6a3a2e3eb4d427ea2772303d6537532d30dbeadffdccb93da2a",
+      "aliases": [
+        "Combo photo (dono results upload karke)"
+      ],
+      "placeholders": [
+        "[combo name]",
+        "[item 1]",
+        "[item 2]"
+      ],
+      "sourceHash": "0f65dffce29aeeb6ba0f9046c499540adf31bfc87093ff77fdfadf8198212e58"
+    },
+    {
+      "chunkId": "ai-local-business-ads:exact-template:044",
+      "heading": "Lesson 05 — Offer poster",
+      "content": "Use this photo of our [items] as the main image. Turn it into a clean, modern offer poster\nfor Instagram for our [shop]. Keep the food exactly as it is in the photo — do not add or\nchange anything on the plate or in the glass.\nWrite ONLY this text, spelled exactly like this, nothing else:\n- Top, big bold: \"[OFFER NAME]\"\n- Below it: \"[item 1] + [item 2]\"\n- Big price badge: \"₹[price]\"\n- Small: \"[days, time]\"\n- Bottom: \"[SHOP NAME] · [area, city]\"\nWarm colours, easy-to-read bold fonts, clean layout with the food clearly visible. Do not\nadd any other words, discounts, percentages, logos or claims.",
+      "contentType": "exact-template",
+      "lessonNumber": 5,
+      "lessonId": "lesson_5",
+      "lessonName": "Lesson 05 — Offer poster",
+      "sourceDocument": "approved-prompts.txt",
+      "contentHash": "f067bfdb8e1b3374324e17fdad3000bd9a8c7fe347e892106cb55b16b35f55a6",
+      "aliases": [
+        "Offer poster"
+      ],
+      "placeholders": [
+        "[items]",
+        "[shop]",
+        "[OFFER NAME]",
+        "[item 1]",
+        "[item 2]",
+        "[price]",
+        "[days, time]",
+        "[SHOP NAME]",
+        "[area, city]"
+      ],
+      "sourceHash": "0f65dffce29aeeb6ba0f9046c499540adf31bfc87093ff77fdfadf8198212e58"
+    },
+    {
+      "chunkId": "ai-local-business-ads:exact-template:045",
+      "heading": "Lesson 05 — Tyohaar greeting poster",
+      "content": "Use this photo of our shop front as the main image. Make a warm [festival] greeting\nposter. Keep the shop, the building and the \"[SHOP NAME]\" signboard exactly the same — do\nnot change the shop itself.\nAdd festive feeling only as a decorative design around the photo: a soft glowing frame of\n[diyas / lights / festival elements] along the edges, gentle golden sparkles. Do not place\ndecorations on the real shop.\nWrite ONLY this text, spelled exactly like this:\n- Top: \"[Happy Diwali]\"\n- Bottom: \"Warm wishes from [SHOP NAME]\"\nElegant, easy-to-read fonts. No offers, no prices, no other words.",
+      "contentType": "exact-template",
+      "lessonNumber": 5,
+      "lessonId": "lesson_5",
+      "lessonName": "Lesson 05 — Tyohaar greeting poster",
+      "sourceDocument": "approved-prompts.txt",
+      "contentHash": "f3bda3cc6a825ca9879da431f6af422a0f9590df4f4cabb4bd2452ba4030a8f2",
+      "aliases": [
+        "Tyohaar greeting poster"
+      ],
+      "placeholders": [
+        "[festival]",
+        "[SHOP NAME]",
+        "[diyas / lights / festival elements]",
+        "[Happy Diwali]"
+      ],
+      "sourceHash": "0f65dffce29aeeb6ba0f9046c499540adf31bfc87093ff77fdfadf8198212e58"
+    },
+    {
+      "chunkId": "ai-local-business-ads:exact-template:046",
+      "heading": "Lesson 06 — Shop front push-in",
+      "content": "Use this photo of our shop front as the exact reference. Make a 6-second vertical video:\nthe camera slowly pushes forward toward the glowing door, smooth and steady, like a calm\nevening walk-up. Warm light glows from inside, a gentle breeze, the evening sky slowly\ndarkens a little. Keep the building, the shutter, the chairs and the \"[SHOP NAME]\"\nsignboard exactly the same — the text on the board must not change. Do not add people,\ncars, new signs, decorations or lights. Ambient street sound only, no music, no voices, no\ntext on screen.",
+      "contentType": "exact-template",
+      "lessonNumber": 6,
+      "lessonId": "lesson_6",
+      "lessonName": "Lesson 06 — Shop front push-in",
+      "sourceDocument": "approved-prompts.txt",
+      "contentHash": "9e6416cbc4208d2252bcbd74ed051b0da191b0e27d1bd43a8c94e9e82d6413fd",
+      "aliases": [
+        "Shop front push-in"
+      ],
+      "placeholders": [
+        "[SHOP NAME]"
+      ],
+      "sourceHash": "0f65dffce29aeeb6ba0f9046c499540adf31bfc87093ff77fdfadf8198212e58"
+    },
+    {
+      "chunkId": "ai-local-business-ads:exact-template:047",
+      "heading": "Lesson 06 — Andar glide",
+      "content": "Use this photo of our [shop] interior as the exact reference. Make a 6-second vertical\nvideo: the camera slowly glides forward into the [shop] at eye level, as if a customer is\nwalking in, moving gently toward the counter. Soft warm light, a little steam rising from\nthe [chai urn / coffee machine]. Keep the same tables, chairs, counter, boards and walls\nexactly as in the photo. Do not add people, new furniture, plants, decorations or any\nobjects that are not in the photo. Soft ambient sound only, no music, no voices, no text\non screen.",
+      "contentType": "exact-template",
+      "lessonNumber": 6,
+      "lessonId": "lesson_6",
+      "lessonName": "Lesson 06 — Andar glide",
+      "sourceDocument": "approved-prompts.txt",
+      "contentHash": "2b14fbf5cc28dc8f6b0558609d9ba00b82bb503afea03c8a8b5debac70ac7db3",
+      "aliases": [
+        "Andar glide"
+      ],
+      "placeholders": [
+        "[shop]",
+        "[chai urn / coffee machine]"
+      ],
+      "sourceHash": "0f65dffce29aeeb6ba0f9046c499540adf31bfc87093ff77fdfadf8198212e58"
+    },
+    {
+      "chunkId": "ai-local-business-ads:exact-template:048",
+      "heading": "Lesson 06 — Food close-up",
+      "content": "Use this photo of our [dish] as the exact reference. Make a 6-second vertical close-up\nvideo: the camera slowly circles a little around the plate, warm natural steam rising,\nsoft window light. Keep the same plate and the same portion — do not add any other food or\ngarnish. No hands, no people. Gentle ambient sound only, no music, no voices, no text on\nscreen.",
+      "contentType": "exact-template",
+      "lessonNumber": 6,
+      "lessonId": "lesson_6",
+      "lessonName": "Lesson 06 — Food close-up",
+      "sourceDocument": "approved-prompts.txt",
+      "contentHash": "753484bf503c11f73807b577ff14c79fdf18bc85497112365ac269f0f8032340",
+      "aliases": [
+        "Food close-up"
+      ],
+      "placeholders": [
+        "[dish]"
+      ],
+      "sourceHash": "0f65dffce29aeeb6ba0f9046c499540adf31bfc87093ff77fdfadf8198212e58"
+    },
+    {
+      "chunkId": "ai-local-business-ads:exact-template:049",
+      "heading": "Lesson 07 — Step 1: 3 lines (chat G.P.T)",
+      "content": "I'm making a 24-second Instagram reel for my [shop] [SHOP NAME] in [area, city]. It has 3\nclips of 8 seconds each:\n1) the shop front\n2) inside the [shop]\n3) a close-up of our [best item]\nWrite one short Hindi voiceover line for each clip, in Devanagari script.\nRules:\n- Each line must be easy to say in 6 seconds — maximum 12 words\n- Friendly and natural, like talking to a friend\n- No claims like \"best\", \"No.1\", \"sabse sasta\" or \"famous\"\n- Use only these facts: [menu, offer with price and timing, opening hours]",
+      "contentType": "exact-template",
+      "lessonNumber": 7,
+      "lessonId": "lesson_7",
+      "lessonName": "Lesson 07 — Step 1: 3 lines (chat G.P.T)",
+      "sourceDocument": "approved-prompts.txt",
+      "contentHash": "8197038d8389dfcfbdda034e9c49d4e083b2b91c3478f02749d50ae5a1c48fd0",
+      "aliases": [
+        "Step 1: 3 lines (chat G.P.T)"
+      ],
+      "placeholders": [
+        "[shop]",
+        "[SHOP NAME]",
+        "[area, city]",
+        "[best item]",
+        "[menu, offer with price and timing, opening hours]"
+      ],
+      "sourceHash": "0f65dffce29aeeb6ba0f9046c499540adf31bfc87093ff77fdfadf8198212e58"
+    },
+    {
+      "chunkId": "ai-local-business-ads:exact-template:050",
+      "heading": "Lesson 07 — Step 2: Awaaz wali clip (Flow · Video · 8 sec · 9:16) — har clip ke liye line badlo",
+      "content": "Use this photo of our [shop front / interior / dish] as the exact reference. Make an\n8-second vertical video: [one slow camera move — push toward the door / glide inside /\ncircle the plate]. Keep everything exactly as in the photo — the \"[SHOP NAME]\" signboard\ntext must not change. No people on screen.\nVoiceover: a warm, friendly young Indian [male / female] narrator, off-screen, speaking\nclear natural Hindi at a relaxed pace. Nobody on screen speaks.\nTIMING: 0–1s: ambient sound only. 1–7s: the narrator says: \"[LINE from chat G.P.T, in\nDevanagari]\" 7–8s: ambient sound only.\nSoft ambient sound under the voice, no music, no text on screen.",
+      "contentType": "exact-template",
+      "lessonNumber": 7,
+      "lessonId": "lesson_7",
+      "lessonName": "Lesson 07 — Step 2: Awaaz wali clip (Flow · Video · 8 sec · 9:16) — har clip ke liye line badlo",
+      "sourceDocument": "approved-prompts.txt",
+      "contentHash": "6411f1d863de02da14b61ee2bba56a16566962d1d92218d57a4bb7c08779ee8b",
+      "aliases": [
+        "Step 2: Awaaz wali clip (Flow · Video · 8 sec · 9:16) — har clip ke liye line badlo"
+      ],
+      "placeholders": [
+        "[shop front / interior / dish]",
+        "[one slow camera move — push toward the door / glide inside /\ncircle the plate]",
+        "[SHOP NAME]",
+        "[male / female]",
+        "[LINE from chat G.P.T, in\nDevanagari]"
+      ],
+      "sourceHash": "0f65dffce29aeeb6ba0f9046c499540adf31bfc87093ff77fdfadf8198212e58"
+    },
+    {
+      "chunkId": "ai-local-business-ads:exact-template:051",
+      "heading": "Lesson 08 — Instagram caption + hashtags",
+      "content": "Write an Instagram caption for our 24-second reel (shop front → inside → [best item]\nclose-up). Keep it short and friendly in Hinglish. Mention [area, city] and [offer with\nprice and timing]. Add 8–10 hashtags — mostly local ones ([city], [area], [type of shop])\nand a few [food / service] ones. No claims like \"best\" or \"No.1\".",
+      "contentType": "exact-template",
+      "lessonNumber": 8,
+      "lessonId": "lesson_8",
+      "lessonName": "Lesson 08 — Instagram caption + hashtags",
+      "sourceDocument": "approved-prompts.txt",
+      "contentHash": "c88b228528fe64c0efdb78a0da2e3cda34c3da52e33a490c7367537f058e271f",
+      "aliases": [
+        "Instagram caption + hashtags"
+      ],
+      "placeholders": [
+        "[best item]",
+        "[area, city]",
+        "[offer with\nprice and timing]",
+        "[city]",
+        "[area]",
+        "[type of shop]",
+        "[food / service]"
+      ],
+      "sourceHash": "0f65dffce29aeeb6ba0f9046c499540adf31bfc87093ff77fdfadf8198212e58"
+    },
+    {
+      "chunkId": "ai-local-business-ads:exact-template:052",
+      "heading": "Lesson 08 — WhatsApp status + broadcast",
+      "content": "Now write for WhatsApp:\n1) 3 short status lines for this week — one for the reel, one for the offer poster, one\nfor the festival greeting. Max 10 words each.\n2) One short broadcast message for regular customers who have saved our number — friendly,\nno pressure, with our timing [opening – closing].\nNo fake urgency like \"only today\" or \"last chance\" unless it is true.",
+      "contentType": "exact-template",
+      "lessonNumber": 8,
+      "lessonId": "lesson_8",
+      "lessonName": "Lesson 08 — WhatsApp status + broadcast",
+      "sourceDocument": "approved-prompts.txt",
+      "contentHash": "de3cdebb8d3bce45eb22f47db973eed3c6d83ab881b6a66034e720123e91be06",
+      "aliases": [
+        "WhatsApp status + broadcast"
+      ],
+      "placeholders": [
+        "[opening – closing]"
+      ],
+      "sourceHash": "0f65dffce29aeeb6ba0f9046c499540adf31bfc87093ff77fdfadf8198212e58"
+    },
+    {
+      "chunkId": "ai-local-business-ads:exact-template:053",
+      "heading": "Lesson 08 — Google Business Profile",
+      "content": "Now help with our Google Business Profile:\n1) A short \"Offer\" post for [offer] (max 50 words)\n2) Which photos to upload (shop front, inside, food/products) and in what order\n3) A polite reply template for a good review, and one for a bad review\nDon't write any reviews for us — only the replies.",
+      "contentType": "exact-template",
+      "lessonNumber": 8,
+      "lessonId": "lesson_8",
+      "lessonName": "Lesson 08 — Google Business Profile",
+      "sourceDocument": "approved-prompts.txt",
+      "contentHash": "5eb2d72b978141beb6f3f3f37b1fcad4302efc2534d66d57c763d5da415c33e6",
+      "aliases": [
+        "Google Business Profile"
+      ],
+      "placeholders": [
+        "[offer]"
+      ],
+      "sourceHash": "0f65dffce29aeeb6ba0f9046c499540adf31bfc87093ff77fdfadf8198212e58"
+    },
+    {
+      "chunkId": "ai-local-business-ads:exact-template:054",
+      "heading": "Lesson 08 — Hafte ka posting plan",
+      "content": "Make a simple weekly posting plan as a table: Day | Instagram | WhatsApp Status | Google\nBusiness. Use the customer timings from our brief to suggest a posting time for each. Keep\nit simple enough for one person to manage in about 15 minutes a day.",
+      "contentType": "exact-template",
+      "lessonNumber": 8,
+      "lessonId": "lesson_8",
+      "lessonName": "Lesson 08 — Hafte ka posting plan",
+      "sourceDocument": "approved-prompts.txt",
+      "contentHash": "c5202ecc04c20f9fd93025148d716320e3d3248656f4565656e02cd4be1915cc",
+      "aliases": [
+        "Hafte ka posting plan"
+      ],
+      "placeholders": [],
+      "sourceHash": "0f65dffce29aeeb6ba0f9046c499540adf31bfc87093ff77fdfadf8198212e58"
+    },
+    {
+      "chunkId": "ai-local-business-ads:exact-template:055",
+      "heading": "Lesson 09 — 3 packages",
+      "content": "I want to offer AI-made marketing content as a service to small local shops in my area —\ncafes, salons, bakeries, kirana stores. I only use ChatGPT, Google Flow and CapCut.\nSuggest 3 simple monthly packages: Basic, Standard and Plus. For each, list exactly what\nthe shop gets (for example: number of photo upgrades, offer posters, festival posters,\nreels, Google Business posts per month) and roughly how many hours it takes me.\nDon't suggest any prices — write [price] where I should fill it in. No promises about\nsales, followers or results.",
+      "contentType": "exact-template",
+      "lessonNumber": 9,
+      "lessonId": "lesson_9",
+      "lessonName": "Lesson 09 — 3 packages",
+      "sourceDocument": "approved-prompts.txt",
+      "contentHash": "ad6cd89d48ec3b9abaefa5cee524838c087fc5d2688a4828b605438db6c26550",
+      "aliases": [
+        "3 packages"
+      ],
+      "placeholders": [
+        "[price]"
+      ],
+      "sourceHash": "0f65dffce29aeeb6ba0f9046c499540adf31bfc87093ff77fdfadf8198212e58"
+    },
+    {
+      "chunkId": "ai-local-business-ads:exact-template:056",
+      "heading": "Lesson 09 — Pehla WhatsApp message",
+      "content": "Write a short, polite first WhatsApp message in simple Hinglish that I can send to a local\nshop owner I know or have visited. In one line say what I do, offer to make one free\nsample poster from a photo of their shop, and say clearly that it's completely okay if\nthey're not interested. No promises about sales or followers. Maximum 60 words.",
+      "contentType": "exact-template",
+      "lessonNumber": 9,
+      "lessonId": "lesson_9",
+      "lessonName": "Lesson 09 — Pehla WhatsApp message",
+      "sourceDocument": "approved-prompts.txt",
+      "contentHash": "b9e30685242c4e038c88e737e88ece4a014ea91c3e9b2322a752518d8f7149cf",
+      "aliases": [
+        "Pehla WhatsApp message"
+      ],
+      "placeholders": [],
+      "sourceHash": "0f65dffce29aeeb6ba0f9046c499540adf31bfc87093ff77fdfadf8198212e58"
+    },
+    {
+      "chunkId": "ai-local-business-ads:exact-template:057",
+      "heading": "Lesson 09 — Client se sawaal",
+      "content": "Make a simple checklist of questions I should ask a shop owner before starting work:\nbusiness details, what real photos they can give me, which offers and prices they approve,\nfestivals they celebrate, which platforms they use, and who will approve posts. Keep it as\na short list I can send on WhatsApp.",
+      "contentType": "exact-template",
+      "lessonNumber": 9,
+      "lessonId": "lesson_9",
+      "lessonName": "Lesson 09 — Client se sawaal",
+      "sourceDocument": "approved-prompts.txt",
+      "contentHash": "24a6a12dc437ca12e1ecc6202f4283d4a295379981476445a926742ea0cc7df4",
+      "aliases": [
+        "Client se sawaal"
+      ],
+      "placeholders": [],
+      "sourceHash": "0f65dffce29aeeb6ba0f9046c499540adf31bfc87093ff77fdfadf8198212e58"
+    },
+    {
+      "chunkId": "ai-local-business-ads:exact-template:058",
+      "heading": "Lesson 09 — \"Main kaise kaam karta hoon\" note",
+      "content": "Write a short \"how I work\" note I can share with every client, in simple Hinglish: I only\nuse their real photos and their real prices, every poster and caption is sent to them for\napproval before posting, they own all the content I make for them, and how changes work.\nMaximum 120 words.",
+      "contentType": "exact-template",
+      "lessonNumber": 9,
+      "lessonId": "lesson_9",
+      "lessonName": "Lesson 09 — \"Main kaise kaam karta hoon\" note",
+      "sourceDocument": "approved-prompts.txt",
+      "contentHash": "11b7cd2c3c5c4e7f776376a8abd98c649a9c2530561b72026e0fbe6c16c51ed1",
+      "aliases": [
+        "\"Main kaise kaam karta hoon\" note"
+      ],
+      "placeholders": [],
+      "sourceHash": "0f65dffce29aeeb6ba0f9046c499540adf31bfc87093ff77fdfadf8198212e58"
+    }
+  ]
+}

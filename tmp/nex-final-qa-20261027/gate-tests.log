@@ -1,0 +1,43 @@
+[nex-ai-debug] {"conversation_id":"","request_active_course_id":"","resolved_active_course_id":"","current_topic":"","current_intent":"","rewritten_retrieval_query":"Explain a concept briefly.","retrieved_chunk_ids":[],"retrieved_chunk_hashes":[],"retrieved_source_hashes":[],"retrieved_translation_hashes":[],"retrieved_course_ids":[],"retrieved_course_names":[],"scores_ranks":[],"selected_exact_prompt_template_id":"","provider_model_path":"fal-openrouter"}
+✔ session starts closed with all 12 attempts remaining (20.418084ms)
+✔ different questions, corrections, histories and conversations share one authorization and ledger (48.111833ms)
+✔ 12 attempts persist through fresh gate instances; the 13th is rejected without ledger reset (148.773ms)
+✔ expiry is exactly 60 minutes and is preserved across restarts (29.417667ms)
+✔ session rejects wrong account before any paid attempt (12.461875ms)
+✔ session rejects wrong course before any paid attempt (12.93975ms)
+✔ session rejects conflicting course selectors before any paid attempt (12.232042ms)
+✔ session rejects missing active course before any paid attempt (11.98ms)
+✔ session rejects unauthorized retrieved course before any paid attempt (13.22625ms)
+✔ session rejects expired entitlement before any paid attempt (11.659667ms)
+✔ session rejects wrong model before any paid attempt (10.8535ms)
+✔ session rejects production runtime before any paid attempt (13.206208ms)
+✔ session rejects production database before any paid attempt (14.0285ms)
+✔ session rejects wrong local port before any paid attempt (11.954375ms)
+✔ session rejects production Host header before any paid attempt (12.062292ms)
+✔ session rejects external peer address before any paid attempt (13.619ms)
+✔ session rejects wrong HTTP path before any paid attempt (11.875833ms)
+✔ session rejects wrong HTTP method before any paid attempt (12.202667ms)
+✔ session rejects oversized token limit before any paid attempt (10.772792ms)
+✔ approval cannot be enlarged or moved: more than 12 attempts (15.994125ms)
+✔ approval cannot be enlarged or moved: more than 60 minutes (15.284334ms)
+✔ approval cannot be enlarged or moved: different account (15.687167ms)
+✔ approval cannot be enlarged or moved: different session (15.623291ms)
+✔ explicit close preserves accounting and prevents reauthorization of the same ledger (27.691667ms)
+✔ missing, truncated or altered ledgers fail closed instead of becoming zero (3.334916ms)
+✔ simultaneous accounting lock fails closed and does not consume or reset attempts (21.963125ms)
+✔ separate restarted processes share the same non-resettable 12-attempt counter (212.399875ms)
+✔ client QA flags cannot grant approval or enlarge the session budget (8.612125ms)
+✔ normal adapter retries and repairs debit the same persistent session budget (35.916209ms)
+✔ an exhausted session or expired approval is not retried as a connection failure (132.366417ms)
+✔ wrong account/course is rejected before any tutor/retrieval handler runs (5.241ms)
+✔ manual QA block reporting is clear and distinct from real provider failures (0.224ms)
+✔ normal production routes do not import or depend on the development QA gate (123.914709ms)
+✔ development launcher refuses a production-mode start before opening the backend (29.151709ms)
+ℹ tests 34
+ℹ suites 0
+ℹ pass 34
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1142.256458

@@ -42,10 +42,13 @@ function inspect(b) {
 }
 
 test('saved failure fixture preserves the exact recorded questions and both responses', () => {
-  for (const turn of recorded.turns) {
-    assert.equal(digest(turn.query), turn.query_sha256);
-    assert.equal(digest(turn.answer), turn.answer_sha256);
-    assert.equal(turn.http_status, 200);
+  const bytes = fs.readFileSync(path.join(root, recorded.source_report));
+  assert.equal(digest(bytes), recorded.source_report_sha256);
+  const original = JSON.parse(bytes).results.find(c => c.id === recorded.case_id);
+  for (const [i, turn] of recorded.turns.entries()) {
+    assert.equal(turn.query, original.turns[i].query);
+    assert.equal(turn.answer, original.turns[i].answer);
+    assert.deepEqual(turn.errors, original.turns[i].errors);
   }
 });
 

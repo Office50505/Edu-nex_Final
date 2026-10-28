@@ -1,0 +1,109 @@
+{
+  "readiness": {
+    "checkedAt": "2026-10-27T12:01:34.447Z",
+    "backendReady": true,
+    "isolatedDatabaseReady": true,
+    "updatedCodeLoaded": true,
+    "simulatorAuthenticated": true,
+    "simulatorCourseEntitled": true,
+    "sourceRevisionSHA256": "30323d24405b9489bcec2e8f1c671fafcb587c4f76e54db539b872c91e73efdf",
+    "protections": {
+      "normalAuthentication": true,
+      "normalRateLimiting": true,
+      "billingClassifier": true,
+      "advertisingQuality": true,
+      "courseIsolation": true,
+      "durableAttemptAccounting": true
+    },
+    "history": {
+      "conversationCount": 6,
+      "preservedConversations": [
+        {
+          "id": "nai-1792930708332-k0fla4i",
+          "messages": 11
+        },
+        {
+          "id": "nai-1792929329693-ddv62zf",
+          "messages": 5
+        },
+        {
+          "id": "nai-1792927883651-qstfp5d",
+          "messages": 5
+        },
+        {
+          "id": "nai-1792927546022-u7f1rfw",
+          "messages": 3
+        },
+        {
+          "id": "nai-1792927251367-n5wzhtv",
+          "messages": 9
+        }
+      ],
+      "currentMessageCount": 1
+    },
+    "backendUrl": "http://127.0.0.1:3129",
+    "currentConversationId": "nai-1793102493764-h9nmz84",
+    "arbitraryQuestionsAndConversationsAllowed": true,
+    "previousLedgersPreserved": true,
+    "providerKeyConfigured": true,
+    "sessionId": "b83453c5-71cf-40d2-8de4-ed6b8d15192a",
+    "sessionSHA256": "1bbf1ec3377f4deba53c8cfbc1efacc746128e29dddd310c7bf23919d570d4a5",
+    "approvalStatus": "manual_qa_awaiting_approval",
+    "approved": false,
+    "providerAttempts": 0,
+    "maximumProviderAttempts": 12,
+    "remainingProviderAttempts": 12,
+    "expiresAt": null,
+    "durationMinutes": 60,
+    "model": "google/gemini-2.5-flash",
+    "userId": "6addcefc5d47d548973c29b9",
+    "courseId": "6ad9fe8ed0076b8d5e3b4f6d",
+    "blocker": "manual_qa_awaiting_approval"
+  },
+  "approvalCommand": "node \"/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/tmp/nex-final-qa-20261027/control.cjs\" approve --sha256 1bbf1ec3377f4deba53c8cfbc1efacc746128e29dddd310c7bf23919d570d4a5",
+  "approvalExecuted": false,
+  "paidCallsExecuted": 0,
+  "providerAttempts": 0,
+  "remainingBudget": 12,
+  "durationMinutesFromApproval": 60,
+  "multipleQuestionsAndFollowupsAllowed": true,
+  "retriesFailuresAndRepairsCountTowardSameBudget": true,
+  "historicalFilesChecked": 123,
+  "historicalFilesChanged": [],
+  "previousSession": {
+    "sessionId": "436ff6f9-3618-4256-b9b6-bc30deb89586",
+    "approvalStatus": "manual_qa_awaiting_approval",
+    "approved": false,
+    "providerAttempts": 0,
+    "maximumProviderAttempts": 30,
+    "expiresAt": null,
+    "disposition": "Preserved intact; separate 12-attempt successor prepared for final acceptance. Old temporary database/key directory missing."
+  },
+  "newGateOfflineTests": {
+    "passed": 34,
+    "failed": 0
+  },
+  "unseenAcceptanceQuestionsGenerated": 0,
+  "tutorChatRequestsSubmitted": 0,
+  "nativeSimulator": {
+    "device": "iPhone 17 Pro",
+    "bundleIdentifier": "com.alihussainkhan.skillomate.dev",
+    "signedIn": true,
+    "courseEntitled": true,
+    "originalRunnableAppRestored": true,
+    "applicationSourceChanged": false,
+    "nativeBuildPerformed": false,
+    "keychainSessionPersistence": "blocked: installed app lacks required entitlement; simulator rejected both ad-hoc and local-development signing repairs; original runnable app restored",
+    "historicalDeviceConversationsPreserved": 5
+  },
+  "blockers": [
+    "Explicit approval is still required before any provider execution."
+  ],
+  "limitations": [
+    "Current signed-in simulator can be used; restarting the app requires signing in again because secure Keychain persistence fails.",
+    "Old temporary isolated MongoDB and JWT keys were absent. New isolated database/account/entitlement were restored from local metadata; original device conversations remain intact."
+  ],
+  "productionDatabaseModified": false,
+  "deployed": false,
+  "committedOrPushed": false
+}

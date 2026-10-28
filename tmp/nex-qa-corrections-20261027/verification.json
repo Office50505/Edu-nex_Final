@@ -1,0 +1,50 @@
+{
+  "scope": "AI Local Business Ads shared manual QA corrections; local deterministic verification only",
+  "testCounts": {
+    "tests": 514,
+    "pass": 514,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "network": "real fetch/http/https/socket connections disabled by tests/helpers/deny-network.cjs",
+  "savedGenuineProviderResponsesReplayed": 6,
+  "consolidatedTenScenarioRawTranscriptLocated": false,
+  "protectedFilesChecked": 131,
+  "protectedFilesChanged": [],
+  "originalApprovalLedgersPreserved": true,
+  "courseTemplatesPreserved": true,
+  "filesChangedThisTask": [
+    "edunex-b/services/aiTutorService.js",
+    "edunex-b/services/businessCreativeRequest.js",
+    "edunex-b/services/courseTutorRequest.js",
+    "edunex-b/services/courseKnowledgePacks.js",
+    "edunex-b/services/businessAdvertisingPolicy.js",
+    "edunex-b/tests/business-advertising-quality.test.cjs",
+    "edunex-b/tests/local-business-ads.test.cjs",
+    "edunex-b/tests/ai-chat-history.test.cjs",
+    "edunex-b/tests/fixtures/business-manual-qa-saved-responses.json"
+  ],
+  "confirmedCauses": [
+    "Student instructions requesting claims were not explicitly separated from reported facts.",
+    "Output validation covered currency and selected guarantees but not clear attendance, social-proof or feature assertions.",
+    "Numeric evidence used presence matching, including negated/requested amounts and superseded details.",
+    "Troubleshooting guidance led with explanations, while shared instructions encouraged unnecessary lesson references.",
+    "Saved Hinglish negations bina/bagair could be misclassified as requested promotions."
+  ],
+  "verificationFixtureCorrections": [
+    "Three pre-existing memory checks expected persistence after unavailable/no-key or always-failing provider turns; baseline failures reproduced with original sources. Checks now establish successful conversations and assert successful local-rule setup where appropriate."
+  ],
+  "remainingLimitations": [
+    "Deterministic checks are a conservative pattern backstop, not a universal semantic fact checker or independent verification of business facts.",
+    "Draft-first style, tailoring and nuanced multi-language model behavior still require real in-app verification.",
+    "Six earlier genuine saved responses were available, but the exact consolidated ten-scenario transcript was not located.",
+    "Local policy alternatives are deliberately conservative and may be less tailored than a successful model answer."
+  ],
+  "readyForControlledLiveVerification": true,
+  "paidProviderCalls": 0,
+  "deployed": false,
+  "committedOrPushed": false,
+  "productionDatabaseModified": false,
+  "zipGenerated": false
+}

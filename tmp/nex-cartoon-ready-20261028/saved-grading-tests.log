@@ -1,0 +1,17 @@
+................F.................
+======================================================================
+FAIL: test_all_preserved_files_still_match_snapshot (tests.test_cartoon_cs11_v2.CartoonCS11V2Tests.test_all_preserved_files_still_match_snapshot)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/test_cartoon_cs11_v2.py", line 131, in test_all_preserved_files_still_match_snapshot
+    self.assertEqual(hashlib.sha256((ROOT / name).read_bytes()).hexdigest(), digest, name)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'b2c70136e7e5b38d2b1c1ed64062d552aac83df291bc0eb76dcd7e88df80fffc' != '758cce3f03b8d10990cd8ac5021dd8a6d0d972a56f1cc785675171f87776fb5f'
+- b2c70136e7e5b38d2b1c1ed64062d552aac83df291bc0eb76dcd7e88df80fffc
++ 758cce3f03b8d10990cd8ac5021dd8a6d0d972a56f1cc785675171f87776fb5f
+ : knowledge/ai-cartoon-series/index.json
+
+----------------------------------------------------------------------
+Ran 34 tests in 0.010s
+
+FAILED (failures=1)

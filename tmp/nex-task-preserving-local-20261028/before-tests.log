@@ -1,0 +1,209 @@
+[nex-ai-debug] {"conversation_id":"","request_active_course_id":"6ad9fe8ed0076b8d5e3b4f6d","resolved_active_course_id":"6ad9fe8ed0076b8d5e3b4f6d","current_topic":"","current_intent":"","rewritten_retrieval_query":"Our shop is called Paper Lantern. Give an English poster prompt. Warranty is unconfirmed.","retrieved_chunk_ids":["ai-local-business-ads:lesson-summary:003","ai-local-business-ads:faq:023","ai-local-buisness-ads:lesson-overview:Upgrade Shop Photos:0","ai-local-buisness-ads:course-overview:Course overview:0","ai-local-business-ads:faq:033","ai-local-business-ads:lesson-summary:009"],"retrieved_chunk_hashes":["a32bb90afbeb920b35b508d83018af5e35f091f0c55ea1a6637fb8c00b89ea34","fd26d6276722532250bc5e694537e848554b6139b48d5d63da3d304d6dc4e3a9","","","82dea01e6ae52c280d65d2d6d579dcacd4f5272e67ce2fc0897b0480f2f28750","a7a3fd52bf8fee236d0eb736e0eb6f21e274a3eae3e0a9b8792846f9abceaa66"],"retrieved_source_hashes":["6e06f7ec4425616ccaf215ae95f629a1d75d1798c3c22b1b6c25178607082395","8add7ed8a46602116e471dca839296be6ed7eaca7306502f874d1c695f9e358e"],"retrieved_translation_hashes":["","","","","",""],"retrieved_course_ids":["6ad9fe8ed0076b8d5e3b4f6d"],"retrieved_course_names":["AI Local Buisness ADS"],"scores_ranks":[{"rank":1,"score":"2.4648","course_id":"6ad9fe8ed0076b8d5e3b4f6d","section":"Lesson 03 — Dukaan Ki Phone Photo → Professional"},{"rank":2,"score":"1.6538","course_id":"6ad9fe8ed0076b8d5e3b4f6d","section":"Poster ki spelling galat"},{"rank":3,"score":"1.4461","course_id":"6ad9fe8ed0076b8d5e3b4f6d","section":"Upgrade Shop Photos"},{"rank":4,"score":"1.1392","course_id":"6ad9fe8ed0076b8d5e3b4f6d","section":"Course overview"},{"rank":5,"score":"1.0671","course_id":"6ad9fe8ed0076b8d5e3b4f6d","section":"Prompts kahan milenge?"},{"rank":6,"score":"1.0200","course_id":"6ad9fe8ed0076b8d5e3b4f6d","section":"Lesson 09 — Ye Kaam Service Ki Tarah"}],"selected_exact_prompt_template_id":"","provider_model_path":"course-response-policy"}
+✖ natural Hindi facts, corrections and output requests retain their provenance (8.530375ms)
+✔ a Hindi budget question is a plan rather than a new poster request (0.861166ms)
+✔ a Hindi troubleshooting request can ask for a customized prompt (0.31625ms)
+✖ a scoped short follow-up retains the task after the rolling transcript ages out (5.477625ms)
+✖ formatting and disclaimers cannot excuse a factual claim: Use a warm design and free Wi-Fi. (6.516791ms)
+✖ formatting and disclaimers cannot excuse a factual claim: Call to action: Get free delivery. (1.122125ms)
+✖ formatting and disclaimers cannot excuse a factual claim: Do not invent reviews, and our shop offers free delivery. (0.226625ms)
+✔ formatting and disclaimers cannot excuse a factual claim: Use a friendly tone. Our staff are experienced technicians. (0.616834ms)
+✖ a Hindi refusal does not excuse an affirmative capability in the same sentence (8.006791ms)
+✔ unknown Hindi staff credentials are qualified while design preferences survive (0.202167ms)
+✖ safe style cannot retain a superseded business identity (0.378709ms)
+✖ an unrelated feedback template cannot pass as the requested poster repair (243.665083ms)
+✖ a planning task cannot accept a generic feedback message as its answer (0.565375ms)
+✔ affirmative Hindi facts remain usable and are not replaced just because of script (0.65475ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 5
+ℹ fail 9
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 328.730083
+
+✖ failing tests:
+
+test at tests/task-preserving-generalization.test.cjs:12:1
+✖ natural Hindi facts, corrections and output requests retain their provenance (8.530375ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'गिफ्ट नेस्ट'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/task-preserving-generalization.test.cjs:19:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.start (node:internal/test_runner/test:1257:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'गिफ्ट नेस्ट',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/task-preserving-generalization.test.cjs:38:1
+✖ a scoped short follow-up retains the task after the rolling transcript ages out (5.477625ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'explanation'
+  - 'creative_deliverable'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/task-preserving-generalization.test.cjs:42:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'explanation',
+    expected: 'creative_deliverable',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/task-preserving-generalization.test.cjs:55:4
+✖ formatting and disclaimers cannot excuse a factual claim: Use a warm design and free Wi-Fi. (6.516791ms)
+  AssertionError [ERR_ASSERTION]: unsupported assertion must be detected
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/task-preserving-generalization.test.cjs:59:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/task-preserving-generalization.test.cjs:55:4
+✖ formatting and disclaimers cannot excuse a factual claim: Call to action: Get free delivery. (1.122125ms)
+  AssertionError [ERR_ASSERTION]: unsupported assertion must be detected
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/task-preserving-generalization.test.cjs:59:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/task-preserving-generalization.test.cjs:55:4
+✖ formatting and disclaimers cannot excuse a factual claim: Do not invent reviews, and our shop offers free delivery. (0.226625ms)
+  AssertionError [ERR_ASSERTION]: unsupported assertion must be detected
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/task-preserving-generalization.test.cjs:59:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/task-preserving-generalization.test.cjs:65:1
+✖ a Hindi refusal does not excuse an affirmative capability in the same sentence (8.006791ms)
+  AssertionError [ERR_ASSERTION]: The input was expected to not match the regular expression /हमारी दुकान मुफ्त डिलीवरी देती है/. Input:
+  
+  '```text\n\nनकली रिव्यू मत जोड़ो, लेकिन हमारी दुकान मुफ्त डिलीवरी देती है।\n\n```'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/task-preserving-generalization.test.cjs:69:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '```text\n\nनकली रिव्यू मत जोड़ो, लेकिन हमारी दुकान मुफ्त डिलीवरी देती है।\n\n```',
+    expected: /हमारी दुकान मुफ्त डिलीवरी देती है/,
+    operator: 'doesNotMatch',
+    diff: 'simple'
+  }
+
+test at tests/task-preserving-generalization.test.cjs:81:1
+✖ safe style cannot retain a superseded business identity (0.378709ms)
+  AssertionError [ERR_ASSERTION]: The input was expected to not match the regular expression /Silver Leaf/. Input:
+  
+  '```text\n' +
+    'Create a poster for Paper Lantern.\n' +
+    'Use warm colours for Silver Leaf.\n' +
+    '```'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/task-preserving-generalization.test.cjs:86:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '```text\nCreate a poster for Paper Lantern.\nUse warm colours for Silver Leaf.\n```',
+    expected: /Silver Leaf/,
+    operator: 'doesNotMatch',
+    diff: 'simple'
+  }
+
+test at tests/task-preserving-generalization.test.cjs:90:1
+✖ an unrelated feedback template cannot pass as the requested poster repair (243.665083ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'repaired'
+  - 'relevant_limitation'
+       ^
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/task-preserving-generalization.test.cjs:97:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'repaired',
+    expected: 'relevant_limitation',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/task-preserving-generalization.test.cjs:102:1
+✖ a planning task cannot accept a generic feedback message as its answer (0.565375ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  false !== true
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/task-preserving-generalization.test.cjs:105:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

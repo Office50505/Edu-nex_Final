@@ -1,0 +1,119 @@
+{
+  "status": "EXECUTED_ON_ISOLATED_LOCAL_DATABASE",
+  "actual_course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+  "actual_title": "AI Local Buisness ADS",
+  "actual_slug": "ai-local-buisness-ads",
+  "environment": {
+    "configuration_source": ".env",
+    "node_env": "development",
+    "scheme": "mongodb+srv:",
+    "hostname": "edunex.qm9jjbw.mongodb.net",
+    "database": "test",
+    "classification": "remote; production/staging ownership unverified, treat as potentially production"
+  },
+  "remote_writes_permitted": false,
+  "missing_course_registration_fields": [],
+  "existing_real_video_references": 10,
+  "reference_validation": "All ten real AWS CloudFront references pass existing videoSources.validateSource; playback was not fetched or verified.",
+  "lesson_mapping": [
+    {
+      "lesson": 1,
+      "actual_lesson_id": "6ad9fe8ed0076b8d5e3b4f63",
+      "title": "AI LOCAL BUSINESS ADS",
+      "provider": "aws_cloudfront"
+    },
+    {
+      "lesson": 2,
+      "actual_lesson_id": "6ad9fe8ed0076b8d5e3b4f64",
+      "title": "Business Brief with ChatGPT",
+      "provider": "aws_cloudfront"
+    },
+    {
+      "lesson": 3,
+      "actual_lesson_id": "6ad9fe8ed0076b8d5e3b4f65",
+      "title": "Upgrade Shop Photos",
+      "provider": "aws_cloudfront"
+    },
+    {
+      "lesson": 4,
+      "actual_lesson_id": "6ad9fe8ed0076b8d5e3b4f66",
+      "title": "Menu and Food Photos",
+      "provider": "aws_cloudfront"
+    },
+    {
+      "lesson": 5,
+      "actual_lesson_id": "6ad9fe8ed0076b8d5e3b4f67",
+      "title": "Offer and Festival Posters",
+      "provider": "aws_cloudfront"
+    },
+    {
+      "lesson": 6,
+      "actual_lesson_id": "6ad9fe8ed0076b8d5e3b4f68",
+      "title": "Shop Photos to Video",
+      "provider": "aws_cloudfront"
+    },
+    {
+      "lesson": 7,
+      "actual_lesson_id": "6ad9fe8ed0076b8d5e3b4f69",
+      "title": "Hindi Voiceover Reel",
+      "provider": "aws_cloudfront"
+    },
+    {
+      "lesson": 8,
+      "actual_lesson_id": "6ad9fe8ed0076b8d5e3b4f6a",
+      "title": "Where and When to Post",
+      "provider": "aws_cloudfront"
+    },
+    {
+      "lesson": 9,
+      "actual_lesson_id": "6ad9fe8ed0076b8d5e3b4f6b",
+      "title": "Marketing as a Service",
+      "provider": "aws_cloudfront"
+    },
+    {
+      "lesson": 10,
+      "actual_lesson_id": "6ad9fe8ed0076b8d5e3b4f6c",
+      "title": "Final Project",
+      "provider": "aws_cloudfront"
+    }
+  ],
+  "existing_pack_slugs": [
+    "ai-local-business-ads",
+    "ai-local-buisness-ads"
+  ],
+  "proposed_local_pack_binding": {
+    "add_alias": "ai-local-buisness-ads",
+    "retain_aliases": [
+      "ai-local-business-ads"
+    ],
+    "actualCourseId": "6ad9fe8ed0076b8d5e3b4f6d",
+    "note": "Local configuration proposal only; do not rename the existing remote course or register a duplicate."
+  },
+  "metadata_file": "real-metadata.json",
+  "metadata_sha256": "11d9aa52aa0789e5aecd0381d36120f85fcd4d8a24e9a38a4e9474aa59755514",
+  "isolated_target": "mongodb://127.0.0.1:27017/skillomate_mvp_eval_lba_real_20261022",
+  "prepared_command_after_confirmation": "node scripts/eval/local-business-registration/register-local.cjs --apply-confirmed --uri mongodb://127.0.0.1:27017/skillomate_mvp_eval_lba_real_20261022",
+  "execution_requires_explicit_confirmation": true,
+  "registration_free_evaluation": {
+    "no_production_registration_needed": true,
+    "http_pipeline_requires_local_course_record": true,
+    "reason": "The existing tutor resolves a published Course and active entitlement before protected retrieval. Standalone file retrieval alone cannot replace actual HTTP authorization checks.",
+    "current_launcher_caveat": "Resolved: checksum-bound registration-plan mode loads and verifies the pre-registered actual-ID localhost course. Dummy seeding is disabled for a course pack with actualCourseId.",
+    "paid_inference_requires_separate_explicit_approval": true
+  },
+  "planned_sequence": [
+    "Confirm the isolated local clone operation before executing any writes.",
+    "Add the existing misspelled slug as a local pack alias while retaining the canonical alias; do not change the remote catalog.",
+    "Use the real course/video IDs and URLs from the checksum-bound snapshot in the isolated test database.",
+    "Reuse existing synthetic-user authentication and entitlements; never bypass authorization.",
+    "Keep paid providers disabled until separately approved."
+  ],
+  "execution": {
+    "user_confirmed": true,
+    "executed_at_utc": "2026-10-22T13:05:53.845365+00:00",
+    "target": "mongodb://127.0.0.1:27017/skillomate_mvp_eval_lba_real_20261022",
+    "registered_actual_course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+    "registered_real_lessons": 10,
+    "remote_writes": false
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "checkedAt": "2026-10-25T11:38:07.209Z",
+  "backendUrl": "http://127.0.0.1:3129",
+  "simulator": {
+    "backendUrl": "http://127.0.0.1:3129",
+    "authenticated": true,
+    "userId": "6addcefc5d47d548973c29b9",
+    "activeCourseId": "6ad9fe8ed0076b8d5e3b4f6d",
+    "entitlementState": "ACTIVE",
+    "courseIndexed": true,
+    "messages": [
+      {
+        "role": "assistant",
+        "content": "Ask anything from your indexed courses. I can search across all course lessons.",
+        "failed": false
+      }
+    ],
+    "conversationId": "nai-1792927883651-qstfp5d"
+  },
+  "backendReady": true,
+  "isolatedDatabaseReady": true,
+  "updatedCodeLoaded": true,
+  "providerKeyConfigured": true,
+  "model": "google/gemini-2.5-flash",
+  "casesSHA256": "810383c9c7688b3a330c5432454ef01029ef3c65c57190b44c4908d78853f068",
+  "approved": false,
+  "providerAttempts": 0,
+  "maximumProviderAttempts": 4,
+  "priorLedgersPreserved": true,
+  "remainingBlocker": "Explicit approval required before sending either frozen question."
+}

@@ -1,0 +1,28 @@
+{
+  "ok": true,
+  "value": {
+    "results": [
+      {
+        "name": "hook writing message",
+        "answer": "Approved exact prompt:\n\n```text\n  Mera niche: [niche, jaise home cooking]\n  Meri audience: [kaun, jaise 18–30 saal ke hostel students]\n  Reel ka topic: [topic]\n  Hook type: [curiosity / pattern interrupt / bold / question / story / visual / list / POV]\n\n  Is topic ke liye is hook type ke 10 alag hooks likho. Har hook 1–2 lines ka ho, Hinglish\n  mein, jaise dost bolta hai. Hook jhootha promise na kare — jo bole, reel mein deliver ho\n  sake. Har hook ke saath pehle frame mein kya dikhe, woh bhi ek line mein likho.\n```",
+        "provider": "course-knowledge-rule",
+        "templateId": "viral-hook-formula:exact-template:025",
+        "retrievedCourseIds": [
+          "6ae1b4694e1af14d4adc9e2b"
+        ]
+      },
+      {
+        "name": "hook comparison message",
+        "answer": "Approved exact prompt:\n\n```text\n  Ye mere 2 hooks hain same topic ke liye:\n  A: [hook A]\n  B: [hook B]\n  Dono ko 1–10 score do: scroll rokne ki power, clarity, aur promise reel mein deliver ho\n  sakta hai ya nahi. Phir better wala aur strong banao.\n```",
+        "provider": "course-knowledge-rule",
+        "templateId": "viral-hook-formula:exact-template:026",
+        "retrievedCourseIds": [
+          "6ae1b4694e1af14d4adc9e2b",
+          "6ad9fe8ed0076b8d5e3b4f6d"
+        ]
+      }
+    ],
+    "paidProviderCalls": 0,
+    "inferenceEnabled": false
+  }
+}

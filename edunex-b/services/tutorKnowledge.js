@@ -1,5 +1,7 @@
 const fs = require('node:fs');
 const coursePacks = require('./courseKnowledgePacks');
+const { isBusinessPack, businessCreativeRequest, creativeRecordAllowed } = require('./businessCreativeRequest');
+const { courseTutorRequest } = require('./courseTutorRequest');
 const { COURSE_PACKS, packFor, findPackTemplate, lessonNumber: packLessonNumber } = coursePacks;
 const path = require('node:path');
 const { PRODUCT_SLUGS, PRODUCT_RECORDS, findProductTemplate, wantsProductPrompt, wantsProductScene, productRequestContext } = require('./productTutorKnowledge');
@@ -237,12 +239,23 @@ function retrieveKnowledge({ courses, message, history = [], includeMaterials = 
   const matchingLessons = (owner?.videos || []).filter(video => video === activeLesson
     || (video._id != null && activeLesson?._id != null && String(video._id) === String(activeLesson._id)));
   activeLesson = matchingLessons.length === 1 ? matchingLessons[0] : null;
+  const businessRequest = isBusinessPack(packFor(owner)) ? businessCreativeRequest(message, history) : null;
+  const businessContract = isBusinessPack(packFor(owner)) ? coursePacks.buildBusinessContract({message,history,course:owner,authorized:materialAccess}) : null;
+  const tutorRequest = packFor(owner) ? courseTutorRequest(message, history) : null;
+  const customRequest = ['troubleshooting', 'custom_solution'].includes(tutorRequest?.mode);
+  const packTemplate = findPackTemplate(packFor(owner), message, history);
+  const creativeRequest = packTemplate ? null : businessRequest;
   const candidates = searchableCourses.flatMap(course => [
     { title: course.title, heading: 'Course overview', content: `${course.title}\n${course.description || ''}`, course, kind: 'course-overview' },
-    ...(course.videos || []).map(video => ({ title: course.title, heading: video.title, content: `${video.title}\n${video.description || ''}${materialAccess && sameCourse(course, owner) && video.examplePrompt ? `\nExample prompt: ${video.examplePrompt}` : ''}`, course, active: video === activeLesson, kind: 'lesson-overview' })),
+    ...(course.videos || []).map(video => ({ title: course.title, heading: video.title, content: `${video.title}\n${video.description || ''}${!creativeRequest && !customRequest && materialAccess && sameCourse(course, owner) && video.examplePrompt ? `\nExample prompt: ${video.examplePrompt}` : ''}`, course, active: video === activeLesson, kind: 'lesson-overview' })),
   ]);
   const normalizeTitle = value => String(value || '').toLowerCase().replace(/^\s*lesson\s*\d+\s*[—:–-]?\s*/i, '').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
-  const lessonNumber = String(activeLesson?.title || '').match(/^\s*lesson\s+(\d+)\b/i)?.[1];
+  // Runtime registration may bind real catalog lesson IDs whose displayed
+  // titles differ from the authoritative knowledge headings. The active lesson
+  // has already been resolved against the server-owned course above.
+  const registeredLessonNumber = activeLesson?._id && packFor(owner)?.lessonBindings?.[String(activeLesson._id)];
+  const lessonNumber = String(activeLesson?.title || '').match(/^\s*lesson\s+(\d+)\b/i)?.[1]
+    || (registeredLessonNumber ? String(registeredLessonNumber) : null);
   if (materialAccess) {
     if (activeLesson?.notes && activeCourse) candidates.push({
       title: activeCourse.title, heading: `${activeLesson.title} — Lesson notes`, content: String(activeLesson.notes).slice(0, 12000),
@@ -263,13 +276,13 @@ function retrieveKnowledge({ courses, message, history = [], includeMaterials = 
     lessonNumber: requestedLessonNumberFromText(activeLesson?.title) || conversationContext.lessonNumber }) : null;
   const requestedLessonNumber = requestContext?.lessonNumber
     || (packFor(owner) ? packLessonNumber(message) : isAiFilmmakingCourse(owner) ? filmmakingLessonNumber(message) : null)
+    || registeredLessonNumber
     || requestedLessonNumberFromText(`${message}\n${retrievalQuery}`);
   const followUp = currentTerms.length < 3 || /\b(that|this|same|previous|example|simpler|elaborate|continue|quiz|samjhao|bhi|iska|uska|then|now)\b|तो|उसका|इसका/i.test(message);
   // User turns carry product facts; assistant prose must not invent a new retrieval entity.
-  const recent = followUp ? (productScope ? history.filter(item => item.role === 'user').slice(-2) : history.slice(-4)).map(item => item.content).join(' ') : '';
+  const recent = followUp ? (productScope || creativeRequest || customRequest ? history.filter(item => item.role === 'user').slice(-2) : history.slice(-4)).map(item => item.content).join(' ') : '';
   const template = productScope && (wantsProductPrompt(message) || wantsProductScene(message))
     ? findProductTemplate(message, wantsProductPrompt(message)?history:[]) : null;
-  const packTemplate = findPackTemplate(packFor(owner), message, history);
   const workflowIntent = /workflow|steps|settings|references|how (?:do|does|can|to)|तरीका|सेटिंग|kaise|tareeka/i.test(message);
   const weights = new Map();
   for (const word of terms(recent)) weights.set(word, 0.3);
@@ -278,13 +291,22 @@ function retrieveKnowledge({ courses, message, history = [], includeMaterials = 
     if (productScope && group.includes('photoshoot')) continue;
     if (group.some(word => weights.has(word))) for (const word of group) if (!weights.has(word)) weights.set(word, 0.45);
   }
-  const indexed = candidates.map(candidate => ({ ...candidate, tokens: terms(`${candidate.heading} ${candidate.content} ${candidate.searchTerms || ''} ${candidate.translations?.english || ''}`) }));
+  const indexed = candidates.filter(candidate => creativeRecordAllowed(candidate, creativeRequest)
+    && (!packFor(owner)?.retrieval?.explicitAssetsOnly || tutorRequest?.copyRequested
+      || !['exact-template', 'example-answers'].includes(candidate.contentType)
+      || (candidate.contentType === 'example-answers' && /\bexamples?\b|उदाहरण/iu.test(message)))
+    && (!businessContract || candidate.contentType !== 'course-rules')
+    && (!businessContract || tutorRequest.copyRequested || !['exact-template','example-answers'].includes(candidate.contentType))
+    && (businessContract?.task !== 'planning' || !candidate.lessonNumber || [2,6,7,8,9].includes(candidate.lessonNumber))
+    && (!customRequest || tutorRequest.copyRequested || candidate.contentType !== 'exact-template'))
+    .map(candidate => ({ ...candidate, tokens: terms(`${candidate.heading} ${candidate.content} ${candidate.searchTerms || ''} ${candidate.translations?.english || ''}`) }));
   const frequencies = new Map();
   for (const doc of indexed) for (const term of new Set(doc.tokens)) frequencies.set(term, (frequencies.get(term) || 0) + 1);
   const ranked = indexed.map(doc => {
     const candidateLesson=doc.lessonNumber || requestedLessonNumberFromText(doc.heading);
+    const businessPlanningBoost = businessContract?.task === 'planning' && [2,6,7,8].includes(candidateLesson) ? 60 : 0;
     const contradictsExplicitLesson=productScope && requestContext.explicitLesson && candidateLesson && candidateLesson!==requestedLessonNumber;
-    let score = doc.active && !contradictsExplicitLesson ? (doc.kind === 'lesson-notes' ? 120 : 100) : 0;
+    let score = (doc.active && !contradictsExplicitLesson ? (doc.kind === 'lesson-notes' ? 120 : 100) : 0) + businessPlanningBoost;
     const lessonMatches = requestedLessonNumber && (doc.lessonNumber === requestedLessonNumber || doc.lessonNumbers?.includes(requestedLessonNumber));
     if (lessonMatches) score += 30;
     if (filmmakingWorkflow && doc.kind === 'course-material' && doc.sourceDocument === 'training.txt') {
@@ -342,6 +364,8 @@ function retrieveKnowledge({ courses, message, history = [], includeMaterials = 
     materialsAvailable: materialAccess && ([...DOCUMENTED_COURSE_SLUGS].some(slug => bySlug.has(slug)) || Boolean(activeLesson?.notes)),
     courseScoped: scopedToActiveCourse,
     retrievalQuery,
+    ...(creativeRequest ? { businessRequest: creativeRequest } : {}),
+    ...(tutorRequest ? { tutorRequest } : {}),
     ...(filmmakingWorkflow ? { filmmakingWorkflow } : {}),
     ...(requestContext ? { requestContext } : {}),
     debugChunks: selected.map((doc, index) => ({

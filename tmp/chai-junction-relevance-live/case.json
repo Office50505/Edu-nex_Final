@@ -1,0 +1,23 @@
+{
+  "suite": "LBA-IOS-CREATIVE-RELEVANCE-FINAL",
+  "transport": "ios-simulator",
+  "model": "google/gemini-2.5-flash",
+  "provider_url": "https://fal.run/openrouter/router/openai/v1/chat/completions",
+  "backend_url": "http://127.0.0.1:3129",
+  "course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+  "user_id": "6addcefc5d47d548973c29b9",
+  "conversation_id": "nai-1792929329693-ddv62zf",
+  "max_provider_attempts": 2,
+  "initial_history": [
+    {
+      "role": "assistant",
+      "content": "Ask anything from your indexed courses. I can search across all course lessons."
+    }
+  ],
+  "turns": [
+    {
+      "number": 1,
+      "query": "Create a general Instagram poster prompt in English for Chai Junction in Vijay Nagar, Indore. We sell chai, Maggi and sandwiches. Use the real shop photo and preserve the actual shop identity and signboard. Include the supplied products. No festival themes, discounts, offers, prices or unsupported promotional claims. Return only the ready-to-use English poster prompt."
+    }
+  ]
+}

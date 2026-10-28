@@ -1,0 +1,69 @@
+{
+  "checkedAt": "2026-10-28T08:45:56.841Z",
+  "backendReady": true,
+  "isolatedDatabaseReady": true,
+  "updatedCodeLoaded": true,
+  "simulatorAuthenticated": true,
+  "simulatorCourseEntitled": true,
+  "sourceRevisionSHA256": "a293217e727bd7d80bd826ad1dedf8f2b9ce5f2cdec995121aaaf13f1bd632ce",
+  "protections": {
+    "normalAuthentication": true,
+    "normalRateLimiting": true,
+    "billingClassifier": true,
+    "advertisingQuality": true,
+    "courseIsolation": true,
+    "durableAttemptAccounting": true
+  },
+  "history": {
+    "conversationCount": 8,
+    "preservedConversations": [
+      {
+        "id": "nai-1793102760928-nz62stp",
+        "messages": 7
+      },
+      {
+        "id": "nai-1793102493764-h9nmz84",
+        "messages": 7
+      },
+      {
+        "id": "nai-1792930708332-k0fla4i",
+        "messages": 11
+      },
+      {
+        "id": "nai-1792929329693-ddv62zf",
+        "messages": 5
+      },
+      {
+        "id": "nai-1792927883651-qstfp5d",
+        "messages": 5
+      },
+      {
+        "id": "nai-1792927546022-u7f1rfw",
+        "messages": 3
+      },
+      {
+        "id": "nai-1792927251367-n5wzhtv",
+        "messages": 9
+      }
+    ],
+    "currentMessageCount": 1
+  },
+  "backendUrl": "http://127.0.0.1:3129",
+  "currentConversationId": "nai-1793177148490-ask1bsp",
+  "arbitraryQuestionsAndConversationsAllowed": true,
+  "previousLedgersPreserved": true,
+  "providerKeyConfigured": true,
+  "sessionId": "8cbe4f2f-1fa9-4bd3-8fdf-2657dc2ead18",
+  "sessionSHA256": "4f6d21deee452eb811cb5ec5e3dfb003e41016559ecefaee1343cdf9ed3514ce",
+  "approvalStatus": "manual_qa_awaiting_approval",
+  "approved": false,
+  "providerAttempts": 0,
+  "maximumProviderAttempts": 12,
+  "remainingProviderAttempts": 12,
+  "expiresAt": null,
+  "durationMinutes": 60,
+  "model": "google/gemini-2.5-flash",
+  "userId": "6addcefc5d47d548973c29b9",
+  "courseId": "6ad9fe8ed0076b8d5e3b4f6d",
+  "blocker": "manual_qa_awaiting_approval"
+}

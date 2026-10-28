@@ -1,0 +1,18 @@
+{
+  "suite": "LBA-MANUAL-02 single-question live retest",
+  "model": "google/gemini-2.5-flash",
+  "provider_url": "https://fal.run/openrouter/router/openai/v1/chat/completions",
+  "course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+  "user_id": "6addcefc5d47d548973c29b9",
+  "max_provider_attempts": 2,
+  "cases": [
+    {
+      "id": "LBA-MANUAL-02",
+      "turns": [
+        {
+          "query": "Meri shop ka naam Chai Junction hai, Vijay Nagar Indore mein hai. Hum chai, Maggi aur sandwiches bechte hain. Abhi koi discount nahi chal raha. Mujhe ek simple Instagram poster ka prompt do, English mein. Real shop photo use karna hai, aur koi fake offer ya price add mat karna."
+        }
+      ]
+    }
+  ]
+}

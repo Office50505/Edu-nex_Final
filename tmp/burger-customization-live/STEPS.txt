@@ -1,0 +1,31 @@
+Prepared single-question customized troubleshooting test. No paid calls have been authorized or executed.
+
+Working directory:
+/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled
+
+Readiness (no provider calls):
+node tmp/burger-customization-live/control.cjs check
+
+Authorize ONLY after explicit approval:
+node tmp/burger-customization-live/control.cjs approve --sha256 b2c3a24657137278d64c0fd6695aebb9591c19866da916e9a37cfe0b7104689b
+
+This command grants at most 2 TOTAL provider attempts, including failures/retries/repairs, for 30 minutes from issuance. It does not send the question. Normally one attempt is expected. The existing fsync-before-transport ledger is separate from every previous test and cannot be reset or renewed. Approval automatically closes after this single native response.
+
+Model: google/gemini-2.5-flash
+Backend: http://127.0.0.1:3129
+Course: 6ad9fe8ed0076b8d5e3b4f6d
+Prepared native conversation: nai-1792930708332-k0fla4i
+Question SHA-256 (UTF-8 text without the outer quotation marks or a trailing newline): 09608b1745acc8d4e8768a2d3b8d392eab8e0562c5968acb31d4a9e82b869f2d
+
+After authorization: keep this chat open. Do not switch account/course, start another chat or restart the app. Paste and send this exact question ONCE:
+
+Maine apne restaurant ke burger ki real photo Google Flow mein upload ki. AI lighting toh improve kar raha hai, lekin burger mein extra cheese aur lettuce add kar deta hai, bun ka shape bhi change ho jata hai. Mujhe sirf photo ki lighting, shadows aur sharpness improve karni hai. Burger bilkul original jaisa rehna chahiye. Kya karu? Ek customized prompt bhi do.
+
+Wait for the completed answer. If it errors or says unavailable, stop. Do not repeatedly press Send.
+
+Read-only review (does not submit messages, authorize calls, refresh authentication or write reports):
+node tmp/burger-customization-live/review.cjs
+
+The durable pipeline_traces.jsonl records the actual request, scoped context, provider payload/response, latency and failures. The review prints the exact answer, native/backend correspondence and contextual review signals. Read the actual instructions; mentioning cheese/lettuce as things NOT to add is not itself a violation. Check original ingredients, bun shape, colours and proportions; only lighting/shadows/sharpness should improve. Require a ready-to-use custom prompt, practical recovery advice, and no promise of perfect preservation. Generic templates, course summaries, billing replies and fallback/policy replacements cannot pass as a genuine live provider answer.
+
+preflight-provider-payload.json is explicitly OFFLINE assembly evidence, not an actual provider answer.

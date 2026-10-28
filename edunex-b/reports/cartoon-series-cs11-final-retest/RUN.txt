@@ -1,0 +1,27 @@
+Final CS-11 retest preparation only. Working directory: Untitled/edunex-b.
+
+The v2 cases and grader are unchanged. Only CS-11 and its two conversation turns
+are selected. The updated Cartoon scene-participation policy was inspected in
+the real chat route's intercepted provider payload; no provider calls were made.
+Readiness traffic is labelled preparation in pipeline_traces.jsonl. Its blocked
+transport attempts do not consume the provider budget.
+
+Historical reports/cartoon-series-cs11-v2 and its exhausted four-attempt ledger
+are preserved. This final-retest directory has its own independent approval and
+persistent attempt ledger. Never delete, truncate or reset either ledger.
+
+Current fixture was started with:
+SKILLOMATE_EVAL_CARTOON_FIXTURE=true SKILLOMATE_EVAL_COURSE_PACK=ai-cartoon-series SKILLOMATE_EVAL_CASES=scripts/eval/cartoon-series-fast15-cases-v2.json SKILLOMATE_EVAL_REPORT=reports/cartoon-series-cs11-final-retest node scripts/eval/mvp-local-backend.cjs
+
+Optional read-only approval readiness check (does not create approval):
+python3 -B reports/cartoon-series-cs11-final-retest/create-approval.py
+
+Explicit approval-creation command; maximum four total attempts in THIS report,
+expires 30 minutes after command execution; refuses existing approval:
+python3 -B reports/cartoon-series-cs11-final-retest/create-approval.py --create
+
+Live command, only after explicit approval creation:
+python3 -B chatbot_eval.py --cases scripts/eval/cartoon-series-fast15-cases-v2.json --report reports/cartoon-series-cs11-final-retest --mode live --only CS-11
+
+The live command makes paid provider requests. It was NOT executed during
+preparation. No approval file was created during preparation.

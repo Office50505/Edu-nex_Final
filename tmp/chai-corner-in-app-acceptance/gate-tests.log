@@ -1,0 +1,32 @@
+✔ native gate rejects no approval before transport (3.584875ms)
+✔ native gate rejects expired approval before transport (1.108083ms)
+✔ native gate rejects wrong native conversation before transport (1.208833ms)
+✔ native gate rejects wrong account before transport (1.314084ms)
+✔ native gate rejects wrong active course before transport (0.880958ms)
+✔ native gate rejects changed exact question before transport (0.950834ms)
+✔ native gate rejects changed model before transport (0.854834ms)
+✔ native gate rejects unrecorded initial history before transport (0.887625ms)
+✔ native gate accepts original app body without terminal headers and preserves exact first answer (14.873541ms)
+✔ native gate keeps the four-attempt ledger through restarts and rejects a fifth attempt (26.071709ms)
+✔ native gate requires a genuine first response and rejects completed-turn replays (1.090708ms)
+✔ offline gate rejects absent approval before provider transport (3.07825ms)
+✔ offline gate rejects expired approval before provider transport (1.142291ms)
+✔ offline gate rejects altered question before provider transport (1.499042ms)
+✔ offline gate rejects wrong user before provider transport (1.039ms)
+✔ offline gate rejects wrong course before provider transport (0.879959ms)
+✔ offline gate rejects different conversation ID before provider transport (0.880708ms)
+✔ offline gate rejects changed model before provider transport (0.89475ms)
+✔ offline gate rejects approval over 30 minutes before provider transport (0.868208ms)
+✔ Turn 2 requires the actual first exchange, not supplied/reconstructed history (10.926834ms)
+✔ four-attempt ledger spans both turns, survives restart and blocks a fifth attempt (29.405084ms)
+✔ provider payload must retain the first actual exchange (0.970708ms)
+✔ changed frozen bytes fail closed (0.71525ms)
+✔ memory review cannot mark fallback or absent provider transport as a genuine test (0.134875ms)
+ℹ tests 24
+ℹ suites 0
+ℹ pass 24
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 95.424375

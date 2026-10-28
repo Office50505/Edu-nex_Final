@@ -1,0 +1,27 @@
+{
+  "suite": "LBA-IOS-LIVE-ACCEPTANCE",
+  "transport": "ios-simulator",
+  "model": "google/gemini-2.5-flash",
+  "provider_url": "https://fal.run/openrouter/router/openai/v1/chat/completions",
+  "backend_url": "http://127.0.0.1:3129",
+  "course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+  "user_id": "6addcefc5d47d548973c29b9",
+  "conversation_id": "nai-1792927883651-qstfp5d",
+  "max_provider_attempts": 4,
+  "initial_history": [
+    {
+      "role": "assistant",
+      "content": "Ask anything from your indexed courses. I can search across all course lessons."
+    }
+  ],
+  "turns": [
+    {
+      "number": 1,
+      "query": "Meri shop Chai Junction hai, Vijay Nagar Indore mein. Hum chai, Maggi aur sandwiches bechte hain. Real shop photo se Instagram poster ka English prompt banao. Koi fake price ya discount mat add karna."
+    },
+    {
+      "number": 2,
+      "query": "Actually shop ka naam Chai Corner hai. Ab usi shop ke liye short Hinglish Instagram caption do. Koi discount mention mat karna."
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "status": "staged_pending_verified_published_identity",
+  "source_files": [
+    {
+      "file": "training.txt",
+      "sha256": "726c8fd090049d76b3de090c317fe5ed61c5d37354ed50ecd03211ab140854ad"
+    },
+    {
+      "file": "AI_Cartoon_Series_Course_Notes.pdf",
+      "sha256": "4496bb48c5ad550fc7fc77e9a8406d997c2eb666a97dbdc2b5209ad1bf3a765f"
+    },
+    {
+      "file": "AI_Cartoon_Series_All_Prompts.pdf",
+      "sha256": "1a35c8c0c1ba6473e3f0d684bcc9cf53a6a07c6423830e0d3b0bd7c072330e75"
+    }
+  ],
+  "lessons_indexed": 8,
+  "course_messages_indexed": 17,
+  "master_style_indexed": true,
+  "exact_prompt_authority": "AI_Cartoon_Series_All_Prompts.pdf",
+  "original_training_bytes_preserved": true,
+  "active_registry_binding": false,
+  "actual_course_id": null,
+  "actual_published_slug": null
+}

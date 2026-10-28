@@ -7,7 +7,7 @@ function backend(options = {}) {
   const routes = {};
   const calls = [];
   const authCalls = [];
-  const query = { select() { return this; }, populate() { return this; }, sort() { return this; }, limit() { return this; }, async lean() { return options.courses || []; } };
+  const query = { select() { return this; }, populate() { return this; }, sort() { return this; }, limit() { return this; }, async lean() { if (options.contextError) throw options.contextError; return options.courses || []; } };
   const sandbox = {
     require(name) {
       if (name === 'node:crypto') return require('node:crypto');
@@ -40,6 +40,7 @@ function backend(options = {}) {
       }
       if (name === './productTutorState') return require('../services/productTutorState');
       if (name === './tutorProvider') return require('../services/tutorProvider');
+      if (name.endsWith('/tutorAvailability')) return require('../services/tutorAvailability');
       if (name === './productTutorResponse') return require('../services/productTutorResponse');
       if (name.endsWith('/subscriptionAccess')) return require('../services/subscriptionAccess');
       if (name.endsWith('/AppleSubscription')) return { findOne: () => ({ lean: async () => options.apple || null }) };
@@ -53,6 +54,8 @@ function backend(options = {}) {
     module: { exports: {} }, AbortSignal, process: { env: { FAL_KEY: options.noKey ? '' : 'test' } }, console,
     fetch: async (_, request) => {
       calls.push(JSON.parse(request.body));
+      if (options.providerHook) await options.providerHook(calls.at(-1), calls.length);
+      if (options.providerError) throw options.providerError;
       if (options.fail || options.failAt?.includes(calls.length)) throw new Error("Provider offline");
       return { ok: true, headers: { get: () => 'application/json' }, json: async () => ({ choices: [{ message: { content: options.replies?.[calls.length-1] ?? options.reply ?? 'Example answer' } }] }) };
     },
@@ -91,6 +94,7 @@ function backend(options = {}) {
   }
   const rawChat = body => request('POST', '/chat', body);
   return {
+    service: serviceModule.exports,
     calls,
     authCalls,
     request,

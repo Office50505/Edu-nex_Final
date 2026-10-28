@@ -1,0 +1,23 @@
+Nex AI shared-pipeline manual QA — ready, not approved.
+
+Backend: http://127.0.0.1:3129
+Updated source revision: 80f618b3ece4d67e4a244cc8190173fde8c50c5b4eb783286b383fbb824a62fa
+Simulator: authenticated, course entitlement ACTIVE, eight conversations preserved.
+Model: google/gemini-2.5-flash
+Budget: 8 of 8 provider attempts remaining.
+Expiry: 45 minutes FROM APPROVAL, shared across questions, follow-ups and conversations.
+Failures, retries and repairs each consume the same durable budget. Never reset this ledger.
+
+Approval command (does not submit a question or make a provider call):
+node "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/tmp/nex-shared-live-20261028/control.cjs" approve --sha256 d7cf6a826c781a3179aafa42026c2b0221fa4fd37c2a12d3dd18acf9b883482d
+
+Read-only readiness:
+node "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/tmp/nex-shared-live-20261028/control.cjs" check
+
+Latest raw provider response(s), validation, and final delivery:
+node "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/tmp/nex-shared-live-20261028/inspect.cjs" --last
+All requests: use --all instead of --last.
+No records exist yet; no tutor questions were submitted during preparation.
+
+Two compatibility failures rechecked against baseline and current source: same failures, no new regressions.
+Current app authentication works; an app restart may still require signing in again due to the pre-existing Keychain limitation.

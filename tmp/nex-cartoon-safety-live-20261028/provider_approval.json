@@ -1,0 +1,13 @@
+{
+  "approved": true,
+  "approval_id": "108f0ee0-fb59-4ba0-ba09-d93289d96520",
+  "session_id": "2ce11bf4-9b03-48a2-b546-eb15b3854623",
+  "session_sha256": "ef531ff59f15a4314f6fc03105a8c22dee437da5814ee42ec5df31a5ea37882b",
+  "environment_sha256": "89397ecccedf7a7995bebdce811207526ecb7530b451a77fa2d89c51fedc54d5",
+  "model": "google/gemini-2.5-flash",
+  "user_id": "6addcefc5d47d548973c29b9",
+  "course_id": "6ae09ebee4ac0b60c08276bc",
+  "max_calls": 4,
+  "issued_at": "2026-10-28T09:52:22.350Z",
+  "expires_at": "2026-10-28T10:22:22.350Z"
+}

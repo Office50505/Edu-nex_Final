@@ -1,0 +1,46 @@
+{
+  "readiness": {
+    "checkedAt": "2026-10-25T12:48:14.587Z",
+    "backendReady": true,
+    "isolatedDatabaseReady": true,
+    "updatedCodeLoaded": true,
+    "simulatorAuthenticated": true,
+    "simulatorCourseEntitled": true,
+    "backendUrl": "http://127.0.0.1:3129",
+    "currentConversationId": "nai-1792930708332-k0fla4i",
+    "arbitraryQuestionsAndConversationsAllowed": true,
+    "previousLedgersPreserved": true,
+    "providerKeyConfigured": true,
+    "sessionId": "436ff6f9-3618-4256-b9b6-bc30deb89586",
+    "sessionSHA256": "d8fddc77fa4b6cd47de339d10e467444139701a94411638ad04f0d456b3ca26a",
+    "approvalStatus": "manual_qa_awaiting_approval",
+    "approved": false,
+    "providerAttempts": 0,
+    "maximumProviderAttempts": 30,
+    "remainingProviderAttempts": 30,
+    "expiresAt": null,
+    "durationMinutes": 60,
+    "model": "google/gemini-2.5-flash",
+    "userId": "6addcefc5d47d548973c29b9",
+    "courseId": "6ad9fe8ed0076b8d5e3b4f6d",
+    "blocker": "manual_qa_awaiting_approval"
+  },
+  "tests": {
+    "gate": {
+      "tests": 34,
+      "pass": 34,
+      "fail": 0
+    },
+    "isolation": {
+      "tests": 38,
+      "pass": 38,
+      "fail": 0
+    }
+  },
+  "totalPassed": 72,
+  "previousArtifactsPreserved": 82,
+  "actualProviderAttempts": 0,
+  "approvalGranted": false,
+  "httpChecks": "PASS: auth, account/course denial, varied messages/history, honest pending-approval errors",
+  "productionGateDependency": false
+}

@@ -1,0 +1,41 @@
+{
+  "ok": true,
+  "value": {
+    "sourceRevisionSHA256": "d722570747a60a5dcd578559db2d72c6273896ed16d13ca46a43cb646290fd39",
+    "backendRevisionMatchesConfiguredEndpoint": true,
+    "backendUrl": "http://127.0.0.1:3129",
+    "authenticated": true,
+    "userId": "6addcefc5d47d548973c29b9",
+    "activeCourseId": "6ae1b4694e1af14d4adc9e2b",
+    "entitlementState": "ACTIVE",
+    "entitlementSource": "admin",
+    "inferenceEnabled": false,
+    "registeredLocalPacks": [
+      {
+        "courseId": "6ad9fe8ed0076b8d5e3b4f6d"
+      },
+      {
+        "domain": "viral-hook-formula",
+        "courseId": "6ae1b4694e1af14d4adc9e2b"
+      },
+      {
+        "domain": "cartoon-series",
+        "courseId": "6ae09ebee4ac0b60c08276bc"
+      }
+    ],
+    "courseIndexed": true,
+    "messages": [
+      {
+        "role": "assistant",
+        "content": "Ask anything from your indexed courses. I can search across all course lessons.",
+        "failed": false
+      }
+    ],
+    "conversationId": "nai-1793182640591-reyidt3",
+    "history": {
+      "conversationCount": 1,
+      "preservedConversations": [],
+      "currentMessageCount": 1
+    }
+  }
+}

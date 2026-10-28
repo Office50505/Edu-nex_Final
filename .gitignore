@@ -29,6 +29,13 @@ output/pdf/
 tmp/pdfs/rendered-*/
 tmp/pdfs/generate_ios_build*_report.py
 
+# Isolated local QA secrets, databases, logs and simulator app copies
+/tmp/**/.runtime/
+
+# Approved course source PDFs are inputs, not generated reports
+!edunex-b/knowledge/*/*.pdf
+!edunex-b/course-knowledge/*/*.pdf
+
 # Local chatbot evaluation output and private authorization/runtime state
 edunex-b/reports/
 edunex-b/last_results.json

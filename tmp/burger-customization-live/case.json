@@ -1,0 +1,32 @@
+{
+  "suite": "LBA-IOS-CUSTOMIZED-TROUBLESHOOTING-FINAL",
+  "transport": "ios-simulator",
+  "model": "google/gemini-2.5-flash",
+  "provider_url": "https://fal.run/openrouter/router/openai/v1/chat/completions",
+  "backend_url": "http://127.0.0.1:3129",
+  "course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+  "user_id": "6addcefc5d47d548973c29b9",
+  "conversation_id": "nai-1792930708332-k0fla4i",
+  "max_provider_attempts": 2,
+  "initial_history": [
+    {
+      "role": "assistant",
+      "content": "Ask anything from your indexed courses. I can search across all course lessons."
+    }
+  ],
+  "question_sha256": "09608b1745acc8d4e8768a2d3b8d392eab8e0562c5968acb31d4a9e82b869f2d",
+  "turns": [
+    {
+      "number": 1,
+      "query": "Maine apne restaurant ke burger ki real photo Google Flow mein upload ki. AI lighting toh improve kar raha hai, lekin burger mein extra cheese aur lettuce add kar deta hai, bun ka shape bhi change ho jata hai. Mujhe sirf photo ki lighting, shadows aur sharpness improve karni hai. Burger bilkul original jaisa rehna chahiye. Kya karu? Ek customized prompt bhi do."
+    }
+  ],
+  "expected_behavior": [
+    "Identify unwanted alterations of the photographed burger as the problem.",
+    "Improve only lighting, shadows and sharpness while preserving original ingredients, bun shape, colours and proportions.",
+    "Do not add extra cheese, lettuce or any other ingredients.",
+    "Provide a customized ready-to-use image-editing prompt and practical recovery advice if alterations recur.",
+    "Avoid generic template copying, unrelated course summaries and billing.",
+    "Acknowledge that AI cannot guarantee perfect preservation."
+  ]
+}

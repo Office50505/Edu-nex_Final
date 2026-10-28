@@ -1,0 +1,30 @@
+Final Viral Hook grounding live QA: READY, NOT APPROVED.
+
+Backend http://127.0.0.1:3129
+Course 6ae1b4694e1af14d4adc9e2b / viral-hook-formula
+Full source revision 7c4d89a46b9b31020f0527fa2c1d3c8ac1c30d00e218dbd12bbe890bc28f7b09
+Corrected product revision 72e24a65ba7cc3e86cd6e32058f63c347dcefe3f91acffa702699f13779fd378
+Fresh conversation nai-1793185314863-7wl6mci
+Unfamiliar film-roll question is in the simulator composer, NOT SUBMITTED.
+Old conversation and all 47 prior approval/accounting artifacts preserved.
+
+Budget: 3 TOTAL provider attempts including retries and repairs.
+Used: 0. Remaining: 3. No approval exists. No timer has started.
+Expiry: 30 minutes FROM APPROVAL, after all readiness checks complete.
+
+Only when ready to begin, run:
+node "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/tmp/nex-viral-hook-final-live-20261028/control.cjs" approve --sha256 beee2551dcb5ed7b901db2c0fd64b53819fececb558ada78533aea7eb82e0f7b
+
+This command authorizes the session and starts the timer; it sends no AI question.
+Then manually press Send for the already prepared question in the simulator.
+Follow-ups share the same budget. A repair or retry consumes another attempt.
+Do not reuse or reset previous approvals or ledgers.
+
+Inspect raw generation and repair responses, validation issues/edits and final delivery:
+node "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/tmp/nex-viral-hook-final-live-20261028/inspect.cjs" --last
+Use --all instead of --last for every exchange.
+
+Read-only current budget/status:
+node "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/tmp/nex-viral-hook-final-live-20261028/control.cjs" status
+
+No paid calls, production changes, deployment, commits or pushes during preparation.

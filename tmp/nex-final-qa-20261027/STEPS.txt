@@ -1,0 +1,21 @@
+Final local manual acceptance QA — prepared, NOT authorized.
+
+Backend: http://127.0.0.1:3129
+Model: google/gemini-2.5-flash
+Frozen corrected source revision: 30323d24405b9489bcec2e8f1c671fafcb587c4f76e54db539b872c91e73efdf
+
+Exact approval command (approves the session; does not execute a provider call):
+node "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/tmp/nex-final-qa-20261027/control.cjs" approve --sha256 1bbf1ec3377f4deba53c8cfbc1efacc746128e29dddd310c7bf23919d570d4a5
+
+After explicit approval, different questions, follow-ups and new chats share the SAME 12-attempt budget for 60 minutes from issuance. Failures, retries and repairs each consume an attempt. The counter and expiry persist across restarts. No approval per question. The original ledger must never be reset, deleted or renewed.
+
+Read-only readiness/status:
+node "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/tmp/nex-final-qa-20261027/control.cjs" check
+node "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/tmp/nex-final-qa-20261027/control.cjs" status
+
+Backend restart, preserving this exact profile and accounting:
+node "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/tmp/nex-final-qa-20261027/server.cjs"
+
+Simulator: original development app restored and signed in. Missing Keychain entitlement prevents saving auth across an app restart; if restarted, sign into the same LOCAL synthetic account again (9000000002 / LocalRetest02!), reselect AI Local Business Ads and open Nex AI. Existing device conversations were preserved. Authentication in the running process is verified; persistence repair remains unresolved. Do not use port 3000 for this QA session.
+
+No acceptance questions were generated or submitted. No real provider attempts have been made. Historical approval and accounting files are unchanged.

@@ -1,0 +1,43 @@
+✔ native gate rejects no approval before transport (2.769666ms)
+✔ native gate rejects expired approval before transport (1.042167ms)
+✔ native gate rejects wrong native conversation before transport (1.203375ms)
+✔ native gate rejects wrong account before transport (0.889125ms)
+✔ native gate rejects wrong active course before transport (0.969875ms)
+✔ native gate rejects changed exact question before transport (0.943083ms)
+✔ native gate rejects changed model before transport (0.925583ms)
+✔ native gate rejects unrecorded initial history before transport (0.893ms)
+✔ native gate accepts original app body without terminal headers and preserves exact first answer (14.455917ms)
+✔ native gate keeps the four-attempt ledger through restarts and rejects a fifth attempt (38.684625ms)
+✔ native gate requires a genuine first response and rejects completed-turn replays (1.009583ms)
+✔ offline gate rejects absent approval before provider transport (2.57375ms)
+✔ offline gate rejects expired approval before provider transport (0.876083ms)
+✔ offline gate rejects altered question before provider transport (1.405209ms)
+✔ offline gate rejects wrong user before provider transport (0.850208ms)
+✔ offline gate rejects wrong course before provider transport (0.969375ms)
+✔ offline gate rejects different conversation ID before provider transport (0.924875ms)
+✔ offline gate rejects changed model before provider transport (0.98075ms)
+✔ offline gate rejects approval over 30 minutes before provider transport (1.044625ms)
+✔ Turn 2 requires the actual first exchange, not supplied/reconstructed history (9.520458ms)
+✔ four-attempt ledger spans both turns, survives restart and blocks a fifth attempt (35.621792ms)
+✔ provider payload must retain the first actual exchange (8.245333ms)
+✔ changed frozen bytes fail closed (0.742792ms)
+✔ memory review cannot mark fallback or absent provider transport as a genuine test (0.128417ms)
+✔ single native gate rejects absent approval (2.202625ms)
+✔ single native gate rejects expired approval (1.04425ms)
+✔ single native gate rejects changed question (1.33175ms)
+✔ single native gate rejects different conversation (0.927375ms)
+✔ single native gate rejects different course (0.955625ms)
+✔ single native gate rejects different account (0.880959ms)
+✔ single native gate rejects different model (0.951792ms)
+✔ single native gate rejects changed initial history (1.032833ms)
+✔ single native gate rejects attempt limit raised to four (6.07775ms)
+✔ single native gate durably permits only two total attempts including a retry (23.769666ms)
+✔ completed native single question cannot be replayed (19.312917ms)
+ℹ tests 35
+ℹ suites 0
+ℹ pass 35
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 106.766416

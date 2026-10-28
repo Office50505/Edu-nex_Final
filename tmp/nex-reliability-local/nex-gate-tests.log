@@ -1,0 +1,21 @@
+✔ offline gate rejects absent approval before provider transport (2.470167ms)
+✔ offline gate rejects expired approval before provider transport (0.73875ms)
+✔ offline gate rejects altered question before provider transport (1.059ms)
+✔ offline gate rejects wrong user before provider transport (0.66475ms)
+✔ offline gate rejects wrong course before provider transport (0.67475ms)
+✔ offline gate rejects different conversation ID before provider transport (0.6495ms)
+✔ offline gate rejects changed model before provider transport (0.685834ms)
+✔ offline gate rejects approval over 30 minutes before provider transport (0.6575ms)
+✔ Turn 2 requires the actual first exchange, not supplied/reconstructed history (6.881375ms)
+✔ four-attempt ledger spans both turns, survives restart and blocks a fifth attempt (17.833666ms)
+✔ provider payload must retain the first actual exchange (0.796833ms)
+✔ changed frozen bytes fail closed (0.625292ms)
+✔ memory review cannot mark fallback or absent provider transport as a genuine test (0.104667ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 72.546792

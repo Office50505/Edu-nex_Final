@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "suite": "NEX-IOS-CARTOON-SAFETY-CORRECTED-QA",
+  "session_id": "2ce11bf4-9b03-48a2-b546-eb15b3854623",
+  "environment": {
+    "nodeEnv": "development",
+    "backendUrl": "http://127.0.0.1:3129",
+    "host": "127.0.0.1",
+    "port": 3129,
+    "database": "mongodb://127.0.0.1:27028/skillomate_lba_final_qa_20261027",
+    "redis": "redis://127.0.0.1:6388/0",
+    "workspaceRoot": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled",
+    "productionConfigLoaded": false,
+    "backgroundJobsEnabled": false
+  },
+  "user_id": "6addcefc5d47d548973c29b9",
+  "course_id": "6ae09ebee4ac0b60c08276bc",
+  "model": "google/gemini-2.5-flash",
+  "provider_url": "https://fal.run/openrouter/router/openai/v1/chat/completions",
+  "max_provider_attempts": 4,
+  "approval_duration_minutes": 30,
+  "allowed_paths": [
+    "/api/ai/chat",
+    "/api/course-ai/chat"
+  ],
+  "questions": "unfrozen",
+  "conversations": "any for the authorized account and course",
+  "source_revision_sha256": "ac975317f86cdca4b9cb9aa27494ff8f467d9234e78c50f72e2c6765fad07ae1",
+  "supersedes_session_id": "ed82feda-a0c9-4999-9e87-df02650d8179"
+}

@@ -10,7 +10,7 @@ function readChat(key, initial = [], now = Date.now()) {
     if (now - entry.updatedAt >= TTL) entries.delete(id);
   }
   let entry = entries.get(key);
-  if (!entry) entry = { messages: [...initial], pending: false, updatedAt: now };
+  if (!entry) entry = { conversationId: `lesson-${now}-${Math.random().toString(36).slice(2, 10)}`, messages: [...initial], pending: false, updatedAt: now };
   entries.delete(key);
   entries.set(key, entry);
   while (entries.size > MAX_CHATS) entries.delete(entries.keys().next().value);

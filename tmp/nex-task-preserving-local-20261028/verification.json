@@ -1,0 +1,120 @@
+{
+  "verifiedAt": "2026-10-28T09:00:42.733542+00:00",
+  "scope": "Task-preserving Local Business Ads pipeline; deterministic verification only",
+  "existingImplementationVerified": [
+    "Server-owned request contract separates task, learner facts, uncertainty, constraints and corrections within the authorized course/conversation.",
+    "Route retains one bounded repair through requestTutorProvider with maxAttempts=1 and the remaining initial 25-second deadline; corrected answer is revalidated.",
+    "Exact approved-template access and course-scoped retrieval remain on their existing authorized paths."
+  ],
+  "changesThisTask": [
+    "Preserve Unicode combining marks and parse natural Hindi names, products, corrections and delivery/price/warranty retractions.",
+    "Carry abbreviated task/format revisions through server-scoped conversation state when rolling history is no longer sufficient.",
+    "Assess claims inside design wording and formatting fields; split affirmative clauses from disclaimers in English and Hindi.",
+    "Apply corrected business identity inside otherwise safe design text.",
+    "Reject an unrelated feedback answer or repair instead of accepting it as the requested poster or marketing plan.",
+    "Exempt only exact approved bytes from validation, rather than a whole containing line.",
+    "Localize correction placeholders and remove redundant grounding/format instructions from the creative-purpose policy."
+  ],
+  "filesModifiedThisTask": [
+    "edunex-b/services/businessRequestContract.js",
+    "edunex-b/services/businessResponsePipeline.js",
+    "edunex-b/services/businessCreativeRequest.js"
+  ],
+  "filesAddedThisTask": [
+    "edunex-b/tests/task-preserving-generalization.test.cjs"
+  ],
+  "newRegressionTests": 16,
+  "newRegressionsFailingBeforeFix": 11,
+  "focusedTests": {
+    "tests": 520,
+    "pass": 520,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "compatibilityTests": {
+    "tests": 581,
+    "pass": 579,
+    "fail": 2,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "preexistingFailures": [
+    {
+      "test": "series facts, exact Master Style and latest corrections survive the rolling window",
+      "file": "edunex-b/tests/cartoon-series.test.cjs",
+      "failure": "Cartoon fixture has no persisted successful session, so saved.courseContext is undefined.",
+      "reproducedWithPreChangeSources": true
+    },
+    {
+      "test": "Skillomate platform questions get deterministic product facts",
+      "file": "edunex-b/tests/tutor-knowledge.test.cjs",
+      "failure": "Ambiguous Refund kab mil sakta hai? returns a platform-versus-business clarification while the older expectation requires a platform refund answer.",
+      "reproducedWithPreChangeSources": true
+    }
+  ],
+  "historicalReplay": {
+    "dental": {
+      "task": "creative_deliverable",
+      "delivery": "deterministic_edit",
+      "remainingIssues": 0,
+      "providerRepairAttempts": 0
+    },
+    "mobile-repair": {
+      "task": "creative_deliverable",
+      "delivery": "deterministic_edit",
+      "remainingIssues": 0,
+      "providerRepairAttempts": 0
+    },
+    "stationery-plan": {
+      "task": "planning",
+      "delivery": "deterministic_edit",
+      "remainingIssues": 0,
+      "providerRepairAttempts": 0
+    },
+    "gift-nest": {
+      "task": "creative_deliverable",
+      "delivery": "original",
+      "remainingIssues": 0,
+      "providerRepairAttempts": 0
+    }
+  },
+  "protectionsVerified": [
+    "Task preservation and factual grounding",
+    "Course/conversation memory and latest corrections",
+    "Billing intent routing",
+    "Authentication and entitlement behavior",
+    "Cross-course isolation and unchanged exact templates",
+    "Durable shared accounting for generation, repair, exhaustion, awaiting approval and failed transport using disposable offline fixtures"
+  ],
+  "protectedArtifactsChecked": 2807,
+  "protectedArtifactsChanged": [],
+  "realNetworkDisabled": true,
+  "paidProviderCalls": 0,
+  "productionDatabaseModified": false,
+  "approvedCoursePromptsModified": false,
+  "historicalReportsModified": false,
+  "deployed": false,
+  "committedOrPushed": false,
+  "zipGenerated": false,
+  "remainingLimitations": [
+    "Natural-language extraction and claim checking are conservative rules with provenance checks, not a universal semantic fact verifier; ambiguous phrasing can require a bounded repair or a relevant limitation.",
+    "Real Gemini fluency, nuanced multilingual quality and unseen reasoning have not been verified through live calls.",
+    "Two wider compatibility failures reproduce before this task and remain unchanged.",
+    "The isolated QA backend previously started on port 3129 predates these edits; its frozen source guard now blocks live execution until the updated code is loaded under a newly prepared source-bound session."
+  ],
+  "readyForControlledLiveVerification": true,
+  "runningQaBackendUpdated": false,
+  "liveVerificationPrerequisites": [
+    "Restart the isolated QA backend with this revision.",
+    "Prepare a source-bound approval; no provider execution was authorized or performed in this task."
+  ],
+  "releaseReadiness": "No full release conclusion; deterministic task scope is green and the two documented baseline compatibility failures remain.",
+  "evidence": {
+    "core": "final-focused-tests.log",
+    "compatibility": "final-compatibility-tests.log",
+    "preexistingBaseline": "preexisting-baseline.log",
+    "savedReplays": "historical-replay.json",
+    "taskDiff": "changes.diff"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "ok": true,
+  "value": {
+    "provider": "course-knowledge-rule",
+    "knowledge": "course-materials",
+    "answer": "Course ka exact approved prompt:\n\n```text\nLet's turn Scene 1 of our episode into a video. First I need a START FRAME image.\nWrite one ready-to-paste Nano Banana Pro prompt for the first frame of Scene 1. I will\nupload 2 reference images: [Character]'s character sheet and the [location] image. Show\nthe exact moment the scene begins — [e.g. Golu in the living room, looking at a plate with\ntwo round laddoos]. Keep the character and the room exactly the same as the references.\nUse our Master Style line. 16:9, no text.\n```",
+    "templateId": "ai-cartoon-series:exact-template:025",
+    "retrievedCourseIds": [
+      "6ae09ebee4ac0b60c08276bc"
+    ],
+    "providerStatus": "not_requested"
+  }
+}

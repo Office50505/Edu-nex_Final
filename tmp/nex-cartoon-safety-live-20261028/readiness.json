@@ -1,0 +1,68 @@
+{
+  "checkedAt": "2026-10-28T09:52:22.304Z",
+  "backendReady": true,
+  "isolatedDatabaseReady": true,
+  "updatedCodeLoaded": true,
+  "simulatorAuthenticated": true,
+  "simulatorCourseEntitled": true,
+  "sourceRevisionSHA256": "ac975317f86cdca4b9cb9aa27494ff8f467d9234e78c50f72e2c6765fad07ae1",
+  "protections": {
+    "normalAuthentication": true,
+    "normalRateLimiting": true,
+    "billingClassifier": true,
+    "cartoonDomainPolicy": true,
+    "courseIsolation": true,
+    "durableAttemptAccounting": true
+  },
+  "history": {
+    "conversationCount": 1,
+    "preservedConversations": [
+      {
+        "id": "nai-1793180446806-fihnl9a",
+        "messages": 5
+      }
+    ],
+    "currentMessageCount": 5
+  },
+  "backendUrl": "http://127.0.0.1:3129",
+  "currentConversationId": "nai-1793180446806-fihnl9a",
+  "arbitraryQuestionsAndConversationsAllowed": true,
+  "previousLedgersPreserved": true,
+  "providerKeyConfigured": true,
+  "pipeline": {
+    "domain": "cartoon-series",
+    "requestContractLoaded": true,
+    "taskPreservingValidationLoaded": true,
+    "sharedServiceExportsVerified": true,
+    "deterministicStartupCheckPassed": true,
+    "providerCalls": 0,
+    "courseId": "6ae09ebee4ac0b60c08276bc",
+    "courseSlug": "ai-cartoon-series",
+    "lessonsVerified": 8,
+    "exactPromptBodiesVerified": 18,
+    "businessAdvertisingRulesApplied": false,
+    "safetyClassifierLoaded": true,
+    "originalRohanBittuAllowed": true,
+    "benignVideoRequestsAllowed": true,
+    "genuineBypassBlocked": true,
+    "originalQuestionSHA256": "f1bfeea443f02e7fbf6eab1beb69d4cd1f80ffdaef3e5c836493bc2d8381735d",
+    "safetyClassifierSourceSHA256": "c0694b27f9341c2b6fcc31139fb3bdf0974aee545d26ad29b19107e6f0529023",
+    "requestContractFunctionSHA256": "7f390c476d1fbe8728071cf2802484c857706360402ba06001facf37373cf8fb",
+    "taskAssessmentFunctionSHA256": "448a9655b11f6f349c8b874de8ce942dacf4b7e158a0e5625f1e8a29e6f669d7",
+    "routeTaskPipelineLoaded": true
+  },
+  "entitlementSource": "admin",
+  "sessionId": "2ce11bf4-9b03-48a2-b546-eb15b3854623",
+  "sessionSHA256": "ef531ff59f15a4314f6fc03105a8c22dee437da5814ee42ec5df31a5ea37882b",
+  "approvalStatus": "manual_qa_awaiting_approval",
+  "approved": false,
+  "providerAttempts": 0,
+  "maximumProviderAttempts": 4,
+  "remainingProviderAttempts": 4,
+  "expiresAt": null,
+  "durationMinutes": 30,
+  "model": "google/gemini-2.5-flash",
+  "userId": "6addcefc5d47d548973c29b9",
+  "courseId": "6ae09ebee4ac0b60c08276bc",
+  "blocker": "manual_qa_awaiting_approval"
+}

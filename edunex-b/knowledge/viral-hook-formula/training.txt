@@ -1,0 +1,296 @@
+SKILLOMATE                                                                  Chatbot Knowledge Base
+
+
+
+
+ SKILLOMATE · VIRAL HOOK FORMULA
+
+
+ Chatbot Knowledge Base
+ Nex AI (Skillomate app tutor) ko is course ke baare mein train karne ke liye — course
+ ki saari jaankari, formulas, examples, FAQ aur bot ke jawab dene ke rules.
+
+
+ Part A — Bot ke liye rules
+  • Jawab Hinglish mein, dost jaisa, chhota aur seedha. Zaroorat ho toh steps numbered do.
+  • Jahan topic kisi lesson mein hai, uska number batao (jaise "ye Lesson 06 mein hai").
+  • User hooks maange toh uske niche, audience aur topic ke hisaab se 3–5 hooks do, aur
+    saath mein hook type ka naam.
+  • Jhoothe, clickbait ya misleading hooks likhne mein help mat karo — hook jo promise kare,
+    reel mein deliver hona chahiye.
+  • Views, followers, viral hone ya kamai ka koi promise ya number mat do. Hook help karta
+    hai, guarantee nahi.
+  • Platform algorithms ke baare mein pakke claims mat karo — bas ye ki log rukte hain toh
+    reel aage jaati hai.
+  • Pata na ho toh saaf bolo, guess mat karo.
+
+
+ Part B — Course overview
+ Naam: Viral Hook Formula (Skillomate). Format: Hinglish video lessons, 9:16, ek AI
+ presenter jo har lesson khud ek hook se shuru karti hai aur phir use explain karti hai. Koi
+ screen recording nahi. Lessons: 10. Audience: creators, small business owners, students —
+ koi bhi jo Reels/Shorts banata hai.
+
+
+
+
+                                    Viral Hook Formula · Page 1
+SKILLOMATE                                                                                   Chatbot Knowledge Base
+
+
+
+
+ #        Lesson                           Kya seekha
+
+ 01       Pehle 3 Second Ka Khel (Intro)   Course ka format: har lesson mein presenter khud ek naya hook try
+                                           karti hai, phir use tod ke samjhaati hai. 8 ...
+
+ 02       Curiosity Gap Hook               Shuru mein bolo ki ek aisi cheez hai jo koi nahi batata — aur uska
+                                           jawaab reel ke end mein do.
+
+ 03       Pattern Interrupt Hook           Pehle hi second mein kuch unexpected karo — kuch phaad do, kuch
+                                           gira do, achaanak zoom, ya ek tez sound.
+
+ 04       Bold Statement (Contrarian)      Pehle bolo ki log jo kaam karte hain woh band karo, aur phir turant
+          Hook                             uski ek solid wajah do.
+
+ 05       Question Hook                    Viewer se uski apni problem wala sawaal poochho, jaise "Kya tumhe
+                                           bhi ye hota hai?" — aur sawaal ekdum specifi...
+
+ 06       Story Hook (beech se shuru)      Pehle time ya jagah batao ("kal raat", "aaj office mein"), aur phir
+                                           seedha twist wala moment.
+
+ 07       Visual Hook                      Reel ko extreme close-up, tez movement ya kisi ajeeb angle se shuru
+                                           karo, taaki pehla frame hi alag dikhe.
+
+ 08       List (Number) Hook               Shuru mein number bolo, jaise "3 galtiyaan jo sab karte hain", aur
+                                           batao ki aakhri wali sabse important hai, t...
+
+ 09       POV (Relatable) Hook             "POV" likho, aur phir ek specific roz wali situation dikhao jo tumhari
+                                           audience sach mein face karti hai.
+
+ 10       Finale: Apna Hook Formula        chat G.P.T se hooks likhwao: apna niche, audience aur hook type
+                                           batao, aur bolo "10 options do". Phir ek hi to...
+
+
+
+
+ Part C — Key concepts (glossary)
+ Term                     Matlab
+
+ Hook                     Reel ki pehli line aur pehla visual — pehle ~3 second jo scroll rokte hain.
+
+ Payoff                   Hook ne jo promise kiya, reel mein uska jawaab/delivery.
+
+ Curiosity gap            Sawaal kholna aur jawaab baad mein dena.
+
+ Pattern interrupt        Feed ke flow ko todne wala unexpected action, sound ya visual.
+
+ Contrarian               Common advice ke ulta statement, solid wajah ke saath.
+
+ POV                      Viewer ki roz ki situation act karna, "POV:" text ke saath.
+
+ Combo hook               Do types ek saath — jaise question + visual, story + curiosity.
+
+ A/B test                 Ek hi topic ke 2 hooks bana ke dono try karna, aur dekhna kis mein log zyada ruke.
+
+ Text overlay             Screen pe hook ki line likhna — mute pe dekhne walon ke liye.
+
+
+
+
+                                             Viral Hook Formula · Page 2
+SKILLOMATE                                                                               Chatbot Knowledge Base
+
+
+
+
+ Part D — Saare hook formulas aur examples
+ Hook type           Formula (ek line)                                  Kab use karo
+
+ Curiosity gap       Ek secret ka promise, jawaab end mein              Tips, secrets, behind-the-scenes
+
+ Pattern interrupt   Pehle second mein kuch unexpected                  Jab feed mein content ek jaisa ho
+                     (action/sound/zoom)
+
+ Bold statement      Common advice ka ulta + solid wajah                Opinion, myth-busting
+
+ Question            Audience ki apni problem ka specific sawaal        Problem-solution content
+
+ Story               Time/jagah + seedha twist wala moment              Experiences, case studies
+
+ Visual              Close-up, tez movement ya ajeeb angle se           Food, product, travel, fashion
+                     shuru
+
+ List                Number + aakhri point sabse strong                 Tips, tools, mistakes
+
+ POV                 "POV:" + specific roz wali situation               Relatable, comedy, student/office life
+
+
+
+ Lesson 02 — Curiosity Gap Hook
+ Formula: Shuru mein bolo ki ek aisi cheez hai jo koi nahi batata — aur uska jawaab reel ke
+ end mein do.
+  • Food page: "Restaurant wale ye ek cheez daalte hain jo ghar pe sab bhoolte hain."
+  • Fitness: "Ye ek galti tumhari progress rok rahi hai."
+  • Galti: Payoff dena zaroori hai. Lesson ka secret: hook hamesha sabse pehle likho, baaki
+    reel baad mein.
+
+ Lesson 03 — Pattern Interrupt Hook
+ Formula: Pehle hi second mein kuch unexpected karo — kuch phaad do, kuch gira do,
+ achaanak zoom, ya ek tez sound.
+  • Cooking reel ko anda phodne ki awaaz se shuru karo.
+  • Fashion reel mein pehle second pe dupatta hawa mein uchhaalo.
+  • Galti: Sirf drama nahi — interrupt ka reel ke topic se connection hona chahiye, warna log
+    cheat feel karenge.
+
+ Lesson 04 — Bold Statement (Contrarian) Hook
+ Formula: Pehle bolo ki log jo kaam karte hain woh band karo, aur phir turant uski ek solid
+ wajah do.
+  • Study page: "Highlighter use karna band karo."
+  • Finance page: "Saving se pehle ye ek kaam karo."
+  • Galti: Bold ka matlab jhooth nahi — jo bolo use reel mein explain karo, aur reason sachcha
+    hona chahiye.
+
+ Lesson 05 — Question Hook
+ Formula: Viewer se uski apni problem wala sawaal poochho, jaise "Kya tumhe bhi ye hota
+ hai?" — aur sawaal ekdum specific rakho.
+  • Skincare: "Kya tumhara face bhi dopahar tak oily ho jaata hai?"
+  • Gaming: "Aim last moment pe kyun hilti hai?"
+
+
+
+
+                                          Viral Hook Formula · Page 3
+SKILLOMATE                                                                         Chatbot Knowledge Base
+
+
+
+
+  • Galti: "Hello guys, kaise ho?" se shuru karna — ye sawaal nahi, scroll karne ka invitation
+    hai.
+
+ Lesson 06 — Story Hook (beech se shuru)
+ Formula: Pehle time ya jagah batao ("kal raat", "aaj office mein"), aur phir seedha twist wala
+ moment.
+  • Travel: "Manali pahunchte hi cab wale ne mana kar diya..."
+  • Business: "Pehle customer ne hi order cancel kar diya..."
+  • Galti: Kahani background ya bachpan se shuru karna. Pehle action, background baad
+    mein.
+
+ Lesson 07 — Visual Hook
+ Formula: Reel ko extreme close-up, tez movement ya kisi ajeeb angle se shuru karo, taaki
+ pehla frame hi alag dikhe.
+  • Food reel ko uthti bhaap ke close-up se shuru karo.
+  • Product reel mein item ko seedha camera ki taraf laao.
+  • Galti: Shuru ke 2 second blank intro ya logo animation — wahi sabse fast skip hota hai.
+
+ Lesson 08 — List (Number) Hook
+ Formula: Shuru mein number bolo, jaise "3 galtiyaan jo sab karte hain", aur batao ki aakhri
+ wali sabse important hai, taaki log end tak rukein.
+  • Budget page: "3 apps jo mere kharche track karte hain."
+  • Coding: "5 shortcuts jo har beginner ko pata hone chahiye."
+  • Galti: List mein 10 points thoonsna. 3 se 5 rakho — reel chhoti aur punchy rehti hai.
+
+ Lesson 09 — POV (Relatable) Hook
+ Formula: "POV" likho, aur phir ek specific roz wali situation dikhao jo tumhari audience sach
+ mein face karti hai.
+  • Student: "POV: exam se pehli raat syllabus pehli baar khola."
+  • Office: "POV: Friday 6 baje boss ka call."
+  • Galti: Situation general rakhna. Jitni specific hogi, utni relatable lagegi.
+
+
+
+
+                                      Viral Hook Formula · Page 4
+SKILLOMATE                                                                                Chatbot Knowledge Base
+
+
+
+
+ Part E — FAQ / troubleshooting
+ User ka sawaal / problem                Jawab
+
+ Mere views kam hain, kya hook ki        Ho sakta hai. Pehle 3 second check karo: line specific hai? mute pe
+ wajah se?                               pehla frame rokta hai? blank intro toh nahi? (L01, L07)
+
+ Kaunsa hook sabse best hai?             Koi ek best nahi — topic pe depend karta hai. Part D ki table se type
+                                         chuno, aur 2 hooks A/B test karo. (L10)
+
+ Mera hook clickbait lagta hai           Check karo reel mein payoff hai ya nahi. Promise wahi karo jo deliver
+                                         kar sako. (L01, L10)
+
+ Log ruk ke bhi beech mein chale         Hook ka payoff jaldi aur saaf do; list hook mein strong point aakhir
+ jaate hain                              mein rakho. (L02, L08)
+
+ Mera niche boring hai, hook kaise       Question hook (audience ki problem) ya POV hook (roz ki situation) se
+ banau?                                  shuru karo. (L05, L09)
+
+ Bina bole hook kaise?                   Visual hook — close-up, tez movement, ajeeb angle, ya pehle frame
+                                         pe bada text. (L07)
+
+ Hello guys se shuru kar sakta hoon?     Nahi — seedha hook se shuru karo, intro baad mein ya bilkul nahi.
+                                         (L05)
+
+ Story bahut lambi ho jaati hai          Kahani beech se shuru karo — time/jagah + twist. Background baad
+                                         mein. (L06)
+
+ chat G.P.T ke hooks generic aate        Niche, audience, topic aur hook type saaf likho, aur "10 options"
+ hain                                    maango (Part F). (L10)
+
+ Kitne points ki list?                   3 se 5. Zyada points se reel lambi aur slow ho jaati hai. (L08)
+
+ Kya viral hone ki guarantee hai?        Nahi — hook rukne ke chances badhata hai, guarantee koi nahi deta.
+
+
+
+
+ Part F — chat G.P.T messages (exact)
+ [Brackets] mein user ki details daal ke do.
+  Hooks likhwane ka message (L10)
+
+  Mera niche: [niche, jaise home cooking]
+  Meri audience: [kaun, jaise 18–30 saal ke hostel students]
+  Reel ka topic: [topic]
+  Hook type: [curiosity / pattern interrupt / bold / question / story / visual / list / POV]
+
+  Is topic ke liye is hook type ke 10 alag hooks likho. Har hook 1–2 lines ka ho, Hinglish
+  mein, jaise dost bolta hai. Hook jhootha promise na kare — jo bole, reel mein deliver ho
+  sake. Har hook ke saath pehle frame mein kya dikhe, woh bhi ek line mein likho.
+
+
+  Do hooks compare karne ka message (L10)
+
+  Ye mere 2 hooks hain same topic ke liye:
+  A: [hook A]
+  B: [hook B]
+  Dono ko 1–10 score do: scroll rokne ki power, clarity, aur promise reel mein deliver ho
+  sakta hai ya nahi. Phir better wala aur strong banao.
+
+
+
+
+                                           Viral Hook Formula · Page 5
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+
+ Part G — Example answers (bot ka tone)
+ User: mera cooking page hai, ek hook do
+ Bot: Topic kya hai? Abhi ke liye 3 options: (1) Question: "Kya tumhari dal bhi restaurant jaisi
+ nahi banti?" (2) Curiosity: "Restaurant wale ye ek cheez daalte hain jo ghar pe sab bhoolte
+ hain." (3) Visual: tadke ki chhan-chhan awaaz ke close-up se shuru. Teeno mein payoff reel
+ mein dena — Lesson 02, 05 aur 07 dekho.
+ User: "ye trick tumhe crorepati bana degi" hook theek hai?
+ Bot: Ye promise reel deliver nahi kar sakti, toh log cheat feel karenge aur trust jaayega. Bold
+ rakho par sachcha — jaise "Saving se pehle ye ek kaam karo" (Lesson 04).
+ User: kitne din mein viral ho jaunga?
+ Bot: Iska koi pakka jawaab ya number nahi hai. Har reel mein hook checklist follow karo, 2
+ hooks test karo, aur jo kaam kare use repeat karo (Lesson 10).
+
+
+
+
+                                     Viral Hook Formula · Page 6
+

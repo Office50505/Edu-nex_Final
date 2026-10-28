@@ -1,0 +1,7 @@
+STAGED ONLY — no published course ID or slug found in the configured catalog.
+Exactly 15 questions in 13 scenarios, including two real two-turn conversations.
+No runtime, course records or provider approval are fabricated.
+Before live execution: verify the published course identity, bind the pack to that ID/slug, verify an isolated local copy of its real eight-lesson metadata, and obtain separate explicit provider approval.
+The current real-metadata launcher is specific to the ten-lesson Local Business Ads snapshot; eight-lesson Cartoon metadata support must be validated before use.
+Future evaluation command (not ready to execute yet):
+python3 -B chatbot_eval.py --cases scripts/eval/cartoon-series-fast15-cases.json --report reports/cartoon-series-integration --mode live

@@ -1,0 +1,15 @@
+{
+  "approved": false,
+  "approval_id": "88b7b4e4-7c0c-4a5c-abcc-dfeae453e3dc",
+  "model": "google/gemini-2.5-flash",
+  "cases_sha256": "4d664925069fd6af734cad4cc423ddba55f1ecd0f9aaf4a7f5e628e1b2240410",
+  "turns_sha256": "3f0a111cba3f1a53867ff845bf21c678a96b5b9e59f6ae3d5dcc25c095acdf50",
+  "course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+  "user_id": "6addcefc5d47d548973c29b9",
+  "conversation_id": "lba-memory-50c5d4bb-fb0b-4fd7-9536-fc50d104a063",
+  "max_calls": 4,
+  "issued_at": "2026-10-25T10:58:20.120Z",
+  "expires_at": "2026-10-25T11:28:20.120Z",
+  "closed_at": "2026-10-25T10:58:35.351Z",
+  "attempts_used": 2
+}

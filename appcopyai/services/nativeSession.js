@@ -84,7 +84,7 @@ export function createNativeSession({ baseUrl, storage, onChange, onExpired = ()
       assertCurrent(version);
       if (result.response.status === 401) return expire(version);
     }
-    if (!result.response.ok) throw Object.assign(new Error(result.data?.error || 'AI is unavailable. Please try again.'), { status: result.response.status });
+    if (!result.response.ok) throw Object.assign(new Error(result.data?.error || 'AI is unavailable. Please try again.'), { status: result.response.status, code: result.data?.code, outcome: result.data?.outcome });
     return result.data;
     } catch (error) {
       if (error.code !== 'SESSION_EXPIRED' && version !== generation) throw sessionChanged();

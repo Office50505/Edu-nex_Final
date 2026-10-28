@@ -1,8 +1,20 @@
+const APPROVAL_BLOCKS = new Set(['awaiting_explicit_approval_or_expired', 'provider_attempt_budget_exhausted',
+  'invalid_turn', 'turn_already_completed', 'question_conversation_account_or_course_mismatch',
+  'first_live_turn_missing', 'actual_previous_exchange_missing_or_changed', 'provider_payload_or_history_mismatch',
+  'request_identity_question_or_course_mismatch', 'provider_payload_mismatch']);
+for (const reason of ['awaiting_approval', 'expired', 'closed', 'invalid_approval', 'invalid_session',
+  'budget_exhausted', 'scope_denied', 'model_mismatch', 'environment_mismatch', 'invalid_payload',
+  'ledger_invalid', 'accounting_busy']) APPROVAL_BLOCKS.add(`manual_qa_${reason}`);
+
 class TutorProviderError extends Error {
   constructor(code, diagnostics) { super(`Tutor provider ${code}`); this.name = 'TutorProviderError'; this.code = code; this.diagnostics = diagnostics; }
 }
 
 function errorCode(error) {
+  // The existing approval transport rejects before making a paid request.
+  // Preserve these exact gate reasons; retrying cannot obtain authorization.
+  if (APPROVAL_BLOCKS.has(error?.code)) return error.code;
+  if (APPROVAL_BLOCKS.has(error?.message)) return error.message;
   if (error?.name === 'SyntaxError') return 'invalid_response';
   if (error?.name === 'TimeoutError' || error?.name === 'AbortError') return 'timeout';
   if (['ENOTFOUND', 'EAI_AGAIN'].includes(error?.cause?.code || error?.code)) return 'dns_error';
@@ -43,7 +55,7 @@ async function requestTutorProvider({ url, key, payload, extractText, fetchImpl 
       }
     } catch (error) { code = errorCode(error); attempt.status = code; }
     finally { attempt.durationMs = now() - attemptStart; }
-    if (code === 'invalid_response') break;
+    if (code === 'invalid_response' || APPROVAL_BLOCKS.has(code)) break;
     if (i + 1 < limit && totalTimeoutMs - (now() - start) > 200) await sleep(100);
   }
   throw new TutorProviderError(code, { status: code, attempts, durationMs: now() - start });

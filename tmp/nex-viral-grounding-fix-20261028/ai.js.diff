@@ -1,0 +1,41 @@
+--- edunex-b/routes/ai.js (before task)
+
++++ edunex-b/routes/ai.js
+
+@@ -349,7 +349,34 @@
+
+           }
+           reply = validation.reply;
+           responseIssue = validation.issue;
+-          const packValidation = validatePackReply({reply,knowledge});
++          let packValidation = validatePackReply({reply,knowledge});
++          if (packValidation.repairRequest?.kind === 'grounding') {
++            const original = packValidation;
++            let repairAttempted = false;
++            // Same adapter, deadline, authorization and accounting as the existing
++            // correction path; this course may use at most one repair, no retries.
++            if (!validationRepairDiagnostics && Date.now()-generationStarted < 24800) {
++              repairAttempted = true;
++              try {
++                const repaired = await callFalOpenRouter({context:knowledge.context,message,pagePath,assistantName,history,
++                  courseScope:{activeCourse:{_id:knowledge.activeCourse.id,slug:knowledge.activeCourse.slug},includeMaterials:Boolean(knowledge.materialsAvailable)},
++                  totalTimeoutMs:Math.max(1,25000-(Date.now()-generationStarted)),maxAttempts:1,
++                  repair:original.repairRequest,language:original.repairRequest.language,
++                  onDiagnostics:value=>{validationRepairDiagnostics=value;}});
++                const checked = validatePackReply({reply:repaired,knowledge});
++                if (!checked.issue) packValidation = {...checked,issue:original.issue};
++              } catch (error) {
++                if (error.code === 'COURSE_KNOWLEDGE_SCOPE_VIOLATION') throw error;
++              }
++            }
++            // If repair fails or is unsafe, keep useful sections of the original
++            // draft with only its unsupported clauses replaced by placeholders.
++            const final = validatePackReply({reply:packValidation.reply,knowledge});
++            packValidation = {...final,issue:original.issue};
++            taskAssessment = {task:'creative_deliverable',format:'hooks',rawIssues:original.assessment.issues,
++              finalIssues:final.assessment?.issues || [],repairAttempted,
++              delivery:packValidation.reply===original.reply?'deterministic_edit':'repaired'};
++          }
+           reply = packValidation.reply;
+           responseIssue ||= packValidation.issue;
+           if (responseIssue) provider = 'course-response-policy';

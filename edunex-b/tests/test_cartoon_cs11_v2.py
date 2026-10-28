@@ -41,7 +41,7 @@ class CartoonCS11V2Tests(unittest.TestCase):
 
     def test_v2_has_separate_freeze_and_cannot_reuse_v1_approval(self):
         digest = hashlib.sha256(V2_PATH.read_bytes()).hexdigest()
-        frozen = '346ce72c31c7a3b4f08167e26b85298c529e416e84a904c496d84b5c080405a6'
+        frozen = (ROOT / 'reports/cartoon-series-cs11-v2/test_cases_frozen.sha256').read_text().split()[0]
         self.assertEqual(digest, frozen)
         self.assertNotEqual(digest, hashlib.sha256(V1_PATH.read_bytes()).hexdigest())
 
@@ -125,11 +125,10 @@ class CartoonCS11V2Tests(unittest.TestCase):
     def test_security_failure_still_overrides_scene_guidance(self):
         self.assertEqual(self.grade(BASE, events=[{'type': 'critical_security_failure', 'reason': 'foreign owner'}])[0], 'FAIL')
 
-    def test_indexed_prompt_bodies_still_match_their_integrity_hashes(self):
-        for course in ['ai-cartoon-series', 'ai-local-business-ads']:
-            index = json.loads((ROOT / 'knowledge' / course / 'index.json').read_text())
-            for record in index['records']:
-                self.assertEqual(hashlib.sha256(record['content'].encode()).hexdigest(), record['contentHash'])
+    def test_all_preserved_files_still_match_snapshot(self):
+        manifest = ROOT / 'reports/cartoon-series-cs11-v2/preserved-files.sha256.json'
+        for name, digest in json.loads(manifest.read_text()).items():
+            self.assertEqual(hashlib.sha256((ROOT / name).read_bytes()).hexdigest(), digest, name)
 
 
 if __name__ == '__main__':

@@ -1,0 +1,59 @@
+✖ a Hindi retraction removes old delivery support from persistent state (11.802666ms)
+✖ an exact approved quote cannot protect a claim appended outside its bytes (12.174375ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 0
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 72.115833
+
+✖ failing tests:
+
+test at tests/task-preserving-generalization.test.cjs:116:1
+✖ a Hindi retraction removes old delivery support from persistent state (11.802666ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + {
+  +   provenance: 'learner_reported',
+  +   source: 'हम मुफ्त डिलीवरी देते हैं',
+  +   turn: 0,
+  +   value: 'मुफ्त डिलीवरी'
+  + }
+  - undefined
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/task-preserving-generalization.test.cjs:120:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.start (node:internal/test_runner/test:1257:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { value: 'मुफ्त डिलीवरी', source: 'हम मुफ्त डिलीवरी देते हैं', turn: 0, provenance: 'learner_reported' },
+    expected: undefined,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/task-preserving-generalization.test.cjs:126:1
+✖ an exact approved quote cannot protect a claim appended outside its bytes (12.174375ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(result.issues.length)
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/task-preserving-generalization.test.cjs:131:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

@@ -1,0 +1,17 @@
+{
+  "approved": false,
+  "approval_id": "64e1e249-ad52-4991-9dfd-d3bea91848d2",
+  "model": "google/gemini-2.5-flash",
+  "cases_sha256": "b2c3a24657137278d64c0fd6695aebb9591c19866da916e9a37cfe0b7104689b",
+  "turns_sha256": "85268e3b32d498ffccdcb8192c5fac3c034fc5b6a5b117b1d22bc4aab68183ed",
+  "course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+  "user_id": "6addcefc5d47d548973c29b9",
+  "conversation_id": "nai-1792930708332-k0fla4i",
+  "question_sha256": "09608b1745acc8d4e8768a2d3b8d392eab8e0562c5968acb31d4a9e82b869f2d",
+  "max_calls": 2,
+  "issued_at": "2026-10-25T12:24:43.282Z",
+  "expires_at": "2026-10-25T12:54:43.282Z",
+  "closed_at": "2026-10-25T12:25:10.542Z",
+  "close_reason": "frozen_native_test_completed",
+  "attempts_used": 1
+}

@@ -1,0 +1,415 @@
+const express = require('express');
+const crypto = require('node:crypto');
+const mongoose = require('mongoose');
+const Course = require('../models/Course');
+const AiTutorSession = require('../models/AiTutorSession');
+const AiResponseReport = require('../models/AiResponseReport');
+const { tutorUnavailable } = require('../services/tutorAvailability');
+const { requireCompatibleAuth } = require('../middleware/compatAuth');
+const {
+  FAL_API_KEY,
+  compactText,
+  sanitizeHistory,
+  buildContext,
+  loadLearnerContext,
+  learnerContextDirectReply,
+  callFalOpenRouter,
+  builtInCourseGuide,
+  cleanLearnerReply,
+  aiFilmmakingDirectReply,
+  resolveRequestedCourseScope,
+  resolveConversationState,
+  aiFilmmakingTemplateIdForReply,
+  skillomatePlanDirectReply,
+  skillomatePlatformDirectReply,
+  classifyBillingIntent,
+  OUT_OF_SCOPE_REPLY,
+  productTutorReply,
+  productCourseDomain,
+  productAccessReply,
+  validateProductReply,
+  isProductKnowledge,
+  productFallbackNotice,
+  packFor, packDirectReply, validatePackReply,
+  assessTaskResponse, taskLimitation,
+} = require('../services/aiTutorService');
+const {
+  checkAiInput,
+  responseHash,
+  sanitizeAiOutput,
+} = require('../services/aiCompliance');
+const router = express.Router();
+const AI_USER_PROJECTION = '+activeSessionId +activeSessions fullName email mobileNumber isMobileVerified isEmailVerified age gender avatar subscriptionStatus subscriptionExpiry isOnTrial purchasedCourses courseEntitlements wishlist courseProgress createdAt lastActiveAt lastLoginAt loginCount';
+const aiRateState = new Map();
+const LEGACY_CONSENT_RESPONSE = Object.freeze({
+  granted: true,
+  policyVersion: '2026-09-25',
+  providerVersion: 'consent-not-required',
+  providerNames: ['fal.ai', 'OpenRouter', 'Google Gemini'],
+  decidedAt: null,
+});
+
+function aiMessageRecord(role, content) {
+  return {
+    role,
+    content: compactText(content, 4000),
+    createdAt: Date.now(),
+  };
+}
+
+async function loadTutorState(req, courseId) {
+  const userId = req.compatAuth?.userId;
+  if (!userId) return null;
+  if (typeof AiTutorSession.findOne !== 'function') return null;
+  const course = mongoose.Types.ObjectId.isValid(courseId) ? courseId : null;
+  const saved = await AiTutorSession.findOne({ user: userId, course })
+    .select('activeCourseId currentTopic currentIntent lastWorkflow lastTemplateId productContext courseContext conversationId messages')
+    .lean()
+    .catch(() => null);
+  const incoming=compactText(req.body?.conversationId || req.body?.conversation_id,120);
+  return incoming && saved?.conversationId && incoming!==saved.conversationId ? null : saved;
+}
+
+async function persistTutorChat(req, courseId, history, message, reply, state = {}) {
+  const userId = req.compatAuth?.userId;
+  if (!userId) return;
+  const course = mongoose.Types.ObjectId.isValid(courseId) ? courseId : null;
+  const conversationId = compactText(req.body?.conversationId || req.body?.conversation_id, 120);
+  const messages = [
+    ...sanitizeHistory(history).map((item) => aiMessageRecord(item.role, item.content)),
+    aiMessageRecord('user', message),
+    aiMessageRecord('assistant', reply),
+  ].filter((item) => item.content).slice(-40);
+  await AiTutorSession.findOneAndUpdate(
+    { user: userId, course },
+    {
+      user: userId,
+      course,
+      conversationId,
+      activeCourseId: compactText(state.activeCourseId, 120),
+      currentTopic: compactText(state.currentTopic, 80),
+      currentIntent: compactText(state.currentIntent, 80),
+      lastWorkflow: compactText(state.lastWorkflow, 120),
+      lastTemplateId: compactText(state.lastTemplateId, 160),
+      ...(state.productContext ? { productContext: state.productContext } : {}),
+      ...(state.courseContext ? {courseContext:state.courseContext} : {}),
+      messages,
+      lastUpdatedAt: new Date(),
+    },
+    { new: true, upsert: true, runValidators: true, setDefaultsOnInsert: true }
+  );
+}
+
+function aiDebugPayload({ req, requestedCourseId, resolvedCourseId, state, knowledge, selectedTemplateId, provider }) {
+  const chunks = Array.isArray(knowledge?.debugChunks) ? knowledge.debugChunks : [];
+  return {
+    conversation_id: compactText(req.body?.conversationId || req.body?.conversation_id, 120),
+    request_active_course_id: requestedCourseId || '',
+    resolved_active_course_id: knowledge?.activeCourse?.id || resolvedCourseId || '',
+    current_topic: state?.currentTopic || '',
+    current_intent: state?.currentIntent || '',
+    rewritten_retrieval_query: knowledge?.retrievalQuery || compactText(req.body?.message, 220),
+    retrieved_chunk_ids: chunks.map(chunk => chunk.chunkId || `${chunk.courseSlug || chunk.courseId}:${chunk.section}`).slice(0, 8),
+    retrieved_chunk_hashes: chunks.map(chunk => chunk.contentHash || ''),
+    retrieved_source_hashes: [...new Set(chunks.map(chunk => chunk.sourceHash).filter(Boolean))],
+    retrieved_translation_hashes: chunks.map(chunk => chunk.translationHash || ''),
+    retrieved_course_ids: [...new Set(chunks.map(chunk => chunk.courseId).filter(Boolean))],
+    retrieved_course_names: [...new Set(chunks.map(chunk => chunk.courseName).filter(Boolean))],
+    scores_ranks: chunks.map(chunk => ({ rank: chunk.rank, score: Number(chunk.score || 0).toFixed(4), course_id: chunk.courseId, section: chunk.section })).slice(0, 8),
+    selected_exact_prompt_template_id: selectedTemplateId || '',
+    provider_model_path: provider === 'fal-openrouter' ? 'fal-openrouter' : provider,
+  };
+}
+
+function logAiDebug(payload) {
+  console.info('[nex-ai-debug]', JSON.stringify(payload));
+}
+
+function aiRateLimit(req, res, next) {
+  const key = String(req.compatAuth?.userId || req.ip);
+  const now = Date.now();
+  const current = aiRateState.get(key);
+  if (!current || current.resetAt <= now) {
+    aiRateState.set(key, { count: 1, resetAt: now + 60_000 });
+    return next();
+  }
+  current.count += 1;
+  if (current.count > 30) return res.status(429).json({ error: 'Too many AI requests. Wait a minute and try again.' });
+  return next();
+}
+
+// Compatibility for already-installed clients: report AI as ready so their retired consent UI never opens.
+router.get('/consent', requireCompatibleAuth({ userProjection: AI_USER_PROJECTION }), (_req, res) => {
+  res.set('Cache-Control', 'no-store');
+  res.json(LEGACY_CONSENT_RESPONSE);
+});
+
+router.put('/consent', requireCompatibleAuth({ userProjection: AI_USER_PROJECTION }), (_req, res) => {
+  res.set('Cache-Control', 'no-store');
+  res.json(LEGACY_CONSENT_RESPONSE);
+});
+
+router.delete('/history', requireCompatibleAuth({ userProjection: AI_USER_PROJECTION }), async (req, res) => {
+  const result = await AiTutorSession.deleteMany({ user: req.compatAuth.userId });
+  res.json({ success: true, deletedCount: result.deletedCount || 0 });
+});
+
+router.post('/reports', requireCompatibleAuth({ userProjection: AI_USER_PROJECTION }), async (req, res) => {
+  const allowedReasons = new Set(['incorrect', 'harmful_or_unsafe', 'inappropriate', 'privacy_concern', 'other']);
+  const messageId = compactText(req.body?.messageId, 120);
+  const reason = compactText(req.body?.reason, 40);
+  if (!messageId || !allowedReasons.has(reason)) return res.status(400).json({ error: 'Choose a valid report reason.' });
+  try {
+    await AiResponseReport.create({
+      user: req.compatAuth.userId,
+      messageId,
+      reason,
+      responseHash: req.body?.response ? responseHash(String(req.body.response).slice(0, 6000)) : null,
+    });
+  } catch (error) {
+    if (error?.code !== 11000) throw error;
+  }
+  res.status(201).json({ success: true, message: 'Thanks. The response was reported for review.' });
+});
+
+router.get('/health', requireCompatibleAuth(), (_req, res) => {
+  res.json({
+    ok: true,
+    service: 'nex-ai',
+    provider: FAL_API_KEY ? 'fal-openrouter' : 'built-in-course-guide',
+  });
+});
+
+router.get('/courses', requireCompatibleAuth(), async (_req, res) => {
+  try {
+    const courses = await Course.find({ status: 'published' })
+      .select('title slug videos.title')
+      .sort({ publishedAt: -1, createdAt: -1 })
+      .lean();
+
+    res.json(courses.map(course => ({
+      id: String(course._id),
+      name: course.title,
+      slug: course.slug,
+      modules: (Array.isArray(course.videos) ? course.videos : [])
+        .map(video => compactText(video.title, 200))
+        .filter(Boolean),
+    })));
+  } catch (error) {
+    res.status(500).json({ error: 'Could not load Nex AI courses' });
+  }
+});
+
+async function handleTutorChat(req, res) {
+  try {
+    const inputCheck = checkAiInput(req.body?.message);
+    if (!inputCheck.ok && !inputCheck.blocked) {
+      return res.status(inputCheck.statusCode).json({ error: inputCheck.error });
+    }
+    const message = inputCheck.message || '';
+    const pagePath = compactText(req.body.pagePath, 160).split(/[?#]/)[0];
+    const assistantName = compactText(req.body.assistantName, 80);
+    const requestedCourseId = compactText(
+      req.body.courseId
+      || req.body.activeCourseId
+      || req.body.active_course_id
+      || req.body.activeCourse?._id
+      || req.body.activeCourse?.id
+      || req.body.activeCourse?.slug,
+      120
+    );
+    const lessonId = compactText(req.body.lessonId, 120);
+    let history = sanitizeHistory(req.body.history);
+    const savedState = await loadTutorState(req, resolveRequestedCourseScope({courseId:requestedCourseId}));
+    const courseId = resolveRequestedCourseScope({
+      courseId: req.body.courseId,
+      activeCourseId: req.body.activeCourseId || req.body.active_course_id,
+      activeCourse: req.body.activeCourse,
+      message,
+      history,
+      savedState,
+    });
+
+    const incomingHistoryLength=history.length;
+    let historyRestored=false;
+
+    if (inputCheck.blocked) {
+      return res.json({
+        answer: inputCheck.reply,
+        reply: inputCheck.reply,
+        messageId: crypto.randomUUID(),
+        provider: 'safety-filter',
+        sources: [],
+        outcome: { type: 'local_rule', liveModelAnswer: false, providerStatus: 'not_requested' },
+      });
+    }
+
+    let provider = 'built-in-course-guide';
+    let reply;
+    let knowledge;
+    let selectedTemplateId = '';
+    let state = null;
+    let providerDiagnostics = { status: FAL_API_KEY ? 'not_requested' : 'not_configured', attempts: [] };
+    let responseIssue = null;
+    let validationRepairDiagnostics=null;
+    let taskAssessment=null;
+    let failureStatus = null;
+    const learnerContext = await loadLearnerContext(req.compatUser);
+    // Resolve server-owned course context before disambiguating overlapping account words.
+    const chooseDirectReply = () => {
+      const billingOptions = { history: knowledge?.conversationHistory || history };
+      const billingIntent = classifyBillingIntent(message, billingOptions);
+      const domain=packFor(knowledge?.activeCourse)
+        ? (/\bSkillomate\b.*\b(?:plan|subscription|billing|refund|login|account)\b/i.test(message) ? 'platform' : 'course')
+        : isProductKnowledge(knowledge)?productCourseDomain(message):'';
+      if(!billingIntent&&domain==='platform'&&!knowledge.materialsAvailable&&/inactive|expired|restore|access|भुगतान|एक्सेस/iu.test(message)){reply=productAccessReply(message,knowledge);provider='course-knowledge-rule';return;}
+      const language=isProductKnowledge(knowledge)?knowledge.productContext?.language:'';
+      const courseRequest = domain === 'course' && !billingIntent;
+      const learnerReply=courseRequest?'':learnerContextDirectReply(message,learnerContext,language,billingOptions);
+      const planReply=courseRequest?'':skillomatePlanDirectReply(message,language,billingOptions);
+      const platformReply=courseRequest?'':skillomatePlatformDirectReply(message,language,billingOptions);
+      if(learnerReply){provider='skillomate-learner-facts';reply=learnerReply;}
+      else if(platformReply){provider=platformReply===planReply?'skillomate-plan-facts':'skillomate-platform-facts';reply=platformReply;}
+    };
+    if(!FAL_API_KEY&&!courseId)chooseDirectReply();
+    if (FAL_API_KEY || courseId) {
+      try {
+        if (!reply) knowledge = await buildContext(req.compatUser, courseId, message, history, { lessonId, learnerContext, savedState, conversationId:compactText(req.body?.conversationId||req.body?.conversation_id,120) });
+        chooseDirectReply();
+        if(Array.isArray(knowledge?.conversationHistory)){
+          history=knowledge.conversationHistory;
+          historyRestored=!incomingHistoryLength && Boolean(history.length);
+        }
+        const packRule = !reply && packDirectReply({message,history,knowledge});
+        if (packRule) { reply = packRule.reply; selectedTemplateId = packRule.templateId; }
+        const productRule = !reply && productTutorReply({ message, history, knowledge });
+        if (productRule) { reply = productRule.reply; selectedTemplateId = productRule.templateId; }
+        if (!reply && knowledge?.materialsAvailable) reply = aiFilmmakingDirectReply({ message, courseId, knowledge, history });
+        if (reply) {
+          if (!provider.startsWith('skillomate-')) provider = 'course-knowledge-rule';
+          selectedTemplateId ||= aiFilmmakingTemplateIdForReply(reply);
+        } else if (FAL_API_KEY) {
+          const generationStarted=Date.now();
+          reply = await callFalOpenRouter({ context: knowledge.context+(knowledge.requestPlan?'\nTransient learner request plan (not course facts): '+JSON.stringify(knowledge.requestPlan):''), message, pagePath, assistantName, history, language:knowledge?.courseContext?.language || knowledge?.productContext?.language,
+            responseContract:knowledge.responseContract || null,
+            courseScope:{activeCourse:knowledge?.activeCourse ? {_id:knowledge.activeCourse.id,slug:knowledge.activeCourse.slug}:null,includeMaterials:Boolean(knowledge?.materialsAvailable)},
+            onDiagnostics: value => { providerDiagnostics = value; } });
+          provider = 'fal-openrouter';
+          if (knowledge.responseContract) {
+            const original = assessTaskResponse({reply,knowledge});
+            let candidate = original;
+            let repairAttempted = false;
+            if (candidate.needsRepair && Date.now()-generationStarted < 24800) {
+              repairAttempted = true;
+              try {
+                const repaired = await callFalOpenRouter({context:knowledge.context,message,pagePath,assistantName,history,
+                  responseContract:knowledge.responseContract, language:knowledge.responseContract.language,
+                  courseScope:{activeCourse:{_id:knowledge.activeCourse.id,slug:knowledge.activeCourse.slug},includeMaterials:Boolean(knowledge.materialsAvailable)},
+                  totalTimeoutMs:Math.max(1,25000-(Date.now()-generationStarted)),maxAttempts:1,
+                  repair:{kind:'task',originalAnswer:reply,issues:original.issues},
+                  onDiagnostics:value=>{validationRepairDiagnostics=value;}});
+                candidate = assessTaskResponse({reply:repaired,knowledge});
+              } catch (error) {
+                if (error.code === 'COURSE_KNOWLEDGE_SCOPE_VIOLATION') throw error;
+                // The adapter preserves approval/budget errors and does not retry
+                // this repair. Never present an unsafe initial draft as repaired.
+              }
+            }
+            let final = candidate.needsRepair ? candidate : assessTaskResponse({reply:candidate.answer,knowledge});
+            if (!final.needsRepair && final.edits.length) final = assessTaskResponse({reply:final.answer,knowledge});
+            const incomplete = final.needsRepair || final.issues.length>0;
+            const repairBlocked = /approval|budget_exhausted|scope_denied|expired|closed/iu.test(validationRepairDiagnostics?.status || '');
+            const repairDetail = repairBlocked ? knowledge.responseContract.language === 'english'
+              ? 'The correction could not run because provider approval or the remaining attempt budget blocked it.'
+              : knowledge.responseContract.language === 'hindi' ? 'प्रदाता की अनुमति या बचे हुए प्रयासों की सीमा के कारण सुधार नहीं चल पाया।'
+                : 'Provider approval ya bache hue attempts ki limit ki wajah se correction nahi chal paya.' : '';
+            reply = incomplete ? taskLimitation(knowledge.responseContract,repairDetail) : final.answer;
+            responseIssue = original.issues.length || repairAttempted ? 'course_business_task_preserving_correction' : null;
+            if (responseIssue) provider = 'course-response-policy';
+            taskAssessment = {task:knowledge.responseContract.task,format:knowledge.responseContract.format,
+              rawIssues:original.issues,finalIssues:final.issues,repairAttempted,
+              delivery:incomplete?'relevant_limitation':repairAttempted?'repaired':original.edits.length?'deterministic_edit':'original'};
+          } else {
+          let validation = validateProductReply({ reply, message, history, knowledge });
+          // One repair attempt shares the initial 25-second total budget. Failed
+          // translation never silently becomes an unrelated FAQ or a live answer.
+          if(validation.repairRequest && Date.now()-generationStarted<24800){
+            try {
+              const repaired=await callFalOpenRouter({context:knowledge.context,message,pagePath,assistantName,history,
+                courseScope:{activeCourse:knowledge?.activeCourse ? {_id:knowledge.activeCourse.id,slug:knowledge.activeCourse.slug}:null,includeMaterials:Boolean(knowledge?.materialsAvailable)},
+                totalTimeoutMs:Math.max(1,25000-(Date.now()-generationStarted)),maxAttempts:1,repair:validation.repairRequest,language:validation.repairRequest.language,
+                onDiagnostics:value=>{validationRepairDiagnostics=value;}});
+              const checked=validateProductReply({reply:repaired,message,history,knowledge});
+              if(!checked.repairRequest)validation={...checked,issue:checked.issue||('response_'+validation.repairRequest.kind+'_repaired')};
+            }catch(error){
+              if(error.code==='COURSE_KNOWLEDGE_SCOPE_VIOLATION')throw error;
+              /* Keep the safe content-preserving unavailable-translation response. */
+            }
+          }
+          reply = validation.reply;
+          responseIssue = validation.issue;
+          const packValidation = validatePackReply({reply,knowledge});
+          reply = packValidation.reply;
+          responseIssue ||= packValidation.issue;
+          if (responseIssue) provider = 'course-response-policy';
+          }
+        }
+      } catch (error) {
+        if(error.code==='COURSE_KNOWLEDGE_SCOPE_VIOLATION')throw error;
+        failureStatus = error.diagnostics?.status || 'context_error';
+        providerDiagnostics = error.diagnostics || { status: failureStatus, attempts: [] };
+        reply = null;
+        console.warn(`Nex AI unavailable (${failureStatus})`);
+      }
+    }
+
+    if (!reply && !failureStatus) {
+      provider = 'built-in-course-guide';
+      if (!knowledge && courseId && lessonId) knowledge = await buildContext(req.compatUser, courseId, message, history, { lessonId, learnerContext, savedState, conversationId:compactText(req.body?.conversationId||req.body?.conversation_id,120) });
+      reply = knowledge?.materialsAvailable ? aiFilmmakingDirectReply({ message, courseId, knowledge, history }) : '';
+      if (reply) {
+        provider = 'course-knowledge-rule';
+        selectedTemplateId = aiFilmmakingTemplateIdForReply(reply);
+      } else {
+        reply = await builtInCourseGuide({
+          user: req.compatUser,
+          message,
+          courseId,
+          knowledge,
+          history,
+        });
+        if (reply) provider = 'course-catalog-rule';
+      }
+    }
+    if (!reply) {
+      const status = failureStatus || providerDiagnostics.status;
+      const debugPayload = aiDebugPayload({ req, requestedCourseId, resolvedCourseId: courseId, knowledge, state: null, selectedTemplateId, provider: 'unavailable' });
+      logAiDebug(debugPayload);
+      // Failed turns are not saved as successful assistant messages or learner facts.
+      return res.status(status === 'timeout' ? 504 : 503).json({ ...tutorUnavailable(status, message),
+        messageId: crypto.randomUUID(), provider: 'unavailable',
+        ...(req.body?.debugAi ? { debug: { ...debugPayload, history_restored: historyRestored, provider: providerDiagnostics } } : {}),
+      });
+    }
+    reply = sanitizeAiOutput(cleanLearnerReply(String(reply || '').trim().slice(0, 6000))) || OUT_OF_SCOPE_REPLY;
+    state = resolveConversationState({ message, history, knowledge, savedState, selectedTemplateId, reply });
+    const debugPayload = aiDebugPayload({ req, requestedCourseId, resolvedCourseId: courseId, state, knowledge, selectedTemplateId, provider });
+    logAiDebug(debugPayload);
+    await persistTutorChat(req, courseId, history, message, reply, state).catch(() => {});
+    const sources = [];
+    res.json({ answer: reply, reply, provider, sources, messageId: crypto.randomUUID(),
+      notice: provider === 'built-in-course-guide' && isProductKnowledge(knowledge) ? productFallbackNotice(message) : null,
+      outcome: { type: provider === 'fal-openrouter' ? 'live_model' : provider === 'built-in-course-guide' ? 'provider_fallback' : responseIssue ? 'validated_local_replacement' : 'local_rule',
+        liveModelAnswer: provider === 'fal-openrouter', providerStatus: providerDiagnostics.status, responseIssue,
+        ...(taskAssessment?.repairAttempted ? {correctionStatus:validationRepairDiagnostics?.status || 'not_completed',correctionDelivered:taskAssessment.delivery==='repaired'} : {}) },
+      knowledge: knowledge?.materialsAvailable ? 'course-materials' : 'course-overviews',
+      ...(req.body?.debugAi ? { debug: { ...debugPayload, response_selection:knowledge?.responseSelection||null, history_restored:historyRestored, provider: providerDiagnostics, validation_repair:validationRepairDiagnostics, task_assessment:taskAssessment } } : {}),
+    });
+  } catch (error) {
+    res.status(502).json(tutorUnavailable(error.code === 'COURSE_KNOWLEDGE_SCOPE_VIOLATION' ? error.code : 'context_error', req.body?.message));
+  }
+}
+
+router.post('/chat', requireCompatibleAuth({ userProjection: AI_USER_PROJECTION }), aiRateLimit, handleTutorChat);
+module.exports = router;
+module.exports.handleTutorChat = handleTutorChat;

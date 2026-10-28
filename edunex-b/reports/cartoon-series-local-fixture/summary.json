@@ -1,0 +1,49 @@
+{
+  "checked_at_utc": "2026-10-24T05:43:21.805519+00:00",
+  "local_fixture_supported": "YES",
+  "eight_lesson_validation": "PASS",
+  "authorization": "PASS",
+  "live_evaluator_readiness": "PASS — isolated fixture runtime ready; execution requires separate explicit provider approval",
+  "endpoint": "http://127.0.0.1:3128",
+  "database": "skillomate_mvp_eval_cartoon_fixture_1792820492836_4f9bdd1a",
+  "fixture_course_id": "6adc450c59f1eabf60217cc5",
+  "fixture_slug": "local-fixture-ai-cartoon-series",
+  "production_course_id": null,
+  "production_published_slug": null,
+  "source_lessons": 8,
+  "exact_course_messages": 17,
+  "master_style_templates": 1,
+  "test_video_reference": "Existing synthetic evaluator placeholder MVPTEST0001; not an uploaded video or verified playback reference.",
+  "local_fixture_catalog_status": "published only inside the fresh isolated local database to exercise existing tutor authorization; no production registration",
+  "tests": {
+    "focused_node_passed": 44,
+    "focused_python_passed": 13,
+    "http_readiness_passed": 36,
+    "failures": 0,
+    "local_db_mapping_and_context_checks": "PASS"
+  },
+  "evaluation": {
+    "questions": 15,
+    "scenarios": 13,
+    "two_turn_conversations": 2,
+    "cases_sha256": "eb73038e68aa684d5e5b47bc7c7fcb50c58ea3e0f1230f128ad660f9e88f606c",
+    "live_executed": false
+  },
+  "provider_invocations": 0,
+  "blocked_provider_attempts": 0,
+  "provider_approval_exists": false,
+  "model": "google/gemini-2.5-flash",
+  "credentials_present": true,
+  "credentials_network_verified": false,
+  "playback_verified": false,
+  "production_accessed": false,
+  "production_modified": false,
+  "deployed": false,
+  "committed": false,
+  "pushed": false,
+  "remaining_blockers": [
+    "Explicit, unexpired provider approval bound to this exact question hash/model is required before paid live execution.",
+    "Provider answer quality has not been evaluated live.",
+    "Actual admin uploads and verified published identity remain prerequisites for production integration, not for this isolated fixture."
+  ]
+}

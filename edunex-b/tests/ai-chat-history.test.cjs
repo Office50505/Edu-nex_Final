@@ -38,6 +38,7 @@ function backend(options = {}) {
       if (name.includes('tutorKnowledge')) return require('../services/tutorKnowledge');
       if (name === './productTutorState') return require('../services/productTutorState');
       if (name === './tutorProvider') return require('../services/tutorProvider');
+      if (name.endsWith('/tutorAvailability')) return require('../services/tutorAvailability');
       if (name === './productTutorResponse') return require('../services/productTutorResponse');
       if (name.endsWith('/subscriptionAccess')) return require('../services/subscriptionAccess');
       if (name.endsWith('/AppleSubscription')) return { findOne: () => ({ lean: async () => options.apple || null }) };
@@ -101,7 +102,10 @@ test('phase5 route persists supplied colour fields for a later request without c
  const api=backend({noKey:true,sessions,courses:[{_id:courseId,slug:'ai-product-photoshoot-ads',title:'AI Product Photoshoot & Ads',videos:[]}],
   user:{_id:'phase5-learner'},subscription:{status:'active',currentPeriodEnd:new Date(Date.now()+60000)}});
  const scope={courseId,conversationId:'phase5-colour'};
- await api.chat({...scope,message:'Change the colour of the metal rim to bronze brown, while keeping the body unchanged. Lesson 04.'});
+ // Establish memory with a successful local asset request; an unavailable
+ // no-key tutoring turn intentionally does not persist learner facts.
+ const first=await api.chat({...scope,message:'Change the colour of the metal rim to bronze brown, while keeping the body unchanged. Copy the exact approved L04 Colour Variant Sheet prompt.'});
+ assert.equal(first.outcome.type,'local_rule');
  const result=await api.chat({...scope,message:'Copy the exact L04 Colour Variant Sheet prompt.'});
  assert.match(result.answer,/Only change the colour of the metal rim to bronze brown\./);
  assert.equal(result.outcome.type,'local_rule');assert.equal(result.outcome.liveModelAnswer,false);assert.equal(api.calls.length,0);
@@ -285,14 +289,14 @@ test('source markers and reference lists are hidden from learner replies', async
   assert.doesNotMatch(result.reply, /\[S\d+\]|References|Sources|S999/);
 });
 
-test('empty or failed provider replies fall back without learner-facing outage copy', async () => {
+test('empty or failed provider replies return honest unavailability', async () => {
   for (const options of [{ reply: '' }, { fail: true }]) {
     const api = backend(options);
     const result = await api.chat({ message: 'courses' });
-    assert.equal(result.provider, 'built-in-course-guide');
-    assert.equal(result.notice, null);
-    assert.equal(Array.isArray(result.sources), true);
-    assert.equal(result.sources.length, 0);
+    assert.equal(result.provider, 'unavailable');
+    assert.equal(result.code, 'TUTOR_UNAVAILABLE');
+    assert.equal(result.outcome.type, 'unavailable');
+    assert.equal(result.answer, undefined);
   }
 });
 
@@ -591,11 +595,12 @@ test('selected paid notes stay inaccessible without an active subscription', asy
   assert.match(api.calls[0].messages[0].content, /Currently selected video .*Tools Setup/);
   assert.doesNotMatch(api.calls[0].messages[0].content, /TOOLS_NOTES/);
 });
-test('provider outage still identifies the selected video in Roman Hinglish', async () => {
+test('provider outage returns unavailability rather than selected-video filler', async () => {
   const api = backend({ courses: [selectedCourse], fail: true });
   const response = await api.chat({ message: 'is video mein kya hai', courseId: selectedCourse._id, lessonId: 'lesson-b' });
-  assert.match(response.reply, /Aap abhi Tools Setup dekh rahe ho/);
-  assert.equal(response.provider, 'built-in-course-guide');
+  assert.match(response.error, /abhi available nahi/);
+  assert.equal(response.provider, 'unavailable');
+  assert.equal(response.reply, undefined);
 });
 test('widget uses the current lesson at send time and clears it away from the player', async () => {
   const ui = widget();
@@ -660,18 +665,18 @@ test('product safety refusal works without paid material and without calling a p
   assert.equal(api.calls.length,0);assert.match(r.reply,/not a real customer/);assert.equal(r.outcome.type,'local_rule');
 });
 
-test('product provider failures retain relevant guidance with safe diagnostic status',async()=>{
+test('product provider failures return honest errors with safe diagnostic status',async()=>{
   const api=qualityBackend({fail:true});
   const r=await api.chat({courseId:qualityProductCourse._id,message:'Explain how composition affects advertising without drafting copy.',debugAi:true});
-  assert.equal(api.calls.length,2);assert.equal(r.provider,'built-in-course-guide');assert.equal(r.outcome.type,'provider_fallback');
+  assert.equal(api.calls.length,2);assert.equal(r.provider,'unavailable');assert.equal(r.outcome.type,'unavailable');
   assert.equal(r.outcome.liveModelAnswer,false);assert.equal(r.debug.provider.status,'connection_error');assert.equal(r.debug.provider.attempts.length,2);
-  assert.ok(r.notice);assert.doesNotMatch(JSON.stringify(r.debug.provider),/Provider offline|test|Authorization/);
+  assert.ok(r.error);assert.equal(r.answer,undefined);assert.doesNotMatch(JSON.stringify(r.debug.provider),/Provider offline|test|Authorization/);
 });
 
-test('unconfigured provider is explicitly fallback rather than a live answer',async()=>{
+test('unconfigured provider is explicitly unavailable rather than a live answer',async()=>{
   const api=qualityBackend({noKey:true});
   const r=await api.chat({courseId:qualityProductCourse._id,message:'Explain how composition affects advertising without drafting copy.'});
-  assert.equal(api.calls.length,0);assert.equal(r.outcome.providerStatus,'not_configured');assert.equal(r.outcome.type,'provider_fallback');
+  assert.equal(api.calls.length,0);assert.equal(r.outcome.providerStatus,'not_configured');assert.equal(r.outcome.type,'unavailable');
 });
 
 test('phase3 negated platform terms cannot reroute a supplied product price to subscription facts',async()=>{
@@ -706,7 +711,8 @@ test('phase3 persisted facts from a different active course are not reused',asyn
 
 test('phase7 route keeps a Hindi product through an omitted-history language switch and exact prompt',async()=>{
  const sessions=new Map();const api=qualityBackend({noKey:true,sessions,userId:'phase7-synthetic'});const scope={courseId:qualityProductCourse._id,conversationId:'phase7-hindi-name'};
- await api.chat({...scope,message:'मेरे प्रोडक्ट का नाम लकड़ी की कलम पेटी है। Lesson 02 के कदम हिंदी में बताइए।'});
+ const first=await api.chat({...scope,message:'मेरे प्रोडक्ट का नाम लकड़ी की कलम पेटी है। Copy the exact approved L06 Light Sweep prompt unchanged.'});
+ assert.equal(first.outcome.type,'local_rule');
  const demo=await api.chat({...scope,message:'Give a concrete honest product demonstration example in Hinglish.'});
  assert.match(demo.reply,/लकड़ी की कलम पेटी/);assert.match(demo.reply,/Example line/);assert.match(demo.reply,/Lesson 07/);
  const exact=await api.chat({...scope,message:'Copy the exact L06 Light Sweep prompt in English.'});

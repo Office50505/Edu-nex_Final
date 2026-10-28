@@ -1,0 +1,22 @@
+Corrected Cartoon live QA — READY, NOT APPROVED.
+
+Backend: http://127.0.0.1:3129
+Course: 6ae09ebee4ac0b60c08276bc / ai-cartoon-series
+Corrected source revision: ac975317f86cdca4b9cb9aa27494ff8f467d9234e78c50f72e2c6765fad07ae1
+Simulator authenticated and entitled; original conversation retained.
+Original Rohan/Bittu question is in the composer, NOT SUBMITTED.
+
+Maximum 4 total provider attempts INCLUDING retries/repairs; 30 minutes FROM APPROVAL.
+Current usage: 0. Remaining: 4. No timer has started. Never reset this ledger.
+
+Approval command (does not submit a question):
+node "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/tmp/nex-cartoon-safety-live-20261028/control.cjs" approve --sha256 ef531ff59f15a4314f6fc03105a8c22dee437da5814ee42ec5df31a5ea37882b
+
+After approval, manually press Send for the prepared original question.
+
+Raw vs delivered inspection:
+node "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/tmp/nex-cartoon-safety-live-20261028/inspect.cjs" --last
+Read-only readiness:
+node "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/tmp/nex-cartoon-safety-live-20261028/control.cjs" check
+
+Old session/approval/ledger untouched. No paid calls or broad tests executed during preparation.

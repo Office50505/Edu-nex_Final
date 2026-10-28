@@ -1,0 +1,23 @@
+{
+  "edunex-b/services/aiTutorService.js": "1f026d5b6176912fde9441cbfc091bb940bf8669eb9bdeba5c49a99c9a3e5709",
+  "edunex-b/routes/ai.js": "8d0ca617f41ca373179cd04cf71314752338f51c4b62a951db336dd074accb63",
+  "edunex-b/services/tutorProvider.js": "2fbd8f535cc7b08ce22bd555aa51a15694db4807da3e72e48a492277cc9835fc",
+  "edunex-b/services/tutorAvailability.js": "c646c5024c92cd2365848ed8470ef49ec7f185ecadab2c61e1a6d51dea00cb40",
+  "edunex-b/services/aiCompliance.js": "4ade54cd78363f803195267d0721befdd8821c9fe79acf6449945c06c13118c1",
+  "edunex-b/services/tutorKnowledge.js": "93f29826094aafe55e96bfc95d98164c5d7822afdd0730fdba552d824a288de3",
+  "edunex-b/services/courseKnowledgePacks.js": "8b42778a9b733a81ea82ba762f8e4c5e9057f93d31f22e15f02c72a86e281d16",
+  "edunex-b/middleware/compatAuth.js": "10e041d66261b61271911f0e0731518a89c635aad55b238d9fa17f68e17858a8",
+  "edunex-b/models/AiTutorSession.js": "bff99fe21e8a5b6b342c8946bf81c3570ea60586cdeec6ee8e921acb81ef218f",
+  "edunex-b/knowledge/course-packs.json": "8843cb3993867b735b8555f08e890c048effd13fa034eb1bfad8366c1db25846",
+  "edunex-b/knowledge/ai-local-business-ads/index.json": "5e09b4c01ad396e42ec487d2e77ed37f6ca6303fec893e2194b329ae16b16e3a",
+  "appcopyai/App.js": "8cb016c8eee074cba67905ae8d9b9fc9b5c654f9817397a2d0cb4d92aa78c196",
+  "appcopyai/services/aiClient.js": "e2e1c1bea9c25cffe50eb24a4e9852da92fa9c227fc71c037672a51ba20d740a",
+  "appcopyai/services/nativeSession.js": "c42cafe5dab28d9ffb7adce9bb574347a27a5121bbc989e0fc42960cfda6f715",
+  "appcopyai/courseAiCache.js": "ffd69e50e94547766195e019fdcbacf0e8c979a020646dfb1269d378b53c1220",
+  "tmp/chai-junction-memory-test/gate.cjs": "9eeca0caeb801774608c254808cf703ca1fa7e551e90e4f8708b78980d191008",
+  "tmp/chai-corner-in-app-acceptance/gate.cjs": "80bbf34c15db9da97c4bfd0073701af2082514e433b6cdac696013fd0c42da7c",
+  "tmp/chai-corner-in-app-acceptance/server.cjs": "5550da99eec2561f8e59eff32a8566933625bd6244eea12218f11c6e6b6eb41c",
+  "tmp/chai-corner-in-app-acceptance/control.cjs": "9f536539464ba82817c4042b85d2a7ac09fd1869cee1fea4d7484f4aaa2039cf",
+  "tmp/chai-corner-in-app-acceptance/app-inspect.js": "7491862a0d93bbafec2a554f7b5e15337c878509c34a54bfde44405068b3cce8",
+  "tmp/chai-corner-in-app-acceptance/app-evaluate.cjs": "21d54842ee5c5b78c6a9082714a30db230238fe2de832cd5d80d05e751710b95"
+}

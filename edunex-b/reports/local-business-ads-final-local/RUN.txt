@@ -1,0 +1,13 @@
+Working directory: /Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b
+
+Start/restart the real-metadata local evaluator:
+SKILLOMATE_EVAL_COURSE_PACK=ai-local-business-ads SKILLOMATE_EVAL_CASES=scripts/eval/local-business-ads-fast15-cases.json SKILLOMATE_EVAL_REPORT=reports/local-business-ads-final-local SKILLOMATE_EVAL_REGISTRATION_PLAN=scripts/eval/local-business-registration/operation.json node scripts/eval/mvp-local-backend.cjs
+
+Live evaluation, only after explicit paid-provider approval enables the gate:
+python3 -B chatbot_eval.py --cases scripts/eval/local-business-ads-fast15-cases.json --report reports/local-business-ads-final-local --mode live
+
+The localhost Course already exists, copied by the prepared authorized operation. The launcher verifies its course ID, slug, category and ten real lesson records and refuses mismatches. It does not overwrite the real course/category. Only synthetic test users and a lesson-free isolation control are seeded. No dummy video IDs are used for this course.
+
+Paid gate remains closed: provider_approval.json is absent. A future explicitly authorized gate must bind model google/gemini-2.5-flash, cases_sha256 from test_cases_frozen.sha256, max_calls=24 and a short UTC expires_at. No paid execution was performed.
+
+Exactly 15 student questions in 13 scenarios, including two actual two-turn memory scenarios. Fallbacks and blocked inference remain UNTESTED, not live passes.

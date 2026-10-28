@@ -1,0 +1,118 @@
+{
+  "reviewedAt": "2026-10-25T11:40:03.168Z",
+  "backendUrl": "http://127.0.0.1:3129",
+  "model": "google/gemini-2.5-flash",
+  "casesSHA256": "810383c9c7688b3a330c5432454ef01029ef3c65c57190b44c4908d78853f068",
+  "conversationId": "nai-1792927883651-qstfp5d",
+  "providerAttempts": 2,
+  "maximumProviderAttempts": 4,
+  "allTurnsGenuineProviderAnswers": true,
+  "nativeMessagesMatchBackend": true,
+  "secondRequestIncludesActualFirstExchange": true,
+  "turns": [
+    {
+      "time": "2026-10-25T11:38:41.363Z",
+      "case": "LBA-IOS-LIVE-ACCEPTANCE",
+      "type": "chat_response",
+      "request_id": "3aaca5ea-0c1c-4054-818d-d2da93f2fe2d",
+      "durationMs": 3616,
+      "conversation_id": "nai-1792927883651-qstfp5d",
+      "httpStatus": 200,
+      "turn": 1,
+      "user_id": "6addcefc5d47d548973c29b9",
+      "request": {
+        "message": "Meri shop Chai Junction hai, Vijay Nagar Indore mein. Hum chai, Maggi aur sandwiches bechte hain. Real shop photo se Instagram poster ka English prompt banao. Koi fake price ya discount mat add karna.",
+        "activeCourseId": "6ad9fe8ed0076b8d5e3b4f6d",
+        "history": [
+          {
+            "role": "assistant",
+            "content": "Ask anything from your indexed courses. I can search across all course lessons."
+          }
+        ],
+        "conversationId": "nai-1792927883651-qstfp5d"
+      },
+      "response": {
+        "answer": "Sure, aapki shop 'Chai Junction' ke liye Instagram poster ka English prompt yahan hai. Yeh prompt aapki real shop photo use karega aur koi fake price ya discount add nahi karega, jaisa aapne kaha.\n\n**Tyohaar greeting poster**\n\n```\nUse this photo of our shop front as the main image. Make a warm [festival] greeting poster. Keep the shop, the building and the \"Chai Junction\" signboard exactly the same — do not change the shop itself.\nAdd festive feeling only as a decorative design around the photo: a soft glowing frame of [diyas / lights / festival elements] along the edges, gentle golden sparkles. Do not place decorations on the real shop.\nWrite ONLY this text, spelled exactly like this:\n- Top: \"[Happy Diwali]\"\n- Bottom: \"Warm wishes from Chai Junction\"\nElegant, easy-to-read fonts. No offers, no prices, no other words.\n```\n\nAap [festival] aur [diyas / lights / festival elements] ko apne hisaab se change kar sakte hain. Jaise, agar Diwali hai toh [Happy Diwali] aur [diyas] use kar sakte hain.\n\nYeh prompt Lesson 05 mein cover kiya gaya hai.",
+        "reply": "Sure, aapki shop 'Chai Junction' ke liye Instagram poster ka English prompt yahan hai. Yeh prompt aapki real shop photo use karega aur koi fake price ya discount add nahi karega, jaisa aapne kaha.\n\n**Tyohaar greeting poster**\n\n```\nUse this photo of our shop front as the main image. Make a warm [festival] greeting poster. Keep the shop, the building and the \"Chai Junction\" signboard exactly the same — do not change the shop itself.\nAdd festive feeling only as a decorative design around the photo: a soft glowing frame of [diyas / lights / festival elements] along the edges, gentle golden sparkles. Do not place decorations on the real shop.\nWrite ONLY this text, spelled exactly like this:\n- Top: \"[Happy Diwali]\"\n- Bottom: \"Warm wishes from Chai Junction\"\nElegant, easy-to-read fonts. No offers, no prices, no other words.\n```\n\nAap [festival] aur [diyas / lights / festival elements] ko apne hisaab se change kar sakte hain. Jaise, agar Diwali hai toh [Happy Diwali] aur [diyas] use kar sakte hain.\n\nYeh prompt Lesson 05 mein cover kiya gaya hai.",
+        "provider": "fal-openrouter",
+        "sources": [],
+        "messageId": "6b73d97c-7fdd-463b-83f1-22e0bf026e22",
+        "notice": null,
+        "outcome": {
+          "type": "live_model",
+          "liveModelAnswer": true,
+          "providerStatus": "success",
+          "responseIssue": null
+        },
+        "knowledge": "course-materials"
+      }
+    },
+    {
+      "time": "2026-10-25T11:39:29.484Z",
+      "case": "LBA-IOS-LIVE-ACCEPTANCE",
+      "type": "chat_response",
+      "request_id": "2c30d9c4-c2c3-4a85-8af8-24270ee8f6e7",
+      "durationMs": 2780,
+      "conversation_id": "nai-1792927883651-qstfp5d",
+      "httpStatus": 200,
+      "turn": 2,
+      "user_id": "6addcefc5d47d548973c29b9",
+      "request": {
+        "message": "Actually shop ka naam Chai Corner hai. Ab usi shop ke liye short Hinglish Instagram caption do. Koi discount mention mat karna.",
+        "activeCourseId": "6ad9fe8ed0076b8d5e3b4f6d",
+        "history": [
+          {
+            "role": "assistant",
+            "content": "Ask anything from your indexed courses. I can search across all course lessons."
+          },
+          {
+            "role": "user",
+            "content": "Meri shop Chai Junction hai, Vijay Nagar Indore mein. Hum chai, Maggi aur sandwiches bechte hain. Real shop photo se Instagram poster ka English prompt banao. Koi fake price ya discount mat add karna."
+          },
+          {
+            "role": "assistant",
+            "content": "Sure, aapki shop 'Chai Junction' ke liye Instagram poster ka English prompt yahan hai. Yeh prompt aapki real shop photo use karega aur koi fake price ya discount add nahi karega, jaisa aapne kaha.\n\n**Tyohaar greeting poster**\n\n```\nUse this photo of our shop front as the main image. Make a warm [festival] greeting poster. Keep the shop, the building and the \"Chai Junction\" signboard exactly the same — do not change the shop itself.\nAdd festive feeling only as a decorative design around the photo: a soft glowing frame of [diyas / lights / festival elements] along the edges, gentle golden sparkles. Do not place decorations on the real shop.\nWrite ONLY this text, spelled exactly like this:\n- Top: \"[Happy Diwali]\"\n- Bottom: \"Warm wishes from Chai Junction\"\nElegant, easy-to-read fonts. No offers, no prices, no other words.\n```\n\nAap [festival] aur [diyas / lights / festival elements] ko apne hisaab se change kar sakte hain. Jaise, agar Diwali hai toh [Happy Diwali] aur [diyas] use kar sakte hain.\n\nYeh prompt Lesson 05 mein cover kiya gaya hai."
+          }
+        ],
+        "conversationId": "nai-1792927883651-qstfp5d"
+      },
+      "response": {
+        "answer": "Okay, aapki shop ka naam 'Chai Corner' hai, theek hai.\n\nYahan aapki shop 'Chai Corner' ke liye ek short Hinglish Instagram caption hai, bina kisi discount mention kiye:\n\n```\nApni shaam ko behtar banayein Chai Corner par! ☕\nVijay Nagar, Indore mein aapka favourite spot, jahan milti hai garma-garam chai, tasty Maggi aur fresh sandwiches.\nAaiye aur relax kijiye!\n#ChaiCorner #VijayNagar #IndoreFood #ChaiLover #MaggiTime #SandwichLove #Indore\n```\n\nYeh caption Lesson 08 mein diye gaye guidelines ke hisaab se hai.",
+        "reply": "Okay, aapki shop ka naam 'Chai Corner' hai, theek hai.\n\nYahan aapki shop 'Chai Corner' ke liye ek short Hinglish Instagram caption hai, bina kisi discount mention kiye:\n\n```\nApni shaam ko behtar banayein Chai Corner par! ☕\nVijay Nagar, Indore mein aapka favourite spot, jahan milti hai garma-garam chai, tasty Maggi aur fresh sandwiches.\nAaiye aur relax kijiye!\n#ChaiCorner #VijayNagar #IndoreFood #ChaiLover #MaggiTime #SandwichLove #Indore\n```\n\nYeh caption Lesson 08 mein diye gaye guidelines ke hisaab se hai.",
+        "provider": "fal-openrouter",
+        "sources": [],
+        "messageId": "33b8a6d1-eacd-4090-8850-478e8387dcc9",
+        "notice": null,
+        "outcome": {
+          "type": "live_model",
+          "liveModelAnswer": true,
+          "providerStatus": "success",
+          "responseIssue": null
+        },
+        "knowledge": "course-materials"
+      }
+    }
+  ],
+  "latencyMs": [
+    3616,
+    2780
+  ],
+  "providerFailures": [],
+  "reviewSignals": {
+    "correctedNamePresent": true,
+    "locationPresent": true,
+    "productsPresent": true,
+    "numericPriceOrDiscount": false,
+    "promotionWordsForContextualReview": [
+      "discount"
+    ],
+    "fullAnswerWordCount": 79
+  },
+  "manualReviewRequired": true,
+  "assessment": "REQUIRES CONTENT REVIEW",
+  "reviewCriteria": [
+    "English poster prompt uses actual Chai Junction facts and real photo; no invented price or promotion.",
+    "Second answer is a useful short natural Hinglish caption for Chai Corner with remembered location/products.",
+    "Inspect actual claims in the caption; negated discount words in surrounding prose alone are not a promotion."
+  ]
+}

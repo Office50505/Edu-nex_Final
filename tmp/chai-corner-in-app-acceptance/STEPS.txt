@@ -1,0 +1,29 @@
+Local iOS acceptance preparation — no paid test executed.
+
+From /Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled:
+
+1. Inspect readiness (no provider calls):
+node tmp/chai-corner-in-app-acceptance/control.cjs check
+
+2. Only after explicit approval, authorize the frozen case for up to 4 attempts and 30 minutes:
+node tmp/chai-corner-in-app-acceptance/control.cjs approve --sha256 810383c9c7688b3a330c5432454ef01029ef3c65c57190b44c4908d78853f068
+
+3. Keep the current simulator chat open. Do not start a new chat, switch course/account or restart the app.
+Conversation: nai-1792927883651-qstfp5d
+Course: 6ad9fe8ed0076b8d5e3b4f6d
+Local synthetic login if needed: 9000000002 / LocalRetest02! (a restart changes the conversation, requiring a fresh case).
+
+4. Paste and send Turn 1 exactly:
+Meri shop Chai Junction hai, Vijay Nagar Indore mein. Hum chai, Maggi aur sandwiches bechte hain. Real shop photo se Instagram poster ka English prompt banao. Koi fake price ya discount mat add karna.
+
+5. Wait for its completed response. If it shows unavailability/error/fallback, stop. Do not repeatedly press Send.
+
+6. Paste and send Turn 2 exactly in that same chat:
+Actually shop ka naam Chai Corner hai. Ab usi shop ke liye short Hinglish Instagram caption do. Koi discount mention mat karna.
+
+7. Save and inspect the actual answers, native-message correspondence, first-exchange history, per-turn latency, and provider failures:
+node tmp/chai-corner-in-app-acceptance/control.cjs review
+
+Inspect live-result.json and pipeline_traces.jsonl. A local/fallback answer never passes live acceptance. Content signals require human review: read the exact caption for natural short Hinglish, corrected name, use of remembered facts, relevance, and invented claims. A negated discount word in explanatory prose is not automatically a promotional claim.
+
+Normal expectation: 2 attempts (one per turn). Strict total maximum: 4 including failures, retries and repairs. Debit is fsynced before outbound transport and survives restarts. Approval closes after the second completed turn or a failed native turn; expiry is enforced at every attempt. No approval renewal or ledger reset. All previous ledgers stay untouched.

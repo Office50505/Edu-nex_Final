@@ -1,0 +1,23 @@
+--- before/edunex-b/services/aiCompliance.js
++++ after/edunex-b/services/aiCompliance.js
+@@ -5,7 +5,19 @@
+ const MINOR_SEXUAL_REPLY = 'I cannot help sexualize a minor or an age-ambiguous person, or provide generation instructions for that. Use clearly adult, non-sexual, fully clothed characters and keep the scene safe.';
+ const FILTER_BYPASS_REPLY = 'I cannot help bypass Flow, Veo, or other provider safety filters. I can help rewrite the idea into a safe, policy-compliant version.';
+ const PROMPT_LEAKAGE_PATTERN = /(?:reveal|show|print|repeat|dump|ignore).{0,50}(?:system prompt|developer message|hidden instructions|api key|secret|course context)|(?:jailbreak|prompt injection)/i;
+-const FILTER_BYPASS_PATTERN = /\b(?:bypass|evade|avoid|disable|break|trick|jailbreak|get around|beat)\b.{0,80}\b(?:safety|filter|filters|policy|moderation|guardrail|guardrails|flow|veo)\b|\b(?:safety|filter|filters|policy|moderation|guardrail|guardrails|flow|veo)\b.{0,80}\b(?:bypass|evade|avoid|disable|break|trick|jailbreak|get around|beat)\b/i;
++const EVASION_ACTION = '\\b(?:bypass|evade|jailbreak|get around)\\b';
++const AMBIGUOUS_ACTION = '\\b(?:avoid|disable|break|trick|beat)\\b';
++const SAFETY_CONTROL = '\\b(?:safety|filters?|policy|moderation|guardrails?)\\b';
++const PROVIDER = '\\b(?:flow|veo)\\b';
++// A provider name is not itself a safety control. Ordinary "lunch break",
++// "avoid changing clothes" or "disable music" near Flow/Veo must stay allowed.
++const FILTER_BYPASS_PATTERN = new RegExp([
++  `${EVASION_ACTION}.{0,80}(?:${SAFETY_CONTROL}|${PROVIDER})`,
++  `(?:${SAFETY_CONTROL}|${PROVIDER}).{0,80}${EVASION_ACTION}`,
++  `${AMBIGUOUS_ACTION}.{0,80}${SAFETY_CONTROL}`,
++  `${SAFETY_CONTROL}.{0,80}${AMBIGUOUS_ACTION}`,
++  '\\b(?:trick|beat)\\s+(?:(?:the|google)\\s+){0,2}(?:flow|veo)\\b',
++].join('|'), 'i');
+ const EXPLICIT_SEXUAL_PATTERN = /\b(?:porn|pornographic|explicit sex|sex scene|nude|naked|nsfw|erotic|sexual|seductive|strip|lingerie|cleavage|bedroom)\b.{0,80}\b(?:prompt|image|video|generate|generation|flow|veo|clip|scene)\b|\b(?:prompt|image|video|generate|generation|flow|veo|clip|scene)\b.{0,80}\b(?:porn|pornographic|explicit sex|sex scene|nude|naked|nsfw|erotic|sexual|seductive|strip|lingerie|cleavage)\b/i;
+ const MINOR_OR_AGE_AMBIGUOUS_PATTERN = /\b(?:minor|underage|child|kid|teen|teenage|schoolgirl|schoolboy|young girl|young boy|little girl|little boy|age ambiguous|age-ambiguous|looks young|barely legal|17|16|15|14|13|12)\b/i;
+ const SEXUALIZED_APPEARANCE_PATTERN = /\b(?:sexual|sexy|seductive|revealing|nude|naked|lingerie|cleavage|erotic|porn|strip|hot)\b/i;

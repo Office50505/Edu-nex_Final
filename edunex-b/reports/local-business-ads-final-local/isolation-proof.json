@@ -1,0 +1,10 @@
+{
+  "PASS": true,
+  "endpoint": "127.0.0.1:27017",
+  "database": "skillomate_mvp_eval_lba_real_20261022",
+  "directConnection": true,
+  "standalone": true,
+  "empty": true,
+  "metadata_sha256": "11d9aa52aa0789e5aecd0381d36120f85fcd4d8a24e9a38a4e9474aa59755514",
+  "course_id": "6ad9fe8ed0076b8d5e3b4f6d"
+}

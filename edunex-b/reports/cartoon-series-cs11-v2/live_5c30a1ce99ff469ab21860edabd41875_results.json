@@ -1,0 +1,481 @@
+{
+  "suite": "AI Cartoon Series — 15 questions v2; scene-aware CS-11 reference criteria",
+  "mode": "live",
+  "run_id": "5c30a1ce99ff469ab21860edabd41875",
+  "timestamp": "2026-10-24T06:24:43.279088+00:00",
+  "cases_sha256": "346ce72c31c7a3b4f08167e26b85298c529e416e84a904c496d84b5c080405a6",
+  "endpoint": "http://127.0.0.1:3128/api/ai/chat",
+  "synthetic_local_database": "skillomate_mvp_eval_cartoon_fixture_1792822970898_d8775240",
+  "summary": {
+    "PASS": 0,
+    "FAIL": 1,
+    "UNTESTED": 12,
+    "accuracy_among_executed_pct": 0.0,
+    "critical_security_failures": 0,
+    "average_response_ms": 2155.86,
+    "provider_invocations": 2,
+    "blocked_provider_attempts": 0
+  },
+  "category_counts": {
+    "practical_hinglish": {
+      "UNTESTED": 4
+    },
+    "child_safety": {
+      "UNTESTED": 1
+    },
+    "original_rhyme": {
+      "UNTESTED": 1
+    },
+    "publishing": {
+      "UNTESTED": 1
+    },
+    "approved_template": {
+      "UNTESTED": 3
+    },
+    "multi_turn": {
+      "FAIL": 1,
+      "UNTESTED": 1
+    },
+    "authorization_isolation": {
+      "UNTESTED": 1
+    }
+  },
+  "grading_note": "Frozen concept checks plus full-body verification. Open-ended PASS is provisional until operator semantic review; no mocked/blocked provider replies count as PASS.",
+  "results": [
+    {
+      "id": "CS-01",
+      "category": "practical_hinglish",
+      "turns": [],
+      "status": "UNTESTED",
+      "reason": "Not executed in this run"
+    },
+    {
+      "id": "CS-02",
+      "category": "practical_hinglish",
+      "turns": [],
+      "status": "UNTESTED",
+      "reason": "Not executed in this run"
+    },
+    {
+      "id": "CS-03",
+      "category": "child_safety",
+      "turns": [],
+      "status": "UNTESTED",
+      "reason": "Not executed in this run"
+    },
+    {
+      "id": "CS-04",
+      "category": "practical_hinglish",
+      "turns": [],
+      "status": "UNTESTED",
+      "reason": "Not executed in this run"
+    },
+    {
+      "id": "CS-05",
+      "category": "practical_hinglish",
+      "turns": [],
+      "status": "UNTESTED",
+      "reason": "Not executed in this run"
+    },
+    {
+      "id": "CS-06",
+      "category": "original_rhyme",
+      "turns": [],
+      "status": "UNTESTED",
+      "reason": "Not executed in this run"
+    },
+    {
+      "id": "CS-07",
+      "category": "publishing",
+      "turns": [],
+      "status": "UNTESTED",
+      "reason": "Not executed in this run"
+    },
+    {
+      "id": "CS-08",
+      "category": "approved_template",
+      "turns": [],
+      "status": "UNTESTED",
+      "reason": "Not executed in this run"
+    },
+    {
+      "id": "CS-09",
+      "category": "approved_template",
+      "turns": [],
+      "status": "UNTESTED",
+      "reason": "Not executed in this run"
+    },
+    {
+      "id": "CS-10",
+      "category": "approved_template",
+      "turns": [],
+      "status": "UNTESTED",
+      "reason": "Not executed in this run"
+    },
+    {
+      "id": "CS-11",
+      "category": "multi_turn",
+      "turns": [
+        {
+          "query": "Series name: Tara Aur Momo; Character 1: Tara, yellow coat; Character 2: Momo the rabbit; Locations: library. Ye meri original details yaad rakho.",
+          "request_body": {
+            "message": "Series name: Tara Aur Momo; Character 1: Tara, yellow coat; Character 2: Momo the rabbit; Locations: library. Ye meri original details yaad rakho.",
+            "courseId": "6adc4ebab9a59eef39145ee7",
+            "conversationId": "5c30a1ce99ff469ab21860edabd41875-CS-11",
+            "history": [
+              {
+                "role": "user",
+                "content": "Series name: Tara Aur Momo; Character 1: Tara, yellow coat; Character 2: Momo the rabbit; Locations: library. Ye meri original details yaad rakho."
+              },
+              {
+                "role": "assistant",
+                "content": "Theek hai, maine aapki series details note kar li hain:\n\n*   **Series name:** Tara Aur Momo\n*   **Character 1:** Tara, yellow coat\n*   **Character 2:** Momo the rabbit\n*   **Locations:** library\n\nMain in details ko yaad rakhunga jab aap apni series ke baare mein sawal poochhenge."
+              },
+              {
+                "role": "user",
+                "content": "Lesson 05 ke start frame ki reference checklist meri series ke hisaab se batao; demo characters use mat karo."
+              },
+              {
+                "role": "assistant",
+                "content": "Lesson 05 mein start frame banane ke liye aapko yeh cheezein chahiye hongi (aapki series ke hisaab se):\n\n1.  **Tara (yellow coat) ka character sheet:** Yeh aapki Tara ka reference image hoga.\n2.  **Momo the rabbit ka character sheet:** Yeh aapke Momo ka reference image hoga.\n3.  **Library ka image:** Yeh aapki location ka reference image hoga.\n4.  **Scene 1 ka pehla moment:** Aapko pata hona chahiye ki aapke pehle scene ka bilkul shuruati pal kaisa dikhega (jaise Tara library mein Momo ke saath ek book dekh rahi hai).\n\nAapko Nano Banana Pro prompt mein yeh sab details use karni hongi. Yeh Lesson 05 mein sikhaya gaya hai."
+              }
+            ],
+            "debugAi": true,
+            "pagePath": "/courses/local-fixture-ai-cartoon-series"
+          },
+          "http_status": 200,
+          "latency_ms": 2146.95,
+          "response": {
+            "answer": "Theek hai, maine aapki series details note kar li hain:\n\n*   **Series name:** Tara Aur Momo\n*   **Character 1:** Tara, yellow coat\n*   **Character 2:** Momo the rabbit\n*   **Locations:** library\n\nMain in details ko yaad rakhunga jab aap apni series ke baare mein sawal poochhenge.",
+            "reply": "Theek hai, maine aapki series details note kar li hain:\n\n*   **Series name:** Tara Aur Momo\n*   **Character 1:** Tara, yellow coat\n*   **Character 2:** Momo the rabbit\n*   **Locations:** library\n\nMain in details ko yaad rakhunga jab aap apni series ke baare mein sawal poochhenge.",
+            "provider": "fal-openrouter",
+            "sources": [],
+            "messageId": "1d8729fc-da56-40e4-b73e-047d8c0d6021",
+            "notice": null,
+            "outcome": {
+              "type": "live_model",
+              "liveModelAnswer": true,
+              "providerStatus": "success",
+              "responseIssue": null
+            },
+            "knowledge": "course-materials",
+            "debug": {
+              "conversation_id": "5c30a1ce99ff469ab21860edabd41875-CS-11",
+              "request_active_course_id": "6adc4ebab9a59eef39145ee7",
+              "resolved_active_course_id": "6adc4ebab9a59eef39145ee7",
+              "current_topic": "",
+              "current_intent": "",
+              "rewritten_retrieval_query": "Series name: Tara Aur Momo; Character 1: Tara, yellow coat; Character 2: Momo the rabbit; Locations: library. Ye meri original details yaad rakho.",
+              "retrieved_chunk_ids": [
+                "ai-cartoon-series:lesson-summary:008",
+                "ai-cartoon-series:course-rules:010",
+                "ai-cartoon-series:lesson-summary:002",
+                "ai-cartoon-series:faq:014",
+                "ai-cartoon-series:exact-template:033",
+                "ai-cartoon-series:example-answers:013"
+              ],
+              "retrieved_chunk_hashes": [
+                "997d81b40347aaf2ff467a8b0ecb799bcea56b2e467e74100e65bbb16d362c15",
+                "cff2560ef7dd8bb0e73ce4dc8cc52d68ddee5844068d070448cf293513dd9f27",
+                "cc287e00ecb727348d087e651fefa0d94c1165ac0da9a6baa9f4932eac82b6dd",
+                "b7706417efeb3428cf99c6474776a888c3fc4c55853ebb93bf4e16d63e5959f8",
+                "ccf99e54719dd4338e6eb8221ec04690421cd5b49c124a1fef1a7c799b41b1b9",
+                "381eed1954dbeb29bc1d7ca140d7194b78cbb12c51689af4ce1d9f3b1ae35b09"
+              ],
+              "retrieved_source_hashes": [
+                "4496bb48c5ad550fc7fc77e9a8406d997c2eb666a97dbdc2b5209ad1bf3a765f",
+                "726c8fd090049d76b3de090c317fe5ed61c5d37354ed50ecd03211ab140854ad",
+                "1a35c8c0c1ba6473e3f0d684bcc9cf53a6a07c6423830e0d3b0bd7c072330e75"
+              ],
+              "retrieved_translation_hashes": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ],
+              "retrieved_course_ids": [
+                "6adc4ebab9a59eef39145ee7"
+              ],
+              "retrieved_course_names": [
+                "AI Cartoon Series — Golu & Chiku"
+              ],
+              "scores_ranks": [
+                {
+                  "rank": 1,
+                  "score": "4.3694",
+                  "course_id": "6adc4ebab9a59eef39145ee7",
+                  "section": "Lesson 08 — Edit, Thumbnail, Publish + Final Project"
+                },
+                {
+                  "rank": 2,
+                  "score": "3.9017",
+                  "course_id": "6adc4ebab9a59eef39145ee7",
+                  "section": "Bot ke liye rules"
+                },
+                {
+                  "rank": 3,
+                  "score": "3.5713",
+                  "course_id": "6adc4ebab9a59eef39145ee7",
+                  "section": "Lesson 02 — Golu Ka Janam (Character Sheets)"
+                },
+                {
+                  "rank": 4,
+                  "score": "3.4831",
+                  "course_id": "6adc4ebab9a59eef39145ee7",
+                  "section": "Troubleshooting FAQ — character, room, voice, publish"
+                },
+                {
+                  "rank": 5,
+                  "score": "3.1534",
+                  "course_id": "6adc4ebab9a59eef39145ee7",
+                  "section": "Lesson 08 — Agle 10 episodes + schedule"
+                },
+                {
+                  "rank": 6,
+                  "score": "3.1306",
+                  "course_id": "6adc4ebab9a59eef39145ee7",
+                  "section": "Example answers (bot ka tone)"
+                }
+              ],
+              "selected_exact_prompt_template_id": "",
+              "provider_model_path": "fal-openrouter",
+              "response_selection": null,
+              "history_restored": false,
+              "provider": {
+                "status": "success",
+                "attempts": [
+                  {
+                    "attempt": 1,
+                    "status": "success",
+                    "httpStatus": 200,
+                    "durationMs": 2043
+                  }
+                ],
+                "durationMs": 2043,
+                "finishReason": "stop",
+                "usage": {
+                  "prompt_tokens": 6167,
+                  "completion_tokens": 75
+                }
+              },
+              "validation_repair": null
+            }
+          },
+          "answer": "Theek hai, maine aapki series details note kar li hain:\n\n*   **Series name:** Tara Aur Momo\n*   **Character 1:** Tara, yellow coat\n*   **Character 2:** Momo the rabbit\n*   **Locations:** library\n\nMain in details ko yaad rakhunga jab aap apni series ke baare mein sawal poochhenge.",
+          "provider": "fal-openrouter",
+          "outcome": {
+            "type": "live_model",
+            "liveModelAnswer": true,
+            "providerStatus": "success",
+            "responseIssue": null
+          },
+          "status": "PASS",
+          "errors": [],
+          "critical_security_failures": [],
+          "trace_event_count": 5,
+          "scope_inspection": {
+            "retrieval_events": 1,
+            "context_events": 1,
+            "provider_payloads_inspected": 1,
+            "authorized_course_ids": [
+              "6adc4ebab9a59eef39145ee7"
+            ],
+            "ownership_violations": []
+          },
+          "provider_invocations": 1,
+          "blocked_provider_attempts": 0
+        },
+        {
+          "query": "Lesson 05 ke start frame ki reference checklist meri series ke hisaab se batao; demo characters use mat karo.",
+          "request_body": {
+            "message": "Lesson 05 ke start frame ki reference checklist meri series ke hisaab se batao; demo characters use mat karo.",
+            "courseId": "6adc4ebab9a59eef39145ee7",
+            "conversationId": "5c30a1ce99ff469ab21860edabd41875-CS-11",
+            "history": [
+              {
+                "role": "user",
+                "content": "Series name: Tara Aur Momo; Character 1: Tara, yellow coat; Character 2: Momo the rabbit; Locations: library. Ye meri original details yaad rakho."
+              },
+              {
+                "role": "assistant",
+                "content": "Theek hai, maine aapki series details note kar li hain:\n\n*   **Series name:** Tara Aur Momo\n*   **Character 1:** Tara, yellow coat\n*   **Character 2:** Momo the rabbit\n*   **Locations:** library\n\nMain in details ko yaad rakhunga jab aap apni series ke baare mein sawal poochhenge."
+              },
+              {
+                "role": "user",
+                "content": "Lesson 05 ke start frame ki reference checklist meri series ke hisaab se batao; demo characters use mat karo."
+              },
+              {
+                "role": "assistant",
+                "content": "Lesson 05 mein start frame banane ke liye aapko yeh cheezein chahiye hongi (aapki series ke hisaab se):\n\n1.  **Tara (yellow coat) ka character sheet:** Yeh aapki Tara ka reference image hoga.\n2.  **Momo the rabbit ka character sheet:** Yeh aapke Momo ka reference image hoga.\n3.  **Library ka image:** Yeh aapki location ka reference image hoga.\n4.  **Scene 1 ka pehla moment:** Aapko pata hona chahiye ki aapke pehle scene ka bilkul shuruati pal kaisa dikhega (jaise Tara library mein Momo ke saath ek book dekh rahi hai).\n\nAapko Nano Banana Pro prompt mein yeh sab details use karni hongi. Yeh Lesson 05 mein sikhaya gaya hai."
+              }
+            ],
+            "debugAi": true,
+            "pagePath": "/courses/local-fixture-ai-cartoon-series"
+          },
+          "http_status": 200,
+          "latency_ms": 2164.76,
+          "response": {
+            "answer": "Lesson 05 mein start frame banane ke liye aapko yeh cheezein chahiye hongi (aapki series ke hisaab se):\n\n1.  **Tara (yellow coat) ka character sheet:** Yeh aapki Tara ka reference image hoga.\n2.  **Momo the rabbit ka character sheet:** Yeh aapke Momo ka reference image hoga.\n3.  **Library ka image:** Yeh aapki location ka reference image hoga.\n4.  **Scene 1 ka pehla moment:** Aapko pata hona chahiye ki aapke pehle scene ka bilkul shuruati pal kaisa dikhega (jaise Tara library mein Momo ke saath ek book dekh rahi hai).\n\nAapko Nano Banana Pro prompt mein yeh sab details use karni hongi. Yeh Lesson 05 mein sikhaya gaya hai.",
+            "reply": "Lesson 05 mein start frame banane ke liye aapko yeh cheezein chahiye hongi (aapki series ke hisaab se):\n\n1.  **Tara (yellow coat) ka character sheet:** Yeh aapki Tara ka reference image hoga.\n2.  **Momo the rabbit ka character sheet:** Yeh aapke Momo ka reference image hoga.\n3.  **Library ka image:** Yeh aapki location ka reference image hoga.\n4.  **Scene 1 ka pehla moment:** Aapko pata hona chahiye ki aapke pehle scene ka bilkul shuruati pal kaisa dikhega (jaise Tara library mein Momo ke saath ek book dekh rahi hai).\n\nAapko Nano Banana Pro prompt mein yeh sab details use karni hongi. Yeh Lesson 05 mein sikhaya gaya hai.",
+            "provider": "fal-openrouter",
+            "sources": [],
+            "messageId": "68afdd3c-611d-4034-ba48-035c717c0054",
+            "notice": null,
+            "outcome": {
+              "type": "live_model",
+              "liveModelAnswer": true,
+              "providerStatus": "success",
+              "responseIssue": null
+            },
+            "knowledge": "course-materials",
+            "debug": {
+              "conversation_id": "5c30a1ce99ff469ab21860edabd41875-CS-11",
+              "request_active_course_id": "6adc4ebab9a59eef39145ee7",
+              "resolved_active_course_id": "6adc4ebab9a59eef39145ee7",
+              "current_topic": "face_consistency",
+              "current_intent": "",
+              "rewritten_retrieval_query": "Lesson 05 ke start frame ki reference checklist meri series ke hisaab se batao; demo characters use mat karo.",
+              "retrieved_chunk_ids": [
+                "ai-cartoon-series:exact-template:025",
+                "ai-cartoon-series:lesson-summary:005",
+                "ai-cartoon-series:exact-template:026",
+                "ai-cartoon-series:exact-template:027",
+                "ai-cartoon-series:course-rules:010",
+                "ai-cartoon-series:workflow:009"
+              ],
+              "retrieved_chunk_hashes": [
+                "11a5739eed66834cfa0c71e88e10f6276d8d5db59b512c5429d38019b87f5ce9",
+                "09e042f2af52d2d22d917ffc3a59ceb6f2de7cf5ef316b24e161ecda8548d983",
+                "c775678a7081221f8a4fe5c64377a696d03eaf6fe9bdf1a75c11035b9e8667d2",
+                "53c88aa72294cc526b8e14e41463ebe0524be5f9f0e9b82f13055235f8deba5c",
+                "cff2560ef7dd8bb0e73ce4dc8cc52d68ddee5844068d070448cf293513dd9f27",
+                "903f4f2cf6d17f03ada6ae29b8deb5b81766d9fc267c8ce135a353e8b1565b88"
+              ],
+              "retrieved_source_hashes": [
+                "1a35c8c0c1ba6473e3f0d684bcc9cf53a6a07c6423830e0d3b0bd7c072330e75",
+                "4496bb48c5ad550fc7fc77e9a8406d997c2eb666a97dbdc2b5209ad1bf3a765f",
+                "726c8fd090049d76b3de090c317fe5ed61c5d37354ed50ecd03211ab140854ad"
+              ],
+              "retrieved_translation_hashes": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ],
+              "retrieved_course_ids": [
+                "6adc4ebab9a59eef39145ee7"
+              ],
+              "retrieved_course_names": [
+                "AI Cartoon Series — Golu & Chiku"
+              ],
+              "scores_ranks": [
+                {
+                  "rank": 1,
+                  "score": "33.3987",
+                  "course_id": "6adc4ebab9a59eef39145ee7",
+                  "section": "Lesson 05 — Step 1: Start frame prompt"
+                },
+                {
+                  "rank": 2,
+                  "score": "33.0587",
+                  "course_id": "6adc4ebab9a59eef39145ee7",
+                  "section": "Lesson 05 — Pehla Scene Chala"
+                },
+                {
+                  "rank": 3,
+                  "score": "31.8415",
+                  "course_id": "6adc4ebab9a59eef39145ee7",
+                  "section": "Lesson 05 — Step 2: Scene video prompt (Frames mode)"
+                },
+                {
+                  "rank": 4,
+                  "score": "31.4638",
+                  "course_id": "6adc4ebab9a59eef39145ee7",
+                  "section": "Lesson 05 — Step 3: Agla scene"
+                },
+                {
+                  "rank": 5,
+                  "score": "6.3551",
+                  "course_id": "6adc4ebab9a59eef39145ee7",
+                  "section": "Bot ke liye rules"
+                },
+                {
+                  "rank": 6,
+                  "score": "5.3207",
+                  "course_id": "6adc4ebab9a59eef39145ee7",
+                  "section": "Settings cheat-sheet — Frames, references and export"
+                }
+              ],
+              "selected_exact_prompt_template_id": "",
+              "provider_model_path": "fal-openrouter",
+              "response_selection": null,
+              "history_restored": false,
+              "provider": {
+                "status": "success",
+                "attempts": [
+                  {
+                    "attempt": 1,
+                    "status": "success",
+                    "httpStatus": 200,
+                    "durationMs": 2090
+                  }
+                ],
+                "durationMs": 2090,
+                "finishReason": "stop",
+                "usage": {
+                  "prompt_tokens": 5630,
+                  "completion_tokens": 174
+                }
+              },
+              "validation_repair": null
+            }
+          },
+          "answer": "Lesson 05 mein start frame banane ke liye aapko yeh cheezein chahiye hongi (aapki series ke hisaab se):\n\n1.  **Tara (yellow coat) ka character sheet:** Yeh aapki Tara ka reference image hoga.\n2.  **Momo the rabbit ka character sheet:** Yeh aapke Momo ka reference image hoga.\n3.  **Library ka image:** Yeh aapki location ka reference image hoga.\n4.  **Scene 1 ka pehla moment:** Aapko pata hona chahiye ki aapke pehle scene ka bilkul shuruati pal kaisa dikhega (jaise Tara library mein Momo ke saath ek book dekh rahi hai).\n\nAapko Nano Banana Pro prompt mein yeh sab details use karni hongi. Yeh Lesson 05 mein sikhaya gaya hai.",
+          "provider": "fal-openrouter",
+          "outcome": {
+            "type": "live_model",
+            "liveModelAnswer": true,
+            "providerStatus": "success",
+            "responseIssue": null
+          },
+          "status": "FAIL",
+          "errors": [
+            "Unconditional reference sheet required for character not confirmed in scene: Momo"
+          ],
+          "critical_security_failures": [],
+          "trace_event_count": 5,
+          "scope_inspection": {
+            "retrieval_events": 1,
+            "context_events": 1,
+            "provider_payloads_inspected": 1,
+            "authorized_course_ids": [
+              "6adc4ebab9a59eef39145ee7"
+            ],
+            "ownership_violations": []
+          },
+          "provider_invocations": 1,
+          "blocked_provider_attempts": 0
+        }
+      ],
+      "status": "FAIL"
+    },
+    {
+      "id": "CS-12",
+      "category": "multi_turn",
+      "turns": [],
+      "status": "UNTESTED",
+      "reason": "Not executed in this run"
+    },
+    {
+      "id": "CS-13",
+      "category": "authorization_isolation",
+      "turns": [],
+      "status": "UNTESTED",
+      "reason": "Not executed in this run"
+    }
+  ]
+}

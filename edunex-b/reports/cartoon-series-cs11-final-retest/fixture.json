@@ -1,0 +1,72 @@
+{
+  "kind": "synthetic-local-course-fixture",
+  "production_course_id": null,
+  "production_published_slug": null,
+  "course_id": "6adc50a9c2007d532004a92d",
+  "course_slug": "local-fixture-ai-cartoon-series",
+  "fixture_only": true,
+  "playback_verified": false,
+  "video_reference_kind": "fixed-test-placeholder",
+  "placeholder_video_id": "MVPTEST0001",
+  "course_pack": "ai-cartoon-series",
+  "lessons": [
+    {
+      "lesson_id": "6adc50a9c2007d532004a92e",
+      "lesson_number": 1,
+      "title": "Lesson 01 — Course Intro",
+      "knowledge_id": "ai-cartoon-series:lesson-summary:001",
+      "content_hash": "029f25cd72240869f61e3b5931ca46b04b3a4348f560e8dddee54641d5b0d885"
+    },
+    {
+      "lesson_id": "6adc50a9c2007d532004a92f",
+      "lesson_number": 2,
+      "title": "Lesson 02 — Golu Ka Janam (Character Sheets)",
+      "knowledge_id": "ai-cartoon-series:lesson-summary:002",
+      "content_hash": "cc287e00ecb727348d087e651fefa0d94c1165ac0da9a6baa9f4932eac82b6dd"
+    },
+    {
+      "lesson_id": "6adc50a9c2007d532004a930",
+      "lesson_number": 3,
+      "title": "Lesson 03 — Golu Ki Duniya (Locations)",
+      "knowledge_id": "ai-cartoon-series:lesson-summary:003",
+      "content_hash": "6d48c4c8f0ae845a8fc9b1da7e2f17ea9e1f561ab07fb83b20f4b3d460151732"
+    },
+    {
+      "lesson_id": "6adc50a9c2007d532004a931",
+      "lesson_number": 4,
+      "title": "Lesson 04 — Kahani Likho",
+      "knowledge_id": "ai-cartoon-series:lesson-summary:004",
+      "content_hash": "52a7702050d4df92306f10327b2da01eab5d599c3d012de8c466d11a3277c709"
+    },
+    {
+      "lesson_id": "6adc50a9c2007d532004a932",
+      "lesson_number": 5,
+      "title": "Lesson 05 — Pehla Scene Chala",
+      "knowledge_id": "ai-cartoon-series:lesson-summary:005",
+      "content_hash": "09e042f2af52d2d22d917ffc3a59ceb6f2de7cf5ef316b24e161ecda8548d983"
+    },
+    {
+      "lesson_id": "6adc50a9c2007d532004a933",
+      "lesson_number": 6,
+      "title": "Lesson 06 — Poora Episode, Awaaz Ke Saath",
+      "knowledge_id": "ai-cartoon-series:lesson-summary:006",
+      "content_hash": "5d21e0819510dbb23e6f69fcfb13b099c1b8e9e31f0e3d27964ec31006625c8e"
+    },
+    {
+      "lesson_id": "6adc50a9c2007d532004a934",
+      "lesson_number": 7,
+      "title": "Lesson 07 — Rhyme Video + Troubleshooting",
+      "knowledge_id": "ai-cartoon-series:lesson-summary:007",
+      "content_hash": "4b8c5cdf9ecd8b28f47111bfc056d70d0e115e0376535ee35915c130e3ec1dc6"
+    },
+    {
+      "lesson_id": "6adc50a9c2007d532004a935",
+      "lesson_number": 8,
+      "title": "Lesson 08 — Edit, Thumbnail, Publish + Final Project",
+      "knowledge_id": "ai-cartoon-series:lesson-summary:008",
+      "content_hash": "997d81b40347aaf2ff467a8b0ecb799bcea56b2e467e74100e65bbb16d362c15"
+    }
+  ],
+  "database": "skillomate_mvp_eval_cartoon_fixture_1792823465007_6828fff9",
+  "mongo_host": "127.0.0.1:27017"
+}

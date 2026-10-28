@@ -1,0 +1,16 @@
+{
+  "backendUrl": "http://127.0.0.1:3129",
+  "backendReady": true,
+  "isolatedDatabaseReady": true,
+  "userId": "6addcefc5d47d548973c29b9",
+  "testAccountHasActiveSession": true,
+  "entitledCourseId": "6ad9fe8ed0076b8d5e3b4f6d",
+  "loadedSourceVerified": true,
+  "providerKeyConfigured": true,
+  "model": "google/gemini-2.5-flash",
+  "approvalGranted": true,
+  "providerAttempts": 0,
+  "maxProviderAttempts": 4,
+  "casesSHA256": "4d664925069fd6af734cad4cc423ddba55f1ecd0f9aaf4a7f5e628e1b2240410",
+  "liveExecution": "not executed by readiness check"
+}

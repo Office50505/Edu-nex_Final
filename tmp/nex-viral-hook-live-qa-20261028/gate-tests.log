@@ -1,0 +1,22 @@
+✔ unapproved session has no timer, four attempts, and blocks client approval flags (21.216292ms)
+✔ four total attempts span questions, followups, new conversations and restarts; fifth blocked (77.508208ms)
+✔ expiry starts at approval, lasts exactly 30 minutes and survives restart (20.35425ms)
+✔ rejects wrong account before accounting (13.219458ms)
+✔ rejects wrong course before accounting (14.2655ms)
+✔ rejects conflicting course before accounting (13.848125ms)
+✔ rejects no entitlement before accounting (12.804042ms)
+✔ rejects production database before accounting (11.676708ms)
+✔ rejects external host before accounting (14.4585ms)
+✔ rejects different model before accounting (15.317792ms)
+✔ missing, empty, truncated and tampered ledgers fail closed (3.7795ms)
+✔ approval cannot enlarge budget or duration (33.980292ms)
+✔ retry and repair share the durable four-attempt counter (60.143125ms)
+✔ close keeps ledger and disallows reopening (25.757167ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 380.141084

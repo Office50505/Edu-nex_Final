@@ -1,0 +1,269 @@
+{
+  "checkedAt": "2026-10-28T11:02:45.203Z",
+  "backendReady": true,
+  "isolatedDatabaseReady": true,
+  "updatedCodeLoaded": true,
+  "simulatorAuthenticated": true,
+  "simulatorCourseEntitled": true,
+  "sourceRevisionSHA256": "7c4d89a46b9b31020f0527fa2c1d3c8ac1c30d00e218dbd12bbe890bc28f7b09",
+  "protections": {
+    "normalAuthentication": true,
+    "normalRateLimiting": true,
+    "billingClassifier": true,
+    "viralHookDomainPolicy": true,
+    "courseIsolation": true,
+    "durableAttemptAccounting": true
+  },
+  "history": {
+    "conversationCount": 2,
+    "preservedConversations": [
+      {
+        "id": "nai-1793182640591-reyidt3",
+        "messages": 11
+      }
+    ],
+    "currentMessageCount": 1
+  },
+  "backendUrl": "http://127.0.0.1:3129",
+  "currentConversationId": "nai-1793185314863-7wl6mci",
+  "arbitraryQuestionsAndConversationsAllowed": true,
+  "previousLedgersPreserved": true,
+  "providerKeyConfigured": true,
+  "pipeline": {
+    "groundingValidationLoaded": true,
+    "domain": "viral-hook-formula",
+    "requestContractLoaded": true,
+    "taskPreservingValidationLoaded": true,
+    "sharedServiceExportsVerified": true,
+    "deterministicStartupCheckPassed": true,
+    "providerCalls": 0,
+    "courseId": "6ae1b4694e1af14d4adc9e2b",
+    "courseSlug": "viral-hook-formula",
+    "recordsVerified": 27,
+    "lessonsVerified": 10,
+    "hookCategoriesVerified": 8,
+    "exactPromptBodiesVerified": 2,
+    "businessAdvertisingRulesApplied": false,
+    "cartoonRulesApplied": false,
+    "scopedMemoryCorrectionVerified": true,
+    "safetyClassifierLoaded": true,
+    "ordinaryHookTermsAllowed": true,
+    "genuineBypassBlocked": true,
+    "taskAssessmentFunctionSHA256": "448a9655b11f6f349c8b874de8ce942dacf4b7e158a0e5625f1e8a29e6f669d7",
+    "packValidationFunctionSHA256": "2dec694dafcb227496468075c52eb83ce5bcf6933a0d07d66f5f9fe989520fe8",
+    "routeTaskPipelineLoaded": true,
+    "groundingRepairLoaded": true
+  },
+  "entitlementSource": "admin",
+  "knowledgeCheck": {
+    "courseId": "6ae1b4694e1af14d4adc9e2b",
+    "coveredRecords": 27,
+    "exactTemplates": 2,
+    "checks": [
+      {
+        "chunkId": "viral-hook-formula:lesson-summary:001",
+        "contentHash": "39c34e13e385a269063edd2b762ae87daf4d80444805e9d2bc542d21222c96e4",
+        "authorizedRetrieval": true,
+        "exact": false
+      },
+      {
+        "chunkId": "viral-hook-formula:lesson-summary:002",
+        "contentHash": "2af2b4db54f7b475429f0a31b02a8ee7f540021885cdc6ab39e27135456771f3",
+        "authorizedRetrieval": true,
+        "exact": false
+      },
+      {
+        "chunkId": "viral-hook-formula:lesson-summary:003",
+        "contentHash": "6d43b4ab86553126dcb1b9d9195d1b07dca5713a8ead70688d7bf8fa146c0568",
+        "authorizedRetrieval": true,
+        "exact": false
+      },
+      {
+        "chunkId": "viral-hook-formula:lesson-summary:004",
+        "contentHash": "354c074214772edb25c4a8dd5e37cc5033c4ee72ba312d1ef323c8895d095c7b",
+        "authorizedRetrieval": true,
+        "exact": false
+      },
+      {
+        "chunkId": "viral-hook-formula:lesson-summary:005",
+        "contentHash": "b84bcc28b616b2a968abd0a5413c6fc0779ed36911ca03b5e75394b31da73908",
+        "authorizedRetrieval": true,
+        "exact": false
+      },
+      {
+        "chunkId": "viral-hook-formula:lesson-summary:006",
+        "contentHash": "85300322657cc2ca843dd8c1be51cb7d05977a24897ee532190980efa46b529f",
+        "authorizedRetrieval": true,
+        "exact": false
+      },
+      {
+        "chunkId": "viral-hook-formula:lesson-summary:007",
+        "contentHash": "a891501b6cadb206b892a3323efc8663d0ea365dbc63426ad92cbf1cc304b815",
+        "authorizedRetrieval": true,
+        "exact": false
+      },
+      {
+        "chunkId": "viral-hook-formula:lesson-summary:008",
+        "contentHash": "f6396dcec4b1f3d1a6cf0037f536a53a36b2c97ab30eebd6d9c13c6acd684e21",
+        "authorizedRetrieval": true,
+        "exact": false
+      },
+      {
+        "chunkId": "viral-hook-formula:lesson-summary:009",
+        "contentHash": "fbf139cf6ee059cb0d2263aeedc3abc891e9ccba5e575a83b9330d20cc0d30b5",
+        "authorizedRetrieval": true,
+        "exact": false
+      },
+      {
+        "chunkId": "viral-hook-formula:lesson-summary:010",
+        "contentHash": "0f219a34f62b0cf2a0bd411e09bdd60e909379bf5ae5dde71bfc2d0a7b12fdeb",
+        "authorizedRetrieval": true,
+        "exact": false
+      },
+      {
+        "chunkId": "viral-hook-formula:course-rules:011",
+        "contentHash": "60a5c1fe3dccd9350188fdfcc68ae3303999ee86b65035934c5211c4cd1d933a",
+        "authorizedRetrieval": true,
+        "exact": false
+      },
+      {
+        "chunkId": "viral-hook-formula:overview:012",
+        "contentHash": "74ebf318163fe02c3be42228d858fa86aab1fc20ca5248408996374179b8251f",
+        "authorizedRetrieval": true,
+        "exact": false
+      },
+      {
+        "chunkId": "viral-hook-formula:glossary:013",
+        "contentHash": "f13f09fce31cce9747f08b7cb4bb3651d3526ea42fcb2493e932be3056c2e543",
+        "authorizedRetrieval": true,
+        "exact": false
+      },
+      {
+        "chunkId": "viral-hook-formula:faq:014",
+        "contentHash": "cfd1d9008ff037e82e11e3ae0766451447d5a24f16b309ecfd43d16ab4dc954c",
+        "authorizedRetrieval": true,
+        "exact": false
+      },
+      {
+        "chunkId": "viral-hook-formula:example-answers:015",
+        "contentHash": "6be5e26204c1947cc7680009410dc6415990e8396ef71630f3b471aaeb4f0580",
+        "authorizedRetrieval": true,
+        "exact": false
+      },
+      {
+        "chunkId": "viral-hook-formula:workflow:016",
+        "contentHash": "906ecfea535479a8f9b6cf4ff6fc1e4d464fa2d05fda0bbc1a2ea02f517e76bb",
+        "authorizedRetrieval": true,
+        "exact": false
+      },
+      {
+        "chunkId": "viral-hook-formula:hook-formula:017",
+        "contentHash": "5fc88e9dc705faae1cdf280b3fb5657fd78c612e44928b92eb8e9a0fd53862e9",
+        "authorizedRetrieval": true,
+        "exact": false
+      },
+      {
+        "chunkId": "viral-hook-formula:hook-formula:018",
+        "contentHash": "e191c13cfad9071466d0e2ec7372a270caf3af2321d101882868c041e0f5cb32",
+        "authorizedRetrieval": true,
+        "exact": false
+      },
+      {
+        "chunkId": "viral-hook-formula:hook-formula:019",
+        "contentHash": "3206ca12b46e582e729ed3d71a7093d6190d264294e0011ce2e64bb1b414466f",
+        "authorizedRetrieval": true,
+        "exact": false
+      },
+      {
+        "chunkId": "viral-hook-formula:hook-formula:020",
+        "contentHash": "0008d6932591a3fc80cdebc11cd58df8b349f91aee2e858c5890c258e539670a",
+        "authorizedRetrieval": true,
+        "exact": false
+      },
+      {
+        "chunkId": "viral-hook-formula:hook-formula:021",
+        "contentHash": "e2c72ec9dd5b22f7e0ccf9a016ae4aa6324a47d1fc69083575192c49b5a94b6a",
+        "authorizedRetrieval": true,
+        "exact": false
+      },
+      {
+        "chunkId": "viral-hook-formula:hook-formula:022",
+        "contentHash": "327743e482b5bfe6b259fe69b24fed64079d7ed4cf72be7007fbe6752008326d",
+        "authorizedRetrieval": true,
+        "exact": false
+      },
+      {
+        "chunkId": "viral-hook-formula:hook-formula:023",
+        "contentHash": "8de5afa1b94aa194bfad5d5b6ebb304523deb05c23dbb01e5d3d23879d00b3b0",
+        "authorizedRetrieval": true,
+        "exact": false
+      },
+      {
+        "chunkId": "viral-hook-formula:hook-formula:024",
+        "contentHash": "ef58e5ec264f63bdd6a9fcd9c9ba834bdaf19825c56b0865055312542b50eaf0",
+        "authorizedRetrieval": true,
+        "exact": false
+      },
+      {
+        "chunkId": "viral-hook-formula:exact-template:025",
+        "contentHash": "681398ec0efaf17afdf739052dc3bab6e395269292d7642c6e76848db9f084b9",
+        "authorizedRetrieval": true,
+        "exact": true
+      },
+      {
+        "chunkId": "viral-hook-formula:exact-template:026",
+        "contentHash": "258bc758fd55ec2174b29a11fc6bcb45bb5d74fa2f3719e3f869de0a370dfcc4",
+        "authorizedRetrieval": true,
+        "exact": true
+      },
+      {
+        "chunkId": "viral-hook-formula:workflow:027",
+        "contentHash": "09a36b0d8f71be77b0b06ea026e140b52eeec512cdcf4272209a7f87bb30859a",
+        "authorizedRetrieval": true,
+        "exact": false
+      }
+    ],
+    "historyRestored": true,
+    "memoryRestored": true,
+    "businessOrCartoonContractApplied": false,
+    "providerCalls": 0,
+    "databaseWrites": 0
+  },
+  "sessionId": "6323adcf-b118-4559-b327-3e6aaf2c64b6",
+  "sessionSHA256": "beee2551dcb5ed7b901db2c0fd64b53819fececb558ada78533aea7eb82e0f7b",
+  "approvalStatus": "manual_qa_awaiting_approval",
+  "approved": false,
+  "providerAttempts": 0,
+  "maximumProviderAttempts": 3,
+  "remainingProviderAttempts": 3,
+  "expiresAt": null,
+  "durationMinutes": 30,
+  "model": "google/gemini-2.5-flash",
+  "userId": "6addcefc5d47d548973c29b9",
+  "courseId": "6ae1b4694e1af14d4adc9e2b",
+  "blocker": "manual_qa_awaiting_approval",
+  "preparationComplete": true,
+  "correctedProductRevisionSHA256": "72e24a65ba7cc3e86cd6e32058f63c347dcefe3f91acffa702699f13779fd378",
+  "freshConversation": true,
+  "scenario": "Unlabelled undeveloped 35mm film roll, unknown contents and usable-image outcome; three Hinglish curiosity hooks with opening visuals and actual-result payoff.",
+  "questionFile": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/tmp/nex-viral-hook-final-live-20261028/question.txt",
+  "questionStagedButNotSubmitted": true,
+  "previousConversationPreserved": true,
+  "historicalApprovalAccountingArtifactsPreserved": 47,
+  "productOrCourseContentChangedDuringPreparation": false,
+  "focusedGateTests": {
+    "passed": 14,
+    "failed": 0
+  },
+  "rawValidationRepairDeliveryGroupingCheckedOffline": true,
+  "approvalCommand": "node \"/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/tmp/nex-viral-hook-final-live-20261028/control.cjs\" approve --sha256 beee2551dcb5ed7b901db2c0fd64b53819fececb558ada78533aea7eb82e0f7b",
+  "inspectionCommand": "node \"/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/tmp/nex-viral-hook-final-live-20261028/inspect.cjs\" --last",
+  "approvalCommandExecuted": false,
+  "timerStarted": false,
+  "paidCallsExecuted": 0,
+  "criticalBlockers": [],
+  "providerAvailability": "Provider key/model/endpoint configured; network availability and generated-answer quality await approved manual execution.",
+  "productionChanges": false,
+  "deployed": false,
+  "committedOrPushed": false
+}

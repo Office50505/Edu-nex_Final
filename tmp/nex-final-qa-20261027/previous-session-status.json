@@ -1,0 +1,9 @@
+{
+  "sessionId": "436ff6f9-3618-4256-b9b6-bc30deb89586",
+  "approvalStatus": "manual_qa_awaiting_approval",
+  "approved": false,
+  "providerAttempts": 0,
+  "maximumProviderAttempts": 30,
+  "expiresAt": null,
+  "disposition": "Preserved intact; separate 12-attempt successor prepared for final acceptance. Old temporary database/key directory missing."
+}

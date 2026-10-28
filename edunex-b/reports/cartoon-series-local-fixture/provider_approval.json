@@ -1,0 +1,7 @@
+{
+  "approved": true,
+  "model": "google/gemini-2.5-flash",
+  "cases_sha256": "eb73038e68aa684d5e5b47bc7c7fcb50c58ea3e0f1230f128ad660f9e88f606c",
+  "max_calls": 24,
+  "expires_at": "2026-10-24T06:17:03.500477+00:00"
+}

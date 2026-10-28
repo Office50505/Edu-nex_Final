@@ -1,0 +1,42 @@
+{
+  "course": "AI Cartoon Series — Golu & Chiku",
+  "integration": "FAIL",
+  "status": "knowledge_prepared_and_fixture_verified; blocked_pending_verified_published_identity",
+  "actual_course_id": null,
+  "actual_published_slug": null,
+  "registry_enabled": false,
+  "lessons_indexed": 8,
+  "exact_course_messages_indexed": 17,
+  "separate_master_style_templates": 1,
+  "total_records": 33,
+  "exact_prompt_authority": "AI_Cartoon_Series_All_Prompts.pdf",
+  "local_tests": {
+    "cartoon_series_passed": 41,
+    "cartoon_series_failed": 0,
+    "local_business_shared_code_checks_passed": 43,
+    "local_business_shared_code_checks_failed": 0,
+    "harness": "VM-only catalog/auth/transport fixtures; no network inference and no database writes. These are not live quality passes."
+  },
+  "live_evaluation": {
+    "prepared": true,
+    "student_questions": 15,
+    "scenarios": 13,
+    "two_turn_conversations": 2,
+    "cases_file": "scripts/eval/cartoon-series-fast15-cases.json",
+    "cases_sha256": "eb73038e68aa684d5e5b47bc7c7fcb50c58ea3e0f1230f128ad660f9e88f606c",
+    "executed": false,
+    "provider_approval_created": false,
+    "ready": false
+  },
+  "critical_blockers": [
+    "No AI Cartoon Series / Golu & Chiku course exists in the configured catalog. Existing published ID, slug and eight real lesson IDs cannot be verified. Pack remains inactive; no duplicate record or slug was invented.",
+    "A real-course isolated evaluation runtime cannot be configured until catalog identity and metadata are available. The existing real-metadata launcher currently validates the Local Business Ads ten-lesson snapshot; eight-lesson Cartoon support must be validated before use.",
+    "Explicit approval is required before any paid provider evaluation. No approval was created or reused from another course."
+  ],
+  "original_course_sources_unchanged": true,
+  "provider_requests_sent": 0,
+  "production_database_writes": false,
+  "deployed": false,
+  "committed": false,
+  "pushed": false
+}

@@ -1,0 +1,120 @@
+{
+  "status": "Implemented and locally verified; stopped before paid execution",
+  "rootCause": {
+    "sourceTraceDirectory": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/tmp/nex-viral-hook-live-qa-20261028",
+    "rawEqualsDeliveredForBothSavedFailures": true,
+    "courseId": "6ae1b4694e1af14d4adc9e2b",
+    "nicheAndAudiencePresentInHistory": true,
+    "generationInventedFacts": true,
+    "validationGap": "The previous Viral pack validation checked template substitution/preservation only. It returned issue:null for fabricated statistics, specific state/diagnosis assumptions and successful repair outcomes.",
+    "repairGap": "No automatic factual repair was requested for either response. The student correction was an ordinary new generation, with assistant claims still in conversational context.",
+    "retrievedContext": "Both saved failures retrieved authorized Viral Hook material; the course selection and retained history were correct.",
+    "thirdHistoricalAttempt": "A later maintenance request was submitted to Gemini, which described hypothetical code changes. That response was not a project implementation. No historical artifact was changed by this task."
+  },
+  "implementation": [
+    "Course-scoped learner-only grounding evidence and persistent retractions in the existing string-valued facts store; no schema or entitlement change.",
+    "Separate reported observations, unknown/retracted facts, quoted or hypothetical ideas, proposed camera styling and unsupported assertions. Future promises cannot become observed results.",
+    "Validate statements and locally qualified conditions per sentence/clause; authorized exact byte ranges alone are exempt. Brackets do not exempt factual assertions.",
+    "One optional grounding repair uses the existing provider adapter, the remaining original 25-second deadline, maxAttempts:1, unchanged course-scope checks and attempt gate.",
+    "Revalidate the repair and retain original numbered-item count. If unavailable/unsafe/substituted, preserve original useful content with flagged clauses replaced by localized placeholders.",
+    "The existing Business and Cartoon dispatch remains unchanged; no business-owner or character-sheet rules are added to Viral."
+  ],
+  "filesModified": [
+    "edunex-b/services/viralHookTutor.js",
+    "edunex-b/services/courseKnowledgePacks.js",
+    "edunex-b/services/aiTutorService.js",
+    "edunex-b/routes/ai.js",
+    "edunex-b/tests/viral-hook-integration.test.cjs"
+  ],
+  "filesAdded": [
+    "edunex-b/tests/viral-hook-grounding.test.cjs",
+    "edunex-b/tests/fixtures/viral-hook-live-grounding-failures.json"
+  ],
+  "existingTestFixtureAdjustment": "Changed a mock hook that presupposed viewers were skipping the first frame into an open question about testing a different first frame; assertions were retained.",
+  "beforeAndAfter": [
+    {
+      "before": "Is cassette player mein ek aisi cheez kharab hai jo 90% log ignore kar dete hain...",
+      "after": "Is purane cassette player ke andar kya milega? Aaj pehla check saath karte hain.",
+      "qualification": "After text is the mocked repair fixture delivered through the actual route in deterministic tests, not a paid model result."
+    },
+    {
+      "before": "End mein player ko perfect working condition mein play karke dikhaoge.",
+      "after": "Actual checks aur jo findings milen woh dikhao, chahe result inconclusive ho.",
+      "qualification": "The fallback instead retains safe original sections and replaces only flagged clauses with confirmation placeholders."
+    }
+  ],
+  "tests": {
+    "total": 119,
+    "passed": 119,
+    "failed": 0,
+    "newGrounding": 39,
+    "existingViralIntegration": 40,
+    "existingBusinessAndCartoonCompatibility": 40,
+    "command": "NODE_OPTIONS=--require=./edunex-b/tests/helpers/deny-network.cjs node --test edunex-b/tests/viral-hook-grounding.test.cjs edunex-b/tests/viral-hook-integration.test.cjs edunex-b/tests/task-preserving-response.test.cjs edunex-b/tests/cartoon-task-preserving.test.cjs",
+    "networkDisabled": true,
+    "initialDevelopmentFailuresResolved": [
+      "Saved trace fixture records used null for the absent contract, not undefined.",
+      "The previous mocked truthful alternative still presupposed viewer skipping; the mock wording was corrected."
+    ],
+    "syntaxChecksPassed": true,
+    "diffWhitespaceCheckPassed": true
+  },
+  "savedFailures": {
+    "initialStatistic": "Detected unsupported statistic and implied repair success; bounded mocked repair delivered the five-hook task.",
+    "studentCorrection": "Detected assumed audio damage, operating state and completed/clear-audio/perfect-working payoffs; bounded mocked repair delivered the two curiosity hooks.",
+    "invalidOrBlockedRepair": "Rejected; original safe visuals, hook headings and item count preserved with localized placeholders."
+  },
+  "regressionCoverage": [
+    "Unfamiliar seed germination, data recovery, pigment conservation and unreported physical properties.",
+    "English, Hindi and Hinglish; explicit conditions, hypotheses, metaphors and camera styling.",
+    "Quoted/rejected claims, denial of proof, bracketed claims, negations and guaranteed future claims.",
+    "Long conversation memory, niche/audience corrections and new-chat reset.",
+    "Exact template source integrity and authorized route; missing/expired/other-course access and cross-course scope including the repair response.",
+    "Generation and repair share existing durable accounting; blocked/exhausted approval is not retried.",
+    "Historical Business Ads failures and Cartoon canon, scene participation, repairs and saved CS-11 evidence."
+  ],
+  "preservation": {
+    "protectedArtifactsChecked": 1770,
+    "protectedArtifactsChanged": [],
+    "approvedCourseKnowledgeChanged": false,
+    "authenticationOrEntitlementsChanged": false,
+    "providerAccountingImplementationChanged": false,
+    "billingClassifierChanged": false,
+    "historicalApprovalOrLedgersChanged": false,
+    "historicalAttemptsStillRecorded": 3,
+    "paidCallsThisTask": 0,
+    "productionWrites": false,
+    "deployed": false,
+    "committedOrPushed": false
+  },
+  "runtime": {
+    "backendUrl": "http://127.0.0.1:3129",
+    "correctedSourceRevision": "72e24a65ba7cc3e86cd6e32058f63c347dcefe3f91acffa702699f13779fd378",
+    "sourceUnchanged": true,
+    "simulatorAuthenticated": true,
+    "selectedCourseId": "6ae1b4694e1af14d4adc9e2b",
+    "entitlementState": "ACTIVE",
+    "conversationId": "nai-1793182640591-reyidt3",
+    "messagesPreserved": 11,
+    "inferenceEnabled": false,
+    "providerCredentialsLoaded": false
+  },
+  "limitations": [
+    "Rule-based claim recognition and conservative lexical evidence support are not a complete semantic entailment checker; unfamiliar paraphrases can be missed or conservatively flagged.",
+    "A successful repair may still need live quality review. All provider responses in new tests were injected mocks; no new Gemini output was generated.",
+    "If a bounded repair fails or the budget/approval blocks it, affected clauses remain explicit placeholders rather than newly invented facts."
+  ],
+  "finalLiveReadiness": {
+    "oneFinalManualCheckJustified": true,
+    "correctedBackendLoaded": true,
+    "paidExecutionReady": false,
+    "requirement": "Prepare a fresh approval bound to the corrected source revision before manually running a final live check. Do not reuse the old source-bound session command; old approval and remaining historical budget have not been reset or carried over."
+  },
+  "evidence": {
+    "tests": "final-focused-tests.log",
+    "savedRawAndDelivered": "saved-failures.json",
+    "taskDiff": "complete-changes.diff",
+    "runtime": "runtime-readiness.json",
+    "simulator": "simulator-readiness.json"
+  }
+}
