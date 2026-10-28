@@ -28,6 +28,7 @@ const {
   validateProductReply,
   isProductKnowledge,
   productFallbackNotice,
+  packFor, packDirectReply, validatePackReply,
 } = require('../services/aiTutorService');
 const {
   checkAiInput,
@@ -59,7 +60,7 @@ async function loadTutorState(req, courseId) {
   if (typeof AiTutorSession.findOne !== 'function') return null;
   const course = mongoose.Types.ObjectId.isValid(courseId) ? courseId : null;
   const saved = await AiTutorSession.findOne({ user: userId, course })
-    .select('activeCourseId currentTopic currentIntent lastWorkflow lastTemplateId productContext conversationId messages')
+    .select('activeCourseId currentTopic currentIntent lastWorkflow lastTemplateId productContext courseContext conversationId messages')
     .lean()
     .catch(() => null);
   const incoming=compactText(req.body?.conversationId || req.body?.conversation_id,120);
@@ -88,6 +89,7 @@ async function persistTutorChat(req, courseId, history, message, reply, state = 
       lastWorkflow: compactText(state.lastWorkflow, 120),
       lastTemplateId: compactText(state.lastTemplateId, 160),
       ...(state.productContext ? { productContext: state.productContext } : {}),
+      ...(state.courseContext ? {courseContext:state.courseContext} : {}),
       messages,
       lastUpdatedAt: new Date(),
     },
@@ -215,7 +217,7 @@ async function handleTutorChat(req, res) {
     );
     const lessonId = compactText(req.body.lessonId, 120);
     let history = sanitizeHistory(req.body.history);
-    const savedState = await loadTutorState(req, requestedCourseId);
+    const savedState = await loadTutorState(req, resolveRequestedCourseScope({courseId:requestedCourseId}));
     const courseId = resolveRequestedCourseScope({
       courseId: req.body.courseId,
       activeCourseId: req.body.activeCourseId || req.body.active_course_id,
@@ -250,7 +252,9 @@ async function handleTutorChat(req, res) {
     const learnerContext = await loadLearnerContext(req.compatUser);
     // Resolve server-owned course context before disambiguating overlapping account words.
     const chooseDirectReply = () => {
-      const domain=isProductKnowledge(knowledge)?productCourseDomain(message):'';
+      const domain=packFor(knowledge?.activeCourse)
+        ? (/\bSkillomate\b.*\b(?:plan|subscription|billing|refund|login|account)\b/i.test(message) ? 'platform' : 'course')
+        : isProductKnowledge(knowledge)?productCourseDomain(message):'';
       if(domain==='platform'&&!knowledge.materialsAvailable&&/inactive|expired|restore|access|भुगतान|एक्सेस/iu.test(message)){reply=productAccessReply(message,knowledge);provider='course-knowledge-rule';return;}
       const language=isProductKnowledge(knowledge)?knowledge.productContext?.language:'';
       const learnerReply=domain==='course'?'':learnerContextDirectReply(message,learnerContext,language);
@@ -268,6 +272,8 @@ async function handleTutorChat(req, res) {
           history=knowledge.conversationHistory;
           historyRestored=!incomingHistoryLength && Boolean(history.length);
         }
+        const packRule = !reply && packDirectReply({message,history,knowledge});
+        if (packRule) { reply = packRule.reply; selectedTemplateId = packRule.templateId; }
         const productRule = !reply && productTutorReply({ message, history, knowledge });
         if (productRule) { reply = productRule.reply; selectedTemplateId = productRule.templateId; }
         if (!reply && knowledge?.materialsAvailable) reply = aiFilmmakingDirectReply({ message, courseId, knowledge, history });
@@ -276,7 +282,7 @@ async function handleTutorChat(req, res) {
           selectedTemplateId ||= aiFilmmakingTemplateIdForReply(reply);
         } else if (FAL_API_KEY) {
           const generationStarted=Date.now();
-          reply = await callFalOpenRouter({ context: knowledge.context+(knowledge.requestPlan?'\nTransient learner request plan (not course facts): '+JSON.stringify(knowledge.requestPlan):''), message, pagePath, assistantName, history, language:knowledge?.productContext?.language,
+          reply = await callFalOpenRouter({ context: knowledge.context+(knowledge.requestPlan?'\nTransient learner request plan (not course facts): '+JSON.stringify(knowledge.requestPlan):''), message, pagePath, assistantName, history, language:knowledge?.courseContext?.language || knowledge?.productContext?.language,
             courseScope:{activeCourse:knowledge?.activeCourse ? {_id:knowledge.activeCourse.id,slug:knowledge.activeCourse.slug}:null,includeMaterials:Boolean(knowledge?.materialsAvailable)},
             onDiagnostics: value => { providerDiagnostics = value; } });
           provider = 'fal-openrouter';
@@ -298,6 +304,9 @@ async function handleTutorChat(req, res) {
           }
           reply = validation.reply;
           responseIssue = validation.issue;
+          const packValidation = validatePackReply({reply,knowledge});
+          reply = packValidation.reply;
+          responseIssue ||= packValidation.issue;
           if (responseIssue) provider = 'course-response-policy';
         }
       } catch (error) {

@@ -1,4 +1,6 @@
 const fs = require('node:fs');
+const coursePacks = require('./courseKnowledgePacks');
+const { COURSE_PACKS, packFor, findPackTemplate, lessonNumber: packLessonNumber } = coursePacks;
 const path = require('node:path');
 const { PRODUCT_SLUGS, PRODUCT_RECORDS, findProductTemplate, wantsProductPrompt, wantsProductScene, productRequestContext } = require('./productTutorKnowledge');
 const { activeCourseEntitlement } = require('./courseAccess');
@@ -37,6 +39,7 @@ const COURSE_DOCUMENTS = [
     ],
   },
 ];
+for (const pack of COURSE_PACKS) COURSE_DOCUMENTS.push({ slugs: pack.slugs, dir: pack.dir, files: [['index.json', pack.title]], records: pack.records, ownerCourseId: pack.actualCourseId });
 const DOCUMENTED_COURSE_SLUGS = new Set(COURSE_DOCUMENTS.flatMap(course => course.slugs));
 const STOP = new Set('the a an and or of to in is it for with my me how what why can do does please explain give tell about that this more elaborate simple simply you your hai ka ki ke ko se mein mujhe kya kaise'.split(' '));
 const SYNONYMS = [
@@ -91,15 +94,16 @@ const PLATFORM_DOCUMENTS = fs.existsSync(PLATFORM_DOC_PATH)
       kind: 'platform-material',
     }))
   : [];
-const localDocuments = COURSE_DOCUMENTS.flatMap(({ slugs, dir, files }) => files.flatMap(([file, title]) => {
+const localDocuments = COURSE_DOCUMENTS.flatMap(({ slugs, dir, files, records, ownerCourseId }) => files.flatMap(([file, title]) => {
   const text = fs.readFileSync(path.join(__dirname, '../knowledge', dir, file), 'utf8');
-  return slugs.flatMap(slug => (PRODUCT_SLUGS.has(slug) ? PRODUCT_RECORDS : chunks(text)).map(chunk => ({
+  return slugs.flatMap(slug => (records || (PRODUCT_SLUGS.has(slug) ? PRODUCT_RECORDS : chunks(text))).map(chunk => ({
     ...chunk,
     title,
     courseSlug: slug,
+    ownerCourseId,
     kind: 'course-material',
     contentType: chunk.contentType || 'course-material',
-    sourceDocument: file,
+    sourceDocument: chunk.sourceDocument || file,
   })));
 }));
 
@@ -145,7 +149,8 @@ function assertKnowledgeScope(knowledge, { activeCourse, includeMaterials }) {
 }
 
 function forbiddenCourseDocuments({ activeCourse, includeMaterials }) {
-  const family = includeMaterials && activeCourse ? COURSE_DOCUMENTS.find(group => group.slugs.includes(activeCourse.slug)) : null;
+  const family = includeMaterials && activeCourse ? COURSE_DOCUMENTS.find(group => group.slugs.includes(activeCourse.slug)
+    && (!group.ownerCourseId || group.ownerCourseId === String(activeCourse._id))) : null;
   return localDocuments.filter(doc => !family?.slugs.includes(doc.courseSlug));
 }
 
@@ -200,7 +205,7 @@ function isAiFilmmakingCourse(course) {
 function retrievalQueryFor({ message, history = [], activeCourse = null }) {
   const workflow = filmmakingWorkflowRequest(message, history, activeCourse);
   if (workflow) return workflow.retrievalQuery;
-  if (activeCourse && !PRODUCT_SLUGS.has(activeCourse.slug) && detectsFaceConsistencyRetrieval(message, history)) {
+  if (activeCourse && !packFor(activeCourse) && !PRODUCT_SLUGS.has(activeCourse.slug) && detectsFaceConsistencyRetrieval(message, history)) {
     const courseName = String(activeCourse.title || activeCourse.slug || '').trim();
     const exact = wantsExactPrompt(message) ? ' exact prompt template' : '';
     return `${courseName} face consistency Ingredients${exact} using saved last frame and character sheet`;
@@ -243,7 +248,7 @@ function retrieveKnowledge({ courses, message, history = [], includeMaterials = 
       title: activeCourse.title, heading: `${activeLesson.title} — Lesson notes`, content: String(activeLesson.notes).slice(0, 12000),
       course: activeCourse, kind: 'lesson-notes', active: true,
     });
-    candidates.push(...localDocuments.filter(doc => bySlug.has(doc.courseSlug)).map(doc => ({ ...doc, course: bySlug.get(doc.courseSlug),
+    candidates.push(...localDocuments.filter(doc => bySlug.has(doc.courseSlug) && (!doc.ownerCourseId || doc.ownerCourseId === String(owner._id))).map(doc => ({ ...doc, course: bySlug.get(doc.courseSlug),
       active: Boolean(activeLesson && activeCourse?.slug === doc.courseSlug && (
         (lessonNumber && doc.heading.match(/^\s*lesson\s+(\d+)\b/i)?.[1] === lessonNumber)
         || normalizeTitle(doc.heading) === normalizeTitle(activeLesson.title)
@@ -257,13 +262,14 @@ function retrieveKnowledge({ courses, message, history = [], includeMaterials = 
   const requestContext = productScope ? productRequestContext(message, history, { ...conversationContext,
     lessonNumber: requestedLessonNumberFromText(activeLesson?.title) || conversationContext.lessonNumber }) : null;
   const requestedLessonNumber = requestContext?.lessonNumber
-    || (isAiFilmmakingCourse(owner) ? filmmakingLessonNumber(message) : null)
+    || (packFor(owner) ? packLessonNumber(message) : isAiFilmmakingCourse(owner) ? filmmakingLessonNumber(message) : null)
     || requestedLessonNumberFromText(`${message}\n${retrievalQuery}`);
   const followUp = currentTerms.length < 3 || /\b(that|this|same|previous|example|simpler|elaborate|continue|quiz|samjhao|bhi|iska|uska|then|now)\b|तो|उसका|इसका/i.test(message);
   // User turns carry product facts; assistant prose must not invent a new retrieval entity.
   const recent = followUp ? (productScope ? history.filter(item => item.role === 'user').slice(-2) : history.slice(-4)).map(item => item.content).join(' ') : '';
   const template = productScope && (wantsProductPrompt(message) || wantsProductScene(message))
     ? findProductTemplate(message, wantsProductPrompt(message)?history:[]) : null;
+  const packTemplate = findPackTemplate(packFor(owner), message, history);
   const workflowIntent = /workflow|steps|settings|references|how (?:do|does|can|to)|तरीका|सेटिंग|kaise|tareeka/i.test(message);
   const weights = new Map();
   for (const word of terms(recent)) weights.set(word, 0.3);
@@ -300,6 +306,7 @@ function retrieveKnowledge({ courses, message, history = [], includeMaterials = 
       if(requestContext.lessons?.includes(doc.lessonNumber)&&doc.contentType==='workflow')score+=150;
     }
     if (template && doc.chunkId === template.chunkId) score += 150;
+    if (packTemplate && doc.chunkId === packTemplate.chunkId) score += 250;
     const counts = new Map();
     for (const term of doc.tokens) counts.set(term, (counts.get(term) || 0) + 1);
     for (const [word, weight] of weights) {
@@ -389,4 +396,4 @@ function retrievePlatformKnowledge({ message, history = [] } = {}) {
   };
 }
 
-module.exports = { retrieveKnowledge, retrievePlatformKnowledge, hasLessonAccess, allowsCourseComparison, assertKnowledgeScope, assertCourseTextScope, scopeConversationHistory, activeCourseEntitlement, filmmakingWorkflowReply };
+module.exports = { ...coursePacks, retrieveKnowledge, retrievePlatformKnowledge, hasLessonAccess, allowsCourseComparison, assertKnowledgeScope, assertCourseTextScope, scopeConversationHistory, activeCourseEntitlement, filmmakingWorkflowReply };

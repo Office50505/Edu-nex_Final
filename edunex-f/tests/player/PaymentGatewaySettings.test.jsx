@@ -6,16 +6,16 @@ import { PaymentGatewaySettings } from '../../src/pages/admin/PaymentGatewaySett
 import { adminJson } from '../../src/pages/admin/adminApi';
 vi.mock('../../src/pages/admin/adminApi', () => ({adminJson: vi.fn()}));
 afterEach(() => { cleanup(); vi.resetAllMocks(); });
-const settings = { mode: 'test', modes: {test:{configured:true},live:{configured:true}} };
+const settings = { provider: 'razorpay', mode: 'test', modes: {test:{configured:true},live:{configured:true}} };
 it('switches mode only on Apply and displays the server-confirmed result',async()=>{
  adminJson.mockResolvedValueOnce(settings).mockResolvedValueOnce({...settings,mode:'live'});
  render(<PaymentGatewaySettings/>);
  const live=await screen.findByRole('radio',{name:/Live — charge real money/});
  fireEvent.click(live);expect(adminJson).toHaveBeenCalledTimes(1);
- fireEvent.click(screen.getByRole('button',{name:'Apply Live mode'}));
- await screen.findByText('New checkouts now use Live mode.');
- expect(adminJson.mock.calls[1][1].body).toBe('{"mode":"live"}');
- expect(screen.getByRole('button',{name:'Apply Live mode'}).disabled).toBe(true);
+ fireEvent.click(screen.getByRole('button',{name:'Apply Razorpay Live'}));
+ await screen.findByText('New checkouts now use Razorpay Live.');
+ expect(adminJson.mock.calls[1][1].body).toBe('{"provider":"razorpay","mode":"live"}');
+ expect(screen.getByRole('button',{name:'Apply Razorpay Live'}).disabled).toBe(true);
 });
 it('missing credentials disable a mode and an API failure keeps the active mode',async()=>{
  adminJson.mockResolvedValueOnce({...settings,modes:{...settings.modes,live:{configured:false,detail:'Missing live plan'}}});
@@ -25,7 +25,7 @@ it('missing credentials disable a mode and an API failure keeps the active mode'
  adminJson.mockResolvedValueOnce(settings).mockRejectedValueOnce(new Error('Plan price mismatch'));
  render(<PaymentGatewaySettings/>);
  fireEvent.click(await screen.findByRole('radio',{name:/Live — charge real money/}));
- fireEvent.click(screen.getByRole('button',{name:'Apply Live mode'}));
+ fireEvent.click(screen.getByRole('button',{name:'Apply Razorpay Live'}));
  await waitFor(()=>expect(screen.getByRole('alert').textContent).toBe('Plan price mismatch'));
  expect(screen.getByText('Test — use Razorpay test payments')).toBeTruthy();
 });

@@ -21,9 +21,20 @@ tmp/pdfs/rendered-skillomate-k6-*/
 # Generated mobile release artifacts (APK, AAB, IPA, and Xcode archives)
 appcopyai/releases/
 appcopyai/tmp/xcode-derived/
+output/android/
 
 # Generated PDF reports and future PDF output
 *.pdf
 output/pdf/
 tmp/pdfs/rendered-*/
 tmp/pdfs/generate_ios_build*_report.py
+
+# Local chatbot evaluation output and private authorization/runtime state
+edunex-b/reports/
+edunex-b/last_results.json
+**/provider_approval*.json
+**/runtime_location.txt
+**/pipeline_traces.jsonl
+__pycache__/
+*.py[cod]
+*.zip

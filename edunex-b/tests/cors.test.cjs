@@ -7,6 +7,13 @@ const {
   skillomateCors,
 } = require('../middleware/cors');
 
+test('local marketing origins are allowed only in development', () => {
+  for (const origin of ['http://localhost:3001', 'http://127.0.0.1:3001']) {
+    assert.equal(buildAllowedOrigins({ NODE_ENV: 'development' }).has(origin), true);
+    assert.equal(buildAllowedOrigins({ NODE_ENV: 'production' }).has(origin), false);
+  }
+});
+
 function runCors({ method = 'GET', origin } = {}) {
   const headers = new Map();
   let ended = false;

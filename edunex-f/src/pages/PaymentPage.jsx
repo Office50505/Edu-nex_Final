@@ -303,9 +303,11 @@ export function PaymentPage() {
 
   const initiatePayment = async () => {
     if (busyRef.current || !planAvailable || checkoutState !== "pay") return;
+    autoLaunchAttemptedRef.current = true;
     busyRef.current = true;
     setSubmitting(true);
     setPayMsg({ text: "", type: "" });
+    let authorizationReceived = false;
     try {
       let response;
       if (marketingOnboarding) {
@@ -326,6 +328,7 @@ export function PaymentPage() {
       if (!response.ok) throw new Error(data.error || data.message || `Payment initiation failed (${response.status})`);
       if (data.gateway === "razorpay") {
         const result = await openRazorpay({ ...data, paymentType });
+        authorizationReceived = true;
         setPending(true);
         setPayMsg({ text: "Verifying payment…", type: "info" });
         const verified = await authFetch("/api/payment/razorpay/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(result) });
@@ -352,7 +355,7 @@ export function PaymentPage() {
       throw new Error("Secure checkout is unavailable. Please try again later.");
     } catch (error) {
       const message = error.message || "Payment initiation failed";
-      if (/mandate already exists|unfinished checkout/i.test(message)) {
+      if (authorizationReceived || /mandate already exists|unfinished checkout/i.test(message)) {
         setPending(true);
         setPayMsg({ text: "An existing payment mandate is being confirmed. Check its status before starting another payment.", type: "info" });
       } else {

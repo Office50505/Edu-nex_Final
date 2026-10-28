@@ -1,0 +1,165 @@
+AI Local Business Ads
+Course Notes
+Poore course ke notes — har lesson mein kya seekha, steps, galtiyan aur aaj ka
+kaam. Example dukaan: Chai Kona, Vijay Nagar, Indore (sample cafe, demo ke liye).
+Course ka poora raasta
+Business Brief → dukaan ki photos → menu/food photos → offer aur tyohaar posters → dukaan
+ka video → Hindi awaaz wali reel → kahan/kab post karein → ye kaam service ki tarah → final
+project.
+Tools: chat G.P.T (brief, offers, plan, captions, script), Google Flow (Nano Banana Pro
+images, Video), CapCut (clips jodna), ElevenLabs (optional awaaz).
+Course ka golden rule: AI se sudhaaro, badlo mat. Asli photo, asli daam, aur har post
+maalik ki manzoori se.
+Lesson 01 — Course Intro
+•Course mein kya banega: business brief, dukaan ki professional photos, menu/food photos,
+offer aur tyohaar ke posters, dukaan ka video, Hindi awaaz wali reel, posting plan, aur ye
+kaam service ki tarah karna.
+•Running example: Vijay Nagar, Indore ka ek chhota cafe — Chai Kona (sab sample details,
+demo ke liye).
+•Tools: Google Flow, chat G.P.T, CapCut (ElevenLabs optional).
+Aaj ka kaam
+Ek dukaan chuno — apni ya jaan-pehchaan ki — jis pe poora course follow karoge.
+Lesson 02 — chat G.P.T Se Business Brief
+•Business Brief is course ki neev hai — aage har poster, reel aur plan isi se banta hai.
+•Ek hi chat mein 4 steps: (1) dukaan ki details → customers, unka time, har ek ka ad angle;
+(2) 5 offers, daam ki jagah [price]; (3) 30 din ka post plan, tyohaaron pe "(check date)"; (4)
+sab ek short brief mein.
+•Recording mein chat G.P.T ne khud likha: "Timings estimated hain", aur jo special baat
+confirm nahi thi use "Not confirmed" likha.
+•Start date nahi di toh chat G.P.T ne date picker se date poochi.
+Galti + fix
+Shehar aur ilaaka nahi bataya → ad kisi bhi shehar ka lagne lagta hai. Fix: prompt mein saaf
+likho kya badalna hai aur kya bilkul nahi badalna.
+
+Honest limitation
+Tyohaaron ki tareekhein chat G.P.T galat bhi bata sakta hai — calendar se ek baar milao.
+Daam hamesha maalik tay kare.
+Aaj ka kaam
+Apni chuni dukaan ka brief banao.
+Lesson 03 — Dukaan Ki Phone Photo → Professional
+•Flow → Image → Nano Banana Pro. Andar ki photo aur shop front ki photo upload karo.
+•Prompt mein saaf likho kya-kya behtar karna hai (light, rang, angle, safai) — aur kya nahi
+badalna (furniture, layout, board ka naam).
+•Shop front ko shaam ka look, andar ki photo warm aur saaf. Phir WhatsApp status ke liye
+9:16 version, upar khaali jagah ke saath.
+•Ratio wahi rakho jo photo ka hai — warna AI khaali jagah khud bhar deta hai (jaise ceiling
+lambi kar dena).
+Galti + fix
+"Luxurious aur premium bana do" likha → jhoomar, lakdi ki paneling, velvet kursiyan aa gayi.
+Ye dukaan hai hi nahi. Fix: prompt mein saaf likho kya badalna hai aur kya bilkul nahi
+badalna.
+Honest limitation
+Camera ka tedhapan har baar theek nahi hota — ek-do baar aur generate karo. Sample
+photo use kari ho toh video mein bata do.
+Aaj ka kaam
+Apni dukaan ki do photos upgrade karo.
+Lesson 04 — Menu Ki Food Photos
+•Purani photo ko sirf reference banao aur Flow se dish dobara "shoot" karwao — warna AI
+wahi photo naye table pe chipka deta hai.
+•Dish ko shabdon mein exact likho (plate, portion, kya-kya hai). Phir light, angle, steam,
+background.
+•Do items ki photo banake dono ko saath daalo → combo photo, upar text ke liye jagah.
+•Rule: jo plate grahak ko milti hai, photo mein wahi.
+Galti + fix
+"Extremely delicious and tempting" likha → dhaniya, mirch aur upar se masala aa gaya, jo
+plate mein milta hi nahi. Fix: prompt mein saaf likho kya badalna hai aur kya bilkul nahi
+badalna.
+Honest limitation
+Combo mein items ka size thoda badal sakta hai — 1–2 baar aur generate karke sahi wala
+chuno.
+
+Aaj ka kaam
+Apne menu ki teen photos banao.
+Lesson 05 — Offer Aur Tyohaar Ke Posters
+•Combo photo se offer poster: poster pe exact shabd khud likh ke do — "Write ONLY this
+text, spelled exactly".
+•Shop front se tyohaar ka greeting poster: diye sirf frame/design mein, asli dukaan pe nahi.
+•Greeting poster pe offer zaroori nahi — naam aur shubhkamna kaafi.
+•Example price (₹99) sirf demo hai — asli daam maalik tay kare.
+Galti + fix
+"Diwali offer poster bana do" likha → AI ne khud "BUY 1 GET 1 FREE", "Valid Nov 10–15" aur
+samosa daal diya, jo menu mein hai hi nahi. Fix: prompt mein saaf likho kya badalna hai aur
+kya bilkul nahi badalna.
+Honest limitation
+Chhota text (timing) kabhi bahut chhota ya galat aata hai. Post se pehle har shabd aur
+keemat padho.
+Aaj ka kaam
+Ek offer aur ek tyohaar poster banao.
+Lesson 06 — Dukaan Ki Photos Se Video
+•Flow → Video → Ingredients → 9:16 → 6 sec. Ek photo, ek dheema camera movement.
+•Teen clips: shop front (darwaze ki taraf push), andar (counter ki taraf glide), food (plate ke
+around halka circle).
+•Prompt mein likho: board ka text same, koi naya insaan/furniture nahi.
+•Teeno clips CapCut mein jodo → 18 sec ki sachchi reel.
+Galti + fix
+"Cinematic video of my cafe" likha → menu pe "MAFENU" aur ₹350–450 ke daam aa gaye,
+naye grinder aa gaye — dukaan hi badal gayi. Fix: prompt mein saaf likho kya badalna hai
+aur kya bilkul nahi badalna.
+Honest limitation
+Video mein board ya menu ka text bigad sakta hai — har clip dhyan se dekho.
+Aaj ka kaam
+Dukaan ki teen clip wali reel banao.
+Lesson 07 — Hindi Voiceover Wali Reel
+•chat G.P.T se 3 lines (har clip ke liye ek): max 12 shabd, koi "best/No.1" nahi, sirf diye gaye
+facts.
+
+•Recording wali lines: "Vijay Nagar mein Chai Kona, chalo kuch khaate-peete hain!" · "Chai,
+cold coffee, sandwich aur fries, jo mann kare mangao!" · "Maggi aur cold coffee, student
+combo sirf ninyanve rupaye!"
+•Flow Video (8 sec, 9:16): prompt mein Voiceover wala hissa + timing + line. Awaaz ka
+description teeno clips mein same copy karo.
+•Dusra tareeka: ElevenLabs (Text to Speech) se awaaz banao aur L06 ke silent videos pe
+CapCut mein lagao.
+Honest limitation
+Teeno clips mein awaaz thodi alag lag sakti hai — sun ke check karo, alag lage toh wahi clip
+dobara.
+Aaj ka kaam
+Apni reel pe Hindi awaaz daalo.
+Lesson 08 — Kahan Aur Kab Post Karein
+•Teen jagah: Instagram (caption + local hashtags), WhatsApp (status + sirf saved number
+walon ko broadcast), Google Business Profile (offer post, photos ka order, review replies).
+•Weekly plan: din, platform, time — customers ke time ke hisaab se. Daily 15 minute ki
+checklist.
+•chat G.P.T ne Google Business ke liye dusre cafes ki example photos dikhayi aur khud likha
+"Upload real photos" — hamesha apni asli photos.
+Honest limitation
+Posting time sirf andaaza hai, data nahi. 2–3 hafte baad dekho kya chala aur badlo. Nakli
+review ya khareede followers kabhi nahi.
+Aaj ka kaam
+Apni dukaan ka hafte ka post plan banao.
+Lesson 09 — Ye Kaam Service Ki Tarah
+•chat G.P.T se 3 packages (Basic, Standard, Plus): kya milega + kitne ghante lagenge.
+Daam ki jagah [price] — apne shehar ke hisaab se khud tay karo.
+•Pehla WhatsApp message: chhota, ek free sample poster ka offer, aur "interested nahi ho
+toh koi baat nahi".
+•Kaam se pehle client se sawaal: details, asli photos, approved offers/daam, tyohaar,
+platforms, approval kaun dega.
+•"Main kaise kaam karta hoon" note: asli photos, asli daam, har post maalik ki manzoori se,
+content ka maalik client, ek round changes.
+Honest limitation
+Sample bhejo toh saaf batao ki demo hai. "Bikri dugni" jaise waade kabhi nahi.
+Aaj ka kaam
+Paas ki ek dukaan ke liye sample banao.
+
+Lesson 10 — Finale: Galtiyan, Niyam, Final Project
+•Recap: brief → photos → food → posters → video → awaaz → posting plan → service.
+•Top 3 galtiyan: (1) adhoora prompt (jhoomar, dhaniya), (2) bina padhe post karna
+(MAFENU, check date), (3) AI ko khud offer banane dena (Buy 1 Get 1).
+•Teen niyam: asli photo, asli daam, har post maalik ki manzoori se.
+•Saare prompts notes section mein hain.
+Aaj ka kaam
+Final project: ek asli dukaan (maalik se poochh ke) ka poora set — brief, 2 photo upgrade, 1
+food/product photo, 1 offer poster, 1 awaaz wali reel, hafte ka plan — aur maalik ko dikhao.
+Settings cheat-sheet
+KaamTool / ModeSettings
+Business brief, offers, planchat G.P.TEk hi chat, asli details do
+Dukaan / food photo
+upgrade
+Flow · Image · Nano Banana ProRatio wahi jo photo ka (1:1 ya 4:3)
+Status photoFlow · Image · Nano Banana Pro9:16, upar khaali jagah
+PostersFlow · Image · Nano Banana Pro1:1 (post) ya 9:16 (status), exact text
+Dukaan ka videoFlow · Video · Ingredients9:16, 720p, 6 sec, ek movement
+Awaaz wali clipFlow · Video · Ingredients9:16, 720p, 8 sec, Voiceover + timing
+Awaaz (dusra tareeka)ElevenLabs · Text to SpeechHindi line paste, voice chuno, download
+Note: tools ke menu, model naam aur options update hote rehte hain. Screen pe jo naam dikhe wahi use karo.
+Flow credits kam ho toh pehle zaroori generations karo.

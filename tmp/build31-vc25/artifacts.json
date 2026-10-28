@@ -1,0 +1,20 @@
+{
+  "source_commit": "744f9cc",
+  "artifacts": [
+    {
+      "path": "appcopyai/releases/android/Skillomate-1.0-vc25-production.apk",
+      "bytes": 42765792,
+      "sha256": "20f5ce251a6ce1fe44058cb596b468b8d86250aeca1401b5b3347b181a2c3caa"
+    },
+    {
+      "path": "appcopyai/releases/android/Skillomate-1.0-vc25-production.aab",
+      "bytes": 47403157,
+      "sha256": "905924e546153d958fdc8a78c3177da75a6b87456aed10241aa88f3d4650046b"
+    },
+    {
+      "path": "appcopyai/releases/ios/Skillomate-1.0-build31-development-export/Skillomate.ipa",
+      "bytes": 14421373,
+      "sha256": "ec109223f959359fa0dedff10727e0af178bdcf707ab9fbe542082b67a11ef1f"
+    }
+  ]
+}

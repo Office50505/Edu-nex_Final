@@ -9,6 +9,13 @@ const aiTutorSessionSchema = new mongoose.Schema({
   currentIntent: { type: String, default: '' },
   lastWorkflow: { type: String, default: '' },
   lastTemplateId: { type: String, default: '' },
+  courseContext: {
+    courseId: {type:String,maxlength:120},
+    conversationId: {type:String,maxlength:120},
+    language: {type:String,maxlength:24},
+    userEvidence: [{type:String,maxlength:2000}],
+    facts: {type:Map,of:String},
+  },
   productContext: {
     schemaVersion: { type: Number, enum: [2] },
     courseId: { type: String, maxlength: 120 },

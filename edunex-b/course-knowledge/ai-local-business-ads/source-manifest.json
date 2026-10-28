@@ -1,0 +1,125 @@
+{
+  "course": "AI Local Business Ads",
+  "operation": "source_file_retrieval_and_copy_only",
+  "searched_locations": [
+    "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled",
+    "/Users/arslanalimansoori/Downloads",
+    "/Users/arslanalimansoori/Documents",
+    "/Users/arslanalimansoori/Desktop"
+  ],
+  "destination_directory": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/course-knowledge/ai-local-business-ads",
+  "files": [
+    {
+      "filename": "AI_Local_Business_Ads_Chatbot_Knowledge_Base.txt",
+      "original_path": "/Users/arslanalimansoori/Downloads/AI_Local_Business_Ads_Chatbot_Knowledge_Base.txt",
+      "destination_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/course-knowledge/ai-local-business-ads/AI_Local_Business_Ads_Chatbot_Knowledge_Base.txt",
+      "bytes": 28439,
+      "sha256": "8add7ed8a46602116e471dca839296be6ed7eaca7306502f874d1c695f9e358e",
+      "destination_sha256": "8add7ed8a46602116e471dca839296be6ed7eaca7306502f874d1c695f9e358e",
+      "readable": true,
+      "nonempty": true,
+      "encoding": "UTF-8"
+    },
+    {
+      "filename": "AI_Local_Business_Ads_Course_Notes.pdf",
+      "original_path": "/Users/arslanalimansoori/Downloads/AI_Local_Business_Ads_Course_Notes.pdf",
+      "destination_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/course-knowledge/ai-local-business-ads/AI_Local_Business_Ads_Course_Notes.pdf",
+      "bytes": 55202,
+      "sha256": "6e06f7ec4425616ccaf215ae95f629a1d75d1798c3c22b1b6c25178607082395",
+      "destination_sha256": "6e06f7ec4425616ccaf215ae95f629a1d75d1798c3c22b1b6c25178607082395",
+      "readable": true,
+      "nonempty": true,
+      "pdf_pages": 5
+    },
+    {
+      "filename": "AI_Local_Business_Ads_All_Prompts.pdf",
+      "original_path": "/Users/arslanalimansoori/Downloads/AI_Local_Business_Ads_All_Prompts.pdf",
+      "destination_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/course-knowledge/ai-local-business-ads/AI_Local_Business_Ads_All_Prompts.pdf",
+      "bytes": 81495,
+      "sha256": "0f65dffce29aeeb6ba0f9046c499540adf31bfc87093ff77fdfadf8198212e58",
+      "destination_sha256": "0f65dffce29aeeb6ba0f9046c499540adf31bfc87093ff77fdfadf8198212e58",
+      "readable": true,
+      "nonempty": true,
+      "pdf_pages": 8
+    }
+  ],
+  "verification": {
+    "all_required_files_found": true,
+    "missing_files": [],
+    "knowledge_base_lessons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "knowledge_base_sections": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F",
+      "G"
+    ],
+    "knowledge_base_approved_prompt_count": 25,
+    "course_notes_lessons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "all_prompts_pdf_approved_prompt_count": 25,
+    "approved_prompt_headings": [
+      "Step 1: Details → customers, time, ad angles",
+      "Step 2: 5 offers",
+      "Step 3: 30 din ka post plan",
+      "Step 4: Ek page ka Business Brief",
+      "Andar ki photo upgrade",
+      "Shop front, shaam ka look",
+      "WhatsApp status version (9:16)",
+      "Dish re-shoot",
+      "Drink re-shoot",
+      "Combo photo (dono results upload karke)",
+      "Offer poster",
+      "Tyohaar greeting poster",
+      "Shop front push-in",
+      "Andar glide",
+      "Food close-up",
+      "Step 1: 3 lines (chat G.P.T)",
+      "Step 2: Awaaz wali clip (Flow · Video · 8 sec · 9:16) — har clip ke liye line badlo",
+      "Instagram caption + hashtags",
+      "WhatsApp status + broadcast",
+      "Google Business Profile",
+      "Hafte ka posting plan",
+      "3 packages",
+      "Pehla WhatsApp message",
+      "Client se sawaal",
+      "\"Main kaise kaam karta hoon\" note"
+    ],
+    "price_and_shop_name_placeholders_present": true,
+    "copies_byte_identical": true,
+    "originals_unchanged": true,
+    "pdf_to_txt_extraction_needed": false,
+    "existing_knowledge_and_chatbot_code_unchanged": true
+  },
+  "ready_for_integration": true,
+  "actions_not_performed": [
+    "chatbot training",
+    "chatbot tests or evaluation",
+    "deployment",
+    "chatbot source edits",
+    "existing course knowledge edits"
+  ]
+}

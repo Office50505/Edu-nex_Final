@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { Check, ChevronLeft, LoaderCircle, LockKeyhole, X } from 'lucide-react'
 import { FormEvent, useCallback, useEffect, useRef, useState } from 'react'
 import styles from './MarketingCheckoutFlow.module.css'
-import { OFFER_PRICE } from '@/lib/pricing'
+import { parseMonthlyPricing, monthlyCheckoutPayload, checkoutSignupUrl } from '@/lib/checkoutContract.mjs'
 import { MARKETING_BASE_PATH, SKILLOMATE_PUBLIC_ORIGIN } from '@/lib/links'
 
 const SESSION_KEY = 'skillomateMarketingCheckoutSession'
@@ -13,7 +13,7 @@ const PERSISTED_SESSION_KEY = `${SESSION_KEY}:persisted`
 const CHECKOUT_SESSION_TTL_MS = 60 * 60 * 1000
 
 type Stage = 'account' | 'otp' | 'checking' | 'pending' | 'success' | null
-type Pricing = { gateway: string; checkoutEnabled: boolean; oneTimeAmountPaise: number; accessDays: number }
+type Pricing = { gateway: string; checkoutEnabled: boolean; subscriptionAmountPaise: number; autoRenewEnabled: boolean }
 type PaymentStatus = { accessGranted?: boolean; pendingCheckout?: boolean }
 type ApiOptions = { timeoutMs?: number; timeoutMessage?: string }
 
@@ -55,7 +55,7 @@ function readPersistedCheckoutSession() {
       window.localStorage.removeItem(PERSISTED_SESSION_KEY)
       return ''
     }
-    window.sessionStorage.setItem(SESSION_KEY, token)
+    try { window.sessionStorage.setItem(SESSION_KEY, token) } catch {}
     return token
   } catch {
     return ''
@@ -71,7 +71,7 @@ function readCheckoutSession() {
 }
 
 function saveCheckoutSession(token: string) {
-  window.sessionStorage.setItem(SESSION_KEY, token)
+  try { window.sessionStorage.setItem(SESSION_KEY, token) } catch {}
   try {
     window.localStorage.setItem(PERSISTED_SESSION_KEY, JSON.stringify({
       token,
@@ -83,7 +83,7 @@ function saveCheckoutSession(token: string) {
 }
 
 function clearCheckoutSession() {
-  window.sessionStorage.removeItem(SESSION_KEY)
+  try { window.sessionStorage.removeItem(SESSION_KEY) } catch {}
   try {
     window.localStorage.removeItem(PERSISTED_SESSION_KEY)
   } catch {}
@@ -93,29 +93,33 @@ function readAwaitingPayment() {
   try {
     return window.sessionStorage.getItem(AWAITING_KEY) || window.localStorage.getItem(AWAITING_KEY)
   } catch {
-    return null
+    try { return window.localStorage.getItem(AWAITING_KEY) } catch { return null }
   }
 }
 
 function setAwaitingPayment() {
-  window.sessionStorage.setItem(AWAITING_KEY, '1')
+  try { window.sessionStorage.setItem(AWAITING_KEY, '1') } catch {}
   try {
     window.localStorage.setItem(AWAITING_KEY, '1')
   } catch {}
 }
 
 function clearAwaitingPayment() {
-  window.sessionStorage.removeItem(AWAITING_KEY)
+  try { window.sessionStorage.removeItem(AWAITING_KEY) } catch {}
   try {
     window.localStorage.removeItem(AWAITING_KEY)
   } catch {}
 }
 
 function apiPath(path: string) {
-  const configuredBase = process.env.NEXT_PUBLIC_API_BASE_URL || ''
+  const configuredBase = (process.env.NEXT_PUBLIC_API_BASE_URL || '').replace(/\/+$/, '')
   if (configuredBase) return `${configuredBase}${path}`
-  if (typeof window !== 'undefined' && window.location.hostname === 'skillomate.in') {
+  if (typeof window !== 'undefined' && ['skillomate.in', 'www.skillomate.in'].includes(window.location.hostname)) {
     return `https://api.skillomate.in${path}`
+  }
+  if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined'
+    && ['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+    return `http://${window.location.hostname}:3000${path}`
   }
   return path
 }
@@ -150,6 +154,8 @@ function cleanPhone(value: string) {
 
 export default function MarketingCheckoutFlow() {
   const [pricing, setPricing] = useState<Pricing | null>(null)
+  const [pricingError, setPricingError] = useState('')
+  const [mandateConsent, setMandateConsent] = useState(false)
   const [stage, setStage] = useState<Stage>(null)
   const [bearer, setBearer] = useState('')
   const [phone, setPhone] = useState('')
@@ -203,13 +209,19 @@ export default function MarketingCheckoutFlow() {
     }
   }, [])
 
-  useEffect(() => {
-    void api<Pricing>('/api/onboarding/config').then((data) => {
-      if ((data.gateway === 'phonepe' || data.gateway === 'simulated') && data.checkoutEnabled && Number.isSafeInteger(data.oneTimeAmountPaise) && data.oneTimeAmountPaise > 0) setPricing(data)
-    }).catch(() => {
-      // OTP verification can still proceed; checkout will surface provider/config errors later.
-    })
+  const loadPricing = useCallback(async () => {
+    setPricing(null)
+    setPricingError('')
+    setMandateConsent(false)
+    try {
+      const data = await api<Pricing>('/api/onboarding/config')
+      setPricing(parseMonthlyPricing(data))
+    } catch (error) {
+      setPricingError(error instanceof Error ? error.message : 'Checkout is unavailable. Please try again later.')
+    }
   }, [])
+
+  useEffect(() => { void loadPricing() }, [loadPricing])
 
   useEffect(() => {
     const savedBearer = readCheckoutSession()
@@ -263,7 +275,7 @@ export default function MarketingCheckoutFlow() {
       window.setTimeout(() => {
         clearCheckoutSession()
         clearAwaitingPayment()
-        window.location.assign(`${SKILLOMATE_PUBLIC_ORIGIN}/signup#onboarding=${encodeURIComponent(result.code)}`)
+        window.location.assign(checkoutSignupUrl(result.code, window.location.origin, process.env.NEXT_PUBLIC_SKILLOMATE_PUBLIC_ORIGIN || '', process.env.NODE_ENV === 'development'))
       }, 900)
     } catch (error) {
       finishingRef.current = false
@@ -319,6 +331,7 @@ export default function MarketingCheckoutFlow() {
   }, [bearer, checkPayment, stage])
 
   const openPhonePe = useCallback(async (token: string) => {
+    if (!pricing || !mandateConsent) throw new Error('Confirm the monthly AutoPay terms before continuing.')
     let status: PaymentStatus
     try {
       status = await getStatus(token)
@@ -341,10 +354,7 @@ export default function MarketingCheckoutFlow() {
     const returnOrigin = localReturnHost ? window.location.origin : SKILLOMATE_PUBLIC_ORIGIN
     let checkout: { gateway: string; redirectUrl: string }
     try {
-      checkout = await api<{ gateway: string; redirectUrl: string }>('/api/onboarding/checkout', {
-        paymentType: 'one_time',
-        returnUrl: `${returnOrigin}${MARKETING_BASE_PATH}/index.html?payment=return#paywall`,
-      }, token)
+      checkout = await api<{ gateway: string; redirectUrl: string }>('/api/onboarding/checkout', monthlyCheckoutPayload(pricing, mandateConsent, `${returnOrigin}${MARKETING_BASE_PATH}/?payment=return#paywall`), token)
     } catch (error) {
       if (isExpiredSessionError(error)) {
         resetExpiredSession()
@@ -365,11 +375,12 @@ export default function MarketingCheckoutFlow() {
     if (!['phonepe', 'simulated'].includes(checkout.gateway) || !checkout.redirectUrl) throw new Error('Secure checkout is unavailable.')
     setAwaitingPayment()
     window.location.assign(checkout.redirectUrl)
-  }, [checkPayment, finish, getStatus, resetExpiredSession])
+  }, [checkPayment, finish, getStatus, resetExpiredSession, pricing, mandateConsent])
 
   const sendOtp = async (event: FormEvent) => {
     event.preventDefault()
     if (busyRef.current) return
+    if (!pricing) return setMessage(pricingError || 'Checkout configuration is loading. Please wait.')
     if (phone.length !== 10) return setMessage('Enter a valid 10-digit mobile number.')
     busyRef.current = true
     setBusy(true)
@@ -433,7 +444,7 @@ export default function MarketingCheckoutFlow() {
   }
 
   if (!stage) return null
-  const price = pricing ? `₹${pricing.oneTimeAmountPaise / 100}` : OFFER_PRICE
+  const price = pricing ? new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 2, minimumFractionDigits: 0 }).format(pricing.subscriptionAmountPaise / 100) : ''
   const canClose = stage === 'account' || stage === 'otp'
 
   return (
@@ -449,12 +460,13 @@ export default function MarketingCheckoutFlow() {
           <div className={styles.heading}>
             <p><LockKeyhole /> Secure phone verification</p>
             <h2 id="checkout-title">Login / Sign up</h2>
-            <span>Verify your phone, then pay {price} once with PhonePe. Complete your account details after payment.</span>
+            <span>{pricing ? `Verify your phone, then subscribe for ${price} per month with PhonePe AutoPay. Complete your account details after payment.` : pricingError || 'Loading secure checkout…'}</span>
           </div>
+          {pricingError ? <button type="button" className={styles.secondary} onClick={() => void loadPricing()}>Retry checkout configuration</button> : null}
           <label>Mobile number<div className={styles.phone}><span>+91</span><input type="tel" value={phone} onChange={(event) => setPhone(cleanPhone(event.target.value))} inputMode="numeric" autoComplete="tel-national" maxLength={13} placeholder="98765 43210" autoFocus required /></div></label>
-          <button className={styles.primary} type="submit" disabled={busy || phone.length !== 10}>{busy ? <><LoaderCircle className={styles.spinner} /> Sending OTP</> : 'Send OTP'}</button>
+          <button className={styles.primary} type="submit" disabled={busy || !pricing || phone.length !== 10}>{busy ? <><LoaderCircle className={styles.spinner} /> Sending OTP</> : 'Send OTP'}</button>
           <p className={styles.status} role="status">{message}</p>
-          <small>By continuing, you agree to the Privacy Policy and Terms. This is a one-time payment with no automatic renewal.</small>
+          <small>By continuing, you agree to the Privacy Policy and Terms. Monthly AutoPay renews until cancelled. You will confirm the recurring amount before payment.</small>
         </form> : null}
 
         {stage === 'otp' ? <form className={styles.form} onSubmit={verifyAndPay}>
@@ -464,7 +476,8 @@ export default function MarketingCheckoutFlow() {
             <span>{bearer ? 'Continue to secure PhonePe checkout.' : `We sent a 6-digit code to +91 ${phone}.`}</span>
           </div>
           {!bearer ? <label>One-time password<input className={styles.otp} value={otp} onChange={(event) => setOtp(event.target.value.replace(/\D/g, '').slice(0, 6))} inputMode="numeric" autoComplete="one-time-code" placeholder="• • • • • •" autoFocus /></label> : null}
-          <button className={styles.primary} type="submit" disabled={busy || (!bearer && otp.length !== 6)}>{busy ? <><LoaderCircle className={styles.spinner} /> Please wait</> : bearer ? `Pay ${price}` : `Verify & pay ${price}`}</button>
+          <label className={styles.consent}><input type="checkbox" checked={mandateConsent} onChange={(event) => setMandateConsent(event.target.checked)} /> I authorize {price} now and every month through PhonePe AutoPay until cancelled.</label>
+          <button className={styles.primary} type="submit" disabled={busy || !pricing || !mandateConsent || (!bearer && otp.length !== 6)}>{busy ? <><LoaderCircle className={styles.spinner} /> Please wait</> : bearer ? `Pay ${price}` : `Verify & pay ${price}`}</button>
           {!bearer ? <button className={styles.textButton} type="button" onClick={resendOtp} disabled={busy}>Resend OTP</button> : null}
           <p className={styles.status} role="status">{message}</p>
           <div className={styles.phonePe}><LockKeyhole /> Secure payment powered by PhonePe</div>

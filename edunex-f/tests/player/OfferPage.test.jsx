@@ -80,7 +80,7 @@ it("keeps the offer visible and blocks checkout while pricing fails, then recove
   let pricingReady = false;
   vi.stubGlobal("fetch", vi.fn(async url => {
     if (url.endsWith("/api/onboarding/config") && !pricingReady) throw new Error("Pricing API unavailable");
-    return { ok: true, json: async () => ({ gateway: "phonepe", checkoutEnabled: true, oneTimeAmountPaise: 29900, accessDays: 30 }) };
+    return { ok: true, json: async () => ({ gateway: "phonepe", checkoutEnabled: true, autoRenewEnabled: true, trialAmountPaise: 100, subscriptionAmountPaise: 49900, trialHours: 24 }) };
   }));
   render(<AdOfferPage />);
   expect(await screen.findByText(/Payment pricing is temporarily unavailable/)).toBeTruthy();
@@ -89,14 +89,14 @@ it("keeps the offer visible and blocks checkout while pricing fails, then recove
   expect(screen.queryByText("₹1")).toBeNull();
   pricingReady = true;
   fireEvent.click(screen.getByRole("button", { name: "Retry" }));
-  expect(await screen.findByRole("button", { name: /Pay ₹299 once/ })).toBeTruthy();
+  expect(await screen.findByRole("button", { name: /^Subscribe for ₹1 →$/ })).toBeTruthy();
 });
 
 it("shows the PhonePe price but blocks checkout when new payments are disabled", async () => {
-  vi.stubGlobal("fetch", vi.fn(async () => ({ ok: true, json: async () => ({ gateway: "phonepe", checkoutEnabled: false, oneTimeAmountPaise: 29900, accessDays: 30 }) })));
+  vi.stubGlobal("fetch", vi.fn(async () => ({ ok: true, json: async () => ({ gateway: "phonepe", checkoutEnabled: false, autoRenewEnabled: true, trialAmountPaise: 100, subscriptionAmountPaise: 49900, trialHours: 24 }) })));
   render(<AdOfferPage />);
   expect(await screen.findByText(/Checkout is temporarily unavailable/)).toBeTruthy();
-  expect(screen.getByText("₹299")).toBeTruthy();
+  expect(screen.getByText("₹1")).toBeTruthy();
   expect(screen.getByRole("button", { name: /Checkout unavailable/ }).disabled).toBe(true);
   expect(screen.queryByRole("dialog")).toBeNull();
 });

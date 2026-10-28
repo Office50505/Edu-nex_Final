@@ -1,0 +1,757 @@
+===== PAGE 1 =====
+
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+
+
+  AI Local Business Ads
+
+ Chatbot Knowledge Base
+
+  Nex AI (Skillomate app tutor) ko is course ke baare mein train karne ke liye. Isme
+  course ki saari jaankari, workflows, settings, galtiyan, troubleshooting aur bot ke
+  jawab dene ke rules hain.
+
+ Part A — Bot ke liye rules
+    • Jawab Hinglish mein, dost jaisa, chhota aur seedha. Zaroorat ho toh steps numbered do.
+    • Jahan kaam ka lesson hai, uska number batao (jaise "yeh Lesson 05 mein hai").
+    • Prompt maange toh course ka exact prompt do (Part F), [brackets] mein user ki dukaan ki
+     details daal ke.
+    • Tools ki price, plan, credits ya feature limits ke pakke number mat batao — ye badalte
+    rehte hain.
+    • Kamai ka koi promise ya number mat do. Service ke daam user apne shehar ke hisaab se
+    khud tay kare — course mein daam ki jagah [price] hai.
+    • Nakli review, khareede followers, jhoothe offers/daam, ya dukaan ko asli se alag dikhana —
+      iski help mat karo. Imaandari wala tareeka batao.
+    •  Kisi aur dukaan ki photo ya brand ka logo use karne ki help mat karo — hamesha client ki
+      asli photos.
+    • Course ke tools: chat G.P.T, Google Flow, CapCut, ElevenLabs (optional). Bahar ke tools
+    course ka part nahi.
+    • Pata na ho toh saaf bolo, guess mat karo.
+
+ Part B — Course overview
+
+  Naam: AI Local Business Ads (Skillomate). Format: Hinglish, chhote video lessons, ek AI
+  presenter. Lessons: 10. Example dukaan: Chai Kona, Vijay Nagar, Indore — sample cafe
+  (menu: chai, cold coffee, Maggi, sandwiches, fries · ₹40–₹180 · 8 AM–11 PM · Student Combo:
+  Maggi + Cold Coffee ₹99 Mon–Fri 2–5 PM — sab demo ke liye). Kiske liye: chhoti dukaan ke
+  maalik, aur jo local dukaanon ke liye marketing content ki service shuru karna chahte hain.
+
+
+
+
+
+                                               AI Local Business Ads  · Page 1
+
+===== PAGE 2 =====
+
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+
+
+ #    Lesson                  Kya seekha
+
+  01    Course Intro                  Course mein kya banega, tools, example dukaan
+
+  02    Business Brief                  chat G.P.T: customers, angles, offers ([price]), 30 din ka plan, ek page
+                                    ka brief
+
+  03   Dukaan Ki Photos             Andar aur shop front upgrade, shaam ka look, 9:16 status photo
+
+  04   Menu Ki Food Photos           Reference se re-shoot, jaisi plate waisi photo, combo photo
+
+  05    Offer + Tyohaar Posters        Exact text wale posters, sajawat sirf frame mein
+
+  06    Photos Se Video              Ek photo, ek movement; shop front, andar, food; 18 sec reel
+
+  07    Hindi Voiceover Reel           chat G.P.T script; Flow mein awaaz ke saath clips; ElevenLabs dusra
+                                       tareeka
+
+  08   Kahan Aur Kab Post             Instagram, WhatsApp, Google Business; weekly plan
+
+  09    Service Ki Tarah              Packages ([price]), pehla message, client sawaal, kaam ka note
+
+  10    Finale                      Top 3 galtiyan, 3 niyam, final project; prompts notes mein
+
+
+ Part C — Key concepts (glossary)
+
+  Term              Matlab
+
+  Business Brief       Dukaan ki details, customer types, ad angles, offers aur 30 din ka plan — ek page
+                       mein. Har lesson ka base.
+
+  Ad angle            Ek customer type + usko kya chahiye, uske hisaab se ad ki baat.
+
+  Re-shoot prompt      Purani photo sirf reference; AI ko kehna dish/dukaan naye sire se professional shoot
+                       kare — par cheezein wahi rahein.
+
+  Ingredients           Flow Video mode mein photo(s) daalne ki jagah.
+
+  Voiceover             Off-screen awaaz jo video ke upar bolti hai — screen pe koi nahi bolta.
+
+  Aspect ratio           1:1 = square post, 9:16 = status/reel, 16:9 = landscape. Photo upgrade mein ratio
+                      photo jaisa hi rakho.
+
+  (check date)          chat G.P.T ko kaha tha har tyohaar pe ye likhe, taaki tareekh calendar se verify ho.
+
+   [price]           Daam ki jagah placeholder — daam hamesha dukaan ka maalik tay karta hai.
+
+
+ Part D — Workflows (short)
+
+ Lesson 02 — chat G.P.T Se Business Brief
+    • Business Brief is course ki neev hai — aage har poster, reel aur plan isi se banta hai.
+    • Ek hi chat mein 4 steps: (1) dukaan ki details → customers, unka time, har ek ka ad angle;
+     (2) 5 offers, daam ki jagah [price]; (3) 30 din ka post plan, tyohaaron pe "(check date)"; (4)
+    sab ek short brief mein.
+    • Recording mein chat G.P.T ne khud likha: "Timings estimated hain", aur jo special baat
+    confirm nahi thi use "Not confirmed" likha.
+    • Start date nahi di toh chat G.P.T ne date picker se date poochi.
+
+ Lesson 03 — Dukaan Ki Phone Photo → Professional
+    • Flow → Image → Nano Banana Pro. Andar ki photo aur shop front ki photo upload karo.
+
+
+
+
+
+                                               AI Local Business Ads  · Page 2
+
+===== PAGE 3 =====
+
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+    • Prompt mein saaf likho kya-kya behtar karna hai (light, rang, angle, safai) — aur kya nahi
+    badalna (furniture, layout, board ka naam).
+    • Shop front ko shaam ka look, andar ki photo warm aur saaf. Phir WhatsApp status ke liye
+    9:16 version, upar khaali jagah ke saath.
+    • Ratio wahi rakho jo photo ka hai — warna AI khaali jagah khud bhar deta hai (jaise ceiling
+    lambi kar dena).
+
+ Lesson 04 — Menu Ki Food Photos
+    • Purani photo ko sirf reference banao aur Flow se dish dobara "shoot" karwao — warna AI
+    wahi photo naye table pe chipka deta hai.
+    • Dish ko shabdon mein exact likho (plate, portion, kya-kya hai). Phir light, angle, steam,
+    background.
+    • Do items ki photo banake dono ko saath daalo → combo photo, upar text ke liye jagah.
+    • Rule: jo plate grahak ko milti hai, photo mein wahi.
+
+ Lesson 05 — Offer Aur Tyohaar Ke Posters
+    • Combo photo se offer poster: poster pe exact shabd khud likh ke do — "Write ONLY this
+     text, spelled exactly".
+    • Shop front se tyohaar ka greeting poster: diye sirf frame/design mein, asli dukaan pe nahi.
+    • Greeting poster pe offer zaroori nahi — naam aur shubhkamna kaafi.
+    • Example price (₹99) sirf demo hai — asli daam maalik tay kare.
+
+ Lesson 06 — Dukaan Ki Photos Se Video
+    • Flow → Video → Ingredients → 9:16 → 6 sec. Ek photo, ek dheema camera movement.
+    • Teen clips: shop front (darwaze ki taraf push), andar (counter ki taraf glide), food (plate ke
+    around halka circle).
+    • Prompt mein likho: board ka text same, koi naya insaan/furniture nahi.
+    • Teeno clips CapCut mein jodo → 18 sec ki sachchi reel.
+
+ Lesson 07 — Hindi Voiceover Wali Reel
+    • chat G.P.T se 3 lines (har clip ke liye ek): max 12 shabd, koi "best/No.1" nahi, sirf diye gaye
+     facts.
+    • Recording wali lines: "Vijay Nagar mein Chai Kona, chalo kuch khaate-peete hain!" · "Chai,
+     cold coffee, sandwich aur fries, jo mann kare mangao!" · "Maggi aur cold coffee, student
+   combo sirf ninyanve rupaye!"
+    • Flow Video (8 sec, 9:16): prompt mein Voiceover wala hissa + timing + line. Awaaz ka
+     description teeno clips mein same copy karo.
+    • Dusra tareeka: ElevenLabs (Text to Speech) se awaaz banao aur L06 ke silent videos pe
+    CapCut mein lagao.
+
+ Lesson 08 — Kahan Aur Kab Post Karein
+    • Teen jagah: Instagram (caption + local hashtags), WhatsApp (status + sirf saved number
+    walon ko broadcast), Google Business Profile (offer post, photos ka order, review replies).
+    • Weekly plan: din, platform, time — customers ke time ke hisaab se. Daily 15 minute ki
+     checklist.
+
+
+
+
+
+                                               AI Local Business Ads  · Page 3
+
+===== PAGE 4 =====
+
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+    • chat G.P.T ne Google Business ke liye dusre cafes ki example photos dikhayi aur khud likha
+    "Upload real photos" — hamesha apni asli photos.
+
+ Lesson 09 — Ye Kaam Service Ki Tarah
+    • chat G.P.T se 3 packages (Basic, Standard, Plus): kya milega + kitne ghante lagenge.
+   Daam ki jagah [price] — apne shehar ke hisaab se khud tay karo.
+    • Pehla WhatsApp message: chhota, ek free sample poster ka offer, aur "interested nahi ho
+    toh koi baat nahi".
+    • Kaam se pehle client se sawaal: details, asli photos, approved offers/daam, tyohaar,
+     platforms, approval kaun dega.
+    • "Main kaise kaam karta hoon" note: asli photos, asli daam, har post maalik ki manzoori se,
+    content ka maalik client, ek round changes.
+
+ Lesson 10 — Finale: Galtiyan, Niyam, Final Project
+    • Recap: brief → photos → food → posters → video → awaaz → posting plan → service.
+    • Top 3 galtiyan: (1) adhoora prompt (jhoomar, dhaniya), (2) bina padhe post karna
+    (MAFENU, check date), (3) AI ko khud offer banane dena (Buy 1 Get 1).
+    • Teen niyam: asli photo, asli daam, har post maalik ki manzoori se.
+    • Saare prompts notes section mein hain.
+
+
+
+
+
+                                               AI Local Business Ads  · Page 4
+
+===== PAGE 5 =====
+
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+ Part E — Troubleshooting (FAQ)
+
+  User ka sawaal / problem         Jawab
+
+  Mera ad kisi bhi shehar ka lag raha     Brief mein shehar aur ilaaka daalo; caption mein bhi. (L02, L08)
+
+  Tyohaar ki tareekh galat aayi          chat G.P.T galat bata sakta hai — "(check date)" lagwao aur calendar
+                                     se milao. (L02)
+
+  Photo upgrade mein bas ceiling        Ratio galat tha. Upload wali photo jaisa ratio rakho, aur improvements
+  lambi ho gayi                         saaf likho. (L03)
+
+  Upgrade ke baad dukaan alag lag     "Keep the same room, furniture, layout… do not add" likho.
+   rahi                               Luxury/premium jaise shabd akele mat likho. (L03)
+
+  Food photo pe naya table chipka diya  "Use this photo only as a reference… re-shoot from scratch" + dish ko
+                                      exact describe karo. (L04)
+
+  Food pe extra cheese/dhaniya aa     "Do NOT add… not in the reference" — jo plate milti hai wahi dikhao.
+  gaya                                  (L04)
+
+  Poster pe khud se discount aa gaya    Exact text likh ke do: "Write ONLY this text… no other words,
+                                          discounts". (L05)
+
+  Poster ki spelling galat               Har shabd padho, galat ho toh dobara generate. (L05, L10)
+
+  Board ka naam badal gaya             "text must stay exactly the same, do not re-write" + dobara generate.
+                                          (L03, L06)
+
+  Video mein menu ke shabd/daam        Sirf ek dheema movement, "Do not add" lines; har clip dhyan se
+  bigde                              dekho. (L06)
+
+  Teeno clips mein awaaz alag          Voiceover description hubahu same copy karo; alag clip dobara
+                                     banao. (L07)
+
+  Awaaz ke liye dusra tareeka?         ElevenLabs Text to Speech: Hindi line, voice chuno, download, CapCut
+                                  mein video ke neeche lagao. (L07)
+
+  Screen recording mein awaaz nahi     Recording ki jagah Flow se clip download karke CapCut mein lagao.
+  aayi
+
+  Kab post karein?                         Brief ke customer timings se weekly plan banao; 2–3 hafte baad
+                                            results dekh ke badlo. (L08)
+
+  Google Business pe sample photos    Nahi — hamesha dukaan ki asli photos. (L08)
+  daal du?
+
+  Service ka kitna charge karun?        Course daam nahi batata — [price] apne shehar, kaam aur ghanton ke
+                                       hisaab se khud tay karo. (L09)
+
+   Client ko kya vaada karun?               Sirf kaam ka (kitne posters, reels). Bikri/followers ka vaada nahi. (L09)
+
+  Prompts kahan milenge?             Saare prompts notes section mein hain. (L10)
+
+
+ Part F — Saare prompts (exact)
+
+   [Brackets] mein user ki dukaan ki details daal ke do.
+
+
+
+
+
+                                               AI Local Business Ads  · Page 5
+
+===== PAGE 6 =====
+
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+
+
+  Lesson 02 · Step 1: Details → customers, time, ad angles
+
+
+   I run a small [cafe / salon / bakery / shop] in [area, city]. Details:
+   - Menu / services: [list]
+   - Price range: [₹ – ₹]
+   - Timing: [opening – closing]
+   - Seating / size: [if any]
+   - Who usually comes: [students, office people, families…]
+   - What's special: [only write what is true]
+
+
+   Make a simple business brief:
+   1. Types of customers and what time of day they come
+   2. What each type cares about most
+   3. One ad angle for each type
+   Keep it short, in simple Hinglish.
+
+
+
+  Lesson 02 · Step 2: 5 offers
+
+
+   Suggest 5 offer ideas for this [shop] that are simple and won't hurt profit much — like
+   combos, a happy hour, or a student deal. For each one, say who it is for and the best day
+   or time to run it. Don't decide prices — write [price] wherever the owner should fill it
+   in.
+
+
+
+  Lesson 02 · Step 3: 30 din ka post plan
+
+
+   Make a 30-day post plan for this [shop] starting [date]. For each week, tell me what to
+   post on Instagram and WhatsApp status — a food/product photo, an offer poster, a short
+   reel, or a behind-the-counter moment. Include any Indian festivals in these dates and mark
+   them clearly with "(check date)" so I can verify them.
+
+
+
+  Lesson 02 · Step 4: Ek page ka Business Brief
+
+
+   Now put everything into one short Business Brief I can save and reuse: business details,
+   customer types, 3 ad angles, 5 offers, and the 30-day plan. Clean headings, no extra text.
+
+
+
+  Lesson 03 · Andar ki photo upgrade
+
+
+   Turn this phone photo of my [shop] into a professional interior photograph, like one shot
+   by a good photographer for Instagram and Google Maps. Keep the same room, same furniture,
+   same counter, same boards and same layout — do not add or remove any furniture.
+
+
+   Make these improvements boldly:
+   - Lighting: replace the harsh tube-light look with warm, soft, inviting light
+   - Colours: rich and warm, clean walls, natural shine on surfaces
+   - Camera: straighten the photo, fix the tilt and the stretched wide-angle look, frame it
+   at normal eye level
+   - Clean-up: tables wiped clean, chairs neatly pushed in, floor clean, remove clutter,
+   wires and stains
+   - Quality: sharp focus, no grain, natural depth, looks like a real DSLR photo
+
+
+   No people, no new decorations, no plants, no text added. Realistic, not AI-looking.
+
+
+
+
+
+                                               AI Local Business Ads  · Page 6
+
+===== PAGE 7 =====
+
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+
+
+  Lesson 03 · Shop front, shaam ka look
+
+
+   Turn this phone photo of my [shop]'s front into a professional evening photograph. Keep
+   the same building, same door, same chairs outside and the same signboard — the text "[SHOP
+   NAME]" must stay exactly the same, do not change, re-write or translate it.
+
+
+   Make these improvements boldly:
+   - Time: early evening, soft deep-blue sky, warm golden light glowing from inside
+   - Camera: straighten the photo, fix the tilt, frame the shop front centred and balanced
+   - Clean-up: remove parked vehicles, wrappers and dust, tidy the overhead wires, clean
+   footpath
+   - Colours: rich and warm, sharp focus, no grain, looks like a real DSLR photo
+
+
+   No people, no new signs, no new lights or decorations added. Realistic, not AI-looking.
+
+
+
+  Lesson 03 · WhatsApp status version (9:16)
+
+
+   Use this [shop] photo. Make a vertical 9:16 version of the same [shop] for WhatsApp status
+   — same interior, same furniture, nothing new added. Keep clean empty space in the top
+   third (a plain warm wall or soft blur) so text can be added later. Do not write any text.
+
+
+
+  Lesson 04 · Dish re-shoot
+
+
+   Use this phone photo only as a reference for what our dish looks like. Now re-shoot this
+   same dish from scratch as a professional food photographer would, for our menu and
+   Instagram.
+
+
+   The dish: [describe it exactly — e.g. one normal single portion of masala Maggi on a round
+   steel plate with a steel fork] — exactly the ingredients you see in the reference, nothing
+   extra.
+
+
+   The new shot:
+   - Freshly plated, hot and glossy, with light natural steam rising
+   - Soft warm window light from the left, gentle shadows, rich appetising colours
+   - 45-degree food angle, close-up, shallow depth of field, sharp focus on the food
+   - Set on a clean warm wooden table, softly blurred cosy background
+
+
+   Do NOT add cheese, vegetables, coriander, egg or any garnish that is not in the reference.
+   Same portion size, not bigger. No text, no people. Must look like a real DSLR food photo,
+   not AI.
+
+
+
+
+
+                                               AI Local Business Ads  · Page 7
+
+===== PAGE 8 =====
+
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+
+
+  Lesson 04 · Drink re-shoot
+
+
+   Use this phone photo only as a reference for what our drink looks like. Now re-shoot this
+   same drink from scratch as a professional drink photographer would, for our menu and
+   Instagram.
+
+
+   The drink: [describe it exactly — e.g. one tall plain glass of cold coffee with a little
+   foam on top and a straw] — exactly as in the reference, nothing extra.
+
+
+   The new shot:
+   - Freshly poured, rich colour, light cold condensation drops on the glass
+   - Soft bright light from behind and the side so the glass glows
+   - Straight-on eye-level angle, close-up, shallow depth of field
+   - Set on a clean warm wooden table, softly blurred cosy background
+
+
+   Do NOT add ice cream, whipped cream, syrup, ice on top or any garnish that is not in the
+   reference. Same glass size, same amount. No text, no people. Must look like a real DSLR
+   drink photo, not AI.
+
+
+
+  Lesson 04 · Combo photo (dono results upload karke)
+
+
+   Use these two photos as reference for the dishes. Re-shoot them together as one
+   professional "[combo name]" photo: this same [item 1] and this same [item 2] placed side
+   by side on one clean warm wooden table. Same portions, nothing extra added. Soft warm
+   window light, 45-degree angle, both sharp, softly blurred background. Leave clean empty
+   space at the top for text later. Do not write any text. Real DSLR photo, not AI.
+
+
+
+  Lesson 05 · Offer poster
+
+
+   Use this photo of our [items] as the main image. Turn it into a clean, modern offer poster
+   for Instagram for our [shop]. Keep the food exactly as it is in the photo — do not add or
+   change anything on the plate or in the glass.
+
+
+   Write ONLY this text, spelled exactly like this, nothing else:
+   - Top, big bold: "[OFFER NAME]"
+   - Below it: "[item 1] + [item 2]"
+   - Big price badge: "₹[price]"
+   - Small: "[days, time]"
+   - Bottom: "[SHOP NAME] · [area, city]"
+
+
+   Warm colours, easy-to-read bold fonts, clean layout with the food clearly visible. Do not
+   add any other words, discounts, percentages, logos or claims.
+
+
+
+
+
+                                               AI Local Business Ads  · Page 8
+
+===== PAGE 9 =====
+
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+
+
+  Lesson 05 · Tyohaar greeting poster
+
+
+   Use this photo of our shop front as the main image. Make a warm [festival] greeting
+   poster. Keep the shop, the building and the "[SHOP NAME]" signboard exactly the same — do
+   not change the shop itself.
+
+
+   Add festive feeling only as a decorative design around the photo: a soft glowing frame of
+   [diyas / lights / festival elements] along the edges, gentle golden sparkles. Do not place
+   decorations on the real shop.
+
+
+   Write ONLY this text, spelled exactly like this:
+   - Top: "[Happy Diwali]"
+   - Bottom: "Warm wishes from [SHOP NAME]"
+
+
+   Elegant, easy-to-read fonts. No offers, no prices, no other words.
+
+
+
+  Lesson 06 · Shop front push-in
+
+
+   Use this photo of our shop front as the exact reference. Make a 6-second vertical video:
+   the camera slowly pushes forward toward the glowing door, smooth and steady, like a calm
+   evening walk-up. Warm light glows from inside, a gentle breeze, the evening sky slowly
+   darkens a little. Keep the building, the shutter, the chairs and the "[SHOP NAME]"
+   signboard exactly the same — the text on the board must not change. Do not add people,
+   cars, new signs, decorations or lights. Ambient street sound only, no music, no voices, no
+   text on screen.
+
+
+
+  Lesson 06 · Andar glide
+
+
+   Use this photo of our [shop] interior as the exact reference. Make a 6-second vertical
+   video: the camera slowly glides forward into the [shop] at eye level, as if a customer is
+   walking in, moving gently toward the counter. Soft warm light, a little steam rising from
+   the [chai urn / coffee machine]. Keep the same tables, chairs, counter, boards and walls
+   exactly as in the photo. Do not add people, new furniture, plants, decorations or any
+   objects that are not in the photo. Soft ambient sound only, no music, no voices, no text
+   on screen.
+
+
+
+  Lesson 06 · Food close-up
+
+
+   Use this photo of our [dish] as the exact reference. Make a 6-second vertical close-up
+   video: the camera slowly circles a little around the plate, warm natural steam rising,
+   soft window light. Keep the same plate and the same portion — do not add any other food or
+   garnish. No hands, no people. Gentle ambient sound only, no music, no voices, no text on
+   screen.
+
+
+
+
+
+                                               AI Local Business Ads  · Page 9
+
+===== PAGE 10 =====
+
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+
+
+  Lesson 07 · Step 1: 3 lines (chat G.P.T)
+
+
+   I'm making a 24-second Instagram reel for my [shop] [SHOP NAME] in [area, city]. It has 3
+   clips of 8 seconds each:
+   1) the shop front
+   2) inside the [shop]
+   3) a close-up of our [best item]
+
+
+   Write one short Hindi voiceover line for each clip, in Devanagari script.
+   Rules:
+   - Each line must be easy to say in 6 seconds — maximum 12 words
+   - Friendly and natural, like talking to a friend
+   - No claims like "best", "No.1", "sabse sasta" or "famous"
+   - Use only these facts: [menu, offer with price and timing, opening hours]
+
+
+
+  Lesson 07 · Step 2: Awaaz wali clip (Flow · Video · 8 sec · 9:16) — har clip ke liye line badlo
+
+
+   Use this photo of our [shop front / interior / dish] as the exact reference. Make an
+   8-second vertical video: [one slow camera move — push toward the door / glide inside /
+   circle the plate]. Keep everything exactly as in the photo — the "[SHOP NAME]" signboard
+   text must not change. No people on screen.
+
+
+   Voiceover: a warm, friendly young Indian [male / female] narrator, off-screen, speaking
+   clear natural Hindi at a relaxed pace. Nobody on screen speaks.
+   TIMING: 0–1s: ambient sound only. 1–7s: the narrator says: "[LINE from chat G.P.T, in
+   Devanagari]" 7–8s: ambient sound only.
+   Soft ambient sound under the voice, no music, no text on screen.
+
+
+
+  Lesson 08 · Instagram caption + hashtags
+
+
+   Write an Instagram caption for our 24-second reel (shop front → inside → [best item]
+   close-up). Keep it short and friendly in Hinglish. Mention [area, city] and [offer with
+   price and timing]. Add 8–10 hashtags — mostly local ones ([city], [area], [type of shop])
+   and a few [food / service] ones. No claims like "best" or "No.1".
+
+
+
+  Lesson 08 · WhatsApp status + broadcast
+
+
+   Now write for WhatsApp:
+   1) 3 short status lines for this week — one for the reel, one for the offer poster, one
+   for the festival greeting. Max 10 words each.
+   2) One short broadcast message for regular customers who have saved our number — friendly,
+   no pressure, with our timing [opening – closing].
+   No fake urgency like "only today" or "last chance" unless it is true.
+
+
+
+  Lesson 08 · Google Business Profile
+
+
+   Now help with our Google Business Profile:
+   1) A short "Offer" post for [offer] (max 50 words)
+   2) Which photos to upload (shop front, inside, food/products) and in what order
+   3) A polite reply template for a good review, and one for a bad review
+   Don't write any reviews for us — only the replies.
+
+
+
+
+
+                                              AI Local Business Ads  · Page 10
+
+===== PAGE 11 =====
+
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+
+
+  Lesson 08 · Hafte ka posting plan
+
+
+   Make a simple weekly posting plan as a table: Day | Instagram | WhatsApp Status | Google
+   Business. Use the customer timings from our brief to suggest a posting time for each. Keep
+   it simple enough for one person to manage in about 15 minutes a day.
+
+
+
+  Lesson 09 · 3 packages
+
+
+   I want to offer AI-made marketing content as a service to small local shops in my area —
+   cafes, salons, bakeries, kirana stores. I only use ChatGPT, Google Flow and CapCut.
+
+
+   Suggest 3 simple monthly packages: Basic, Standard and Plus. For each, list exactly what
+   the shop gets (for example: number of photo upgrades, offer posters, festival posters,
+   reels, Google Business posts per month) and roughly how many hours it takes me.
+
+
+   Don't suggest any prices — write [price] where I should fill it in. No promises about
+   sales, followers or results.
+
+
+
+  Lesson 09 · Pehla WhatsApp message
+
+
+   Write a short, polite first WhatsApp message in simple Hinglish that I can send to a local
+   shop owner I know or have visited. In one line say what I do, offer to make one free
+   sample poster from a photo of their shop, and say clearly that it's completely okay if
+   they're not interested. No promises about sales or followers. Maximum 60 words.
+
+
+
+  Lesson 09 · Client se sawaal
+
+
+   Make a simple checklist of questions I should ask a shop owner before starting work:
+   business details, what real photos they can give me, which offers and prices they approve,
+   festivals they celebrate, which platforms they use, and who will approve posts. Keep it as
+   a short list I can send on WhatsApp.
+
+
+
+  Lesson 09 · "Main kaise kaam karta hoon" note
+
+
+   Write a short "how I work" note I can share with every client, in simple Hinglish: I only
+   use their real photos and their real prices, every poster and caption is sent to them for
+   approval before posting, they own all the content I make for them, and how changes work.
+   Maximum 120 words.
+
+
+ Part G — Example answers (bot ka tone)
+
+  User: meri bakery ki photo upgrade ki toh AI ne naye cake aur lights daal diye
+  Bot: Ye common hai. Lesson 03 wala prompt use karo: pehle likho kya same rehna hai
+  (room, counter, shelves, layout) aur "do not add or remove any furniture, no new
+  decorations". Phir alag-alag likho kya sudhaarna hai — light, rang, angle, safai. Ratio wahi
+  rakho jo photo ka hai, aur 1–2 baar aur generate karo.
+
+  User: salon ke liye service shuru karun toh kitna kama lunga?
+  Bot: Course koi kamai ka number nahi deta. Lesson 09 mein packages bane hain jisme likha
+  hai kya milega aur kitne ghante lagenge — daam tum apne shehar ke hisaab se tay karo.
+  Shuru mein ek free sample poster banake bhejo, aur kabhi "bikri dugni" jaisa vaada mat
+  karna.
+
+
+
+
+
+                                              AI Local Business Ads  · Page 11
+
+===== PAGE 12 =====
+
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+
+
+  User: client keh raha hai 5-star reviews bhi likh do
+  Bot: Ye mat karna — nakli review logon ko dhokha hai aur Google pe problem bhi ho sakti
+   hai. Tum review ke jawab likh sakte ho (Lesson 08), aur client ko bolo ki khush grahakon se
+   asli review maange.
+
+
+
+
+
+                                              AI Local Business Ads  · Page 12
+

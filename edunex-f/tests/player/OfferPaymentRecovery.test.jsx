@@ -38,21 +38,15 @@ afterEach(() => {
 const mount = async () => { await act(async () => { render(<AdOfferPage />); }); };
 const handoffs = () => requests.mock.calls.filter(([url]) => url.endsWith('/handoff'));
 
-it('PhonePe offer charges ₹299 once without mandate consent', async () => {
+it('blocks retired one-time PhonePe pricing before starting checkout', async () => {
   const standard = requests.getMockImplementation();
-  requests.mockImplementation((url, options) => {
-    if (url.endsWith('/config')) return Promise.resolve({ ok: true, json: async () => ({ gateway: 'phonepe', oneTimeAmountPaise: 29900, accessDays: 30 }) });
-    if (url.endsWith('/checkout')) return Promise.resolve({ ok: true, json: async () => ({ gateway: 'phonepe', redirectUrl: 'https://checkout.example.test/pay' }) });
-    return standard(url, options);
-  });
+  requests.mockImplementation((url, options) => url.endsWith('/config')
+    ? Promise.resolve({ ok: true, json: async () => ({ gateway: 'phonepe', oneTimeAmountPaise: 29900, accessDays: 30 }) })
+    : standard(url, options));
   await mount();
-  expect(screen.getByText(/One-time payment · No automatic renewal/)).toBeTruthy();
-  expect(screen.getByRole('button', { name: 'Special offer - pay ₹299 once' })).toBeTruthy();
-  await act(async () => { fireEvent.click(screen.getByRole('button', { name: /Pay ₹299 once/ })); });
-  const checkout = requests.mock.calls.find(([url]) => url.endsWith('/checkout'));
-  expect(JSON.parse(checkout[1].body)).toMatchObject({ paymentType: 'one_time' });
-  expect(JSON.parse(checkout[1].body).mandateConsent).toBeUndefined();
-  expect(navigate).toHaveBeenCalledWith('https://checkout.example.test/pay');
+  expect(screen.getByRole('button', { name: /Checkout unavailable/ }).disabled).toBe(true);
+  expect(requests.mock.calls.filter(([url]) => url.endsWith('/checkout'))).toHaveLength(0);
+  expect(navigate).not.toHaveBeenCalled();
   expect(openRazorpay).not.toHaveBeenCalled();
 });
 

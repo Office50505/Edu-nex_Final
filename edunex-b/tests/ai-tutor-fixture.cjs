@@ -35,7 +35,7 @@ function backend(options = {}) {
       if (name.includes('AiResponseReport')) return { create: async () => ({}) };
       if (name.includes('/models/User')) return { updateOne: async () => ({}) };
       if (name.includes('tutorKnowledge')) {
-        const knowledge = require('../services/tutorKnowledge');
+        const knowledge = options.knowledgeModule || require('../services/tutorKnowledge');
         return options.knowledgeTransform ? { ...knowledge, retrieveKnowledge: input => options.knowledgeTransform(knowledge.retrieveKnowledge(input)) } : knowledge;
       }
       if (name === './productTutorState') return require('../services/productTutorState');

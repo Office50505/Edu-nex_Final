@@ -157,14 +157,10 @@ describe("reported frontend regressions", () => {
     expect(bottomLinks.at(-1)?.getAttribute("href")).toBe("/about");
   });
 
-  it("exposes an accessible theme switch in the shared header", () => {
-    window.EduNex = {
-      applyTheme: vi.fn((theme) => { document.documentElement.dataset.theme = theme; }),
-    };
+  it("keeps the shared header in the fixed dark theme without a theme switch", () => {
     render(<Navbar pageKey="index.html" />);
-    fireEvent.click(screen.getAllByRole("button", { name: "Switch to light theme" })[0]);
-    expect(localStorage.getItem("enx-theme")).toBe("light");
-    expect(window.EduNex.applyTheme).toHaveBeenCalledWith("light");
+    expect(screen.queryByRole("button", { name: /Switch to .* theme/ })).toBeNull();
+    expect(screen.getByRole("link", { name: "Skillomate AI home" }).getAttribute("href")).toBe("/");
   });
 
   it("uses a dedicated AI page from the persistent mobile navigation", () => {
@@ -358,8 +354,9 @@ describe("reported frontend regressions", () => {
     render(<ProfilePage />);
     expect(screen.getByText("Aarav Learner")).toBeTruthy();
     expect(screen.queryByText("Loading your profile")).toBeNull();
-    expect(screen.getByRole("button", { name: "Light" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Dark" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Light" })).toBeNull();
+    expect(window.EduNex.applyTheme).toHaveBeenCalledWith("noir");
+    expect(screen.queryByRole("button", { name: "Dark" })).toBeNull();
     expect(screen.queryByRole("button", { name: "System" })).toBeNull();
     expect(screen.queryByRole("button", { name: /Delete Account/i })).toBeNull();
     [
@@ -535,7 +532,7 @@ describe("reported frontend regressions", () => {
 
     await waitFor(() => expect(checkoutBody?.paymentType).toBe("monthly"));
     expect(checkoutBody.mandateConsent).toBe(true);
-    expect(await screen.findByRole("button", { name: "Try Razorpay Again" })).toBeTruthy();
+    expect(await screen.findByRole("button", { name: "Try Checkout Again" })).toBeTruthy();
     expect(screen.queryByText("Choose your billing plan")).toBeNull();
   });
 

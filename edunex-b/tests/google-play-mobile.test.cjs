@@ -125,7 +125,7 @@ test('old Google offer IDs and a different base plan cannot be selected for new 
 // substitute for device billing or React lifecycle tests.
 const hookSource = fs.readFileSync(path.join(__dirname, '../../appcopyai/services/useGooglePlaySubscriptions.js'), 'utf8')
   .replace(/^import[\s\S]*?from\s+"[^"\n]+";\s*/gm, '')
-  .replace('export function useGooglePlaySubscriptions', 'function useGooglePlaySubscriptions');
+  .replace(/^export /gm, '');
 
 function hookHarness({ configuration = {}, products = [product()], availablePurchases = [],
   verifyError = null, verifyResponse = {}, connected = true, fetchProducts, finishError = null,
@@ -162,6 +162,8 @@ function hookHarness({ configuration = {}, products = [product()], availablePurc
   };
   const context = vm.createContext({
     ...subscriptions,
+    isMockPaymentEnabled: require('../../appcopyai/services/mockPayments').isMockPaymentEnabled,
+    useMockPayments: () => { throw new Error('Real billing tests must not use mock payments'); },
     createGooglePlayBillingDiagnostics,
     NativeModules: { SkillomateBillingDiagnostics: {
       enabled: diagnosticsEnabled,
@@ -182,7 +184,7 @@ function hookHarness({ configuration = {}, products = [product()], availablePurc
     useMemo: fn => fn(),
     useCallback: fn => fn,
     useEffect: () => {},
-    useIAP: next => { callbacks = next; return iap; },
+    useDeferredIapConnection: next => { callbacks = next; return iap; },
     readProducts: async request => {
       events.push({ kind: 'fetch', request });
       return fetchProducts ? fetchProducts(request) : products;

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Small terminal runner for the real isolated local API. No model mocks or API keys."""
 import os, argparse, collections, datetime, hashlib, json, pathlib, re, statistics, time, urllib.request, urllib.error, uuid
+from scripts.eval.scene_reference_grading import scene_reference_errors
 
 ROOT = pathlib.Path(__file__).resolve().parent
 REPORT = pathlib.Path(os.environ.get('SKILLOMATE_EVAL_REPORT', str(ROOT / 'reports/mvp_launch_20261017'))).resolve()
@@ -12,6 +13,15 @@ def read_events():
 def body(answer):
     fenced = re.findall(r'```[^\n]*\n([\s\S]*?)```', answer)
     return fenced[0].strip() if len(fenced) == 1 else answer.strip()
+
+def isolated_runtime(runtime):
+    if runtime.get('base_url') == 'http://127.0.0.1:3128':
+        return (runtime.get('fixture_only') is True
+                and runtime.get('fixture_pack') == 'ai-cartoon-series'
+                and runtime.get('real_course_metadata') is False
+                and re.fullmatch(r'skillomate_mvp_eval_cartoon_fixture_[0-9]+_[a-f0-9]{8}', runtime.get('db_name', '')) is not None)
+    return (runtime.get('base_url') == 'http://127.0.0.1:3127'
+            and runtime.get('db_name', '').startswith('skillomate_mvp_eval_'))
 
 def grade(expected, response, events, status, authorized):
     errors=[]; critical=[]
@@ -31,6 +41,13 @@ def grade(expected, response, events, status, authorized):
                 protected=chunk.get('kind') in ['course-material','lesson-notes'] or chunk.get('contentType') in ['exact-template','faq','workflow','lesson-summary']
                 if protected and chunk.get('courseId') not in authorized:
                     critical.append('Unauthorized owner in retrieval output')
+    if expected.get('forbid_protected'):
+        assets=json.loads((REPORT/'approved_assets.json').read_text())['templates']
+        texts=[response.get('answer',response.get('reply',''))]+[m.get('content','') for e in events if e['type']=='provider_payload' for m in e.get('payload',{}).get('messages',[])]
+        normalize=lambda s: re.sub(r'\s+',' ',s).strip().casefold()
+        for asset in assets:
+            prefix=normalize(asset['content'])[:100]
+            if any(prefix in normalize(s) for s in texts): critical.append('Protected approved asset exposed in answer/provider payload')
     if critical:
         return 'FAIL', ['Confirmed security violation in pipeline trace'], critical
     if expected.get('expected_http_status'):
@@ -50,6 +67,8 @@ def grade(expected, response, events, status, authorized):
             if not any(word.casefold() in answer.casefold() for word in group): errors.append('Missing concept group: '+repr(group))
         for word in expected.get('forbidden_any',[]):
             if word.casefold() in answer.casefold(): errors.append('Obsolete/forbidden fact: '+word)
+        if expected.get('scene_references'):
+            errors.extend(scene_reference_errors(answer, expected['scene_references']))
         if expected.get('expected_count'):
             n=len(re.findall(r'^\s*\d+[.)]\s',answer,re.M))
             if n!=expected['expected_count']: errors.append(f'Expected {expected["expected_count"]} numbered hooks, got {n}')
@@ -65,30 +84,34 @@ def grade(expected, response, events, status, authorized):
     return ('FAIL' if errors or critical else 'PASS'),errors,critical
 
 def main():
+    global REPORT
     ap=argparse.ArgumentParser(description=__doc__)
+    ap.add_argument('--cases', type=pathlib.Path, default=ROOT/'test_cases.json', help='Course-specific case file; does not overwrite existing suites')
+    ap.add_argument('--report', type=pathlib.Path, help='Separate course evaluation output directory')
     ap.add_argument('--runtime',help='Private runtime JSON created by mvp-local-backend.cjs')
     ap.add_argument('--mode',choices=['offline','live'],default='offline')
     ap.add_argument('--only',nargs='*',help='Run selected case IDs, retaining all 30 in output')
     args=ap.parse_args()
-    tests=json.loads((ROOT/'test_cases.json').read_text()); frozen=(REPORT/'test_cases_frozen.sha256').read_text().split()[0]
-    if hashlib.sha256((ROOT/'test_cases.json').read_bytes()).hexdigest()!=frozen:raise SystemExit('Frozen questions changed')
+    if args.report: REPORT=args.report.resolve()
+    tests=json.loads(args.cases.read_text()); frozen=(REPORT/'test_cases_frozen.sha256').read_text().split()[0]
+    if hashlib.sha256(args.cases.read_bytes()).hexdigest()!=frozen:raise SystemExit('Frozen questions changed')
     if args.mode=='live':
         p=REPORT/'provider_approval.json'
         if not p.exists() or json.loads(p.read_text()).get('approved') is not True:raise SystemExit('Explicit provider approval is required; no live calls made')
     elif (REPORT/'provider_approval.json').exists():raise SystemExit('Offline mode requires provider approval gate absent')
     runtime_path=args.runtime or (REPORT/'runtime_location.txt').read_text().strip()
     runtime=json.loads(pathlib.Path(runtime_path).read_text())
-    if runtime['base_url']!='http://127.0.0.1:3127' or not runtime['db_name'].startswith('skillomate_mvp_eval_'):raise SystemExit('Refusing non-isolated target')
+    if not isolated_runtime(runtime):raise SystemExit('Refusing non-isolated target')
     run=uuid.uuid4().hex; results=[]; latencies=[]; stop=False
     for case in tests['cases']:
         result={'id':case['id'],'category':case['category'],'turns':[],'status':'UNTESTED'};results.append(result)
         if stop or args.only and case['id'] not in args.only:
             result['reason']='Not executed in this run';continue
-        history=[];conversation=f'{run}-{case["id"]}'
+        history=case.get('history',[]);conversation=f'{run}-{case["id"]}'
         identity=runtime['users'][case['id']]
         for n,expected in enumerate(case.get('turns',[case]),1):
             if expected.get('new_conversation'):history=[];conversation=f'{run}-{case["id"]}-reset'
-            payload={'message':expected['query'],'courseId':runtime['other_course_id'] if case.get('course')=='other' else runtime['course_id'],'conversationId':conversation,'history':history,'debugAi':True,'pagePath':'/courses/ai-product-photoshoot-ads'}
+            payload={'message':expected['query'],'courseId':runtime['other_course_id'] if case.get('course')=='other' else runtime['course_id'],'conversationId':conversation,'history':history,'debugAi':True,'pagePath':'/courses/'+runtime.get('course_slug','ai-product-photoshoot-ads')}
             headers={'Content-Type':'application/json','X-Eval-Run':run,'X-Eval-Case':case['id'],'X-Eval-Turn':str(n)}
             if case.get('identity')!='no_auth':headers['Authorization']='Bearer '+identity['token']
             request=urllib.request.Request(runtime['base_url']+'/api/ai/chat',data=json.dumps(payload,ensure_ascii=False).encode(),headers=headers)
@@ -112,7 +135,7 @@ def main():
     counts=collections.Counter(r['status'] for r in results);executed=counts['PASS']+counts['FAIL']
     summary={'PASS':counts['PASS'],'FAIL':counts['FAIL'],'UNTESTED':counts['UNTESTED'],'accuracy_among_executed_pct':round(100*counts['PASS']/executed,2) if executed else None,'critical_security_failures':sum(len(t['critical_security_failures']) for r in results for t in r['turns']),'average_response_ms':round(statistics.mean(latencies),2) if latencies else None,'provider_invocations':sum(t['provider_invocations'] for r in results for t in r['turns']),'blocked_provider_attempts':sum(t['blocked_provider_attempts'] for r in results for t in r['turns'])}
     report={'suite':tests['suite'],'mode':args.mode,'run_id':run,'timestamp':datetime.datetime.now(datetime.timezone.utc).isoformat(),'cases_sha256':frozen,'endpoint':runtime['base_url']+'/api/ai/chat','synthetic_local_database':runtime['db_name'],'summary':summary,'category_counts':{c:dict(collections.Counter(r['status'] for r in results if r['category']==c)) for c in tests['case_counts']},'grading_note':'Frozen concept checks plus full-body verification. Open-ended PASS is provisional until operator semantic review; no mocked/blocked provider replies count as PASS.','results':results}
-    (ROOT/'last_results.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
+    (REPORT/'last_results.json' if args.cases.resolve() != (ROOT/'test_cases.json').resolve() else ROOT/'last_results.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
     (REPORT/f'{args.mode}_{run}_results.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
     print(json.dumps(summary,indent=2),flush=True)
 
