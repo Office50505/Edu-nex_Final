@@ -1,0 +1,5 @@
+
+Fontconfig error: No writable cache directories
+	/opt/homebrew/var/cache/fontconfig
+	/Users/kratik/.cache/fontconfig
+	/Users/kratik/.fontconfig
