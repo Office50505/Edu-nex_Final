@@ -4,7 +4,7 @@ import { ErrorCode, getAvailablePurchases as readAvailablePurchases, getPendingT
 import { useDeferredIapConnection } from "./useDeferredIapConnection";
 import { APPLE_SUBSCRIPTION_PRODUCT_IDS } from "./subscriptions";
 import { recordApplePurchaseError } from "./applePurchaseDiagnostics";
-import { createAppleTransactionVerifier, recoverApplePurchases, applePurchaseErrorMessage } from "./applePurchaseRecovery";
+import { resolveAppleSignedPurchase, createAppleTransactionVerifier, recoverApplePurchases, applePurchaseErrorMessage } from "./applePurchaseRecovery";
 
 const UNAVAILABLE_APPLE_SUBSCRIPTION = {
   connected: false,
@@ -49,7 +49,7 @@ export function useAppleSubscriptions({ session, user, onEntitlementChanged }) {
       setNotice("Purchase is pending approval. Premium will activate after Apple confirms it.");
       return null;
     }
-    if (purchase?.productId !== APPLE_SUBSCRIPTION_PRODUCT_IDS.monthly || !purchase?.purchaseToken) {
+    if (purchase?.productId !== APPLE_SUBSCRIPTION_PRODUCT_IDS.monthly) {
       setWorking(false);
       setError("The App Store did not return a valid Skillomate subscription transaction.");
       throw new Error("The App Store did not return a valid Skillomate subscription transaction.");
@@ -58,10 +58,11 @@ export function useAppleSubscriptions({ session, user, onEntitlementChanged }) {
       setWorking(true);
       setError("");
       try {
+        const signedPurchase = await resolveAppleSignedPurchase(purchase, readAvailablePurchases);
         const entitlement = await session.requestJson("/api/apple-iap/verify", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ signedTransaction: purchase.purchaseToken }),
+          body: JSON.stringify({ signedTransaction: signedPurchase.purchaseToken }),
         });
         if (!entitlement?.entitlementState) throw new Error("The App Store verification response was incomplete.");
         if (currentUserId.current !== userId) throw new Error("Your account changed. Please retry from your current account.");

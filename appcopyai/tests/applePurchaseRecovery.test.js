@@ -6,7 +6,9 @@ const recovery = require('../services/applePurchaseRecovery');
 const productId = 'com.skillomate.premium.monthly';
 const expired = { entitlementState: 'EXPIRED', entitlementActive: false };
 const active = { entitlementState: 'ACTIVE', entitlementActive: true };
-const purchase = { id: 'old-transaction', productId, purchaseToken: 'signed-test-payload' };
+// Compact JWS-shaped fixture; the mocked backend below does not authenticate it.
+const signedTransaction = 'eyJhbGciOiJFUzI1NiJ9.' + 'a'.repeat(80) + '.' + 'b'.repeat(86);
+const purchase = { id: 'old-transaction', productId, purchaseToken: signedTransaction };
 
 test('concurrent callbacks share verification and finishing; failed attempts remain retryable', async () => {
   const verify = recovery.createAppleTransactionVerifier();
@@ -62,7 +64,7 @@ test('failed ownership verification stops recovery; pending approval is not fini
   assert.equal(verified, false);
 });
 
-function hookFixture({ pending = [purchase], entitlement = expired, verifyError, requestError, onRequest, onVerify } = {}) {
+function hookFixture({ pending = [purchase], available = pending, entitlement = expired, verifyError, requestError, onRequest, onVerify } = {}) {
   let callbacks, stateIndex = 0;
   const states = [ { appAccountToken:'test-account' }, false, '', '', 'ready' ];
   const order = [], logs = [];
@@ -76,13 +78,17 @@ function hookFixture({ pending = [purchase], entitlement = expired, verifyError,
     APPLE_SUBSCRIPTION_PRODUCT_IDS:{monthly:productId},
     recordApplePurchaseError:(stage,error)=>logs.push({stage,error}),
     getPendingTransactionsIOS:async()=>{order.push('pending');return pending;},
-    readAvailablePurchases:async()=>pending,
+    readAvailablePurchases:async()=>{order.push('available');return available;},
     useDeferredIapConnection:options=>{callbacks=options;return {connected:true,subscriptions:[{id:productId}],
       finishTransaction:async()=>order.push('finish'),
       requestPurchase:async()=>{order.push('purchase');await onRequest?.(callbacks);if(requestError)throw requestError;},
     };},
-    session:{requestJson:async path=>{
-      if(path.endsWith('/verify')){order.push('verify');await onVerify?.();if(verifyError)throw verifyError;return entitlement;}
+    session:{requestJson:async (path,options)=>{
+      if(path.endsWith('/verify')){
+        const body=JSON.parse(options.body);
+        assert.equal(recovery.isAppleSignedTransaction(body.signedTransaction),true,'Backend must receive compact JWS, never a transaction ID');
+        order.push('verify');await onVerify?.(body);if(verifyError)throw verifyError;return entitlement;
+      }
       order.push('refresh');return entitlement;
     }},
   };
@@ -109,7 +115,7 @@ test('duplicate and already-owned callbacks recover without displaying the gener
     const f=hookFixture({entitlement:active});
     f.callbacks().onPurchaseError({code});
     await new Promise(resolve=>setImmediate(resolve));
-    assert.deepEqual(f.order,['pending','verify','finish','refresh']);
+    assert.deepEqual(f.order,['pending','available','verify','finish','refresh']);
     assert.equal(f.states[2],'');assert.equal(f.states[1],false);
     assert.match(f.states[3],/active/);
   }
@@ -152,4 +158,52 @@ test('duplicate errors delivered through both callback and request rejection do 
   await f.hook.purchase();
   assert.equal(f.order.filter(item=>item==='finish').length,1);
   assert.equal(f.states[1],false);assert.equal(f.states[2],'');
+});
+
+test('native pending transaction ID is replaced by the same transaction’s JWS before backend verification', async () => {
+  let submitted;
+  const snapshot={...purchase,purchaseToken:'2000001234567890'};
+  const f=hookFixture({pending:[snapshot],available:[purchase],onVerify:body=>{submitted=body.signedTransaction;}});
+  await f.hook.purchase();
+  assert.equal(submitted,signedTransaction);
+  assert.deepEqual(f.order,['pending','available','verify','finish','refresh','purchase']);
+});
+
+test('recovery never verifies or finishes an ID-only transaction when its signed history is absent', async () => {
+  const f=hookFixture({pending:[{...purchase,purchaseToken:'2000001234567890'}],available:[]});
+  await f.hook.purchase();
+  assert.equal(f.order.includes('verify'),false);
+  assert.equal(f.order.includes('finish'),false);
+  assert.equal(f.order.includes('purchase'),false);
+  assert.match(f.states[2],/signed data/);
+});
+
+test('signed-data fallback cannot substitute another transaction or product', async () => {
+  const snapshot={...purchase,purchaseToken:purchase.id};
+  for (const wrong of [{...purchase,id:'another-transaction'}, {...purchase,productId:'another.product'}]) {
+    await assert.rejects(recovery.resolveAppleSignedPurchase(snapshot,async()=>[wrong]),/signed data/);
+  }
+  for (const token of [null,'1234567890123456','a'.repeat(150),'aaa.bbb.ccc']) {
+    assert.equal(recovery.isAppleSignedTransaction(token),false);
+  }
+});
+
+test('direct purchase callbacks also recover ID-only snapshots without sending IDs to the backend', async () => {
+  const f=hookFixture({available:[purchase]});
+  f.callbacks().onPurchaseSuccess({...purchase,purchaseToken:'2000001234567890'});
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.deepEqual(f.order,['available','verify','finish']);
+  assert.equal(f.states[2],'');
+});
+
+test('multiple pending snapshots use one history read and each keeps its own signed data', async () => {
+  const second={...purchase,id:'another-transaction',purchaseToken:signedTransaction.replace(/b/g,'c')};
+  const submitted=[];let historyReads=0;
+  await recovery.recoverApplePurchases({productId,
+    readPending:async()=>[{...purchase,purchaseToken:purchase.id},{...second,purchaseToken:second.id}],
+    readAvailable:async()=>{historyReads++;return [second,purchase];},
+    verify:async item=>submitted.push([item.id,item.purchaseToken]),refresh:async()=>expired,
+  });
+  assert.equal(historyReads,1);
+  assert.deepEqual(submitted,[[purchase.id,purchase.purchaseToken],[second.id,second.purchaseToken]]);
 });

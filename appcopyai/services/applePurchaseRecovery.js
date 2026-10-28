@@ -1,3 +1,24 @@
+function isAppleSignedTransaction(value) {
+  // Shape check only. Apple's signature and ownership are verified by the server.
+  return typeof value === "string" && value.length >= 100 && value.length <= 100000
+    && /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(value);
+}
+
+async function resolveAppleSignedPurchase(purchase, readAvailable) {
+  if (isAppleSignedTransaction(purchase.purchaseToken)) return purchase;
+  const id = String(purchase.transactionId || purchase.id || "");
+  if (id) {
+    const history = await readAvailable({ onlyIncludeActiveItemsIOS: false, alsoPublishToEventListenerIOS: false });
+    const signed = (history || []).find(item => item.productId === purchase.productId
+      && String(item.transactionId || item.id || "") === id
+      && isAppleSignedTransaction(item.purchaseToken));
+    if (signed) return { ...purchase, purchaseToken: signed.purchaseToken };
+  }
+  // Never substitute the latest transaction for a different unfinished one or
+  // finish the original based on another transaction's successful verification.
+  throw new Error("Apple did not return signed data for this transaction. Please try Restore Purchases.");
+}
+
 function createAppleTransactionVerifier() {
   const attempts = new Map();
   return function verifyOnce(purchase, verify) {
@@ -14,7 +35,11 @@ function createAppleTransactionVerifier() {
 
 async function recoverApplePurchases({ productId, readPending, readAvailable, includeAvailable = false, verify, refresh }) {
   const pending = await readPending();
-  const available = includeAvailable
+  // OpenIAP 1.3.15 returns a transaction ID instead of JWS in pending snapshots.
+  // Transaction history retains the original JWS, including for expired items.
+  const needsSignedHistory = (pending || []).some(purchase => purchase.productId === productId
+    && purchase.purchaseState !== "pending" && !isAppleSignedTransaction(purchase.purchaseToken));
+  const available = includeAvailable || needsSignedHistory
     ? await readAvailable({ onlyIncludeActiveItemsIOS: false, alsoPublishToEventListenerIOS: false })
     : [];
   const matching = [...(pending || []), ...(available || [])].filter(purchase => purchase.productId === productId);
@@ -30,7 +55,7 @@ async function recoverApplePurchases({ productId, readPending, readAvailable, in
     }
     // Do not discard expired or foreign transactions locally. The server must
     // verify both authenticity and ownership before a transaction can be finished.
-    await verify(purchase);
+    await verify(await resolveAppleSignedPurchase(purchase, async () => available));
   }
   const entitlement = await refresh();
   return { entitlement, awaitingApproval, found: matching.length > 0 };
@@ -53,4 +78,4 @@ function applePurchaseErrorMessage(error) {
   }
 }
 
-module.exports = { createAppleTransactionVerifier, recoverApplePurchases, applePurchaseErrorMessage };
+module.exports = { isAppleSignedTransaction, resolveAppleSignedPurchase, createAppleTransactionVerifier, recoverApplePurchases, applePurchaseErrorMessage };
