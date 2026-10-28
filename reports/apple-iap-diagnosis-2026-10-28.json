@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-28",
+  "scope": "Read-only diagnosis of the reproduced App Store purchase failure; local diagnostic instrumentation only",
+  "installedApp": {
+    "bundleId": "com.alihussainkhan.edunexfinal",
+    "version": "1.0",
+    "build": "31"
+  },
+  "observations": [
+    "User reproduced the red purchase error while a live StoreKit capture was running.",
+    "StoreKit used its testflight transaction cache for this application.",
+    "The currentEntitlements query for com.skillomate.premium.monthly returned zero transactions.",
+    "The unfinished transaction query returned ten transactions across the application; the capture does not establish that all ten belong to this product.",
+    "StoreKit logged: Found unfinished transaction for com.skillomate.premium.monthly.",
+    "The same sequence occurred on repeated attempts."
+  ],
+  "interpretation": "An unfinished subscription transaction is a confirmed recovery issue to investigate. A repeated purchase callback may be surfaced as duplicate-purchase by react-native-iap 14.7.20 and mapped to the app's generic purchase error. The original callback code was not captured, so this explanation remains an inference.",
+  "notEstablished": [
+    "The original purchaseError.code and purchaseError.message from installed build 31.",
+    "Why the existing transaction was left unfinished, including whether verification, ownership or transaction finishing failed.",
+    "Whether the exact failure is duplicate-purchase, another library error, or a StoreKit error."
+  ],
+  "limitations": [
+    "Installed release logging did not expose the original purchase callback details.",
+    "Debugger attachment to the installed app was denied by iOS.",
+    "Historical device log collection through Apple's log tool requires administrator authentication; live capture was obtained using an isolated temporary log reader instead.",
+    "Local diagnostic changes were not built, installed, deployed or published."
+  ],
+  "nextEvidence": "Run the instrumented Apple subscription hook on the affected iPhone and reproduce once to record the sanitized native error code, message and any underlying error.",
+  "verification": {
+    "diagnosticTestsPassed": 3,
+    "diffWhitespaceCheck": "passed",
+    "billingBehaviorChanged": false
+  },
+  "sandboxSignIn": {
+    "date": "2026-10-28",
+    "observedErrorDomain": "AKAuthenticationServerError",
+    "observedErrorCode": -20970,
+    "appleMessage": "Your account information was entered incorrectly.",
+    "wrappingErrorDomain": "com.apple.AppleIDAuthSupport",
+    "wrappingErrorCode": 2,
+    "requestedTesterEmailMatched": true,
+    "interpretation": "Apple rejected authentication for the requested sandbox tester before the application purchase flow. This does not establish whether the password is wrong or the sandbox account has another authentication/provisioning issue.",
+    "privacy": "Only allowlisted error metadata retained; raw authentication capture removed."
+  }
+}

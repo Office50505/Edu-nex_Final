@@ -305,7 +305,7 @@ test('StoreKit client verifies before finishing, handles cancellation, and resto
   assert.match(appleHookSource, /ErrorCode\.DeferredPayment/);
   assert.match(appleHookSource, /No charge was made/);
   assert.match(appleHookSource, /getAvailablePurchases/);
-  assert.match(appleHookSource, /entitlementActive\) restored = true/);
+  assert.match(appleHookSource, /result\.entitlement\?\.entitlementActive \? "Purchases restored\."/);
   assert.match(appleHookSource, /transaction intentionally remains unfinished/);
   assert.match(appleHookSource, /fetchProducts\(\{ skus: \[APPLE_SUBSCRIPTION_PRODUCT_IDS\.monthly\], type: "subs" \}\)/);
   assert.match(appleHookSource, /productFetchAttempted\.current && !retry/);
