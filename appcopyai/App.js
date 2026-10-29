@@ -3686,7 +3686,7 @@ function ProblemReportModal({ visible, onClose, user, route = "home" }) {
                 multiline
                 maxLength={3000}
                 placeholder="Describe what you were trying to do and what happened instead..."
-                placeholderTextColor={C.textMuted}
+                placeholderTextColor={C.textSub}
                 style={s.reportTextArea}
                 textAlignVertical="top"
                 accessibilityLabel="Describe the problem"
@@ -7017,7 +7017,7 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
                   pointerEvents={cellChromePointerEvents}
                   importantForAccessibility={isCurrent && !playerChromeHidden ? "auto" : "no-hide-descendants"}
                 >
-                  <SafeAreaView style={s.webPlayerTopSafeArea} pointerEvents="box-none">
+                  <SafeAreaView edges={["left", "right"]} style={s.webPlayerTopSafeArea} pointerEvents="box-none">
                     <TouchableOpacity
                       onPress={onBack}
                       style={s.webPlayerTopBtn}
@@ -7476,7 +7476,7 @@ function VideoListScreen({
   return (
     <View style={{ flex: 1, backgroundColor: C.bg }}>
       <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.white} />
-      <SafeAreaView style={{ backgroundColor: C.white }}>
+      <SafeAreaView edges={["top", "left", "right"]} style={{ backgroundColor: C.white }}>
         <View style={[s.pageHeader, isTablet && s.tabletContentFrame]}>
           <TouchableOpacity onPress={onBack} style={s.iconBtn}
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
@@ -8174,7 +8174,7 @@ return StyleSheet.create({
   headerInner: { minHeight: 62, paddingHorizontal: 14, paddingVertical: 9, flexDirection: "row", alignItems: "center", justifyContent: "flex-start", gap: 10 },
   headerInnerCompact: { paddingHorizontal: 10 },
   tabletFrame: { width: "100%", maxWidth: 920, alignSelf: "center" },
-  tabletScrollContent: { width: "100%", maxWidth: 920, alignSelf: "center" },
+  tabletScrollContent: { width: "100%", maxWidth: 920, alignSelf: "center", paddingBottom: 16 },
   brandRow: { flex: 1, minWidth: 126, flexDirection: "row", alignItems: "center", gap: 9, overflow: "visible" },
   brandCopy: { flexShrink: 1 },
   brandIcon: { width: 36, height: 36, borderRadius: 9, alignItems: "center", justifyContent: "center", backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.border },
@@ -8187,7 +8187,7 @@ return StyleSheet.create({
   profileButton: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, alignItems: "center", justifyContent: "center", overflow: "hidden", backgroundColor: HOME_PALETTE.surface, borderWidth: 2, borderColor: HOME_PALETTE.gold },
   scrollViewport: { flex: 1 },
   tabletScrollViewport: { marginBottom: Platform.OS === "ios" ? 118 : 132 },
-  scrollContent: { paddingTop: 10, paddingBottom: Platform.OS === "ios" ? 230 : 240 },
+  scrollContent: { paddingTop: 10, paddingBottom: Platform.OS === "ios" ? 112 : 118 },
   mediaFallback: { ...StyleSheet.absoluteFill, alignItems: "center", justifyContent: "center", padding: 10, backgroundColor: HOME_PALETTE.surfaceSoft },
   mediaFallbackText: { color: HOME_PALETTE.textSecondary, fontSize: 10, lineHeight: 13, fontWeight: "700", textAlign: "center", marginTop: 5 },
   featuredHero: { position: "relative", width: "auto", aspectRatio: 16 / 9, marginHorizontal: 14, borderRadius: 14, overflow: "hidden", backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.borderStrong },
@@ -8259,7 +8259,6 @@ return StyleSheet.create({
   stateText: { color: HOME_PALETTE.textSecondary, fontSize: 12, lineHeight: 17, textAlign: "center", marginTop: 6 },
   stateButton: { minHeight: MIN_TOUCH_TARGET, paddingHorizontal: 16, alignItems: "center", justifyContent: "center", borderRadius: 8, backgroundColor: HOME_PALETTE.gold, marginTop: 16 },
   stateButtonText: { color: HOME_PALETTE.onGold, fontSize: 12, fontWeight: "900" },
-  bottomNavSpacer: { height: Platform.OS === "ios" ? 72 : 88 },
 });
 }
 
@@ -8368,7 +8367,7 @@ function LegacyHomeScreenDraft({ session, user, onGoToCourses, onGoToAI, onGoToD
       <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.bg} />
 
       <View style={s.streamingHeader}>
-        <SafeAreaView>
+        <SafeAreaView edges={["top", "left", "right"]}>
           <View style={s.streamingHeaderInner}>
             <View>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
@@ -9027,9 +9026,9 @@ function HomeScreen({
 
   return (
     <View style={homeStyles.root}>
-      <StatusBar barStyle="light-content" backgroundColor={HOME_PALETTE.background} />
+      <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={HOME_PALETTE.background} />
       <View style={homeStyles.header}>
-        <SafeAreaView>
+        <SafeAreaView edges={["top", "left", "right"]}>
           <View style={[homeStyles.headerInner, isTablet && homeStyles.tabletFrame, width <= 340 && homeStyles.headerInnerCompact]}>
             <View style={homeStyles.brandRow}>
               <SkillomateLogo size={width <= 340 ? "xs" : "sm"} />
@@ -9059,11 +9058,12 @@ function HomeScreen({
 
       <ScrollView
         style={[homeStyles.scrollViewport, isTablet && homeStyles.tabletScrollViewport]}
+        contentInsetAdjustmentBehavior="never"
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[homeStyles.scrollContent, isTablet && homeStyles.tabletScrollContent]}
         scrollEventThrottle={16}
         keyboardShouldPersistTaps="handled"
-        overScrollMode="always"
+        overScrollMode="never"
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -9196,7 +9196,6 @@ function HomeScreen({
                   ))}
               </View>
             ) : null}
-            <View style={homeStyles.bottomNavSpacer} />
           </>
         )}
       </ScrollView>
@@ -9372,7 +9371,7 @@ function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, 
   return (
     <View style={{ flex: 1, backgroundColor: C.white }}>
       <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.white} />
-      <SafeAreaView style={{ backgroundColor: C.white }}>
+      <SafeAreaView edges={["top", "left", "right"]} style={{ backgroundColor: C.white }}>
         <View style={[s.pageHeader, s.pageHeaderLogoOnly, { justifyContent: "space-between" }, isTablet && s.courseListTabletFrame]}>
           <SkillomateLogo size="sm" onPress={onGoToHome} />
           <View style={homeStyles.headerActions}>
@@ -9425,6 +9424,8 @@ function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, 
 
 <FlatList
         style={isTablet && s.courseListViewportTablet}
+        contentInsetAdjustmentBehavior="never"
+        overScrollMode="never"
         data={filtered}
         keyExtractor={item => item._id}
         contentContainerStyle={[s.courseListContent, isTablet && s.courseListTabletContent]}
@@ -9595,7 +9596,7 @@ function WishlistScreen({ wishlist, onToggleWishlist, onSelect, onBack, user, on
   return (
     <View style={{ flex: 1, backgroundColor: C.white }}>
       <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.white} />
-      <SafeAreaView style={{ backgroundColor: C.white }}>
+      <SafeAreaView edges={["top", "left", "right"]} style={{ backgroundColor: C.white }}>
         <View style={[s.pageHeader, isTablet && s.tabletContentFrame]}>
           <TouchableOpacity onPress={onBack} style={s.iconBtn}
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
@@ -9828,7 +9829,7 @@ function CertificatesScreen({ certificates, onBack }) {
     <View style={{ flex: 1, backgroundColor: C.bg }}>
       <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.white} />
       <View style={[s.homeTopBar, { paddingBottom: 12, backgroundColor: C.white }]}>
-        <SafeAreaView style={{ backgroundColor: C.white }}>
+        <SafeAreaView edges={["top", "left", "right"]} style={{ backgroundColor: C.white }}>
           <View style={[s.homeTopBarInner, isTablet && s.tabletContentFrame]}>
             <TouchableOpacity onPress={onBack} style={s.iconBtn} accessibilityRole="button" accessibilityLabel="Back to profile">
               <Ionicons name="arrow-back" size={22} color={C.text} />
@@ -9869,7 +9870,7 @@ function InfoPageScreen({ page, onBack }) {
     <View style={{ flex: 1, backgroundColor: C.bg }}>
       <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.white} />
       <View style={[s.homeTopBar, { paddingBottom: 12, backgroundColor: C.white }]}>
-        <SafeAreaView style={{ backgroundColor: C.white }}>
+        <SafeAreaView edges={["top", "left", "right"]} style={{ backgroundColor: C.white }}>
           <View style={[s.homeTopBarInner, isTablet && s.tabletContentFrame]}>
             <TouchableOpacity onPress={onBack} style={s.iconBtn} accessibilityRole="button" accessibilityLabel="Back to profile">
               <Ionicons name="arrow-back" size={22} color={C.text} />
@@ -9981,7 +9982,7 @@ function SubscriptionDetailsScreen({ user, onBack, session, appleSubscription, o
     <View style={{ flex: 1, backgroundColor: C.bg }}>
       <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.white} />
       <View style={[s.homeTopBar, { paddingBottom: 12, backgroundColor: C.white }]}>
-        <SafeAreaView style={{ backgroundColor: C.white }}>
+        <SafeAreaView edges={["top", "left", "right"]} style={{ backgroundColor: C.white }}>
           <View style={[s.homeTopBarInner, isTablet && s.tabletContentFrame]}>
             <TouchableOpacity onPress={onBack} style={s.iconBtn} accessibilityRole="button" accessibilityLabel="Back to profile">
               <Ionicons name="arrow-back" size={22} color={C.text} />
@@ -10469,7 +10470,7 @@ function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, o
     <View style={{ flex: 1, backgroundColor: C.white }}>
       <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.white} />
       <View style={[s.homeTopBar, { paddingBottom: 8, backgroundColor: C.white }]}>
-        <SafeAreaView style={{ backgroundColor: C.white }}>
+        <SafeAreaView edges={["top", "left", "right"]} style={{ backgroundColor: C.white }}>
           <View style={[s.homeTopBarInner, s.pageHeaderLogoOnly, isTablet && s.tabletContentFrame]}>
             <TouchableOpacity
               onPress={onGoToHome}
@@ -11471,7 +11472,7 @@ function AiAssistantScreen({
   return (
     <View style={[s.aiScreen, { backgroundColor: aiTheme.screen }]}>
       <StatusBar barStyle={aiTheme.statusBar} backgroundColor={aiTheme.top} />
-      <SafeAreaView style={[s.aiTopSafe, { backgroundColor: aiTheme.top, borderBottomColor: aiTheme.topBorder }]}>
+      <SafeAreaView edges={["top", "left", "right"]} style={[s.aiTopSafe, { backgroundColor: aiTheme.top, borderBottomColor: aiTheme.topBorder }]}>
         <View style={[s.aiTopHeader, isTablet && s.tabletContentFrame]}>
           <SkillomateLogo size="xs" mode={C.isDark ? "dark" : "light"} onPress={onGoToHome} />
           <View style={s.aiTopHeaderSpacer} />
@@ -11837,7 +11838,7 @@ function LegalContentScreen({ page = "privacy", onBack }) {
   return (
     <View style={s.legalScreen}>
       <StatusBar barStyle="light-content" backgroundColor={C.bg} />
-      <SafeAreaView style={s.legalSafeArea}>
+      <SafeAreaView edges={["top", "left", "right"]} style={s.legalSafeArea}>
         <View style={[s.legalHeader, isTablet && s.tabletContentFrame]}>
           <TouchableOpacity
             onPress={onBack}
@@ -13488,7 +13489,7 @@ export default function App() {
       return (
   <View style={{ flex: 1, backgroundColor: C.bg }}>
     <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.bg} />
-    <SafeAreaView>
+    <SafeAreaView edges={["top", "left", "right"]}>
       <TouchableOpacity onPress={resetSignup} style={{ padding: 16 }} accessibilityRole="button" accessibilityLabel="Back to login">
         <Ionicons name="arrow-back" size={22} color={C.text} />
       </TouchableOpacity>
@@ -13585,7 +13586,7 @@ export default function App() {
       return (
   <View style={{ flex: 1, backgroundColor: C.bg }}>
     <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.bg} />
-    <SafeAreaView>
+    <SafeAreaView edges={["top", "left", "right"]}>
       <TouchableOpacity
         onPress={() => { setScreen("signup1"); setSignupError(""); }}
         style={{ padding: 16 }}
@@ -14081,7 +14082,7 @@ export default function App() {
     return (
       <View style={{ flex: 1, backgroundColor: C.bg }}>
         <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.white} />
-        <SafeAreaView style={{ backgroundColor: C.white }}>
+        <SafeAreaView edges={["top", "left", "right"]} style={{ backgroundColor: C.white }}>
           <View style={[s.pageHeader, s.pageHeaderLogoOnly, isTabletLayout && s.tabletContentFrame]}>
             <SkillomateLogo size="sm" onPress={() => navigateRootTab("home")} />
           </View>
@@ -14967,7 +14968,7 @@ return StyleSheet.create({
   reportSheet: {
     width: "100%",
     flexShrink: 1,
-    backgroundColor: "#101113",
+    backgroundColor: C.surface,
     borderTopLeftRadius: 22,
     borderTopRightRadius: 22,
     borderWidth: 1,
@@ -14998,7 +14999,7 @@ return StyleSheet.create({
     backgroundColor: "#EF2F32",
   },
   reportEyebrow: {
-    color: "#FF686B",
+    color: C.danger,
     fontSize: 10,
     lineHeight: 13,
     fontWeight: "900",
@@ -15041,9 +15042,9 @@ return StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 14,
     borderRadius: 10,
-    backgroundColor: "#15181D",
+    backgroundColor: C.panelSecondary,
     borderWidth: 1,
-    borderColor: "#303640",
+    borderColor: C.borderStrong,
   },
   reportCategoryButtonActive: {
     backgroundColor: C.primary,
@@ -15063,7 +15064,7 @@ return StyleSheet.create({
     color: C.text,
     fontSize: 15,
     lineHeight: 22,
-    backgroundColor: "#15181D",
+    backgroundColor: C.panelSecondary,
     borderWidth: 1.4,
     borderColor: C.primary,
     borderRadius: 12,
@@ -15071,7 +15072,7 @@ return StyleSheet.create({
     paddingVertical: 13,
   },
   reportCounter: {
-    color: C.textMuted,
+    color: C.textSub,
     fontSize: 11,
     lineHeight: 15,
     textAlign: "right",
@@ -15095,8 +15096,8 @@ return StyleSheet.create({
     justifyContent: "center",
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: "#62656B",
-    backgroundColor: "#242426",
+    borderColor: C.borderStrong,
+    backgroundColor: C.panelSecondary,
     paddingHorizontal: 12,
   },
   reportCancelText: {
@@ -16148,14 +16149,14 @@ courseListCard: {
     paddingHorizontal: 16,
     paddingTop: 12,
     gap: 16,
-    paddingBottom: Platform.OS === "ios" ? 220 : 240,
+    paddingBottom: Platform.OS === "ios" ? 112 : 118,
   },
   courseListTabletContent: {
     width: "100%",
     maxWidth: 920,
     alignSelf: "center",
     paddingHorizontal: 0,
-    paddingBottom: 120,
+    paddingBottom: 16,
   },
   clCard: {
     backgroundColor: C.cardBg, borderRadius: RADIUS.lg, overflow: "hidden",
@@ -17245,7 +17246,7 @@ courseListCard: {
   lecturePickerTabTextActive: { color: "#fff" },
   lecturePickerList: { flex: 1 },
   lecturePickerContent: { paddingHorizontal: 14, paddingBottom: 18, gap: 8 },
-  lecturePickerGridRow: { justifyContent: "space-between", marginBottom: 8 },
+  lecturePickerGridRow: { justifyContent: "flex-start", columnGap: 8 },
   lecturePickerTile: {
     alignItems: "center",
     justifyContent: "flex-start",
