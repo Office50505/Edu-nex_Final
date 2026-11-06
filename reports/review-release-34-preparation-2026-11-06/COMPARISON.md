@@ -1,3 +1,5 @@
+> Historical preparation checkpoint: build 34 is now processed and selected, and matching draft notes are saved. Use `current-validation/BUILD34_COMPARISON.md` for the current status, test results and deployment gates.
+
 # Skillomate 1.0 (34) - release preparation comparison
 
 6 November 2026 | SOURCE PREPARED - NOT BUILT OR UPLOADED
