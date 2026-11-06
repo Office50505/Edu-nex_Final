@@ -1,0 +1,60 @@
+TAP version 13
+# Subtest: all lessons in paid and legacy courses stay private, including the first lesson
+ok 1 - all lessons in paid and legacy courses stay private, including the first lesson
+  ---
+  duration_ms: 0.697584
+  ...
+# Subtest: free courses and explicit free lessons remain public; draft and foreign lessons never do
+ok 2 - free courses and explicit free lessons remain public; draft and foreign lessons never do
+  ---
+  duration_ms: 0.125333
+  ...
+# Subtest: public lesson lists disclose neither paid media nor paid notes and prompts
+ok 3 - public lesson lists disclose neither paid media nor paid notes and prompts
+  ---
+  duration_ms: 0.592875
+  ...
+# Subtest: anonymous public playback issues a scoped grant; private playback still requires auth
+ok 4 - anonymous public playback issues a scoped grant; private playback still requires auth
+  ---
+  duration_ms: 1.068458
+  ...
+# Subtest: anonymous requests cannot grant paid, foreign, missing or unpublished lessons
+ok 5 - anonymous requests cannot grant paid, foreign, missing or unpublished lessons
+  ---
+  duration_ms: 0.364542
+  ...
+# Subtest: public HLS rechecks publication, preview policy, lesson ownership and source before fetching
+ok 6 - public HLS rechecks publication, preview policy, lesson ownership and source before fetching
+  ---
+  duration_ms: 0.366917
+  ...
+# Subtest: the public catalogue route has no authentication middleware and strips paid lesson sources
+ok 7 - the public catalogue route has no authentication middleware and strips paid lesson sources
+  ---
+  duration_ms: 0.59225
+  ...
+# Subtest: public course database projections avoid embedded artwork
+ok 8 - public course database projections avoid embedded artwork
+  ---
+  duration_ms: 0.062709
+  ...
+# Subtest: every paid lesson including the introduction rejects anonymous playback grants
+ok 9 - every paid lesson including the introduction rejects anonymous playback grants
+  ---
+  duration_ms: 0.321041
+  ...
+# Subtest: legacy preview flags and caller-provided free flags cannot expose paid content
+ok 10 - legacy preview flags and caller-provided free flags cannot expose paid content
+  ---
+  duration_ms: 0.101916
+  ...
+1..10
+# tests 10
+# suites 0
+# pass 10
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 213.5045

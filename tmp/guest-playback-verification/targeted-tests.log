@@ -1,0 +1,100 @@
+TAP version 13
+# Subtest: a guest opens course details and can play public lessons without a session
+ok 1 - a guest opens course details and can play public lessons without a session
+  ---
+  duration_ms: 1.906167
+  ...
+# Subtest: a direct link to a paid lesson opens details rather than starting a different free video
+ok 2 - a direct link to a paid lesson opens details rather than starting a different free video
+  ---
+  duration_ms: 0.333833
+  ...
+# Subtest: a guest never trusts members-only videos cached in a home card
+ok 3 - a guest never trusts members-only videos cached in a home card
+  ---
+  duration_ms: 0.343416
+  ...
+# Subtest: a late public response cannot replace the new signed-in account view
+ok 4 - a late public response cannot replace the new signed-in account view
+  ---
+  duration_ms: 0.304292
+  ...
+# Subtest: course data uses public requests for guests and non-members; paid accounts retain session refresh
+ok 5 - course data uses public requests for guests and non-members; paid accounts retain session refresh
+  ---
+  duration_ms: 0.733167
+  ...
+# Subtest: public CloudFront authorization sends no personal identity or bearer credentials
+ok 6 - public CloudFront authorization sends no personal identity or bearer credentials
+  ---
+  duration_ms: 2.694125
+  ...
+# Subtest: fresh installs default to browsing and authentication remains explicitly dismissible
+ok 7 - fresh installs default to browsing and authentication remains explicitly dismissible
+  ---
+  duration_ms: 0.369208
+  ...
+# Subtest: the actual app renders guest Home and course navigation without showing authentication
+ok 8 - the actual app renders guest Home and course navigation without showing authentication
+  ---
+  duration_ms: 212.155083
+  ...
+# Subtest: the actual guest profile is an optional account page and login has a guest exit
+ok 9 - the actual guest profile is an optional account page and login has a guest exit
+  ---
+  duration_ms: 212.816917
+  ...
+# Subtest: the guest player receives only public lessons with its selected index remapped
+ok 10 - the guest player receives only public lessons with its selected index remapped
+  ---
+  duration_ms: 84.515375
+  ...
+# Subtest: the native player consumes a guest lease instead of waiting forever for a login session
+ok 11 - the native player consumes a guest lease instead of waiting forever for a login session
+  ---
+  duration_ms: 1.551375
+  ...
+# Subtest: the native player rejects a lease from a different course, lesson or account session
+ok 12 - the native player rejects a lease from a different course, lesson or account session
+  ---
+  duration_ms: 0.537916
+  ...
+# Subtest: Lectures opens the picker on the active lecture page and closes other sheets
+ok 13 - Lectures opens the picker on the active lecture page and closes other sheets
+  ---
+  duration_ms: 19.892208
+  ...
+# Subtest: Notes opens notes rather than the picker, including after Lectures was opened
+ok 14 - Notes opens notes rather than the picker, including after Lectures was opened
+  ---
+  duration_ms: 6.228459
+  ...
+# Subtest: a lecture selection closes the picker and scrolls to the requested lesson
+ok 15 - a lecture selection closes the picker and scrolls to the requested lesson
+  ---
+  duration_ms: 3.997958
+  ...
+# Subtest: invalid lesson selections cannot navigate away or close the picker
+ok 16 - invalid lesson selections cannot navigate away or close the picker
+  ---
+  duration_ms: 9.983958
+  ...
+# Subtest: failed lesson questions can be retried with their original text
+ok 17 - failed lesson questions can be retried with their original text
+  ---
+  duration_ms: 4.182458
+  ...
+# Subtest: successful answers and fresh lesson chats do not offer a failed-question retry
+ok 18 - successful answers and fresh lesson chats do not offer a failed-question retry
+  ---
+  duration_ms: 0.796417
+  ...
+1..18
+# tests 18
+# suites 0
+# pass 18
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 841.224334

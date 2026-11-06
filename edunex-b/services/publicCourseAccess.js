@@ -1,4 +1,4 @@
-const publicCourseProjection = 'title status accessType publicPreviewEnabled ' + [
+const publicCourseProjection = 'title status accessType ' + [
   '_id', 'title', 'order', 'duration', 'isFree', 'provider', 'sourceType', 'videoUrl', 'embedUrl',
   'bunnyVideoId', 'bunnyLibraryId', 'youtubeId', 'hlsUrl', 'playlistUrl', 'streamUrl',
   'thumbnailUrl', 'thumbnailVerticalUrl', 'topic', 'notes', 'description', 'transcriptUrl', 'notesUrl', 'examplePrompt',
@@ -12,9 +12,10 @@ function orderedLessons(course) {
 function isPublicLesson(course, video) {
   if (course?.status !== 'published' || !video?._id) return false;
   const lessons = orderedLessons(course);
-  if (!lessons.some(item => String(item._id) === String(video._id))) return false;
-  return course.accessType === 'free' || video.isFree === true
-    || (course.publicPreviewEnabled !== false && String(lessons[0]?._id) === String(video._id));
+  const stored = lessons.find(item => String(item._id) === String(video._id));
+  if (!stored) return false;
+  // Paid courses, including their first lesson, stay locked by default.
+  return course.accessType === 'free' || stored.isFree === true;
 }
 
 function publicCourseVideos(course, playableInfo) {

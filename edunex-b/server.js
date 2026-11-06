@@ -4117,7 +4117,7 @@ app.post('/api/courses', protectAdmin, async (req, res) => {
     const course = new Course({
       _id: courseId,
       accessType: req.body.accessType || 'premium',
-      publicPreviewEnabled: req.body.publicPreviewEnabled !== false,
+      publicPreviewEnabled: req.body.publicPreviewEnabled === true,
       title: req.body.title,
       slug: req.body.slug,
       description: req.body.description,

@@ -127,3 +127,38 @@ test('the guest player receives only public lessons with its selected index rema
   assert.equal(player.props.preloadedVideos.length, 2);
   assert.equal(player.props.onVideoComplete, undefined); assert.equal(player.props.onVideoProgress, undefined);
 });
+
+test('the native player consumes a guest lease instead of waiting forever for a login session', () => {
+  const player = ast.program.body.find(n => n.type === 'FunctionDeclaration' && n.id.name === 'VideoItem');
+  const lease = player.body.body.find(n => n.type === 'VariableDeclaration' && n.declarations.some(d => d.id.name === 'validCloudLease'));
+  for (const user of [null, undefined, {}, { sessionId: null }, { sessionId: '' }, { sessionId: 'signed-in' }]) {
+    const c = { courseId: 'course', videoProp: { _id: 'intro' }, user, cloudLease: { hlsUrl: '/authorized.m3u8' }, cloudLeaseRef: { current: {} } };
+    vm.createContext(c); vm.runInContext(fn('getPlaybackLeaseKey'), c);
+    c.cloudLeaseRef.current.key = c.getPlaybackLeaseKey(c.courseId, c.videoProp._id, user?.sessionId);
+    assert.equal(vm.runInContext(`${slice(lease)}; validCloudLease`, c), c.cloudLease);
+  }
+});
+test('the native player rejects a lease from a different course, lesson or account session', () => {
+  const player = ast.program.body.find(n => n.type === 'FunctionDeclaration' && n.id.name === 'VideoItem');
+  const lease = player.body.body.find(n => n.type === 'VariableDeclaration' && n.declarations.some(d => d.id.name === 'validCloudLease'));
+  for (const key of ['other:intro:', 'course:other:', 'course:intro:old-session']) {
+    const c = { courseId: 'course', videoProp: { _id: 'intro' }, user: null, cloudLease: { hlsUrl: '/wrong.m3u8' }, cloudLeaseRef: { current: { key } } };
+    vm.createContext(c); vm.runInContext(fn('getPlaybackLeaseKey'), c);
+    assert.equal(vm.runInContext(`${slice(lease)}; validCloudLease`, c), null);
+  }
+});
+
+test('guests cannot play an automatically exposed introduction from an older backend', async () => {
+  const c = { hasCourseAccess: () => false, fetchApiJson: async () => ({ videos: [{ _id: 'paid-intro', title: 'Introduction', locked: false, isFree: true, publicPlayback: true, hlsUrl: 'https://paid.example/video', notes: 'Paid notes' }] }) };
+  vm.createContext(c); vm.runInContext(fn('requestCourseVideos'), c);
+  const result = await c.requestCourseVideos({}, null, 'course');
+  assert.equal(result.videos[0].locked, true); assert.equal(result.videos[0].isFree, false);
+  assert.equal(result.videos[0].hlsUrl, undefined); assert.equal(result.videos[0].publicPlayback, undefined);
+  assert.equal(result.videos[0].notes, undefined);
+});
+test('only the explicit-free backend policy may enable free guest lessons', async () => {
+  const payload = { publicAccessPolicy: 'explicit-free-v1', videos: [{ _id: 'paid', locked: true }, { _id: 'preview', locked: false, isFree: true, publicPlayback: true }] };
+  const c = { hasCourseAccess: () => false, fetchApiJson: async () => payload };
+  vm.createContext(c); vm.runInContext(fn('requestCourseVideos'), c);
+  assert.equal(await c.requestCourseVideos({}, null, 'course'), payload);
+});

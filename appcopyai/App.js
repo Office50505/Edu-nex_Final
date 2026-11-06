@@ -486,9 +486,16 @@ async function pickProfileImage() {
 const hasCourseAccess = user => DEV_UI_QA_ENABLED || hasActivePremiumEntitlement(user);
 async function requestCourseVideos(session, user, courseId) {
   const path = `/api/${hasCourseAccess(user) && user?._id ? "" : "public/"}courses/${encodeURIComponent(courseId)}/videos`;
-  return hasCourseAccess(user) && user?._id
-    ? session.requestJson(path)
-    : fetchApiJson(path, null);
+  if (hasCourseAccess(user) && user?._id) return session.requestJson(path);
+  const data = await fetchApiJson(path, null);
+  if (data?.publicAccessPolicy === "explicit-free-v1") return data;
+  // Older servers automatically exposed an introductory lesson. Fail closed until
+  // the backend confirms that only explicitly free content is public.
+  return { ...data, videos: (data?.videos || []).map(video => ({
+    _id: video._id, title: video.title, order: video.order, duration: video.duration,
+    thumbnailUrl: video.thumbnailUrl || null, thumbnailVerticalUrl: video.thumbnailVerticalUrl || null,
+    locked: true, isFree: false,
+  })) };
 }
 const AI_FEATURE_ENABLED = true;
 
@@ -4679,7 +4686,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
       clearTimeout(renewTimer);
     };
   }, [courseId,videoProp?._id,videoProp?.provider,isActive,user?._id,user?.sessionId,cloudRetry,localPath]);
-  const validCloudLease = cloudLeaseRef.current?.key === `${courseId}:${videoProp?._id}:${user?.sessionId}` ? cloudLease : null;
+  const validCloudLease = cloudLeaseRef.current?.key === getPlaybackLeaseKey(courseId, videoProp?._id, user?.sessionId) ? cloudLease : null;
   const video = {...(videoProp || (videoIdProp ? {youtubeId:videoIdProp}:{})), ...(validCloudLease || {})};
   const nativeVideoUrl = video.provider === "aws_cloudfront" && !validCloudLease && !localPath
     ? "" : getNativeVideoUrl(video, offlinePlaybackUrl);
@@ -9155,9 +9162,9 @@ function HomeScreen({
       >
         {!user && (
           <View style={{ marginHorizontal: 14, marginBottom: 16, padding: 16, borderRadius: 12, backgroundColor: HOME_PALETTE.surface }}>
-            <Text style={{ color: HOME_PALETTE.text, fontWeight: "800", fontSize: 16 }}>Learn without an account</Text>
+            <Text style={{ color: HOME_PALETTE.text, fontWeight: "800", fontSize: 16 }}>Explore our courses</Text>
             <Text style={{ color: HOME_PALETTE.textSecondary, lineHeight: 20, marginTop: 6 }}>
-              Browse any course and watch its free lessons. Sign in whenever you want to save your learning across devices.
+              Browse course information without an account. Sign in with an active membership to watch paid lessons.
             </Text>
           </View>
         )}
@@ -12141,8 +12148,8 @@ function GuestAccountScreen({ feature, onSignIn, onBrowse, onBack }) {
         <Text style={{ color: C.text, fontSize: 24, fontWeight: "800", marginTop: 18 }}>{labels[feature] || "Your account"}</Text>
         <Text style={{ color: C.textSub, textAlign: "center", lineHeight: 22, marginVertical: 18 }}>
           {feature === "subscription"
-            ? "Paid lessons require a membership. Sign in to manage your membership and restore access across devices. You can browse courses and watch free lessons without an account."
-            : "Sign in to manage your account, sync learning progress and use your membership features. You can browse courses and watch free lessons without an account."}
+            ? "Paid lessons require an active membership. Sign in to access your purchased content. You can browse course information without an account."
+            : "Sign in to manage your account, sync learning progress and use your membership features. You can browse course information without an account."}
         </Text>
         <TouchableOpacity onPress={onSignIn} style={[s.btn, s.btnFill]} accessibilityRole="button" accessibilityLabel="Sign in or create an account">
           <Text style={s.btnText}>Sign in / Create account</Text>

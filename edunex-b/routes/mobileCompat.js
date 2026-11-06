@@ -233,7 +233,7 @@ router.get('/public/courses/:id/videos', asyncHandler(async (req, res) => {
   const course = await getCourse(req.params.id, require('../services/publicCourseAccess').publicCourseProjection);
   if (course.status !== 'published') return res.status(404).json({ error: 'Published course not found' });
   res.set('Cache-Control', 'no-store');
-  res.json({ courseTitle: course.title,
+  res.json({ courseTitle: course.title, publicAccessPolicy: 'explicit-free-v1',
     videos: require('../services/publicCourseAccess').publicCourseVideos(course, publicPlayableVideoInfo) });
 }));
 

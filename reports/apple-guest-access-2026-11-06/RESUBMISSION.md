@@ -1,3 +1,5 @@
+> Superseded: automatic introductory lesson access was removed at the user's request. Use reports/paid-guest-access-2026-11-06/README.md for the current policy. Do not send the historical App Review reply below.
+
 # Apple 5.1.1(v): guest course access
 
 Date: 6 November 2026 (India)

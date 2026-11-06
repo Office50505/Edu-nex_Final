@@ -84,7 +84,7 @@ videos: [
      ],
     completionOrder: { type: [String], default: undefined },
     accessType: { type: String, enum: ['free', 'premium'], default: 'premium' },
-    publicPreviewEnabled: { type: Boolean, default: true },
+    publicPreviewEnabled: { type: Boolean, default: false },
     notesUrl: {
        type: String,
        default: null,
