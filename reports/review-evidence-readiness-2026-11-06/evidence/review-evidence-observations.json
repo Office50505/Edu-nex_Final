@@ -1,0 +1,16 @@
+{
+  "date": "2026-11-06",
+  "appleRequestDate": "2026-10-16",
+  "requested": "Physical device, latest OS, launch and typical flow; registration/login/deletion, UGC reporting where applicable, paid features/subscription disclosure; six additional written information categories",
+  "existingReplyDate": "2026-10-29",
+  "existingRecordingAttachment": true,
+  "existingRecordingBuild": "1.0 (29)",
+  "existingRecordingDurationAsDeclared": "approximately 9 minutes 25 seconds",
+  "existingRecordingDeclaredDevice": "iPhone 15",
+  "videoContentIndependentlyVerified": false,
+  "physicalDevicesAvailableNow": 0,
+  "connectedSimulatorPresent": true,
+  "newRecordingCreated": false,
+  "testAndRecordingOwner": "DevOps",
+  "reviewReplySent": false
+}

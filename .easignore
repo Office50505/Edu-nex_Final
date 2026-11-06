@@ -88,3 +88,15 @@ appcopyai/**/dist/
 **/.DS_Store
 *.swp
 *.swo
+
+# Keep local access stores and audit artifacts out of release uploads.
+.aws/
+**/.aws/
+.ssh/
+**/.ssh/
+*.pem
+*.key
+*.pfx
+*.p7b
+reports/
+**/reports/

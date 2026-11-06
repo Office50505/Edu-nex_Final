@@ -97,10 +97,9 @@ test('native session migration verifies Keychain write and removes plaintext Asy
   assert.equal(secureValues.has(SECURE_SESSION_KEY), false);
 });
 
-test('mobile AI surfaces send prompts without a consent popup and retain history deletion', () => {
-  assert.doesNotMatch(appSource, /services\/aiConsent|\/api\/ai\/consent|showAiConsent|consentOverride/);
-  assert.doesNotMatch(appSource, /Allow external AI processing|Withdraw AI data consent|AI privacy unavailable/);
-  assert.match(appSource, /async function sendAiMessage\(value = input\)/);
+test('mobile AI surfaces retain permission management and history deletion', () => {
+  assert.match(appSource, /manageAiConsent\(\{ session, user \}\)/);
+  assert.match(appSource, /accessibilityLabel="Manage AI data sharing permission"/);
   assert.match(appSource, /accessibilityLabel="Delete AI chat history"/);
 });
 

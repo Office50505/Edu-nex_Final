@@ -1,0 +1,116 @@
+{
+  "date": "2026-11-06",
+  "tracking": false,
+  "dataTypes": [
+    {
+      "type": "Name",
+      "linked": true,
+      "tracking": false,
+      "purposes": [
+        "AppFunctionality",
+        "ProductPersonalization"
+      ]
+    },
+    {
+      "type": "EmailAddress",
+      "linked": true,
+      "tracking": false,
+      "purposes": [
+        "AppFunctionality"
+      ]
+    },
+    {
+      "type": "PhoneNumber",
+      "linked": true,
+      "tracking": false,
+      "purposes": [
+        "AppFunctionality"
+      ]
+    },
+    {
+      "type": "UserID",
+      "linked": true,
+      "tracking": false,
+      "purposes": [
+        "AppFunctionality",
+        "ProductPersonalization",
+        "Analytics"
+      ]
+    },
+    {
+      "type": "PhotosorVideos",
+      "linked": true,
+      "tracking": false,
+      "purposes": [
+        "AppFunctionality"
+      ]
+    },
+    {
+      "type": "PurchaseHistory",
+      "linked": true,
+      "tracking": false,
+      "purposes": [
+        "AppFunctionality"
+      ]
+    },
+    {
+      "type": "ProductInteraction",
+      "linked": true,
+      "tracking": false,
+      "purposes": [
+        "AppFunctionality",
+        "ProductPersonalization",
+        "Analytics"
+      ]
+    },
+    {
+      "type": "OtherUserContent",
+      "linked": true,
+      "tracking": false,
+      "purposes": [
+        "AppFunctionality",
+        "ProductPersonalization"
+      ]
+    },
+    {
+      "type": "CustomerSupport",
+      "linked": true,
+      "tracking": false,
+      "purposes": [
+        "AppFunctionality"
+      ]
+    },
+    {
+      "type": "OtherDataTypes",
+      "linked": true,
+      "tracking": false,
+      "purposes": [
+        "AppFunctionality"
+      ]
+    },
+    {
+      "type": "CrashData",
+      "linked": false,
+      "tracking": false,
+      "purposes": [
+        "AppFunctionality"
+      ]
+    },
+    {
+      "type": "PerformanceData",
+      "linked": false,
+      "tracking": false,
+      "purposes": [
+        "AppFunctionality"
+      ]
+    },
+    {
+      "type": "OtherDiagnosticData",
+      "linked": true,
+      "tracking": false,
+      "purposes": [
+        "AppFunctionality"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,225 @@
+TAP version 13
+# Subtest: captures native code, message and nested StoreKit cause without serializing raw fields
+ok 1 - captures native code, message and nested StoreKit cause without serializing raw fields
+  ---
+  duration_ms: 3.632292
+  ...
+# Subtest: redacts sensitive text, bounds cause depth and survives logger failures
+ok 2 - redacts sensitive text, bounds cause depth and survives logger failures
+  ---
+  duration_ms: 0.525083
+  ...
+# Subtest: actual hook records native callbacks while preserving cancellation behavior
+ok 3 - actual hook records native callbacks while preserving cancellation behavior
+  ---
+  duration_ms: 2.260833
+  ...
+# Subtest: concurrent callbacks share verification and finishing; failed attempts remain retryable
+ok 4 - concurrent callbacks share verification and finishing; failed attempts remain retryable
+  ---
+  duration_ms: 1.017167
+  ...
+# Subtest: recovery verifies expired pending transactions before refresh and ignores unrelated products
+ok 5 - recovery verifies expired pending transactions before refresh and ignores unrelated products
+  ---
+  duration_ms: 1.007583
+  ...
+# Subtest: restore includes expired history without publishing duplicate events and deduplicates transactions
+ok 6 - restore includes expired history without publishing duplicate events and deduplicates transactions
+  ---
+  duration_ms: 0.3765
+  ...
+# Subtest: failed ownership verification stops recovery; pending approval is not finished
+ok 7 - failed ownership verification stops recovery; pending approval is not finished
+  ---
+  duration_ms: 0.396916
+  ...
+# Subtest: Subscribe clears a verified expired unfinished transaction before requesting a new purchase
+ok 8 - Subscribe clears a verified expired unfinished transaction before requesting a new purchase
+  ---
+  duration_ms: 2.834916
+  ...
+# Subtest: Subscribe does not start another purchase when recovery finds active access or fails verification
+ok 9 - Subscribe does not start another purchase when recovery finds active access or fails verification
+  ---
+  duration_ms: 0.897125
+  ...
+# Subtest: duplicate and already-owned callbacks recover without displaying the generic purchase error
+ok 10 - duplicate and already-owned callbacks recover without displaying the generic purchase error
+  ---
+  duration_ms: 5.389959
+  ...
+# Subtest: rapid Subscribe taps cannot submit two native purchase requests
+ok 11 - rapid Subscribe taps cannot submit two native purchase requests
+  ---
+  duration_ms: 1.146791
+  ...
+# Subtest: duplicate callback during successful verification shares work and releases the purchase lock
+ok 12 - duplicate callback during successful verification shares work and releases the purchase lock
+  ---
+  duration_ms: 0.769459
+  ...
+# Subtest: pending approval blocks another charge and cancellation unlocks checkout
+ok 13 - pending approval blocks another charge and cancellation unlocks checkout
+  ---
+  duration_ms: 0.763833
+  ...
+# Subtest: duplicate errors delivered through both callback and request rejection do not leave checkout busy
+ok 14 - duplicate errors delivered through both callback and request rejection do not leave checkout busy
+  ---
+  duration_ms: 0.519708
+  ...
+# Subtest: native pending transaction ID is replaced by the same transaction’s JWS before backend verification
+ok 15 - native pending transaction ID is replaced by the same transaction’s JWS before backend verification
+  ---
+  duration_ms: 0.403583
+  ...
+# Subtest: recovery never verifies or finishes an ID-only transaction when its signed history is absent
+ok 16 - recovery never verifies or finishes an ID-only transaction when its signed history is absent
+  ---
+  duration_ms: 0.40875
+  ...
+# Subtest: signed-data fallback cannot substitute another transaction or product
+ok 17 - signed-data fallback cannot substitute another transaction or product
+  ---
+  duration_ms: 0.1515
+  ...
+# Subtest: direct purchase callbacks also recover ID-only snapshots without sending IDs to the backend
+ok 18 - direct purchase callbacks also recover ID-only snapshots without sending IDs to the backend
+  ---
+  duration_ms: 1.011333
+  ...
+# Subtest: multiple pending snapshots use one history read and each keeps its own signed data
+ok 19 - multiple pending snapshots use one history read and each keeps its own signed data
+  ---
+  duration_ms: 0.299667
+  ...
+# Subtest: a guest opens course details and can play public lessons without a session
+ok 20 - a guest opens course details and can play public lessons without a session
+  ---
+  duration_ms: 1.838625
+  ...
+# Subtest: a direct link to a paid lesson opens details rather than starting a different free video
+ok 21 - a direct link to a paid lesson opens details rather than starting a different free video
+  ---
+  duration_ms: 0.31225
+  ...
+# Subtest: a guest never trusts members-only videos cached in a home card
+ok 22 - a guest never trusts members-only videos cached in a home card
+  ---
+  duration_ms: 0.271709
+  ...
+# Subtest: a late public response cannot replace the new signed-in account view
+ok 23 - a late public response cannot replace the new signed-in account view
+  ---
+  duration_ms: 0.218125
+  ...
+# Subtest: course data uses public requests for guests and non-members; paid accounts retain session refresh
+ok 24 - course data uses public requests for guests and non-members; paid accounts retain session refresh
+  ---
+  duration_ms: 0.464167
+  ...
+# Subtest: public CloudFront authorization sends no personal identity or bearer credentials
+ok 25 - public CloudFront authorization sends no personal identity or bearer credentials
+  ---
+  duration_ms: 0.873833
+  ...
+# Subtest: fresh installs default to browsing and authentication remains explicitly dismissible
+ok 26 - fresh installs default to browsing and authentication remains explicitly dismissible
+  ---
+  duration_ms: 0.2015
+  ...
+# Subtest: the actual app renders guest Home and course navigation without showing authentication
+ok 27 - the actual app renders guest Home and course navigation without showing authentication
+  ---
+  duration_ms: 171.411292
+  ...
+# Subtest: the actual guest profile is an optional account page and login has a guest exit
+ok 28 - the actual guest profile is an optional account page and login has a guest exit
+  ---
+  duration_ms: 154.816792
+  ...
+# Subtest: the guest player receives only public lessons with its selected index remapped
+ok 29 - the guest player receives only public lessons with its selected index remapped
+  ---
+  duration_ms: 63.8895
+  ...
+# Subtest: the native player consumes a guest lease instead of waiting forever for a login session
+ok 30 - the native player consumes a guest lease instead of waiting forever for a login session
+  ---
+  duration_ms: 1.01875
+  ...
+# Subtest: the native player rejects a lease from a different course, lesson or account session
+ok 31 - the native player rejects a lease from a different course, lesson or account session
+  ---
+  duration_ms: 0.492375
+  ...
+# Subtest: guests cannot play an automatically exposed introduction from an older backend
+ok 32 - guests cannot play an automatically exposed introduction from an older backend
+  ---
+  duration_ms: 0.240583
+  ...
+# Subtest: only the explicit-free backend policy may enable free guest lessons
+ok 33 - only the explicit-free backend policy may enable free guest lessons
+  ---
+  duration_ms: 0.272917
+  ...
+# Subtest: observed expired record cannot display ACTIVE or imply lifetime access
+ok 34 - observed expired record cannot display ACTIVE or imply lifetime access
+  ---
+  duration_ms: 1.090625
+  ...
+# Subtest: verified access takes precedence over a stale billing status
+ok 35 - verified access takes precedence over a stale billing status
+  ---
+  duration_ms: 0.8225
+  ...
+# Subtest: past-due and invalid expiry never show active access
+ok 36 - past-due and invalid expiry never show active access
+  ---
+  duration_ms: 0.176375
+  ...
+# Subtest: explicit server denial overrides a legacy paid status
+ok 37 - explicit server denial overrides a legacy paid status
+  ---
+  duration_ms: 0.130709
+  ...
+# Subtest: free accounts do not expose stale expiry dates
+ok 38 - free accounts do not expose stale expiry dates
+  ---
+  duration_ms: 0.235583
+  ...
+# Subtest: verified trial and cancel-at-period-end remain active through expiry
+ok 39 - verified trial and cancel-at-period-end remain active through expiry
+  ---
+  duration_ms: 0.082584
+  ...
+# Subtest: revoked, refunded and expired states cannot inherit an ACTIVE badge
+ok 40 - revoked, refunded and expired states cannot inherit an ACTIVE badge
+  ---
+  duration_ms: 0.124041
+  ...
+# Subtest: unknown verification state never grants display access
+ok 41 - unknown verification state never grants display access
+  ---
+  duration_ms: 0.05625
+  ...
+# Subtest: undated legacy access does not claim to be lifetime access
+ok 42 - undated legacy access does not claim to be lifetime access
+  ---
+  duration_ms: 0.799583
+  ...
+# Subtest: grace access displays its grace expiry rather than the expired billing period
+ok 43 - grace access displays its grace expiry rather than the expired billing period
+  ---
+  duration_ms: 0.307125
+  ...
+1..43
+# tests 43
+# suites 0
+# pass 43
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 636.208083

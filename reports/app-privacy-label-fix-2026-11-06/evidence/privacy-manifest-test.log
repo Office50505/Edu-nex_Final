@@ -1,0 +1,190 @@
+TAP version 13
+# Subtest: iOS external-link policy allows legal/support/resources and blocks purchase steering
+ok 1 - iOS external-link policy allows legal/support/resources and blocks purchase steering # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.548459
+  ...
+# Subtest: native session migration verifies Keychain write and removes plaintext AsyncStorage copy
+ok 2 - native session migration verifies Keychain write and removes plaintext AsyncStorage copy # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.043958
+  ...
+# Subtest: mobile AI surfaces retain permission management and history deletion
+ok 3 - mobile AI surfaces retain permission management and history deletion # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.078083
+  ...
+# Subtest: Android player omits the non-functional fullscreen control
+ok 4 - Android player omits the non-functional fullscreen control # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.047708
+  ...
+# Subtest: Android app links route verified Skillomate video URLs into the running app
+ok 5 - Android app links route verified Skillomate video URLs into the running app # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.078917
+  ...
+# Subtest: Android back stays inside the app and dismisses focused course search first
+ok 6 - Android back stays inside the app and dismisses focused course search first # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.050709
+  ...
+# Subtest: premium access is fail-closed for unknown, retry, revoked and expired states
+ok 7 - premium access is fail-closed for unknown, retry, revoked and expired states # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.039333
+  ...
+# Subtest: production mobile source contains no enabled QA fixtures or iOS web-purchase steering
+ok 8 - production mobile source contains no enabled QA fixtures or iOS web-purchase steering # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.057916
+  ...
+# Subtest: premium gate popup starts the platform store subscription and exposes required purchase controls
+ok 9 - premium gate popup starts the platform store subscription and exposes required purchase controls # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.121583
+  ...
+# Subtest: subscription provider labels stay in Subscription Details scope for every supported provider
+ok 10 - subscription provider labels stay in Subscription Details scope for every supported provider # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.091666
+  ...
+# Subtest: Google Play offer normalization selects the dedicated ₹9 three-day phase and ₹499 monthly renewal
+ok 11 - Google Play offer normalization selects the dedicated ₹9 three-day phase and ₹499 monthly renewal # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.039292
+  ...
+# Subtest: Google Play client uses the eligible offer token and verifies before acknowledging
+ok 12 - Google Play client uses the eligible offer token and verifies before acknowledging # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.030583
+  ...
+# Subtest: iOS exposes only the standard recurring App Store subscription
+ok 13 - iOS exposes only the standard recurring App Store subscription # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.026
+  ...
+# Subtest: local iOS StoreKit configuration has one ₹499 monthly plan and no introductory offer
+ok 14 - local iOS StoreKit configuration has one ₹499 monthly plan and no introductory offer # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.067875
+  ...
+# Subtest: StoreKit client verifies before finishing, handles cancellation, and restores only active access
+ok 15 - StoreKit client verifies before finishing, handles cancellation, and restores only active access # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.03025
+  ...
+# Subtest: each unsubscribed login automatically sees the platform subscription popup once
+ok 16 - each unsubscribed login automatically sees the platform subscription popup once # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.092459
+  ...
+# Subtest: iOS privacy manifest declares uploaded photos without claiming device identifiers or tracking
+ok 17 - iOS privacy manifest declares uploaded photos without claiming device identifiers or tracking
+  ---
+  duration_ms: 0.328458
+  ...
+# Subtest: iOS native bundle explains photo-library access used by the editable profile picker
+ok 18 - iOS native bundle explains photo-library access used by the editable profile picker # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.119
+  ...
+# Subtest: logged-in tablet screens constrain content and bottom navigation width
+ok 19 - logged-in tablet screens constrain content and bottom navigation width # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.040875
+  ...
+# Subtest: home header keeps the logo visible beside action buttons on phones
+ok 20 - home header keeps the logo visible beside action buttons on phones # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.067583
+  ...
+# Subtest: course search suggestions hide internal category identifiers
+ok 21 - course search suggestions hide internal category identifiers # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.036208
+  ...
+# Subtest: root page swipe is bidirectional and disabled while search is open
+ok 22 - root page swipe is bidirectional and disabled while search is open # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.019542
+  ...
+# Subtest: AI chat composer sits directly above the keyboard on iOS
+ok 23 - AI chat composer sits directly above the keyboard on iOS # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.017625
+  ...
+# Subtest: global back gesture stays invisible while the player exposes its intentional edge-back cue
+ok 24 - global back gesture stays invisible while the player exposes its intentional edge-back cue # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.017417
+  ...
+# Subtest: report and personal detail dialogs keep fields and actions reachable above the keyboard
+ok 25 - report and personal detail dialogs keep fields and actions reachable above the keyboard # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.016917
+  ...
+# Subtest: secondary account tablet screens use the shared centered content frame
+ok 26 - secondary account tablet screens use the shared centered content frame # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.016875
+  ...
+# Subtest: course detail tablet screen constrains lesson list and notes sheet
+ok 27 - course detail tablet screen constrains lesson list and notes sheet # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.016666
+  ...
+# Subtest: lecture player back uses the interactive pager and preserves its route-aware destination
+ok 28 - lecture player back uses the interactive pager and preserves its route-aware destination # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.015917
+  ...
+# Subtest: downloaded lecture player shows offline status inside the top lecture pill
+ok 29 - downloaded lecture player shows offline status inside the top lecture pill # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.016209
+  ...
+# Subtest: course detail back returns to the courses page instead of home
+ok 30 - course detail back returns to the courses page instead of home # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.016125
+  ...
+# Subtest: course lesson list exposes per-lesson download actions
+ok 31 - course lesson list exposes per-lesson download actions # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.016292
+  ...
+# Subtest: protected course downloads prefer prepared MP4 and securely fall back to authorized HLS
+ok 32 - protected course downloads prefer prepared MP4 and securely fall back to authorized HLS # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.056
+  ...
+# Subtest: Bunny lesson downloads fall back to the default pull-zone host instead of 503
+ok 33 - Bunny lesson downloads fall back to the default pull-zone host instead of 503 # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.066708
+  ...
+# Subtest: login and signup screens use larger tablet auth frames
+ok 34 - login and signup screens use larger tablet auth frames # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.018375
+  ...
+# Subtest: profile avatar picker keeps unique bundled choices and falls back from unknown legacy values
+ok 35 - profile avatar picker keeps unique bundled choices and falls back from unknown legacy values # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.020834
+  ...
+# Subtest: age policy rejects 12, accepts 13, and signup UIs have no fabricated default age
+ok 36 - age policy rejects 12, accepts 13, and signup UIs have no fabricated default age # SKIP test name does not match pattern
+  ---
+  duration_ms: 0.017125
+  ...
+1..36
+# tests 36
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 35
+# todo 0
+# duration_ms 55.781292

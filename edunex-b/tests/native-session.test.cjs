@@ -2,7 +2,17 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const load = name => import('data:text/javascript;base64,' + fs.readFileSync(path.join(__dirname, '../../appcopyai/services', name)).toString('base64'));
+const sourceUrl = source => 'data:text/javascript;base64,' + Buffer.from(source).toString('base64');
+const load = name => {
+  let source = fs.readFileSync(path.join(__dirname, '../../appcopyai/services', name), 'utf8');
+  if (name === 'aiClient.js') {
+    const core = fs.readFileSync(path.join(__dirname, '../../appcopyai/services/aiConsent.js'), 'utf8');
+    source = source.replace("'./aiConsent'", JSON.stringify(sourceUrl(core)))
+      .replace("import { askAiConsent } from './aiConsentPrompt';", "const askAiConsent = () => { throw new Error('Unexpected consent prompt'); };");
+  }
+  return import(sourceUrl(source));
+};
+const acceptedConsent = { consentRequired: true, granted: true, policyVersion: 'synthetic', providerVersion: 'synthetic-provider', providerNames: ['Synthetic'], disclosure: 'Synthetic disclosure', decidedAt: '2026-11-06' };
 const initial = { _id: 'u1', sessionId: 's1', accessToken: 'expired', token: 'expired', refreshToken: 'r1', avatar: 'old' };
 const rotated = { _id: 'u1', sessionId: 's1', accessToken: 'fresh', refreshToken: 'r2' };
 const reply = (status, data = {}) => ({ ok: status < 400, status, json: async () => data });
@@ -44,13 +54,18 @@ test('expired tutor token refreshes, rotates both tokens and retries exactly onc
   const calls = [];
   const h = await setup(async (url, options) => {
     calls.push({ url, ...options });
+    // Consent is checked before this token expires on the following chat send.
+    if (url.endsWith('/api/ai/consent')) return reply(200, acceptedConsent);
     return url.endsWith('/refresh') ? reply(200, rotated) : options.headers.Authorization === 'Bearer expired' ? reply(401) : reply(200, { reply: 'Answer' });
   });
   const { requestTutor } = await load('aiClient.js');
   const result = await requestTutor({ baseUrl: 'https://example.test', user: initial, session: h.session, question: 'Explain', courseId: 'course', assistantName: 'Nex', messages: [{ role: 'user', content: 'Earlier' }] });
-  assert.equal(result.answer, 'Answer'); assert.equal(calls.length, 3);
-  assert.equal(calls[0].body, calls[2].body);
-  assert.equal(calls[2].headers.Authorization, 'Bearer fresh');
+  assert.equal(result.answer, 'Answer'); assert.equal(calls.length, 4);
+  assert.ok(calls[0].url.endsWith('/api/ai/consent'));
+  const chats = calls.filter(call => call.url.endsWith('/api/ai/chat'));
+  assert.equal(chats.length, 2);
+  assert.equal(chats[0].body, chats[1].body);
+  assert.equal(chats[1].headers.Authorization, 'Bearer fresh');
   assert.equal(h.saved().refreshToken, 'r2'); assert.equal(h.saved().token, 'fresh');
   const { createNativeSession } = await load('nativeSession.js');
   const restored = createNativeSession({ baseUrl: '', storage: h.storage, onChange() {} });
@@ -130,4 +145,25 @@ test('rotated credentials remain in memory on storage failure without silently c
   h.storage.setItem = async () => { throw Error('disk full'); };
   await assert.rejects(h.session.requestJson('/api/ai/chat'), /could not be saved/);
   assert.equal(h.session.getUser().refreshToken, 'r2'); assert.equal(h.ended(), 0);
+});
+test('expired consent lookup refreshes credentials before chat and refusal still prevents transmission', async () => {
+  const { requestTutor } = await load('aiClient.js');
+  for (const allowed of [true, false]) {
+    const calls=[];
+    const h=await setup(async (url, options) => {
+      calls.push({url,...options});
+      if(url.endsWith('/refresh')) return reply(200,rotated);
+      if(options.headers.Authorization==='Bearer expired') return reply(401);
+      if(url.endsWith('/api/ai/consent')) return reply(200,{...acceptedConsent,granted:allowed});
+      return reply(200,{reply:'Answer'});
+    });
+    const send=requestTutor({user:initial,session:h.session,question:'Synthetic question',messages:[],decideConsent:async()=>false});
+    if(allowed)assert.equal((await send).answer,'Answer');
+    else await assert.rejects(send,e=>e.code==='AI_CONSENT_DECLINED');
+    assert.equal(calls.filter(x=>x.url.endsWith('/refresh')).length,1);
+    const chatCalls=calls.filter(x=>x.url.endsWith('/api/ai/chat'));
+    assert.equal(chatCalls.length,allowed?1:0);
+    if(allowed)assert.equal(chatCalls[0].headers.Authorization,'Bearer fresh');
+    assert.equal(h.saved().refreshToken,'r2');
+  }
 });

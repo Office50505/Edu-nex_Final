@@ -1,0 +1,103 @@
+{
+  "status": "NOT_RUN_ON_FINAL_BUILD",
+  "owner": "DevOps",
+  "appVersion": null,
+  "buildNumber": null,
+  "sourceOrArtifactId": null,
+  "serverRevision": null,
+  "physicalDevice": null,
+  "osVersion": null,
+  "testDate": null,
+  "cases": [
+    {
+      "id": "guest-access",
+      "expected": "Guest catalogue/details work without personal information; paid media stays locked",
+      "result": "NOT_RUN",
+      "evidence": null
+    },
+    {
+      "id": "review-account",
+      "expected": "Reviewer credentials and entitlement work without OTP obstruction",
+      "result": "NOT_RUN",
+      "evidence": null
+    },
+    {
+      "id": "purchase-success",
+      "expected": "Localized offer and sandbox purchase produce server-verified access",
+      "result": "NOT_RUN",
+      "evidence": null
+    },
+    {
+      "id": "purchase-cancel-pending",
+      "expected": "Cancelled/pending purchases do not grant premature access or permit duplicate charges",
+      "result": "NOT_RUN",
+      "evidence": null
+    },
+    {
+      "id": "restore",
+      "expected": "Restore after reinstall/new device restores only the verified owner entitlement",
+      "result": "NOT_RUN",
+      "evidence": null
+    },
+    {
+      "id": "ownership-account-switch",
+      "expected": "Foreign/replayed transactions and account switches cannot grant another account access",
+      "result": "NOT_RUN",
+      "evidence": null
+    },
+    {
+      "id": "subscription-lifecycle",
+      "expected": "Renewal, grace, expiry, refund/revocation and server notifications update access",
+      "result": "NOT_RUN",
+      "evidence": null
+    },
+    {
+      "id": "member-playback-downloads",
+      "expected": "Verified member playback/materials/progress/download restrictions function",
+      "result": "NOT_RUN",
+      "evidence": null
+    },
+    {
+      "id": "ai-permission",
+      "expected": "Current consent disclosure, explicit acceptance, refusal and withdrawal operate end to end",
+      "result": "NOT_RUN",
+      "evidence": null
+    },
+    {
+      "id": "ai-report-history",
+      "expected": "Response reporting and separate history deletion function",
+      "result": "NOT_RUN",
+      "evidence": null
+    },
+    {
+      "id": "account-deletion",
+      "expected": "Disposable-account deletion revokes access; Apple subscription warning/manage link works",
+      "result": "NOT_RUN",
+      "evidence": null
+    },
+    {
+      "id": "devices-networks",
+      "expected": "Supported physical iPhone/iPad, accessibility, interruptions, offline/IPv6 recovery pass",
+      "result": "NOT_RUN",
+      "evidence": null
+    },
+    {
+      "id": "screenshots",
+      "expected": "Final screenshots show the actual candidate UI",
+      "result": "NOT_RUN",
+      "evidence": null
+    },
+    {
+      "id": "physical-recording",
+      "expected": "Final-build physical-device recording starts at launch and covers the requested flows",
+      "result": "NOT_RUN",
+      "evidence": null
+    },
+    {
+      "id": "review-evidence",
+      "expected": "Video location, notes, reviewer access and requested supporting documents are verified",
+      "result": "NOT_RUN",
+      "evidence": null
+    }
+  ]
+}

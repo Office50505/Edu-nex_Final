@@ -1,0 +1,119 @@
+{
+  "baseCommit": "c79e2123789bbfb772a9a18e001f589510074648",
+  "version": "1.0",
+  "preparedBuild": "34",
+  "latestUploadedBuildObserved": "33",
+  "selectedBuildObserved": "29",
+  "binaryCreated": false,
+  "ownerAssignedBuildUpload": "DevOps",
+  "files": [
+    {
+      "path": ".easignore",
+      "sha256": "3a147293db43b76d2187eb20e0d4bd0a229cc3fbaef85cfae047eb0eb25a14c4"
+    },
+    {
+      "path": "appcopyai/.easignore",
+      "sha256": "31bfbd416b702e794542eeb90663532c3d16529047d4e982763a136d124042f6"
+    },
+    {
+      "path": "appcopyai/App.js",
+      "sha256": "96529ab2bb52ecfe449d5c7aff410c302b6054dd83dc8c19b6ed292701c5f5f0"
+    },
+    {
+      "path": "appcopyai/app.json",
+      "sha256": "6299150be9c13d8070068a01b682dfe5d1a1cb7462e75375b19770d385003404"
+    },
+    {
+      "path": "appcopyai/ios/ProtectedVideo.xcodeproj/project.pbxproj",
+      "sha256": "27eb42dd98d0ee77f496794f4d11e4607d3e773fc79a6cc9e6f9c15c29f9f2cb"
+    },
+    {
+      "path": "appcopyai/ios/ProtectedVideo/PrivacyInfo.xcprivacy",
+      "sha256": "dcf37c7db00fc04abf21b9ad42ab783f115d15e22ece951ba97362b1aa173d9a"
+    },
+    {
+      "path": "appcopyai/services/aiClient.js",
+      "sha256": "2b2d33fa4edabed209f6ad370a5c015855c54c643563f7c670519a758af3d2f5"
+    },
+    {
+      "path": "appcopyai/services/aiConsent.js",
+      "sha256": "f818b1639c09dd6dd8e9378c8b70cfb3e66942691830daf8c5cd2deeb34060c1"
+    },
+    {
+      "path": "appcopyai/services/aiConsentPrompt.js",
+      "sha256": "d934c951b1691060577136dc91acd4147091eee447694f047c03a5b0982cb45e"
+    },
+    {
+      "path": "appcopyai/tests/aiConsent.test.js",
+      "sha256": "8f31a64548920fbca7b8135f9a40c4bc9fff791a4b7a58cfb4ce449ee9d756c2"
+    },
+    {
+      "path": "appcopyai/tests/aiConsentPrompt.test.js",
+      "sha256": "27f2d52f5a8f9d034dd55a7dae37a546a4c8c35f6b9e5cd8e96dcb6667810c67"
+    },
+    {
+      "path": "edunex-b/models/User.js",
+      "sha256": "99bb650cdd8a32dcee4b767f9a166f09532cd78741c279c3c89a1c5c9f676312"
+    },
+    {
+      "path": "edunex-b/routes/ai.js",
+      "sha256": "38df22e2ea94de3ff8be30344619384555f3043beb2f380f5d4715aed7dff9e3"
+    },
+    {
+      "path": "edunex-b/services/aiConsent.js",
+      "sha256": "9b00c72cbed75b7f9d1b50ea31566ad9a1ab4ebc735b575a8bedd8da32837a56"
+    },
+    {
+      "path": "edunex-b/services/aiProviderPrivacy.js",
+      "sha256": "fa7b6ed01dadf47dea847f1adcc85c1952be5e18963246213b052db4d30534e7"
+    },
+    {
+      "path": "edunex-b/services/aiTutorService.js",
+      "sha256": "da724f40345595927d9eb0ad1379bfc3da8a5d063ebefb2cd3351b6a0e254d55"
+    },
+    {
+      "path": "edunex-b/services/tutorProvider.js",
+      "sha256": "d4763bc0d34523c9871d944a4a9312b29f055024f2addf9240ae7cc2c577731a"
+    },
+    {
+      "path": "edunex-b/tests/ai-chat-history.test.cjs",
+      "sha256": "2307fc16b4000a00e639b7797851f928aa68a62a897ad34c22343dfa794503d0"
+    },
+    {
+      "path": "edunex-b/tests/ai-consent.test.cjs",
+      "sha256": "8dc286ec9bcf233924dcc56970fb129a8f809005ab1f185f25bb8d5b05d199d4"
+    },
+    {
+      "path": "edunex-b/tests/ai-provider-privacy.test.cjs",
+      "sha256": "b562935e4c22808c52c863a977af6a9fc2e3bcffe08c3641c8bf90e4983e6b35"
+    },
+    {
+      "path": "edunex-b/tests/ai-tutor-fixture.cjs",
+      "sha256": "097ffbf63e7e20b4fcf0180adb53a53e716f78e263cffcd34d8512619c694e3e"
+    },
+    {
+      "path": "edunex-b/tests/app-store-mobile-compliance.test.cjs",
+      "sha256": "1c9e5522a7c99bc5d3f6baa31b4800cff76e1cfd003428367d9ff2567b8ec125"
+    },
+    {
+      "path": "edunex-b/tests/helpers/ai-consent-fixture.cjs",
+      "sha256": "6cad096df77f579a169ae7bee8121247ea8bc105c58438af59b2e6d15e3e2464"
+    },
+    {
+      "path": "edunex-b/tests/mobile-tutor-reliability.test.cjs",
+      "sha256": "bce6d1a430328cfc4cd54d2244ff2ca7af2f4537f39bf5ba8cdf9df8cd866f38"
+    },
+    {
+      "path": "edunex-b/tests/native-session.test.cjs",
+      "sha256": "47e1fc3e1ced91cd600f501dde2b8252b227d6ae5e6075809b465012d6bfca58"
+    },
+    {
+      "path": "edunex-f/src/components/legal/LegalLayout.jsx",
+      "sha256": "7669ba28d487ad6ffaaa5fdcf425c61cba4fa355f08c127b1fa8a7f052c622c4"
+    },
+    {
+      "path": "edunex-f/src/pages/LegalPolicyPage.jsx",
+      "sha256": "c502a3dd506f9373089a65e0b690d8e3da0e14db02599419e68a13e8dcc5e075"
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "observedDate": "2026-11-06",
+  "appId": "6790396358",
+  "page": "https://appstoreconnect.apple.com/apps/6790396358/distribution/privacy",
+  "status": "Published",
+  "verifiedAfterReload": true,
+  "unfinishedCategories": false,
+  "dataTypes": {
+    "Name": {
+      "linked": true,
+      "purposes": [
+        "AppFunctionality",
+        "ProductPersonalization"
+      ]
+    },
+    "EmailAddress": {
+      "linked": true,
+      "purposes": [
+        "AppFunctionality"
+      ]
+    },
+    "PhoneNumber": {
+      "linked": true,
+      "purposes": [
+        "AppFunctionality"
+      ]
+    },
+    "UserID": {
+      "linked": true,
+      "purposes": [
+        "AppFunctionality",
+        "Analytics",
+        "ProductPersonalization"
+      ]
+    },
+    "PhotosorVideos": {
+      "linked": true,
+      "purposes": [
+        "AppFunctionality"
+      ]
+    },
+    "PurchaseHistory": {
+      "linked": true,
+      "purposes": [
+        "AppFunctionality"
+      ]
+    },
+    "ProductInteraction": {
+      "linked": true,
+      "purposes": [
+        "AppFunctionality",
+        "ProductPersonalization",
+        "Analytics"
+      ]
+    },
+    "OtherUserContent": {
+      "linked": true,
+      "purposes": [
+        "AppFunctionality",
+        "ProductPersonalization"
+      ]
+    },
+    "CustomerSupport": {
+      "linked": true,
+      "purposes": [
+        "AppFunctionality"
+      ]
+    },
+    "OtherDataTypes": {
+      "linked": true,
+      "purposes": [
+        "AppFunctionality"
+      ]
+    },
+    "CrashData": {
+      "linked": false,
+      "purposes": [
+        "AppFunctionality"
+      ]
+    },
+    "PerformanceData": {
+      "linked": false,
+      "purposes": [
+        "AppFunctionality"
+      ]
+    },
+    "OtherDiagnosticData": {
+      "linked": true,
+      "purposes": [
+        "AppFunctionality"
+      ]
+    }
+  },
+  "tracking": "No tracking; retained existing declarations and explicitly selected No for all edited categories",
+  "appBinarySubmitted": false
+}

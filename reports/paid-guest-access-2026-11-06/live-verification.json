@@ -1,0 +1,87 @@
+{
+  "catalogueHttp": 200,
+  "courses": [
+    {
+      "title": "AI Se Landing Page Banao",
+      "http": 200,
+      "policy": "explicit-free-v1",
+      "lessons": 11,
+      "locked": 11,
+      "lockedSourceLeaks": 0,
+      "introGuestPlayback": 403,
+      "introHasGrant": false,
+      "privatePlayback": 401,
+      "privateDownload": 401
+    },
+    {
+      "title": "AI Real Estate Videos",
+      "http": 200,
+      "policy": "explicit-free-v1",
+      "lessons": 8,
+      "locked": 8,
+      "lockedSourceLeaks": 0,
+      "introGuestPlayback": 403,
+      "introHasGrant": false
+    },
+    {
+      "title": "Viral Hook Formula",
+      "http": 200,
+      "policy": "explicit-free-v1",
+      "lessons": 10,
+      "locked": 10,
+      "lockedSourceLeaks": 0,
+      "introGuestPlayback": 403,
+      "introHasGrant": false
+    },
+    {
+      "title": "AI Cartoon Series",
+      "http": 200,
+      "policy": "explicit-free-v1",
+      "lessons": 8,
+      "locked": 8,
+      "lockedSourceLeaks": 0,
+      "introGuestPlayback": 403,
+      "introHasGrant": false
+    },
+    {
+      "title": "AI Local Business Ads",
+      "http": 200,
+      "policy": "explicit-free-v1",
+      "lessons": 10,
+      "locked": 10,
+      "lockedSourceLeaks": 0,
+      "introGuestPlayback": 403,
+      "introHasGrant": false
+    },
+    {
+      "title": "AI Product Photoshoot & Ads",
+      "http": 200,
+      "policy": "explicit-free-v1",
+      "lessons": 8,
+      "locked": 8,
+      "lockedSourceLeaks": 0,
+      "introGuestPlayback": 403,
+      "introHasGrant": false
+    },
+    {
+      "title": "AI Filmmaking Course",
+      "http": 200,
+      "policy": "explicit-free-v1",
+      "lessons": 15,
+      "locked": 15,
+      "lockedSourceLeaks": 0,
+      "introGuestPlayback": 403,
+      "introHasGrant": false
+    },
+    {
+      "title": "AI Influencer Course",
+      "http": 200,
+      "policy": "explicit-free-v1",
+      "lessons": 34,
+      "locked": 34,
+      "lockedSourceLeaks": 0,
+      "introGuestPlayback": 403,
+      "introHasGrant": false
+    }
+  ]
+}

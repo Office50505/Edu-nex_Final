@@ -20,18 +20,20 @@ Guests may browse course titles, descriptions and lesson lists. Paid video lesso
 
 On the actual iPhone 17 Pro simulator, the AI Influencer course lists lesson 1 and the remaining lessons as Premium. Tapping Introduction opens Your membership with Sign in / Create account and Browse courses as guest. No video starts.
 
-## Required backend release
+## Backend release - verified live
 
-Deploy the current changed backend source, or apply backend-paid-access.patch to the deployed a76bc52 source and deploy through the existing backend-only process. This patch contains only the new paid-content policy, schema/create defaults, public policy marker and backend tests. It excludes the preceding client playback-cache changes.
+DevOps has deployed the correction. Live verification on 6 November 2026 confirmed public browsing returns HTTP 200 for all 8 published courses, all 104 lessons are locked with no paid media/resources exposed, every course introduction rejects anonymous playback with HTTP 403, and private playback/download endpoints reject unauthenticated requests with HTTP 401. The simulator also confirmed that tapping the AI Influencer introduction opens membership options and starts no video. Detailed API results are saved in live-verification.json.
+
+backend-paid-access.patch documents the backend correction relative to the prior a76bc52 source. This patch contains only the new paid-content policy, schema/create defaults, public policy marker and backend tests. It excludes the preceding client playback-cache changes.
 
 Changed backend files: edunex-b/services/publicCourseAccess.js, edunex-b/models/Course.js, edunex-b/routes/mobileCompat.js, edunex-b/server.js, edunex-b/tests/public-course-access.test.cjs.
 
-After deployment:
+Verified release checks:
 
 1. Verify all lessons of a paid course, including its introduction, have locked: true and contain no playable media URLs in GET /api/public/courses/:id/videos.
 2. Anonymous POST /api/public/courses/:courseId/videos/:videoId/playback-access for a paid introduction must return 403 and no playback grant.
 3. Verify account login and active paid membership playback continue to work.
 
-The app-side restriction is visible in the simulator now. No production backend deployment was performed in this task. DevOps must release this correction to enforce it against direct API requests as well.
+The app-side restriction and production backend restriction are both verified. Deployment was performed by DevOps; this verification made no production configuration or account changes. Active paid-member playback was not exercised because no paid test account was used.
 
 Do not use the previous App Review reply claiming that every course has a free introductory lesson. Describe the actual public browsing and paid membership behavior in the resubmission.

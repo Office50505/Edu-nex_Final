@@ -37,7 +37,7 @@ const providerCards = [
   { icon: "key", title: "OTP authentication", copy: "Phone number OTP authentication may use MSG91 to send and verify one-time passwords." },
   { icon: "receipt", title: "Payments", copy: "PhonePe may process one-time web payments, and Razorpay may process eligible recurring web subscriptions. App stores may process eligible mobile purchases." },
   { icon: "dashboard", title: "Infrastructure", copy: "Infrastructure may include Amazon Web Services, Amazon EC2, Amazon S3, Amazon CloudFront and MongoDB, without exposing confidential configuration details." },
-  { icon: "sparkles", title: "AI functionality", copy: "When you use Nex AI, its providers may process your question, up to 12 recent messages and relevant course/lesson context. Skillomate does not send your profile name in the AI request. Avoid sensitive information; you can delete AI history in AI Data Controls." },
+  { icon: "sparkles", title: "AI functionality", copy: "With your explicit permission, fal.ai, OpenRouter and the model provider identified in the permission notice process messages, up to 12 recent chat messages, course/lesson context and your chosen tutor name to generate replies. The default model provider is Google Gemini. Skillomate does not automatically attach account profile, contact, demographic, membership or payment records. Private account answers are excluded from external AI history. Personal information you type may still be shared. Avoid sensitive information." },
 ];
 
 const termsItems = [
@@ -88,6 +88,7 @@ const cookieItems = [
 
 const policyContent = {
   privacy: {
+    updatedAt: "6 November 2026",
     title: "Privacy Policy",
     metaTitle: "Privacy Policy | Skillomate",
     description: "How Skillomate collects, uses, stores and protects account, learning, AI, payment and support information.",
@@ -100,7 +101,7 @@ const policyContent = {
       ["not-collected", "Information not required for standard profiles", <PlainList items={privacyNotCollected} />],
       ["how-we-use", "How we use information", <CheckList items={privacyUses} />],
       ["payments", "Payments", <p>PhonePe may process one-time web payments and Razorpay may process eligible recurring web subscriptions. Google Play Billing may process Android purchases where applicable. Apple may process eligible iOS purchases through Apple in-app purchase systems. Skillomate may keep transaction identifiers, subscription status and billing records to provide access, reconcile payments, support users and meet compliance obligations.</p>],
-      ["ai-functionality", "AI functionality", <><p>When you use Nex AI, its providers may receive your question, up to 12 recent messages and relevant course or lesson context. Your profile name is not included in that model request, and you should not include passwords, payment details or other sensitive personal information.</p><p>You can delete AI chat history from AI Data Controls. Chat history may also be stored locally in your browser or app so you can reopen prior chats. Reports about unsafe or incorrect replies retain a response hash and report reason rather than the response text.</p><p>AI responses may be inaccurate or incomplete and should not be treated as professional advice.</p></>],
+      ["ai-functionality", "AI functionality", <><p>With your explicit permission, fal.ai, OpenRouter and the model provider identified in the permission notice process messages, up to 12 recent chat messages, course/lesson context and your chosen tutor name to generate replies. The default model provider is Google Gemini. Skillomate does not automatically attach account profile, contact, demographic, membership or payment records. Private account answers are excluded from external AI history. Personal information you type may still be shared. Avoid sensitive information.</p><p>AI is optional. You can decline without losing course access, and withdraw permission in the mobile app under Nex AI > Chat history > AI Data Controls. Withdrawal stops future AI requests and does not recall information already processed by providers. You can separately delete saved Skillomate AI chat history from AI Data Controls. Chat history may also be stored locally in your browser or app so you can reopen prior chats. Reports about unsafe or incorrect replies retain a response hash and report reason rather than the response text.</p><p>AI responses may be inaccurate or incomplete and should not be treated as professional advice.</p></>],
       ["sharing", "Data sharing and service providers", <><p>Skillomate may share limited information with service providers that help operate authentication, hosting, storage, payments, notifications, media delivery, AI learning functionality and customer support.</p><InfoGrid items={providerCards} /></>],
       ["security", "Data security", <p>We use reasonable administrative, technical and organizational safeguards designed to protect information. No online service can guarantee absolute security, and users should keep OTPs, passwords and account access private.</p>],
       ["retention", "Data retention", <p>Account, profile, learning and local AI history are kept while needed to provide the service and are deleted through the applicable deletion controls. Security and support records are retained only as reasonably needed. Payment and App Store transaction records may be anonymized and retained when required for tax, accounting, reconciliation, fraud prevention, disputes or legal compliance.</p>],
@@ -205,11 +206,11 @@ export function LegalPolicyPage({ type }) {
   }, [page]);
 
   return (
-    <LegalLayout title={page.title} description={page.description} sections={sectionsFor(page)}>
+    <LegalLayout title={page.title} description={page.description} sections={sectionsFor(page)} updatedAt={page.updatedAt || POLICY_LAST_UPDATED}>
       {page.sections.map(([id, title, content]) => <LegalSection key={id} id={id} title={title}>{content}</LegalSection>)}
       <LegalSection id="services-covered" title="Services covered">
         <PlainList items={learningServices} />
-        <p>Last updated: {POLICY_LAST_UPDATED}</p>
+        <p>Last updated: {page.updatedAt || POLICY_LAST_UPDATED}</p>
       </LegalSection>
     </LegalLayout>
   );

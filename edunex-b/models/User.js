@@ -2,6 +2,16 @@ const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
   fullName: String,
+  aiConsent: {
+    type: new mongoose.Schema({
+      granted: { type: Boolean, required: true },
+      policyVersion: { type: String, required: true },
+      providerVersion: { type: String, required: true },
+      decidedAt: { type: Date, required: true },
+    }, { _id: false }),
+    default: undefined,
+    select: false,
+  },
   email: { type: String, default: null },
   passwordHash: String,
   isOnTrial: { type: Boolean, default: true },

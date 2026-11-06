@@ -1,0 +1,1 @@
+{"ok":true,"service":"Skillomate API","uptimeSeconds":862,"cache":"redis-connected"}

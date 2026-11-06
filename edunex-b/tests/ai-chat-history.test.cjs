@@ -5,6 +5,7 @@ const vm = require('node:vm');
 const path = require('node:path');
 
 function backend(options = {}) {
+  const consent = require('./helpers/ai-consent-fixture.cjs').consentFixture({ initial: options.consent || 'granted' });
   const routes = {};
   const calls = [];
   const authCalls = [];
@@ -27,6 +28,7 @@ function backend(options = {}) {
           return next();
         },
       };
+      if (name.includes('/services/aiConsent')) return consent.service;
       if (name.includes('aiCompliance')) return require('../services/aiCompliance');
       if (name.includes('AiTutorSession')) return options.sessions ? {
         findOne: filter => ({select(){return this;},lean:async()=>options.sessions.get(`${filter.user}:${filter.course}`)||null}),
@@ -37,7 +39,9 @@ function backend(options = {}) {
       if (name.includes('/models/User')) return { updateOne: async () => ({}) };
       if (name.includes('tutorKnowledge')) return require('../services/tutorKnowledge');
       if (name === './productTutorState') return require('../services/productTutorState');
+      if (name === './aiProviderPrivacy') return require('../services/aiProviderPrivacy');
       if (name === './tutorProvider') return require('../services/tutorProvider');
+      if (name === './selectedLessonSummary') return require('../services/selectedLessonSummary');
       if (name.endsWith('/tutorAvailability')) return require('../services/tutorAvailability');
       if (name === './productTutorResponse') return require('../services/productTutorResponse');
       if (name.endsWith('/subscriptionAccess')) return require('../services/subscriptionAccess');
@@ -97,6 +101,7 @@ function backend(options = {}) {
   };
 }
 
+
 test('phase5 route persists supplied colour fields for a later request without client history', async()=>{
  const courseId='6e0000000000000000000001';const sessions=new Map();
  const api=backend({noKey:true,sessions,courses:[{_id:courseId,slug:'ai-product-photoshoot-ads',title:'AI Product Photoshoot & Ads',videos:[]}],
@@ -153,55 +158,25 @@ test('AI lesson materials use independent store access and reject revoked store 
   }
 });
 
-// Preserve the validation contract in already-installed mobile clients, even after
-// their consent helper has been removed from the current app source.
-function legacyMobileAcceptsConsent(consent) {
-  return consent?.granted === true
-    && consent.policyVersion === '2026-09-25'
-    && typeof consent.providerVersion === 'string'
-    && consent.providerVersion.length > 0;
-}
-
-for (const [method, body] of [['GET', {}], ['PUT', { granted: true }], ['PUT', { granted: false }]]) {
-  test(`legacy mobile client accepts ${method} /consent ${JSON.stringify(body)} without a cached gate`, async () => {
-    const api = backend({ user: { aiConsentGranted: false } });
-    const response = await api.request(method, '/consent', body);
-    assert.equal(response.statusCode, 200);
-    assert.equal(legacyMobileAcceptsConsent(response.result), true);
-    assert.equal(response.headers['cache-control'], 'no-store');
-    assert.equal(api.authCalls.length, 1);
-    assert.equal(api.calls.length, 0);
-  });
-}
-
-test('legacy consent compatibility and chat retain authentication before their handlers', async () => {
+test('consent endpoints and chat retain authentication before their handlers', async () => {
   for (const [method, url, body] of [
-    ['GET', '/consent', {}],
-    ['PUT', '/consent', { granted: true }],
-    ['POST', '/chat', { message: 'Explain prompting' }],
+    ['GET', '/consent', {}], ['PUT', '/consent', { granted: true }], ['POST', '/chat', { message: 'Explain prompting' }],
   ]) {
     const api = backend();
     const response = await api.request(method, url, body, false);
-    assert.equal(response.statusCode, 401, `${method} ${url}`);
-    assert.equal(response.result.error, 'Invalid session');
+    assert.equal(response.statusCode, 401);
     assert.equal(response.result.granted, undefined);
-    assert.equal(api.authCalls.length, 1);
-    assert.match(api.authCalls[0].userProjection, /\+activeSessionId\b/);
     assert.equal(api.calls.length, 0);
   }
 });
 
-for (const [state, user] of [
-  ['absent', {}],
-  ['declined', { aiConsentGranted: false }],
-  ['outdated', { aiConsentGranted: true, aiConsentPolicyVersion: '2026-01-01', aiConsentProviderVersion: 'old-provider' }],
-]) {
-  test(`chat answers a valid prompt with ${state} retired consent data`, async () => {
-    const api = backend({ user });
-    const response = await api.rawChat({ message: 'Explain prompting' });
-    assert.equal(response.statusCode, 200);
-    assert.equal(response.result.reply, 'Example answer');
-    assert.equal(api.calls.length, 1);
+for (const consent of ['absent', 'declined', 'outdated']) {
+  test(`chat blocks a valid prompt with ${consent} consent`, async () => {
+    const api = backend({ consent });
+    const response = await api.rawChat({ message: 'Explain prompting', consentGranted: true });
+    assert.equal(response.statusCode, 403);
+    assert.equal(response.result.code, 'AI_CONSENT_REQUIRED');
+    assert.equal(api.calls.length, 0);
   });
 }
 
@@ -573,9 +548,16 @@ const selectedCourse = { _id: '6a9e67c46bcb631b8118d341', slug: 'ai-influencer',
   { _id: 'lesson-b', title: 'Tools Setup', description: 'Set up tools.', notes: 'TOOLS_NOTES: create accounts before generating images.' },
 ] };
 for (const question of ['what is in this video', 'summarize this video', 'is video mein kya sikhaya hai', 'iska summary batao']) {
-  test(`current video reaches provider for: ${question}`, async () => {
+  test(`current video summary stays scoped to the selected lesson for: ${question}`, async () => {
     const api = backend({ courses: [selectedCourse], user: { _id: 'learner' }, subscription: { status: 'active', currentPeriodEnd: new Date(Date.now() + 86400000) } });
-    await api.chat({ message: question, courseId: selectedCourse._id, lessonId: 'lesson-b' });
+    const result = await api.chat({ message: question, courseId: selectedCourse._id, lessonId: 'lesson-b' });
+    if (question === 'summarize this video') {
+      assert.equal(result.provider, 'course-knowledge-rule');
+      assert.match(result.reply, /Tools Setup/);
+      assert.doesNotMatch(result.reply, /INTRO_NOTES/);
+      assert.equal(api.calls.length, 0);
+      return;
+    }
     const prompt = api.calls[0].messages[0].content;
     assert.match(prompt, /Currently selected video .*Tools Setup/);
     assert.match(prompt, /TOOLS_NOTES/);

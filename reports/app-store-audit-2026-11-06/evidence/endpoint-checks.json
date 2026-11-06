@@ -1,0 +1,49 @@
+[
+  {
+    "name": "privacy",
+    "http": "200",
+    "url": "https://skillomate.in/privacy",
+    "title": "Skillomate AI",
+    "bytes": 2535
+  },
+  {
+    "name": "support",
+    "http": "200",
+    "url": "https://skillomate.in/support",
+    "title": "Skillomate AI",
+    "bytes": 2535
+  },
+  {
+    "name": "terms",
+    "http": "200",
+    "url": "https://skillomate.in/terms",
+    "title": "Skillomate AI",
+    "bytes": 2535
+  },
+  {
+    "name": "health",
+    "http": "200",
+    "url": "https://api.skillomate.in/api/health",
+    "title": null,
+    "bytes": 84,
+    "result": {
+      "ok": true,
+      "service": "Skillomate API",
+      "uptimeSeconds": 862,
+      "cache": "redis-connected"
+    }
+  },
+  {
+    "name": "ready",
+    "http": "200",
+    "url": "https://api.skillomate.in/api/ready",
+    "title": null,
+    "bytes": 80,
+    "result": {
+      "ok": true,
+      "service": "Skillomate API",
+      "mongodb": "connected",
+      "redis": "connected"
+    }
+  }
+]

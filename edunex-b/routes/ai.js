@@ -42,18 +42,23 @@ const {
 const router = express.Router();
 const AI_USER_PROJECTION = '+activeSessionId +activeSessions fullName email mobileNumber isMobileVerified isEmailVerified age gender avatar subscriptionStatus subscriptionExpiry isOnTrial purchasedCourses courseEntitlements wishlist courseProgress createdAt lastActiveAt lastLoginAt loginCount';
 const aiRateState = new Map();
-const LEGACY_CONSENT_RESPONSE = Object.freeze({
-  granted: true,
-  policyVersion: '2026-09-25',
-  providerVersion: 'consent-not-required',
-  providerNames: ['fal.ai', 'OpenRouter', 'Google Gemini'],
-  decidedAt: null,
-});
+const { readConsent, requireAiConsent, saveConsent } = require('../services/aiConsent');
 
-function aiMessageRecord(role, content) {
+function consentFailure(res, error) {
+  return res.status(error.statusCode || 503).json({
+    error: error.statusCode ? error.message : 'AI privacy settings are unavailable. Please try again.',
+    code: error.code || 'AI_CONSENT_UNAVAILABLE',
+  });
+}
+function callConsentedProvider(req, options) {
+  return callFalOpenRouter({ ...options, beforeRequest: () => requireAiConsent(req.compatAuth?.userId) });
+}
+
+function aiMessageRecord(role, content, privateAccount = false) {
   return {
     role,
-    content: compactText(content, 4000),
+    content: privateAccount ? 'Account details were shown privately in Skillomate.' : compactText(content, 4000),
+    ...(privateAccount ? { privateAccount: true } : {}),
     createdAt: Date.now(),
   };
 }
@@ -79,7 +84,7 @@ async function persistTutorChat(req, courseId, history, message, reply, state = 
   const messages = [
     ...sanitizeHistory(history).map((item) => aiMessageRecord(item.role, item.content)),
     aiMessageRecord('user', message),
-    aiMessageRecord('assistant', reply),
+    aiMessageRecord('assistant', reply, state.privateAccount),
   ].filter((item) => item.content).slice(-40);
   await AiTutorSession.findOneAndUpdate(
     { user: userId, course },
@@ -139,15 +144,16 @@ function aiRateLimit(req, res, next) {
   return next();
 }
 
-// Compatibility for already-installed clients: report AI as ready so their retired consent UI never opens.
-router.get('/consent', requireCompatibleAuth({ userProjection: AI_USER_PROJECTION }), (_req, res) => {
+router.get('/consent', requireCompatibleAuth(), async (req, res) => {
   res.set('Cache-Control', 'no-store');
-  res.json(LEGACY_CONSENT_RESPONSE);
+  try { res.json(await readConsent(req.compatAuth.userId)); }
+  catch (error) { consentFailure(res, error); }
 });
 
-router.put('/consent', requireCompatibleAuth({ userProjection: AI_USER_PROJECTION }), (_req, res) => {
+router.put('/consent', requireCompatibleAuth(), async (req, res) => {
   res.set('Cache-Control', 'no-store');
-  res.json(LEGACY_CONSENT_RESPONSE);
+  try { res.json(await saveConsent(req.compatAuth.userId, req.body)); }
+  catch (error) { consentFailure(res, error); }
 });
 
 router.delete('/history', requireCompatibleAuth({ userProjection: AI_USER_PROJECTION }), async (req, res) => {
@@ -202,6 +208,9 @@ router.get('/courses', requireCompatibleAuth(), async (_req, res) => {
 });
 
 async function handleTutorChat(req, res) {
+  // Shared with the legacy /course-ai/chat route: never trust client consent flags.
+  try { await requireAiConsent(req.compatAuth?.userId); }
+  catch (error) { return consentFailure(res, error); }
   try {
     const inputCheck = checkAiInput(req.body?.message);
     if (!inputCheck.ok && !inputCheck.blocked) {
@@ -295,7 +304,7 @@ async function handleTutorChat(req, res) {
           selectedTemplateId ||= aiFilmmakingTemplateIdForReply(reply);
         } else if (FAL_API_KEY) {
           const generationStarted=Date.now();
-          reply = await callFalOpenRouter({ context: knowledge.context+(knowledge.requestPlan?'\nTransient learner request plan (not course facts): '+JSON.stringify(knowledge.requestPlan):''), message, pagePath, assistantName, history, language:knowledge?.courseContext?.language || knowledge?.productContext?.language,
+          reply = await callConsentedProvider(req, { context: knowledge.context+(knowledge.requestPlan?'\nTransient learner request plan (not course facts): '+JSON.stringify(knowledge.requestPlan):''), message, pagePath, assistantName, history, language:knowledge?.courseContext?.language || knowledge?.productContext?.language,
             responseContract:knowledge.responseContract || null,
             courseScope:{activeCourse:knowledge?.activeCourse ? {_id:knowledge.activeCourse.id,slug:knowledge.activeCourse.slug}:null,includeMaterials:Boolean(knowledge?.materialsAvailable)},
             onDiagnostics: value => { providerDiagnostics = value; } });
@@ -307,7 +316,7 @@ async function handleTutorChat(req, res) {
             if (candidate.needsRepair && Date.now()-generationStarted < 24800) {
               repairAttempted = true;
               try {
-                const repaired = await callFalOpenRouter({context:knowledge.context,message,pagePath,assistantName,history,
+                const repaired = await callConsentedProvider(req, {context:knowledge.context,message,pagePath,assistantName,history,
                   responseContract:knowledge.responseContract, language:knowledge.responseContract.language,
                   courseScope:{activeCourse:{_id:knowledge.activeCourse.id,slug:knowledge.activeCourse.slug},includeMaterials:Boolean(knowledge.materialsAvailable)},
                   totalTimeoutMs:Math.max(1,25000-(Date.now()-generationStarted)),maxAttempts:1,
@@ -341,7 +350,7 @@ async function handleTutorChat(req, res) {
           // translation never silently becomes an unrelated FAQ or a live answer.
           if(validation.repairRequest && Date.now()-generationStarted<24800){
             try {
-              const repaired=await callFalOpenRouter({context:knowledge.context,message,pagePath,assistantName,history,
+              const repaired=await callConsentedProvider(req, {context:knowledge.context,message,pagePath,assistantName,history,
                 courseScope:{activeCourse:knowledge?.activeCourse ? {_id:knowledge.activeCourse.id,slug:knowledge.activeCourse.slug}:null,includeMaterials:Boolean(knowledge?.materialsAvailable)},
                 totalTimeoutMs:Math.max(1,25000-(Date.now()-generationStarted)),maxAttempts:1,repair:validation.repairRequest,language:validation.repairRequest.language,
                 onDiagnostics:value=>{validationRepairDiagnostics=value;}});
@@ -363,7 +372,7 @@ async function handleTutorChat(req, res) {
             if (!validationRepairDiagnostics && Date.now()-generationStarted < 24800) {
               repairAttempted = true;
               try {
-                const repaired = await callFalOpenRouter({context:knowledge.context,message,pagePath,assistantName,history,
+                const repaired = await callConsentedProvider(req, {context:knowledge.context,message,pagePath,assistantName,history,
                   courseScope:{activeCourse:{_id:knowledge.activeCourse.id,slug:knowledge.activeCourse.slug},includeMaterials:Boolean(knowledge.materialsAvailable)},
                   totalTimeoutMs:Math.max(1,25000-(Date.now()-generationStarted)),maxAttempts:1,
                   repair:original.repairRequest,language:original.repairRequest.language,
@@ -431,9 +440,9 @@ async function handleTutorChat(req, res) {
     state = resolveConversationState({ message, history, knowledge, savedState, selectedTemplateId, reply });
     const debugPayload = aiDebugPayload({ req, requestedCourseId, resolvedCourseId: courseId, state, knowledge, selectedTemplateId, provider });
     logAiDebug(debugPayload);
-    await persistTutorChat(req, courseId, history, message, reply, state).catch(() => {});
+    await persistTutorChat(req, courseId, history, message, reply, { ...state, privateAccount: provider === 'skillomate-learner-facts' }).catch(() => {});
     const sources = [];
-    res.json({ answer: reply, reply, provider, sources, messageId: crypto.randomUUID(),
+    res.json({ answer: reply, reply, provider, sources, privateAccount: provider === 'skillomate-learner-facts', messageId: crypto.randomUUID(),
       notice: provider === 'built-in-course-guide' && isProductKnowledge(knowledge) ? productFallbackNotice(message) : null,
       outcome: { type: provider === 'fal-openrouter' ? 'live_model' : provider === 'built-in-course-guide' ? 'provider_fallback' : responseIssue ? 'validated_local_replacement' : 'local_rule',
         liveModelAnswer: provider === 'fal-openrouter', providerStatus: providerDiagnostics.status, responseIssue,
@@ -442,6 +451,7 @@ async function handleTutorChat(req, res) {
       ...(req.body?.debugAi ? { debug: { ...debugPayload, response_selection:knowledge?.responseSelection||null, history_restored:historyRestored, provider: providerDiagnostics, validation_repair:validationRepairDiagnostics, task_assessment:taskAssessment } } : {}),
     });
   } catch (error) {
+    if (error.code === 'AI_CONSENT_REQUIRED') return consentFailure(res, error);
     res.status(502).json(tutorUnavailable(error.code === 'COURSE_KNOWLEDGE_SCOPE_VIOLATION' ? error.code : 'context_error', req.body?.message));
   }
 }

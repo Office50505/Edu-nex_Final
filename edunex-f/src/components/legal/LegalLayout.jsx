@@ -3,7 +3,7 @@ import { POLICY_LAST_UPDATED, SUPPORT_EMAIL, businessInfo } from "../../lib/site
 import { route } from "../../lib/routes.js";
 import "./LegalPages.css";
 
-export function LegalHero({ eyebrow = "Skillomate", title, description, updated = true, actions = null }) {
+export function LegalHero({ eyebrow = "Skillomate", title, description, updated = true, updatedAt = POLICY_LAST_UPDATED, actions = null }) {
   return (
     <section className="legal-hero" aria-labelledby="legal-page-title">
       <div className="legal-crumbs" aria-label="Breadcrumb">
@@ -15,7 +15,7 @@ export function LegalHero({ eyebrow = "Skillomate", title, description, updated 
       <h1 id="legal-page-title">{title}</h1>
       {description ? <p className="legal-hero-copy">{description}</p> : null}
       <div className="legal-hero-meta">
-        {updated ? <span><EnxIcon name="info" /> Last updated: {POLICY_LAST_UPDATED}</span> : null}
+        {updated ? <span><EnxIcon name="info" /> Last updated: {updatedAt}</span> : null}
         <span><EnxIcon name="mail" /> <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a></span>
       </div>
       {actions ? <div className="legal-hero-actions">{actions}</div> : null}
@@ -32,10 +32,10 @@ export function LegalSection({ id, title, children }) {
   );
 }
 
-export function LegalLayout({ title, description, children, sections = [], updated = true, aside, actions, pageKey }) {
+export function LegalLayout({ title, description, children, sections = [], updated = true, updatedAt = POLICY_LAST_UPDATED, aside, actions, pageKey }) {
   return (
     <main className="react-page-root legal-page-root" data-page={pageKey || undefined}>
-      <LegalHero title={title} description={description} updated={updated} actions={actions} />
+      <LegalHero title={title} description={description} updated={updated} updatedAt={updatedAt} actions={actions} />
       {sections.length ? (
         <details className="legal-mobile-toc">
           <summary>On this page</summary>

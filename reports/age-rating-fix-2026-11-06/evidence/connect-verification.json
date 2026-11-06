@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-06",
+  "appId": "6790396358",
+  "app": "Skillomate",
+  "page": "https://appstoreconnect.apple.com/apps/6790396358/distribution/info",
+  "previousGlobalRating": "4+",
+  "questionnaireCalculatedRating": "4+",
+  "override": "13+",
+  "ageSuitabilityUrl": "https://skillomate.in/terms#eligibility",
+  "savedInAppStoreConnect": true,
+  "verifiedAfterBrowserReload": true,
+  "regionalRatings": {
+    "172 countries or regions": "13+",
+    "Brazil": "14+",
+    "Korea, Republic of": "12+",
+    "Vietnam": "12+"
+  },
+  "operatingSystemsEarlierThan26": "Global rating of 12+ with regional exceptions",
+  "madeForKids": false,
+  "questionnaireAnswersChanged": false,
+  "appCodeChanged": false,
+  "appBuildCreated": false,
+  "appSubmitted": false,
+  "releaseNote": "App Information states changes are released with the next app version; this is a saved metadata correction, not an app release or review approval."
+}

@@ -1,6 +1,7 @@
 import { plainCourseDescription } from "./services/courseDescription";
 import { chatKey, readChat, updateChat } from "./courseAiCache";
 import { requestTutor } from "./services/aiClient";
+import { manageAiConsent } from "./services/aiConsentPrompt";
 import { createNativeSession } from "./services/nativeSession";
 import { mobileSessionMetadata } from "./services/mobileSessionMetadata";
 import { createSecureSessionStorage } from "./services/secureSessionStorage";
@@ -180,6 +181,7 @@ function sanitizeAiChatMessage(message) {
     id: typeof message.id === "string" ? message.id.slice(0, 120) : null,
     content: message.content.slice(0, 4000),
     failed: Boolean(message.failed),
+    privateAccount: message.privateAccount === true,
     provider: typeof message.provider === "string" ? message.provider : null,
     outcome: message.outcome || null,
     createdAt: Number(message.createdAt || Date.now()),
@@ -754,7 +756,7 @@ const LEGAL_APP_PAGES = {
     sections: [
       { title: "Information we collect", body: "We may process your name, mobile number, age, gender, avatar or optional profile photo, login and IP security records, course progress, wishlist, certificates, payment status, device context, and support messages." },
       { title: "How information is used", body: "Information is used to create and secure accounts, provide learning features, track progress, process subscriptions, answer support requests, and prevent abuse." },
-      { title: "Nex AI data", body: "When you use Nex AI, fal.ai, OpenRouter, and Google Gemini may process your question, up to 12 recent messages, and relevant course material. Your profile name is not sent. Avoid sensitive information; you can delete AI history in AI Data Controls." },
+      { title: "Nex AI data", body: "After you allow AI data sharing, fal.ai, OpenRouter and the model provider shown in the permission notice process your messages, up to 12 recent chat messages, relevant course/lesson context and chosen tutor name to generate replies. Skillomate does not automatically attach account profile, contact, age, gender, membership or payment records. Private account answers are excluded from external AI history. Personal information you type may still be shared. Avoid sensitive information. Manage permission and delete saved chats in Nex AI > Chat history > AI Data Controls. Withdrawal stops future requests; it cannot recall data already sent." },
       { title: "Payments and service providers", body: "Payment, verification, media, hosting, storage, and AI providers may process the information required to deliver their services. Sensitive payment credentials are entered through the payment provider." },
       { title: "Device storage and permissions", body: "The app may use internet, storage, vibration, and screen-capture controls for account, media, downloads, exports, and protected learning features. Permissions can be managed in device settings." },
       { title: "Security and retention", body: "We use technical and organizational safeguards, but no online service can guarantee absolute security. Information is kept only as long as needed for product, legal, payment, security, and support purposes." },
@@ -898,7 +900,7 @@ const PRIVACY_CONTENT = {
     {
       title: "Nex AI",
       icon: "sparkles-outline",
-      body: "When you use Nex AI, fal.ai, OpenRouter, and Google Gemini may process your question, up to 12 recent messages, and relevant course context. Your profile name is not sent. Avoid sensitive information; AI Data Controls let you delete history.",
+      body: "After you allow AI data sharing, fal.ai, OpenRouter and the model provider shown in the permission notice process your messages, up to 12 recent chat messages, relevant course/lesson context and chosen tutor name to generate replies. Skillomate does not automatically attach account profile, contact, age, gender, membership or payment records. Private account answers are excluded from external AI history. Personal information you type may still be shared. Avoid sensitive information. Manage permission and delete saved chats in Nex AI > Chat history > AI Data Controls. Withdrawal stops future requests; it cannot recall data already sent.",
     },
     {
       title: "Payments And Subscriptions",
@@ -7054,7 +7056,7 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
         conversationId: courseAiEntry.conversationId,
         messages: courseAiMessages, assistantName: "Course AI", session,
       });
-      updateCourseAi([...messagesWithQuestion, { role: "assistant", id: data.messageId, content: data.answer, provider: data.provider, outcome: data.outcome }], false);
+      updateCourseAi([...messagesWithQuestion, { role: "assistant", id: data.messageId, content: data.answer, provider: data.provider, privateAccount: data.privateAccount, outcome: data.outcome }], false);
     } catch (error) {
       if (["SESSION_CHANGED", "SESSION_EXPIRED"].includes(error.code)) { updateCourseAi(messagesWithQuestion, false); return; }
       updateCourseAi([...messagesWithQuestion, { role: "assistant", failed: true, outcome: error.outcome,
@@ -9160,14 +9162,6 @@ function HomeScreen({
           />
         }
       >
-        {!user && (
-          <View style={{ marginHorizontal: 14, marginBottom: 16, padding: 16, borderRadius: 12, backgroundColor: HOME_PALETTE.surface }}>
-            <Text style={{ color: HOME_PALETTE.text, fontWeight: "800", fontSize: 16 }}>Explore our courses</Text>
-            <Text style={{ color: HOME_PALETTE.textSecondary, lineHeight: 20, marginTop: 6 }}>
-              Browse course information without an account. Sign in with an active membership to watch paid lessons.
-            </Text>
-          </View>
-        )}
         {loading && !course ? (
           <View style={homeStyles.stateCard}>
             <ActivityIndicator color={HOME_PALETTE.gold} />
@@ -11629,7 +11623,7 @@ function AiAssistantScreen({
       });
       if (!aiMounted.current || requestGeneration !== aiGeneration.current) return;
       setStatus("online");
-      appendAiConversationMessage(requestSessionId, { id: data.messageId, role: "assistant", content: data.answer, provider: data.provider, outcome: data.outcome });
+      appendAiConversationMessage(requestSessionId, { id: data.messageId, role: "assistant", content: data.answer, provider: data.provider, privateAccount: data.privateAccount, outcome: data.outcome });
     } catch (error) {
       if (!aiMounted.current || requestGeneration !== aiGeneration.current || ["SESSION_CHANGED", "SESSION_EXPIRED"].includes(error.code)) return;
       setInput(question);
@@ -11637,7 +11631,7 @@ function AiAssistantScreen({
         role: "assistant", failed: true, outcome: error.outcome,
         content: error.name === "AbortError" ? "Nex AI took too long. Please try again." : error.message || "I could not reach Nex AI. Please try again.",
       });
-      setStatus("offline");
+      if (!["AI_CONSENT_DECLINED", "AI_CONSENT_REQUIRED"].includes(error.code)) setStatus("offline");
     } finally {
       aiInFlight.current = false;
       if (aiMounted.current) setLoading(false);
@@ -11961,6 +11955,15 @@ function AiAssistantScreen({
             )}
             <View style={{ borderTopWidth: 1, borderTopColor: C.border, paddingTop: 14, marginTop: 10, gap: 8 }}>
               <Text style={s.aiHistoryLabel}>AI Data Controls</Text>
+              <TouchableOpacity
+                onPress={() => manageAiConsent({ session, user })}
+                style={[s.aiHistoryNewChat, { backgroundColor: C.cardBg, borderWidth: 1, borderColor: C.border }]}
+                accessibilityRole="button"
+                accessibilityLabel="Manage AI data sharing permission"
+              >
+                <Text style={[s.aiHistoryNewChatText, { color: C.text }]}>AI data sharing permission</Text>
+                <Ionicons name="shield-checkmark-outline" size={18} color={C.text} />
+              </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => Alert.alert("Delete AI history?", "This removes your Nex AI conversations from this device and the server.", [
                   { text: "Cancel", style: "cancel" },

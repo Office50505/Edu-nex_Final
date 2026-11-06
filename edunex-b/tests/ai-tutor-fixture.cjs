@@ -4,6 +4,8 @@ const vm = require('node:vm');
 const path = require('node:path');
 
 function backend(options = {}) {
+  // Existing tutor-behavior fixtures explicitly start with a current grant.
+  const consent = require('./helpers/ai-consent-fixture.cjs').consentFixture({ initial: options.consent || 'granted' });
   const routes = {};
   const calls = [];
   const authCalls = [];
@@ -14,7 +16,7 @@ function backend(options = {}) {
       if (name === 'mongoose') return require('mongoose');
       if (name.includes('aiTutorService')) return serviceModule.exports;
       if (name === 'express') return { Router: () => ({
-        delete() {},
+        delete: (url, ...handlers) => { routes[`DELETE ${url}`] = handlers; },
         get: (url, ...handlers) => { routes[`GET ${url}`] = handlers; },
         put: (url, ...handlers) => { routes[`PUT ${url}`] = handlers; },
         post: (url, ...handlers) => { routes[`POST ${url}`] = handlers; },
@@ -26,6 +28,7 @@ function backend(options = {}) {
           return next();
         },
       };
+      if (name.includes('/services/aiConsent')) return consent.service;
       if (name.includes('aiCompliance')) return require('../services/aiCompliance');
       if (name.includes('AiTutorSession')) return options.sessions ? {
         findOne: filter => ({select(){return this;},lean:async()=>options.sessions.get(`${filter.user}:${filter.course}`)||null}),
@@ -39,6 +42,7 @@ function backend(options = {}) {
         return options.knowledgeTransform ? { ...knowledge, retrieveKnowledge: input => options.knowledgeTransform(knowledge.retrieveKnowledge(input)) } : knowledge;
       }
       if (name === './productTutorState') return require('../services/productTutorState');
+      if (name === './aiProviderPrivacy') return require('../services/aiProviderPrivacy');
       if (name === './tutorProvider') return require('../services/tutorProvider');
       if (name === './selectedLessonSummary') return require('../services/selectedLessonSummary');
       if (name.endsWith('/tutorAvailability')) return require('../services/tutorAvailability');
@@ -95,6 +99,8 @@ function backend(options = {}) {
   }
   const rawChat = body => request('POST', '/chat', body);
   return {
+    consent,
+    handleTutorChat: sandbox.module.exports.handleTutorChat,
     service: serviceModule.exports,
     calls,
     authCalls,

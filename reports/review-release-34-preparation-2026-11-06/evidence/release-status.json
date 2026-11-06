@@ -1,0 +1,32 @@
+{
+  "preparedVersion": "1.0",
+  "preparedBuild": "34",
+  "sourcePrepared": true,
+  "signedBinaryCreated": false,
+  "uploadedToAppStoreConnect": false,
+  "selectedBuildInAppStoreConnect": "29",
+  "reviewNotesPrepared": true,
+  "reviewNotesSavedInAppStoreConnect": false,
+  "buildAndUploadAssignedTo": "DevOps",
+  "mobileTests": {
+    "passed": 187,
+    "failed": 0
+  },
+  "targetedBackendTests": {
+    "passed": 138,
+    "failed": 0
+  },
+  "nativeConfigurationValidation": "passed",
+  "cumulativePatchReverseCheck": "passed",
+  "pdfPages": 2,
+  "remaining": "Create/upload and test the exact signed candidate; replace selected build 29 and save matched notes with the required physical-device recording.",
+  "prebuildReviewChecks": {
+    "mobilePassed": 43,
+    "backendPassed": 52,
+    "failed": 0
+  },
+  "finalDeviceTesting": "NOT_RUN_ON_FINAL_BUILD",
+  "physicalRecording": "PENDING_DEVOPS",
+  "newBuildStartedForIssue6": false,
+  "existingOlderRecording": "App Review has a build-29 recording; not independently viewed or accepted as current evidence"
+}

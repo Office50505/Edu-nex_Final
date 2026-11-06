@@ -1,0 +1,41 @@
+TAP version 13
+# [nex-ai-debug] {"conversation_id":"","request_active_course_id":"","resolved_active_course_id":"","current_topic":"","current_intent":"","rewritten_retrieval_query":"Explain prompting","retrieved_chunk_ids":[],"retrieved_chunk_hashes":[],"retrieved_source_hashes":[],"retrieved_translation_hashes":[],"retrieved_course_ids":[],"retrieved_course_names":[],"scores_ranks":[],"selected_exact_prompt_template_id":"","provider_model_path":"fal-openrouter"}
+# Subtest: first use defaults off; explicit current acceptance persists and allows chat
+ok 1 - first use defaults off; explicit current acceptance persists and allows chat
+  ---
+  duration_ms: 269.508792
+  ...
+# Subtest: decline and withdrawal are recorded and block old and new clients
+ok 2 - decline and withdrawal are recorded and block old and new clients
+  ---
+  duration_ms: 1.361625
+  ...
+# Subtest: obsolete policy, provider, missing versions or non-boolean decisions cannot grant
+ok 3 - obsolete policy, provider, missing versions or non-boolean decisions cannot grant
+  ---
+  duration_ms: 3.040042
+  ...
+# Subtest: unavailable consent storage fails closed without any provider call
+ok 4 - unavailable consent storage fails closed without any provider call
+  ---
+  duration_ms: 0.783375
+  ...
+# Subtest: shared chat handler used by the legacy course endpoint also enforces consent
+ok 5 - shared chat handler used by the legacy course endpoint also enforces consent
+  ---
+  duration_ms: 0.735792
+  ...
+# Subtest: withdrawing during a failed attempt stops a scheduled external retry
+ok 6 - withdrawing during a failed attempt stops a scheduled external retry
+  ---
+  duration_ms: 0.932375
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 314.514459

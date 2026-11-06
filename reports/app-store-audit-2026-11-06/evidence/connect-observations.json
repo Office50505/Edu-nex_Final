@@ -1,0 +1,35 @@
+{
+  "observedDate": "2026-11-06",
+  "method": "Authenticated read-only App Store Connect UI inspection",
+  "appId": "6790396358",
+  "version": "1.0",
+  "status": "Rejected",
+  "selectedBuild": "29",
+  "sourceBuildNumber": "33",
+  "globalAgeRating": "4+",
+  "termsMinimumAge": 13,
+  "publishedPrivacyDataTypes": [
+    "Performance Data",
+    "User ID",
+    "Phone Number",
+    "Other Diagnostic Data",
+    "Customer Support",
+    "Crash Data",
+    "Name",
+    "Purchase History",
+    "Other User Content",
+    "Product Interaction",
+    "Email Address"
+  ],
+  "photosOrVideosPublished": false,
+  "reviewNotesStartWithSignIn": true,
+  "reviewCredentialsConfigured": true,
+  "reviewCredentialsRuntimeValidated": false,
+  "physicalRecordingSatisfactionVerified": false,
+  "metadataMutated": false,
+  "publicLegalPagesRendered": [
+    "https://skillomate.in/privacy",
+    "https://skillomate.in/help",
+    "https://skillomate.in/terms"
+  ]
+}

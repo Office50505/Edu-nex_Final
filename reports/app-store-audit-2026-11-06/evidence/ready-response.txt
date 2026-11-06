@@ -1,0 +1,1 @@
+{"ok":true,"service":"Skillomate API","mongodb":"connected","redis":"connected"}

@@ -1,0 +1,20 @@
+{
+  "minimumAge": 13,
+  "mobileSignup": {
+    "path": "appcopyai/App.js",
+    "check": "signupAge rejects values below 13 and displays learners aged 13 and older"
+  },
+  "serverSignup": {
+    "path": "edunex-b/routes/auth.js",
+    "check": "age is required; ages below 13 rejected"
+  },
+  "userSchema": {
+    "path": "edunex-b/models/User.js",
+    "check": "age min: 13"
+  },
+  "terms": {
+    "path": "edunex-f/src/pages/LegalPolicyPage.jsx",
+    "check": "You must be at least 13 years old to use Skillomate."
+  },
+  "codeChangedForThisStep": false
+}

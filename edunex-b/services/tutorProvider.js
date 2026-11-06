@@ -22,7 +22,7 @@ function errorCode(error) {
 }
 
 async function requestTutorProvider({ url, key, payload, extractText, fetchImpl = globalThis.fetch,
-  totalTimeoutMs = 25000, maxAttempts = 2, now = Date.now, sleep = ms => new Promise(resolve => setTimeout(resolve, ms)) }) {
+  totalTimeoutMs = 25000, maxAttempts = 2, beforeRequest = async () => {}, now = Date.now, sleep = ms => new Promise(resolve => setTimeout(resolve, ms)) }) {
   const start = now();
   let code = 'connection_error';
   const attempts = [];
@@ -33,6 +33,9 @@ async function requestTutorProvider({ url, key, payload, extractText, fetchImpl 
     const attempt = { attempt: i + 1, status: 'started', httpStatus: null };
     attempts.push(attempt);
     const attemptStart = now();
+    // Re-check persisted permission before every external attempt, including retries.
+    // Outside the transport catch: a privacy denial must never be retried.
+    await beforeRequest();
     try {
       const response = await fetchImpl(url, { method: 'POST', signal: AbortSignal.timeout(Math.max(1, remaining)),
         headers: { Authorization: `Key ${key}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
