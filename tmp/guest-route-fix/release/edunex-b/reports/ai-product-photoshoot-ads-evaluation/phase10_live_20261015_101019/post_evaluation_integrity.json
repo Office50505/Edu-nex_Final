@@ -1,0 +1,13 @@
+{
+  "verifiedAt": "2026-10-15T10:20:09.228623+00:00",
+  "sourceFilesVerifiedUnchanged": 37,
+  "phase9SourceFilesVerified": 13,
+  "historicalFilesVerifiedUnchanged": 566,
+  "historicalZipFilesVerifiedUnchanged": 11,
+  "frozenCriteriaAndDefinitionsVerified": 6,
+  "sourceChanges": [],
+  "historicalChanges": [],
+  "historicalZipChanges": [],
+  "criteriaChanges": [],
+  "runnerHashMatchesExecutionManifest": true
+}

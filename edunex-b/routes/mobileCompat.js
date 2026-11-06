@@ -18,6 +18,7 @@ const {
   mostWatchedVideo,
   objectId,
   progressForUser,
+  learningStatsForUser,
   publicPlayableVideoInfo,
   serializeCertificate,
   serializeCourse,
@@ -137,6 +138,15 @@ router.post(
 );
 
 router.get(
+  '/user/:id/learning-stats',
+  requireCompatibleAuth({ userIdNames: ['id', 'userId'] }),
+  asyncHandler(async (req, res) => {
+    requireSameUser(req, req.params.id);
+    res.json(await learningStatsForUser(req.params.id));
+  })
+);
+
+router.get(
   '/user/:id/progress',
   requireCompatibleAuth({ userIdNames: ['id', 'userId'] }),
   asyncHandler(async (req, res) => {
@@ -217,6 +227,15 @@ router.get(
     res.json(await mostWatchedVideo());
   })
 );
+
+// Public lessons contain no account data and need no identity or session.
+router.get('/public/courses/:id/videos', asyncHandler(async (req, res) => {
+  const course = await getCourse(req.params.id, require('../services/publicCourseAccess').publicCourseProjection);
+  if (course.status !== 'published') return res.status(404).json({ error: 'Published course not found' });
+  res.set('Cache-Control', 'no-store');
+  res.json({ courseTitle: course.title,
+    videos: require('../services/publicCourseAccess').publicCourseVideos(course, publicPlayableVideoInfo) });
+}));
 
 router.get(
   '/courses/:id/videos',

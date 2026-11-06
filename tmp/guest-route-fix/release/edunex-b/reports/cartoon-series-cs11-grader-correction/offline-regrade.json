@@ -1,0 +1,47 @@
+{
+  "operation": "offline_regrade_of_saved_provider_responses; not a new live evaluation",
+  "checked_at_utc": "2026-10-24T06:15:24.710838+00:00",
+  "source_report": "reports/cartoon-series-cs11-v2/live_5252a9e357834e0aa151e0a7209b1ec6_results.json",
+  "source_report_sha256": "11822041e8c185c5e9b3bcc8a31dad70dddf6f351ef7d2a4a8e55ec9ea442d8b",
+  "source_run_id": "5252a9e357834e0aa151e0a7209b1ec6",
+  "cases_sha256": "346ce72c31c7a3b4f08167e26b85298c529e416e84a904c496d84b5c080405a6",
+  "corrected_grader_sha256": "1a06249a72af1c740ee2a4460661fc209c40a505eac71ca0415f6f0a93eaaa80",
+  "case": "CS-11",
+  "original_scenario_grade": "FAIL",
+  "offline_corrected_scenario_grade": "PASS",
+  "turns": [
+    {
+      "turn": 1,
+      "original_grade": "PASS",
+      "corrected_grade": "PASS",
+      "errors": [],
+      "critical_security_failures": [],
+      "successful_recorded_provider_responses": 1
+    },
+    {
+      "turn": 2,
+      "original_grade": "FAIL",
+      "corrected_grade": "PASS",
+      "errors": [],
+      "critical_security_failures": [],
+      "successful_recorded_provider_responses": 1
+    }
+  ],
+  "recorded_provider_invocations": 2,
+  "new_provider_invocations": 0,
+  "network_disabled_during_regrade": true,
+  "original_frozen_cases_and_live_reports_unchanged": true,
+  "preserved_files_verified": 86,
+  "focused_tests": {
+    "new_association_regressions": 14,
+    "existing_scene_regressions": 18,
+    "grader_compatibility": 8,
+    "total_passed": 40,
+    "failed": 0
+  },
+  "chatbot_behavior_changed": false,
+  "course_knowledge_changed": false,
+  "authorization_changed": false,
+  "production_accessed_or_modified": false,
+  "remaining_genuine_chatbot_issues_in_this_response": []
+}

@@ -1,0 +1,37 @@
+AI FILMMAKING — CHATBOT TRAINING (Lessons 9–15)
+For: Skillomate course chatbot · skillomate.in Tone: simple Hinglish, friendly teacher. Tools taught = ONLY Google Flow, ChatGPT, ElevenLabs, CapCut. Always give copy-paste prompts. Write “Reference-to-video” (not image-to-video). ChatGPT = “chat G.P.T”. Every generation prompt ends with: real skin, no filter, natural hands with five fingers, no morphing/flicker/watermark, NO background music.
+
+LESSON 9 — EMOTION & EXPRESSION
+Concept: Emotion generic mat likho (“sad”), specific facial words likho — tabhi asli feeling aati hai. Close-up me EXACT same face lock karo warna face drift hota.
+Prompt words: - Khushi: soft genuine smile, warm eyes, slight laugh - Udaasi: welling eyes, downturned mouth, heavy look - Rona: tears welling and falling, trembling lips, red eyes - Gussa: furrowed brow, clenched jaw, intense stare - Dar: wide eyes, tense face, slight trembling - Hairaani: raised eyebrows, mouth open, wide eyes
+Student Q&A: - Chehre pe emotion nahi aa raha? Specific words likho (upar), sirf “sad/happy” nahi. - Close-up me chehra badal jata? “close-up of her face and shoulders (not too tight)” + “EXACT same face as reference, do not change/morph”. - Rona kaise? tears welling and falling, trembling lips, red eyes.
+
+LESSON 10 — LIGHTING & MOOD
+Concept: Light se mood banta hai. Flow prompt me light likho, wo samajh jata. Scene ke emotion se light match karo.
+Prompt words: warm soft light (cozy) · cold blue light (udaasi/tension) · golden hour light (khoobsurat/romantic) · dim low night light (tension/drama) · soft diffused light (calm/flattering) · hard dramatic light, strong shadows (intense).
+Student Q&A: - Sad scene ke liye? cold blue light / dim low night light. - Khushi/romantic? warm soft light / golden hour. - Chehre pe best light? soft diffused light. - Yellow aa raha? “cool-neutral white balance, NOT warm/golden/yellow” likho.
+
+LESSON 11 — REALISM TRICKS (AI look hataana)
+Concept: AI video AI jaisा na lage — real banाने ke do hisse: kya likho, kya na likho.
+KARO: RAW candid iPhone, real skin with visible pores, peach-fuzz, faint freckles, natural uneven tone, NOT smoothed, no filter, natural/window light, neutral colours, handheld shake, slightly imperfect framing MAT KARO: “8K / ultra / hyper-detailed” spam; waxy/plastic/smooth skin; beauty filter; heavy colour grade; slow motion; over-perfect studio/posed. Tip: Thodi imperfection (stray hair, slight asymmetry) = real. Perfect = fake.
+Student Q&A: - Video plastic/fake lag raha? real skin + pores, no “8K ultra”, candid handheld. - “8K ultra” likhun? NAHI — ulta plastic banata. - Camera fake lagta? “shot on real iPhone, handheld shake, raw amateur footage, NOT cinematic”.
+
+LESSON 12 — B-ROLL & CUTAWAYS
+Concept: Beech-beech ke chhote extra shots — gaps bharte, cut chhupate, film rich/pro banate.
+Types: Object/detail (cup, phone) · Hands/action (typing, pouring) · Establishing (wide of location) · Texture/mood (rain, steam, pages) · Reaction (face/eyes cutaway). Rule: Har main shot ke beech 1-2 b-roll daalo.
+Student Q&A: - Film flat/empty lag rahी? Beech me b-roll (object/hands/wide/texture/reaction) daalo. - Cut awkward lag raha? Reaction cutaway se cut chhup jata.
+
+LESSON 13 — EDITING (CapCut Breakdown)
+Concept: Banai hui film ka asli CapCut project khol ke dikhaना. Editing simple hai — bas clips sequence me + sahi jagah sound.
+4 parts (screen record): 1. Full timeline overview (video + SFX tracks + music_main). 2. Clips story order me: Hook → Build → Twist → End. 3. Sahi jagah sahi sound — office, phone dial, phone ring, busy tone, maa ki voicemail; neeche halka music; emotional peak par silence. 4. Kitna simple — clip ko drag karke timeline me daalo, sequence me lagao, play.
+Student Q&A: - Editing mushkil hai? Nahi — bas clips order me lagao + sound. CapCut me drag-drop. - Clips kaise jodu? Story order (Hook/Build/Twist/End) me timeline pe lagao. - Sound kahan? Alag audio track pe — SFX upar, music (20-30%) neeche, emotional peak par silence.
+
+LESSON 14 — VOICEOVER (ElevenLabs only)
+Concept: Film ki jaan = awaaz. ElevenLabs se natural AI voiceover. (Is lesson me sirf ElevenLabs — CapCut nahi.)
+Steps: 1. Text-to-Speech → Voice Library → Language Hindi, Gender Female → voice select (jaise “Kahani”). 2. Dialogue Devanagari me type (e.g. बेटा, खाना खा लिया?). 3. Model Eleven v4 · Stability ~50% · Similarity ~50%. 4. Generate → 2 options suno → best download.
+Student Q&A: - Hindi sahi accent kaise? Hindi voice + Devanagari me likho. - Konsा model/settings? Eleven v4, Stability ~50, Similarity ~50. - Robotic lag rahी? Devanagari me likho, settings tune karo, doosra generation try karo. - Lip-sync? (Editing lesson me) clip mute → voice upar.
+
+LESSON 15 — COMMON MISTAKES + PRO TIPS (Finale)
+Cheat-sheet (problem → fix): - Face har clip me badalta → reference attach + Start-frame trick + Ingredients face-lock. - Bahut glitch / 3rd hand → ek clip = ek simple action + “natural hands with five fingers, no extra limbs”. - Video AI/fake → real skin, candid handheld, no “8K ultra”. - Clip violate → fall/hit/revealing/spoken-price hatao (price text pe). - Sides blurred (16:9) → LANDSCAPE 16:9 reference use karo. - Yellow/slow look → “cool-neutral white balance, normal real-time speed, raw iPhone”. - Text glitch → Flow me text nahi, CapCut me add.
+Finale: Poore course ka recap (kahani, character, shots, camera, emotion, light, editing, sound). “Ab tum ready ho — jao apni pehli film banao!”
+Student Q&A: - Kuch bhi galat ho to? Is cheat-sheet pe aao — har common problem ka fix yahan. - Ab kya karu? Apni pehli film banao — story (chat G.P.T) → character sheet → shots generate → edit → voice → publish.

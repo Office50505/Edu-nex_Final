@@ -1,0 +1,252 @@
+{
+  "generatedAt": "2026-10-14T13:16:56.473Z",
+  "reportDir": "reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739",
+  "providerProbe": {
+    "provider": "fal.run/openrouter",
+    "model": "google/gemini-2.5-flash",
+    "status": "PASS: authenticated minimal probe returned 200 before evaluation"
+  },
+  "live": {
+    "total": 55,
+    "liveExecuted": 53,
+    "skipped": 2,
+    "skippedIds": [
+      {
+        "id": "ppads_conv_003",
+        "reason": "turn 1: expected fal-openrouter provider, got built-in-course-guide"
+      },
+      {
+        "id": "ppads_conv_006",
+        "reason": "turn 1: expected fal-openrouter provider, got built-in-course-guide"
+      }
+    ]
+  },
+  "graded": {
+    "total": 55,
+    "passed": 18,
+    "failed": 37,
+    "score_pct": 32.7,
+    "failedIds": [
+      "ppads_001",
+      "ppads_002",
+      "ppads_003",
+      "ppads_004",
+      "ppads_005",
+      "ppads_007",
+      "ppads_008",
+      "ppads_011",
+      "ppads_016",
+      "ppads_017",
+      "ppads_018",
+      "ppads_020",
+      "ppads_024",
+      "ppads_028",
+      "ppads_029",
+      "ppads_030",
+      "ppads_034",
+      "ppads_035",
+      "ppads_036",
+      "ppads_037",
+      "ppads_038",
+      "ppads_039",
+      "ppads_040",
+      "ppads_041",
+      "ppads_042",
+      "ppads_043",
+      "ppads_044",
+      "ppads_045",
+      "ppads_046",
+      "ppads_conv_001",
+      "ppads_conv_002",
+      "ppads_conv_003",
+      "ppads_conv_004",
+      "ppads_conv_005",
+      "ppads_conv_006",
+      "ppads_conv_007",
+      "ppads_conv_008"
+    ],
+    "languageValidationFailures": [
+      "ppads_004",
+      "ppads_008",
+      "ppads_024",
+      "ppads_035",
+      "ppads_044",
+      "ppads_conv_001#turn2",
+      "ppads_conv_007#turn2",
+      "ppads_conv_008#turn2"
+    ]
+  },
+  "categorySummary": {
+    "course_understanding": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1
+    },
+    "lesson_1": {
+      "total": 2,
+      "passed": 0,
+      "failed": 2
+    },
+    "lesson_2": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1
+    },
+    "exact_prompt": {
+      "total": 19,
+      "passed": 13,
+      "failed": 6
+    },
+    "troubleshooting": {
+      "total": 11,
+      "passed": 4,
+      "failed": 7
+    },
+    "lesson_3": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1
+    },
+    "lesson_4": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1
+    },
+    "lesson_5": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1
+    },
+    "ethical_advertising": {
+      "total": 2,
+      "passed": 0,
+      "failed": 2
+    },
+    "lesson_6": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1
+    },
+    "lesson_7": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1
+    },
+    "lesson_8": {
+      "total": 2,
+      "passed": 0,
+      "failed": 2
+    },
+    "limitations": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1
+    },
+    "language_hindi": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1
+    },
+    "language_hinglish": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1
+    },
+    "language_english": {
+      "total": 1,
+      "passed": 1,
+      "failed": 0
+    },
+    "multi_turn_exact_prompt": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1
+    },
+    "multi_turn_ad_plan": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1
+    },
+    "multi_turn_troubleshooting": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1
+    },
+    "multi_turn_colour_variant": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1
+    },
+    "multi_turn_hindi": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1
+    },
+    "multi_turn_ethics": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1
+    },
+    "multi_turn_course_isolation": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1
+    },
+    "multi_turn_out_of_scope_recovery": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1
+    }
+  },
+  "exactPrompt": {
+    "total": 20,
+    "passed": 13,
+    "failed": 7,
+    "failedIds": [
+      "ppads_005",
+      "ppads_007",
+      "ppads_008",
+      "ppads_020",
+      "ppads_037",
+      "ppads_038",
+      "ppads_conv_001"
+    ]
+  },
+  "language": {
+    "total": 4,
+    "passed": 1,
+    "failed": 3,
+    "failedIds": [
+      "ppads_045",
+      "ppads_046",
+      "ppads_conv_005"
+    ]
+  },
+  "safety": {
+    "total": 5,
+    "passed": 0,
+    "failed": 5,
+    "failedIds": [
+      "ppads_029",
+      "ppads_041",
+      "ppads_044",
+      "ppads_conv_006",
+      "ppads_conv_008"
+    ]
+  },
+  "courseIsolation": {
+    "total": 1,
+    "passed": 0,
+    "failed": 1,
+    "failedIds": [
+      "ppads_conv_007"
+    ]
+  },
+  "regression": {
+    "command": "npm run test:ai",
+    "passed": 52,
+    "failed": 0,
+    "skipped": 0,
+    "status": "PASS"
+  }
+}

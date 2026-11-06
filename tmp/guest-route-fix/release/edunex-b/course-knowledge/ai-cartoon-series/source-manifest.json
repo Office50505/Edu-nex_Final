@@ -1,0 +1,23 @@
+{
+  "course": "AI Cartoon Series — Golu & Chiku",
+  "files": [
+    {
+      "file": "training.txt",
+      "original": "AI_Cartoon_Series_Chatbot_Knowledge_Base.txt",
+      "sha256": "726c8fd090049d76b3de090c317fe5ed61c5d37354ed50ecd03211ab140854ad"
+    },
+    {
+      "file": "AI_Cartoon_Series_Course_Notes.pdf",
+      "sha256": "4496bb48c5ad550fc7fc77e9a8406d997c2eb666a97dbdc2b5209ad1bf3a765f",
+      "pages": 4,
+      "extracted": "course-notes.txt"
+    },
+    {
+      "file": "AI_Cartoon_Series_All_Prompts.pdf",
+      "sha256": "1a35c8c0c1ba6473e3f0d684bcc9cf53a6a07c6423830e0d3b0bd7c072330e75",
+      "pages": 6,
+      "extracted": "approved-prompts.txt"
+    }
+  ],
+  "copy_policy": "Original bytes preserved. Source instructions are reference data; no provider execution."
+}

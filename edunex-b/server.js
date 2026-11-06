@@ -1048,6 +1048,7 @@ function sanitizeCourseVideos(rawVideos, existingVideos = []) {
     try {
       if (!video || typeof video !== 'object') throw new Error('Invalid lesson.');
       const source = validateSource(video);
+      if (video.isFree !== undefined && typeof video.isFree !== 'boolean') throw new Error('isFree must be a boolean.');
       const previous = video._id ? existingVideos.find(v => String(v._id) === String(video._id)) : existingVideos.find(v => v.videoUrl === video.videoUrl && v.title === video.title);
       if (video._id && !previous) throw new Error('Lesson ID does not belong to this course.');
       const id = previous?._id || new mongoose.Types.ObjectId();
@@ -1055,7 +1056,7 @@ function sanitizeCourseVideos(rawVideos, existingVideos = []) {
       used.add(String(id));
       const duration = Number(video.duration || 0);
       if (!Number.isFinite(duration) || duration < 0) throw new Error('Duration must be a positive number of seconds.');
-      return { _id: id, ...source, title: String(video.title || '').trim(), topic: String(video.topic || '').trim(), description: String(video.description || '').trim(), notes: String(video.notes || '').trim(), duration, order: index + 1,
+      return { _id: id, ...source, isFree: video.isFree ?? previous?.isFree ?? false, title: String(video.title || '').trim(), topic: String(video.topic || '').trim(), description: String(video.description || '').trim(), notes: String(video.notes || '').trim(), duration, order: index + 1,
         transcriptUrl: video.transcriptUrl || previous?.transcriptUrl || null, thumbnail: previous?.thumbnail || {},
         notesUrl: sanitizeOptionalUrl(video.notesUrl), thumbnailUrl: sanitizeOptionalUrl(video.thumbnailUrl), thumbnailVerticalUrl: sanitizeOptionalUrl(video.thumbnailVerticalUrl), examplePrompt: String(video.examplePrompt || '').trim() };
     } catch (error) { throw new Error(`Lesson ${index + 1}: ${error.message}`); }
@@ -4111,8 +4112,12 @@ app.post('/api/courses', protectAdmin, async (req, res) => {
     const courseThumbnailVerticalUrl = savedVerticalThumbnailUrl
       || (embeddedVerticalThumbnail ? null : sanitizeCourseThumbnailUrl(req.body.thumbnailVerticalUrl));
 
+    if (req.body.accessType !== undefined && !['free', 'premium'].includes(req.body.accessType)) return res.status(400).json({ error: 'Invalid course access type' });
+    if (req.body.publicPreviewEnabled !== undefined && typeof req.body.publicPreviewEnabled !== 'boolean') return res.status(400).json({ error: 'publicPreviewEnabled must be a boolean' });
     const course = new Course({
       _id: courseId,
+      accessType: req.body.accessType || 'premium',
+      publicPreviewEnabled: req.body.publicPreviewEnabled !== false,
       title: req.body.title,
       slug: req.body.slug,
       description: req.body.description,
@@ -4262,6 +4267,14 @@ app.patch('/api/admin/courses/:id', protectAdmin, async (req, res) => {
     }
 
     const updates = {};
+    if (req.body.accessType !== undefined) {
+      if (!['free', 'premium'].includes(req.body.accessType)) return res.status(400).json({ error: 'Invalid course access type' });
+      updates.accessType = req.body.accessType;
+    }
+    if (req.body.publicPreviewEnabled !== undefined) {
+      if (typeof req.body.publicPreviewEnabled !== 'boolean') return res.status(400).json({ error: 'publicPreviewEnabled must be a boolean' });
+      updates.publicPreviewEnabled = req.body.publicPreviewEnabled;
+    }
     const stringFields = ['title', 'slug', 'description', 'thumbnailUrl', 'thumbnailVerticalUrl'];
 
     stringFields.forEach((field) => {

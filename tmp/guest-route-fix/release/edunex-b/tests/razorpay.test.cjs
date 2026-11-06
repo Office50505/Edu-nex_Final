@@ -1,0 +1,301 @@
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const crypto = require('node:crypto');
+const fs = require('node:fs');
+const vm = require('node:vm');
+const path = require('node:path');
+const { validSignature, createPayload, entitlement, validateTrialSchedule } = require('../services/razorpayService');
+const { hasTrialHistoryMarker, hasUsedIntroTrial } = require('../services/trialEligibility');
+const { resolveSubscriptionAccess } = require('../services/subscriptionAccess');
+const { activeCourseEntitlements } = require('../services/courseAccess');
+const now = Date.now();
+const billing = { paymentType: 'trial', trialAmount: 100, monthlyAmount: 50000, trialEnd: new Date(now + 86400000) };
+const billingWithAccessWindow = { ...billing, trialAccessEnd: new Date(now + 26 * 3600000) };
+const remote = { status: 'authenticated' };
+const trial = { invoice: {}, payment: { status: 'captured', currency: 'INR', amount: 100, created_at: Math.floor(now / 1000) } };
+const monthly = { invoice: { billing_start: Math.floor(now / 1000) - 100, billing_end: Math.floor(now / 1000) + 86400 }, payment: { status: 'captured', currency: 'INR', amount: 50000, created_at: Math.floor(now / 1000) } };
+
+test('Checkout HMAC uses payment ID followed by server-owned subscription ID', () => {
+  const signature = crypto.createHmac('sha256', 'test-secret').update('pay_1|sub_1').digest('hex');
+  assert.equal(validSignature('pay_1|sub_1', signature, 'test-secret'), true);
+  assert.equal(validSignature('pay_1|sub_other', signature, 'test-secret'), false);
+  assert.equal(validSignature('pay_1|sub_1', 'bad', 'test-secret'), false);
+});
+test('raw webhook bytes must match exactly', () => {
+  const raw = Buffer.from('{ "event": "subscription.charged" }');
+  const sig = crypto.createHmac('sha256', 'webhook-secret').update(raw).digest('hex');
+  assert.equal(validSignature(raw, sig, 'webhook-secret'), true);
+  assert.equal(validSignature(JSON.stringify(JSON.parse(raw)), sig, 'webhook-secret'), false);
+});
+test('trial creates upfront fee and future billing; direct monthly has no extra trial charge', () => {
+  const c = { planId: 'plan_test', trialAmount: 100, trialHours: 24, cycles: 120 };
+  const payload = createPayload(c, 'trial', 'attempt', now);
+  assert.equal(payload.addons[0].item.amount, 100);
+  assert.equal(payload.start_at, payload.expire_by + 86400);
+  for (const delay of [0, 100, 1799, 1800]) {
+    assert.ok(payload.start_at - (Math.ceil(now / 1000) + delay) >= 86400);
+  }
+  assert.ok(payload.expire_by < payload.start_at);
+  assert.equal(createPayload(c, 'monthly', 'attempt', now).addons, undefined);
+});
+test('checkout expiry window is configurable without shortening the trial', () => {
+  const c = { planId: 'plan_test', trialAmount: 100, trialHours: 24, cycles: 120, checkoutExpiryMinutes: 45 };
+  const payload = createPayload(c, 'trial', 'attempt', 1700000000000);
+  assert.equal(payload.expire_by, 1700000000 + 45 * 60);
+  assert.equal(payload.start_at, payload.expire_by + 86400);
+});
+test('mandate authorization alone and uncaptured payments grant no access', () => {
+  assert.equal(entitlement(billing, remote, [], now).status, 'pending');
+  assert.equal(entitlement(billing, remote, [{ ...trial, payment: { ...trial.payment, status: 'authorized' } }], now).status, 'pending');
+});
+test('captured trial access expires at scheduled first billing', () => {
+  assert.equal(entitlement(billing, remote, [trial], now).status, 'trial');
+  assert.notEqual(entitlement(billing, remote, [trial], now + 86400001).status, 'trial');
+});
+test('captured trial access can extend past first billing as an internal grace window', () => {
+  assert.equal(entitlement(billingWithAccessWindow, remote, [trial], now + 25 * 3600000).status, 'trial');
+  assert.notEqual(entitlement(billingWithAccessWindow, remote, [trial], now + 26 * 3600000 + 1).status, 'trial');
+});
+test('cancelling auto-renew keeps the already-paid trial until it expires', () => {
+  assert.equal(entitlement(billing, { status: 'cancelled' }, [trial], now).status, 'trial');
+  assert.notEqual(entitlement(billing, { status: 'cancelled' }, [trial], now + 86400001).status, 'trial');
+});
+test('the introductory trial is permanently marked as used by account history or a paid trial order', async () => {
+  assert.equal(hasTrialHistoryMarker({ trialStartedAt: new Date(now) }), true);
+  assert.equal(hasTrialHistoryMarker({ status: 'expired' }, { subscriptionStatus: '1rs trial' }), true);
+  assert.equal(await hasUsedIntroTrial('learner', { status: 'expired' }, {}, { exists: async query => query.orderType === 'trial_charge' && query.status === 'paid' }), true);
+  assert.equal(await hasUsedIntroTrial('learner', { status: 'expired' }, {}, { exists: async () => null }), false);
+});
+test('renewal requires a paid current-period invoice; stale events cannot extend access', () => {
+  assert.equal(entitlement(billing, { status: 'active' }, [], now).status, 'expired');
+  assert.equal(entitlement(billing, { status: 'active' }, [monthly], now).status, 'active');
+  assert.equal(entitlement(billing, { status: 'active' }, [monthly], now + 86401000).status, 'expired');
+});
+test('cancellation retains already-paid time; full refunds revoke it and partial refunds do not', () => {
+  assert.equal(entitlement(billing, { status: 'cancelled' }, [monthly], now).status, 'active');
+  assert.equal(entitlement(billing, remote, [{ ...monthly, payment: { ...monthly.payment, amount_refunded: 50000 } }], now).status, 'pending');
+  assert.equal(entitlement(billing, remote, [{ ...monthly, payment: { ...monthly.payment, amount_refunded: 100 } }], now).status, 'active');
+});
+test('an expired mandate does not revoke a paid monthly period that has not ended', () => {
+  const access = resolveSubscriptionAccess({ status: 'expired', subscriptionType: 'monthly', currentPeriodEnd: new Date(now + 86400000) }, {}, now);
+  assert.equal(access.active, true);
+  assert.equal(access.status, 'active');
+});
+test('wrong currency and wrong amount cannot unlock access', () => {
+  for (const change of [{ currency: 'USD' }, { amount: 1 }]) assert.notEqual(entitlement(billing, remote, [{ ...monthly, payment: { ...monthly.payment, ...change } }], now).status, 'active');
+});
+function controller(billing = {}) {
+  const module = { exports: {} }; let upstreamCalls = 0;
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../controllers/razorpayController.js'), 'utf8'), {
+    module, exports: module.exports, Buffer, Date, console,
+    require(name) {
+      if (name === 'node:crypto') return crypto;
+      if (name.includes('razorpayService')) return { validSignature, legacyMode: () => 'test', config: (mode = 'test') => ({ webhookSecret: mode === 'test' ? 'secret' : 'live-secret' }), requireConfig: () => ({ secret: 'secret' }), api: () => { upstreamCalls++; } };
+      if (name.includes('trialEligibility')) return { hasUsedIntroTrial: async () => false };
+      if (name.includes('subscriptionAccess')) return { resolveSubscriptionAccess };
+      if (name.includes('accountEntitlement')) return { loadAccountEntitlement: async user => ({ access: resolveSubscriptionAccess(null, user) }) };
+      if (name.includes('subscriptionMirror')) return { syncUserSubscriptionMirror: async () => {} };
+      if (name.includes('courseAccess')) return { activeCourseEntitlements };
+      return { findById: async () => billing };
+    },
+  });
+  return { handlers: module.exports, calls: () => upstreamCalls };
+}
+test('forged webhook and a different users subscription callback are rejected before provider calls', async () => {
+  const { handlers, calls } = controller({ subscriptionId: 'sub_owner' });
+  let status;
+  const res = { status(value) { status = value; return this; }, json() {} };
+  await handlers.webhook({ body: Buffer.from('{}'), get: () => 'forged' }, res);
+  assert.equal(status, 400);
+  await handlers.verify({ user: { _id: 'owner' }, body: { razorpay_subscription_id: 'sub_other', razorpay_payment_id: 'pay_1' } }, res);
+  assert.equal(status, 400);
+  assert.equal(calls(), 0);
+});
+
+function flow(mode = 'test') {
+  const billing = { _id: 'learner', mode, phase: 'ready', subscriptionId: 'sub_test', ...globalBilling() };
+  let local; let providerCalls = 0; let failWrite = false; const processed = new Map();
+  const upstream = { id: 'sub_test', status: 'active', charge_at: Math.floor(now / 1000) + 86400 };
+  const invoice = { id: 'inv_test', subscription_id: 'sub_test', status: 'paid', payment_id: 'pay_test', ...monthly.invoice };
+  const models = {
+    RazorpayBilling: { findById: async () => billing, findOne: async () => billing,
+      async findOneAndUpdate(query, update) { if (billing.lease) return null; Object.assign(billing, update.$set); return billing; },
+      async updateOne(query, update) { if (query.lease && query.lease !== billing.lease) return; Object.assign(billing, update.$set || {}); for (const key of Object.keys(update.$unset || {})) delete billing[key]; } },
+    BillingWebhook: { findById: async id => processed.get(id), updateOne: async (query, update) => processed.set(query._id, update.$set) },
+    Subscription: {
+      findOne: async () => local,
+      findOneAndUpdate: async (query, update) => { local = { _id: 'local', ...update.$setOnInsert, ...update.$set }; return local; },
+    },
+    Order: { updateOne: async () => { if (failWrite) { failWrite = false; throw new Error('database write interrupted'); } } },
+    User: { findByIdAndUpdate: async () => {} },
+  };
+  const module = { exports: {} };
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../controllers/razorpayController.js'), 'utf8'), { module, exports: module.exports, Buffer, Date, console,
+    require(name) {
+      if (name === 'node:crypto') return crypto;
+      if (name.includes('razorpayService')) return { validSignature, entitlement, legacyMode: () => 'test', config: (mode = 'test') => ({ webhookSecret: mode === 'test' ? 'secret' : 'live-secret' }), api: async route => {
+        providerCalls++;
+        if (route.startsWith('/subscriptions/')) return upstream;
+        if (route.startsWith('/invoices?')) return { items: [invoice] };
+        return { id: 'pay_test', ...monthly.payment };
+      } };
+      if (name.includes('trialEligibility')) return { hasUsedIntroTrial: async () => false };
+      if (name.includes('subscriptionAccess')) return { resolveSubscriptionAccess };
+      if (name.includes('accountEntitlement')) return { loadAccountEntitlement: async user => ({ access: resolveSubscriptionAccess(local, user) }) };
+      if (name.includes('subscriptionMirror')) return { syncUserSubscriptionMirror: async () => {} };
+      if (name.includes('courseAccess')) return { activeCourseEntitlements };
+      return models[name.split('/').at(-1)];
+    },
+  });
+  return { billing, processed, local: () => local, calls: () => providerCalls, interrupt() { failWrite = true; }, async event(id = 'event1', signedMode = mode, eventName = 'subscription.charged') {
+    const body = Buffer.from(JSON.stringify({ event: eventName, payload: { subscription: { entity: { id: 'sub_test' } } } }));
+    const sig = crypto.createHmac('sha256', signedMode === 'live' ? 'live-secret' : 'secret').update(body).digest('hex');
+    let status = 200;
+    await module.exports.webhook({ body, get: key => key === 'x-razorpay-signature' ? sig : id }, { status(value) { status = value; return this; }, json() {} });
+    return status;
+  } };
+}
+function globalBilling() { return { paymentType: 'monthly', trialAmount: 100, monthlyAmount: 50000 }; }
+test('duplicate signed webhooks grant one period and do not refetch or extend it', async () => {
+  const f = flow(); assert.equal(await f.event(), 200); const calls = f.calls();
+  assert.equal(f.local().status, 'active'); assert.equal(await f.event(), 200); assert.equal(f.calls(), calls);
+  assert.equal(f.local().currentPeriodEnd.getTime(), monthly.invoice.billing_end * 1000);
+});
+test('interrupted writes leave events retryable and release the reconciliation lease', async () => {
+  const f = flow(); f.interrupt(); assert.equal(await f.event(), 500);
+  assert.equal(f.processed.size, 0); assert.equal(f.billing.lease, undefined);
+  assert.equal(await f.event(), 200); assert.equal(f.processed.size, 1);
+});
+
+test('live webhooks reconcile with live credentials and cross-mode events are rejected', async () => {
+  const f = flow('live');
+  assert.equal(await f.event('wrong-mode', 'test'), 400);
+  assert.equal(f.calls(), 0);
+  assert.equal(await f.event('live-event', 'live'), 200);
+  assert.equal(f.local().razorpayMode, 'live');
+});
+
+for (const event of ['subscription.activated', 'subscription.charged', 'subscription.pending', 'subscription.halted', 'subscription.cancelled', 'subscription.completed', 'payment.failed']) {
+  test(`${event} reconciles signed events against provider data, rather than event labels`, async () => {
+    const f = flow();
+    assert.equal(await f.event(event, 'test', event), 200);
+    assert.ok(f.calls() > 0);
+    assert.equal(f.local().currentPeriodEnd.getTime(), monthly.invoice.billing_end * 1000);
+    assert.equal(f.processed.size, 1);
+  });
+}
+
+test('invalid short trial settings cannot schedule an early renewal', () => {
+  for (const trialHours of [0, 1, 23, 23.9, NaN]) {
+    assert.throws(() => createPayload({ trialHours }, 'trial', 'attempt', now), /at least 24 hours/);
+  }
+});
+test('provider must preserve the requested trial start before checkout is returned', () => {
+  const record = { paymentType: 'trial', trialEnd: new Date(now + 86400000) };
+  const expected = Math.ceil(record.trialEnd.getTime() / 1000);
+  for (const start_at of [null, undefined, 0, expected - 1]) {
+    assert.throws(() => validateTrialSchedule({ start_at }, record), /schedule could not be verified/);
+  }
+  assert.doesNotThrow(() => validateTrialSchedule({ start_at: expected }, record));
+  assert.throws(() => validateTrialSchedule({ start_at: expected }, { paymentType: 'trial', trialEnd: null }), /schedule could not be verified/);
+  assert.doesNotThrow(() => validateTrialSchedule({}, { paymentType: 'monthly' }));
+});
+test('a renewal failure during a paid trial does not block signup or remove paid access', () => {
+  assert.equal(entitlement(billing, { status: 'pending' }, [trial], now).status, 'trial');
+  assert.equal(entitlement(billing, { status: 'halted' }, [trial], now).status, 'trial');
+});
+
+function statusFlow({ billingRecord = null, subscriptionRecord = null, accountAccess = null } = {}) {
+  let providerCalls = 0;
+  const module = { exports: {} };
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../controllers/razorpayController.js'), 'utf8'), {
+    module, exports: module.exports, Buffer, Date, console,
+    require(name) {
+      if (name === 'node:crypto') return crypto;
+      if (name.includes('razorpayService')) return {
+        legacyMode: () => 'test',
+        config: () => ({}),
+        api: async () => { providerCalls++; return {}; },
+      };
+      if (name.includes('trialEligibility')) return { hasUsedIntroTrial: async () => false };
+      if (name.includes('subscriptionAccess')) return { resolveSubscriptionAccess };
+      if (name.includes('accountEntitlement')) return { loadAccountEntitlement: async user => ({ access: accountAccess || resolveSubscriptionAccess(subscriptionRecord, user) }) };
+      if (name.includes('subscriptionMirror')) return { syncUserSubscriptionMirror: async () => {} };
+      if (name.includes('courseAccess')) return { activeCourseEntitlements };
+      if (name.endsWith('/RazorpayBilling')) return { findById: async () => billingRecord };
+      if (name.endsWith('/Subscription')) return { findOne: async () => subscriptionRecord };
+      return {};
+    },
+  });
+  return {
+    calls: () => providerCalls,
+    async status(user) {
+      let body;
+      let statusCode = 200;
+      await module.exports.status({ user }, {
+        status(value) { statusCode = value; return this; },
+        json(value) { body = value; },
+      });
+      return { body, statusCode };
+    },
+  };
+}
+
+test('active admin grants take precedence over unfinished Razorpay checkout state', async () => {
+  const adminSubscription = {
+    status: 'active',
+    gateway: 'admin',
+    currentPeriodEnd: new Date(now + 86400000),
+  };
+  const f = statusFlow({
+    billingRecord: { _id: 'learner', phase: 'ready', subscriptionId: 'sub_stale' },
+    subscriptionRecord: adminSubscription,
+  });
+  const { body, statusCode } = await f.status({ _id: 'learner' });
+  assert.equal(statusCode, 200);
+  assert.equal(body.status, 'active');
+  assert.equal(body.accessSource, 'admin');
+  assert.equal(body.pendingCheckout, false);
+  assert.equal(body.autoRenewEnabled, false);
+  assert.equal(f.calls(), 0);
+});
+
+test('Razorpay status exposes admin-assigned course access without claiming a global subscription', async () => {
+  const f = statusFlow();
+  const { body, statusCode } = await f.status({
+    _id: 'learner',
+    courseEntitlements: [{ course: 'course-one', accessType: 'permanent' }],
+  });
+  assert.equal(statusCode, 200);
+  assert.equal(body.status, 'none');
+  assert.equal(body.hasActiveAccess, false);
+  assert.equal(body.hasCourseAccess, true);
+  assert.deepEqual(Array.from(body.courseIds), ['course-one']);
+});
+
+test('web status recognizes verified Google Play and Apple access without reconciling or starting Razorpay', async () => {
+  for (const source of ['google_play', 'apple']) {
+    const f = statusFlow({
+      billingRecord: { _id: 'learner', phase: 'ready', subscriptionId: 'sub_unrelated' },
+      accountAccess: { active: true, status: 'active', entitlementState: 'ACTIVE', expiresAt: new Date(now + 86400000), source },
+    });
+    const { body, statusCode } = await f.status({ _id: 'learner', subscriptionStatus: 'expired' });
+    assert.equal(statusCode, 200);
+    assert.equal(body.hasActiveAccess, true);
+    assert.equal(body.entitlementSource, source);
+    assert.equal(body.pendingCheckout, false);
+    assert.equal(f.calls(), 0);
+  }
+});
+
+test('a revoked admin subscription is not restored by reconciliation of the old closed mandate', async () => {
+  const f = statusFlow({
+    billingRecord: { _id: 'learner', phase: 'closed', subscriptionId: 'sub_old' },
+    subscriptionRecord: { gateway: 'admin', status: 'paused', adminBillingSubscriptionId: 'sub_old', trialExpiresAt: null, currentPeriodEnd: null },
+  });
+  const { body, statusCode } = await f.status({ _id: 'learner', subscriptionStatus: 'none' });
+  assert.equal(statusCode, 200);
+  assert.equal(body.status, 'none');
+  assert.equal(body.hasActiveAccess, false);
+  assert.equal(f.calls(), 0);
+});

@@ -1,0 +1,171 @@
+{
+  "createdAt": "2026-10-15T10:20:09.228623+00:00",
+  "executionEnvironment": {
+    "os": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "python": "3.14.6",
+    "node": "v26.7.0",
+    "backend": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b",
+    "gitCommit": "c38bc2afdaeebf8d751edba462cbfb570540f833"
+  },
+  "sourceFreezeAt": "2026-10-15T10:10:19.259922+00:00",
+  "testFreezeAt": "2026-10-15T10:12:59.681235+00:00",
+  "firstProviderRequestAt": "2026-10-15T10:13:19.042Z",
+  "provider": {
+    "name": "fal.run OpenRouter router",
+    "endpoint": "https://fal.run/openrouter/router/openai/v1/chat/completions",
+    "model": "google/gemini-2.5-flash",
+    "credentialPresenceVerifiedPrivately": true,
+    "credentialValuesRecorded": false,
+    "authorization": "Existing user authorization for course-only synthetic test data; no additional recipient/provider."
+  },
+  "executionPhases": {
+    "unseen": {
+      "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase10_live_20261015_101019/unseen_application_raw_results.json",
+      "sha256": "8d79e1a905feb702e7362acbe69ae9e5d8db39785135913b69cf530f4650756a",
+      "startedAt": "2026-10-15T10:13:31.341Z",
+      "completedAt": "2026-10-15T10:14:05.123Z",
+      "cases": 50
+    },
+    "existing": {
+      "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase10_live_20261015_101019/existing_application_raw_results.json",
+      "sha256": "0c60be5230f5f656625dbbe9e3636b7b8eca30882318f3cb67479a436f996a7e",
+      "startedAt": "2026-10-15T10:14:13.488Z",
+      "completedAt": "2026-10-15T10:14:16.418Z",
+      "cases": 30
+    }
+  },
+  "totalScoredCases": 80,
+  "totalScoredTurns": 96,
+  "providerCallsIncludingConnectivityProbe": 22,
+  "languageRepairProviderCalls": 0,
+  "actualPipelineBoundary": "Real loopback HTTP POST /api/ai/chat through Express and the unchanged application router, rate limiter, handler, routing, retrieval, prompt assembly, fal provider adapter and response guards. Synthetic auth/account/course/entitlement fixtures and in-memory persisted conversation storage replace the production data boundary. No production DB.",
+  "outboundProjection": "Only course context and evaluation messages leave the process. Transport excludes unrelated platform context and synthetic learner summaries after actual prompt assembly; tutor instructions and retrieved course material remain unchanged.",
+  "regressionCommands": [
+    [
+      "node",
+      "--test",
+      "--test-reporter=junit",
+      "tests/ai-chat-history.test.cjs",
+      "tests/tutor-knowledge.test.cjs",
+      "tests/product-tutor-quality.test.cjs",
+      "tests/product-tutor-phase3.test.cjs",
+      "tests/product-tutor-phase5.test.cjs",
+      "tests/product-tutor-phase7.test.cjs",
+      "tests/product-tutor-phase9.test.cjs",
+      "tests/mobile-course-ai.test.cjs",
+      "tests/mobile-course-ai-cache.test.cjs"
+    ],
+    [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests",
+      "-p",
+      "test_product_evaluator*.py",
+      "-v"
+    ]
+  ],
+  "applicationCodeChanged": false,
+  "evaluatorChanged": false,
+  "deployed": false,
+  "productionResourcesChanged": false,
+  "committed": false,
+  "pushed": false,
+  "historicalBaseline": {
+    "phase8_v5": {
+      "total": 100,
+      "passed": 86
+    },
+    "phase8_v6_saved_response_regrade": {
+      "total": 100,
+      "passed": 86,
+      "failed": 14,
+      "skipped": 0,
+      "inconclusive": 0,
+      "provider_fallback": 0,
+      "provider_fallback_cases": 0,
+      "live_provider_turns": 11,
+      "local_quality_turns": 108,
+      "score_all_cases_pct": 86.0,
+      "score_executed_cases_pct": 86.0,
+      "dimension_turn_counts": {
+        "correctness": {
+          "passed": 112,
+          "failed": 7
+        },
+        "language": {
+          "passed": 119
+        },
+        "lesson_references": {
+          "passed": 116,
+          "failed": 3
+        },
+        "safety": {
+          "passed": 119
+        },
+        "prompt_accuracy": {
+          "passed": 114,
+          "failed": 5
+        },
+        "task_completion": {
+          "passed": 118,
+          "failed": 1
+        },
+        "context_retention": {
+          "passed": 1
+        }
+      }
+    },
+    "matched_30_phase8_saved_responses_v6": {
+      "total": 30,
+      "passed": 30,
+      "failed": 0,
+      "skipped": 0,
+      "inconclusive": 0,
+      "provider_fallback": 0,
+      "provider_fallback_cases": 0,
+      "live_provider_turns": 0,
+      "local_quality_turns": 31,
+      "score_all_cases_pct": 100.0,
+      "score_executed_cases_pct": 100.0,
+      "dimension_turn_counts": {
+        "correctness": {
+          "passed": 31
+        },
+        "language": {
+          "passed": 31
+        },
+        "lesson_references": {
+          "passed": 31
+        },
+        "safety": {
+          "passed": 31
+        },
+        "prompt_accuracy": {
+          "passed": 31
+        },
+        "task_completion": {
+          "passed": 31
+        },
+        "context_retention": {
+          "passed": 1
+        }
+      }
+    },
+    "matched_30_fresh": {
+      "passed": 30
+    },
+    "limitation": "The 50 unseen questions differ; headline 86/100 versus 51/80 is not a paired effect estimate."
+  },
+  "scoringLimitations": [
+    "Two authored definitions incorrectly expect Veo for recorded Omni L06 settings; v6 scores are retained.",
+    "Finite rubric has false failures and false passes; manual judgments are separate.",
+    "Agent-authored and agent-reviewed; not an independent human blind panel.",
+    "Synthetic auth/entitlement/in-memory sessions exercise actual route logic but not production authentication, database persistence, browser UI or load.",
+    "Provider success in 22 calls does not establish sustained reliability; no deliberate live-provider fault was injected.",
+    "No live AI Influencer or AI Filmmaking provider evaluation; existing-course regression tests passed locally."
+  ]
+}

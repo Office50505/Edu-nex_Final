@@ -221,6 +221,19 @@ function progressMap(rows) {
   }, {});
 }
 
+async function learningStatsForUser(userId) {
+  const [dates, rows] = await Promise.all([
+    AnalyticsEvent.distinct('date', { userId: String(userId), event: { $in: ['learning_day', 'video_start', 'video_complete', 'course_complete'] } }),
+    CourseProgress.find({ userId: String(userId) }).select('courseId completedCount totalVideos').lean(),
+  ]);
+  const days = new Set(dates.filter(value => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)
+    && Number.isFinite(Date.parse(value)) && new Date(value).toISOString().slice(0, 10) === value));
+  const completed = new Set(rows.filter(row => Number.isInteger(row.totalVideos) && row.totalVideos > 0
+    && Number.isInteger(row.completedCount) && row.completedCount >= row.totalVideos && row.courseId)
+    .map(row => String(row.courseId)));
+  return { daysLearning: days.size, coursesDone: completed.size, timezone: 'UTC', source: 'recorded_activity' };
+}
+
 async function progressForUser(userId) {
   const rows = await CourseProgress.find({ userId: String(userId) }).lean();
   return progressMap(rows);
@@ -430,6 +443,7 @@ async function getBunnyPullZone(guid, libraryId = BUNNY_LIBRARY_ID) {
 }
 
 module.exports = {
+  learningStatsForUser,
   completeVideo,
   findBunnyLibraryIdForGuid,
   getBunnyPullZone,

@@ -1,0 +1,616 @@
+{
+  "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+  "allCasesReviewed": 60,
+  "allTurnsReviewed": 76,
+  "method": "Agent semantic/source review; never changes the frozen v7 verdict. Full independent asset checks and ad evidence are recorded separately.",
+  "summary": {
+    "reviewed_pass": 35,
+    "genuine_failure": 12,
+    "mixed_failure": 3,
+    "borderline_pass": 2,
+    "false_pass": 3,
+    "pure_false_failure": 5
+  },
+  "cases": [
+    {
+      "id": "ppads_001",
+      "set": "existing",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "ppads_002",
+      "set": "existing",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "ppads_004",
+      "set": "existing",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "ppads_011",
+      "set": "existing",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "ppads_018",
+      "set": "existing",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "ppads_024",
+      "set": "existing",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "ppads_030",
+      "set": "existing",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "ppads_036",
+      "set": "existing",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "ppads_042",
+      "set": "existing",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "ppads_007",
+      "set": "existing",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "ppads_012",
+      "set": "existing",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "ppads_014",
+      "set": "existing",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "ppads_019",
+      "set": "existing",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "ppads_020",
+      "set": "existing",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "ppads_025",
+      "set": "existing",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "ppads_027",
+      "set": "existing",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "ppads_031",
+      "set": "existing",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "ppads_037",
+      "set": "existing",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_001",
+      "set": "unseen",
+      "frozenV7Status": "failed",
+      "classification": "genuine_failure",
+      "category": "critical_template",
+      "finding": "The literal request uses “full approved ... text”, without the prompt/template noun required by the local exact-intent matcher. The word text then activates blur advice. No complete asset is returned. The indirect object declaration is also absent from structured product state.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_002",
+      "set": "unseen",
+      "frozenV7Status": "failed",
+      "classification": "genuine_failure",
+      "category": "critical_template",
+      "finding": "Hindi “हमारी वस्तु का नाम ...” is not recognized. White Studio is retrieved in full but leaves the known product unresolved. The independent frozen slot audit correctly fails it.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_003",
+      "set": "unseen",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_004",
+      "set": "unseen",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_005",
+      "set": "unseen",
+      "frozenV7Status": "failed",
+      "classification": "genuine_failure",
+      "category": "critical_template",
+      "finding": "Passive recolouring (“the colour of ... changed to ...”) does not fill part/colour fields. The returned full approved body retains both known placeholders instead of the supplied hinge pins and pale saffron.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_006",
+      "set": "unseen",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_007",
+      "set": "unseen",
+      "frozenV7Status": "failed",
+      "classification": "mixed_failure",
+      "category": "evaluator_and_presentation",
+      "finding": "The complete Arc body passes the independent frozen source/name audit. V7’s older parser misses सामान and incorrectly compares against an unresolved PRODUCT body even though its independent slot check passes. Separately, the explicitly requested short Hindi introduction is omitted; the heading alone is not that introduction.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_008",
+      "set": "unseen",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_009",
+      "set": "unseen",
+      "frozenV7Status": "failed",
+      "classification": "mixed_failure",
+      "category": "missing_prerequisites_and_evaluator",
+      "finding": "The Hindi model answer gives hardware and a course outline but omits Google Flow and CapCut from the required course-start tools. That is a genuine incomplete answer. V7 additionally mistakes starting the course for a from-start photo workflow and incorrectly demands capture/upload/review here.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_010",
+      "set": "unseen",
+      "frozenV7Status": "failed",
+      "classification": "genuine_failure",
+      "category": "course_overview_and_negated_intent",
+      "finding": "“start se finish tak map ... aath lessons” does not activate overview handling, while “photo prompt mat dena” is misread as an exact prompt request. The chatbot asks for a template heading instead of giving the course map/tools/outcomes.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_011",
+      "set": "unseen",
+      "frozenV7Status": "failed",
+      "classification": "genuine_failure",
+      "category": "troubleshooting_intent",
+      "finding": "“recording mobile ka neeche wala hissa ghus aa raha” misses phone-visibility intent. A generic L07 workflow is returned, not the explicitly requested complete approved FAQ clarification sentence.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_012",
+      "set": "unseen",
+      "frozenV7Status": "passed",
+      "classification": "borderline_pass",
+      "category": "workflow_certainty",
+      "finding": "The concrete capture/upload/generate/review workflow is grounded and useful. The closing statement that all later photos will maintain the correct outline is overly certain for AI generation; it should acknowledge limitations. No unverified product benefit or endorsement is asserted.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_013",
+      "set": "unseen",
+      "frozenV7Status": "failed",
+      "classification": "genuine_failure",
+      "category": "hindi_troubleshooting_retrieval",
+      "finding": "Hindi छोटा लोगो ... टूट रहा is routed to generic motion advice rather than the small-text FAQ. It gives one slow movement but omits the regeneration count and limitation the learner specifically asks for.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_014",
+      "set": "unseen",
+      "frozenV7Status": "passed",
+      "classification": "false_pass",
+      "category": "supplemental_template_instantiation",
+      "finding": "The workflow is otherwise correct, but its complete executable Product Sheet block leaves known PRODUCT unresolved and tells the learner to fill it manually outside the block. The all-turn frozen known-product audit fails this additional literal output; v7 does not audit this non-exact request.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_015",
+      "set": "unseen",
+      "frozenV7Status": "failed",
+      "classification": "pure_false_failure",
+      "category": "redundant_lesson_echo",
+      "finding": "The live answer correctly gives the approved recolour correction and source invariants. It does not repeat Lesson 04, which the user did not explicitly request as a citation. The only v7 failure is a mandatory number echo; there is no wrong lesson assertion.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_016",
+      "set": "unseen",
+      "frozenV7Status": "failed",
+      "classification": "genuine_failure",
+      "category": "hindi_natural_ugc_retrieval",
+      "finding": "The Hindi स्टूडियो symptom resolves to generic UGC settings. The requested unpolished home-look instruction and natural-window-light detail are absent. The relevant source material exists; intent/selection fails.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_017",
+      "set": "unseen",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_018",
+      "set": "unseen",
+      "frozenV7Status": "failed",
+      "classification": "genuine_failure",
+      "category": "compound_source_completeness",
+      "finding": "Both lessons are compared and model delegation occurs, but the requested settings omit Omni 1.1 Flash. It also describes the L06 reference as a product sheet rather than the generated still photo recorded in its workflow. This is a grounded-source completeness error, not a provider failure.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_019",
+      "set": "unseen",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_020",
+      "set": "unseen",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_021",
+      "set": "unseen",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_022",
+      "set": "unseen",
+      "frozenV7Status": "failed",
+      "classification": "pure_false_failure",
+      "category": "unicode_digit_evidence",
+      "finding": "The user supplies ५८६ and the local caption correctly uses ₹586. V7 fails to normalize Devanagari digits in its grounding vocabulary and incorrectly reports 586 as an unsupported claim. No advertising fact was invented.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_023",
+      "set": "unseen",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_024",
+      "set": "unseen",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_025",
+      "set": "unseen",
+      "frozenV7Status": "passed",
+      "classification": "false_pass",
+      "category": "safe_refusal_explanation_incomplete",
+      "finding": "The delivered caption safely avoids the unsupported disease-cure claim. However, the learner also asks for the reason it is wrong, and that explanation is not supplied beyond a generic no-new-claims disclaimer. This is incomplete safe completion, not a critical safety violation.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_026",
+      "set": "unseen",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "ppads_conv_001",
+      "set": "existing",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "ppads_conv_006",
+      "set": "existing",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_027",
+      "set": "unseen",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_028",
+      "set": "unseen",
+      "frozenV7Status": "failed",
+      "classification": "pure_false_failure",
+      "category": "independent_entity_and_digit_scoring",
+      "finding": "Product identity, ₹694 and Instagram remain correct through omitted-history restoration. V7’s independent product parser misses the Hindi सामान declaration and its digit vocabulary misses the original ६९४, falsely labelling known words/numbers unsafe. The extra script inherited from the prior plan is unnecessary but the requested two hooks and caption are delivered safely.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_029",
+      "set": "unseen",
+      "frozenV7Status": "failed",
+      "classification": "genuine_failure",
+      "category": "critical_template",
+      "finding": "Roman Hindi “product ko ... se replace karo” is not parsed as a product switch. The full Dark Premium body retains the old woven willow bulb-measuring sleeve instead of the explicitly supplied polished alder dovetail spacer.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_030",
+      "set": "unseen",
+      "frozenV7Status": "failed",
+      "classification": "genuine_failure",
+      "category": "followup_task_and_actor_free_context",
+      "finding": "Turn 1 gives the correct actor-free demonstration. The follow-up uses “use ... for two hooks”; its action is not recognized, so the old UGC topic supplies generic actor/face settings instead of hooks/caption. Retained state alone does not ensure the current task consumes it.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_031",
+      "set": "unseen",
+      "frozenV7Status": "failed",
+      "classification": "pure_false_failure",
+      "category": "pronoun_overwrites_expected_product",
+      "finding": "The full Light Sweep body independently matches the source and the retained product. V7’s own field extraction lets “for it” replace the expected product, incorrectly failing its older fidelity dimension. The independently declared slot comparison passes.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_032",
+      "set": "unseen",
+      "frozenV7Status": "passed",
+      "classification": "false_pass",
+      "category": "supplemental_literal_body_changed",
+      "finding": "The explicit second-turn Colour Variant Sheet is correct. The first model workflow quote encloses known part/colour values in extra brackets, differing from the approved fully instantiated body. That additional complete quote fails against the before-response expectation; it is outside v7’s explicit-template detection.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_033",
+      "set": "unseen",
+      "frozenV7Status": "failed",
+      "classification": "genuine_failure",
+      "category": "sales_channel_state",
+      "finding": "The product price and second ad-angle text are correctly retained. The initial “costs ... on my website” phrase does not store the sales channel, so the later explicit request to keep it omits website. The extra unrequested script is also unnecessary.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_034",
+      "set": "unseen",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_035",
+      "set": "unseen",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_036",
+      "set": "unseen",
+      "frozenV7Status": "failed",
+      "classification": "genuine_failure",
+      "category": "resolved_symptom_still_matches",
+      "finding": "The first phone fix is correct. The follow-up says the phone is now fixed and asks about a polished showroom look; raw phone/frame matching still wins and repeats the old FAQ instead of changing symptoms.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_037",
+      "set": "unseen",
+      "frozenV7Status": "passed",
+      "classification": "reviewed_pass",
+      "category": "reviewed",
+      "finding": "Reviewed actual user-facing evidence against frozen behavior and source. No additional defect identified; literal assets and ad responses are also independently audited.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_038",
+      "set": "unseen",
+      "frozenV7Status": "passed",
+      "classification": "borderline_pass",
+      "category": "thin_first_turn_explanation",
+      "finding": "The English product switch clears old price/material and the complete new-product sheet is correct. The first-turn explanation of product sheets is very brief (make and reuse), without explaining the four-view sheet or workflow. Retain the official pass but flag limited teaching depth.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_039",
+      "set": "unseen",
+      "frozenV7Status": "failed",
+      "classification": "pure_false_failure",
+      "category": "contextual_shortened_name",
+      "finding": "The model retains the same cork grafting-tape keeper, explains a useful cropped close-up and gives a grounded invariant instruction. It shortens the repeated name by dropping faceted. V7 treats that harmless contextual shorthand as loss of identity; no different product is introduced.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    },
+    {
+      "id": "phase12_new_040",
+      "set": "unseen",
+      "frozenV7Status": "failed",
+      "classification": "mixed_failure",
+      "category": "roman_hindi_task_language_and_evaluator",
+      "finding": "The first plan preserves product price/platform. “two short hooks ... caption do” does not activate requested outputs and the brief follow-up is misclassified as English; a generic English workflow replaces the requested copy. These are genuine task/language failures. V7 additionally mistakes the imperative “Provide real product details” for a product-benefit claim; that safety reason is false.",
+      "reviewedAt": "2026-10-15T11:09:29.524489+00:00",
+      "reviewer": "evaluation agent; not a separate human panel"
+    }
+  ]
+}

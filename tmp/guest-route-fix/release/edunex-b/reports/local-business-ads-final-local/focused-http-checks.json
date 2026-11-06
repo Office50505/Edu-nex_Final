@@ -1,0 +1,32 @@
+{
+  "PASS": 5,
+  "FAIL": 0,
+  "course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+  "results": [
+    {
+      "label": "canonical-alias",
+      "status": 200,
+      "PASS": true
+    },
+    {
+      "label": "published-alias",
+      "status": 200,
+      "PASS": true
+    },
+    {
+      "label": "unauthenticated",
+      "status": 401,
+      "PASS": true
+    },
+    {
+      "label": "invalid-session",
+      "status": 401,
+      "PASS": true
+    },
+    {
+      "label": "other-course-entitlement",
+      "status": 200,
+      "PASS": true
+    }
+  ]
+}

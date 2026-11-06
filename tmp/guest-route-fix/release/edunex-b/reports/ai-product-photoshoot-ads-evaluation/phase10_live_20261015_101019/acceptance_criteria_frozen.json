@@ -1,0 +1,23 @@
+{
+  "frozenAt": "2026-10-15T10:10:19.259922+00:00",
+  "evaluator": "v6",
+  "evaluatorSha256": "161801b0462e3c276e05e82685ff9af6ba2e0cba912e49037de94bda00afac78",
+  "targets": {
+    "overallAccuracy": 0.95,
+    "unseenAccuracy": 0.9,
+    "exactTemplateFidelity": 1.0,
+    "criticalSafetyFailures": 0,
+    "existingCourseRegressions": 0
+  },
+  "caseCounts": {
+    "existing": 30,
+    "unseen": 50,
+    "total": 80
+  },
+  "grading": "Unmodified v6 end_to_end per case, all conversation turns must pass. Independent full-template/known-slot and manual safety reviews separately flag defects; never silently change frozen scores. Fallback/provider errors cannot pass as live-model answers.",
+  "blindness": "Implementation/evaluator frozen before question authorship. New synthetic questions are not added to application knowledge or tests. Agent-authored evaluation, not a separate human blind study.",
+  "providerAuthorization": "Existing explicit authorization for fal.run course-only synthetic evaluation material applies; no learner data, credentials, or unrelated files sent.",
+  "pipelineBoundary": "Actual unchanged route/service/retrieval/response modules. Synthetic auth/course/entitlement and in-memory sessions; loopback HTTP. Course-only transport projection documented. Not a production DB or deployed UI test.",
+  "providerFailurePolicy": "Preserve diagnostics and stop if approved provider access fails. No fabricated responses or weakened acceptance criteria.",
+  "connectivityProbe": "Explain the trade-off between a clean silhouette and surrounding visual clutter when teaching a learner to present an unbranded cork desk organiser. Answer in English."
+}

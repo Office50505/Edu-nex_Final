@@ -7,6 +7,7 @@ const { resolveAllSubscriptionAccess } = require('./subscriptionAccess');
 const { retrieveKnowledge, retrievePlatformKnowledge, allowsCourseComparison, assertKnowledgeScope, assertCourseTextScope, scopeConversationHistory, activeCourseEntitlement, filmmakingWorkflowReply, packFor, packConversation, packPolicyContext, packDirectReply, validatePackReply, buildBusinessContract, buildCartoonContract, assessTaskResponse, taskLimitation } = require('./tutorKnowledge');
 const { captureProductOptions } = require('./productTutorState');
 const { requestTutorProvider } = require('./tutorProvider');
+const { selectedLessonSummary } = require('./selectedLessonSummary');
 const { tutorLanguage, productTutorReply, localizedGuidance, validateProductReply, isProductKnowledge, productFallbackNotice, productFacts, selectProductGuidance, productCourseDomain, productAccessReply } = require('./productTutorResponse');
 
 const FAL_API_KEY = process.env.FAL_API_KEY || process.env.FAL_KEY || '';
@@ -612,9 +613,12 @@ function aiFilmmakingTemplateIdForReply(reply) {
 function latestMessageLanguage(message) {
   const text = String(message || '').toLowerCase();
   if (/[\u0900-\u097F]/.test(text)) return 'hindi';
-  if (/\b(kya|kaise|kaunsi|kaunsa|kaunse|kis|mein|me|hai|hain|ho|raha|rahe|rha|rhe|lg|batao|samjhao|chahiye|nahi|agar|aur|ya|iska|uska|ye|yeh|wo|karu|karo|lag|sakta|mujhe|bhai)\b/i.test(text)) return 'hinglish';
-  if (/\bke\s+liye\b/i.test(text)) return 'hinglish';
-  if (/\b(?:prompt|template|line|rules?|fix|answer)\s+do\b/i.test(text)) return 'hinglish';
+  // "Me" is also an English pronoun; "lag" and "LG" are common English
+  // troubleshooting terms. They cannot establish Hinglish by themselves.
+  if (/\b(kya|kaise|kaunsi|kaunsa|kaunse|kis|mein|hai|hain|ho|raha|rahe|rha|rhe|batao|samjhao|chahiye|nahi|agar|aur|ya|iska|uska|ye|yeh|wo|karu|karo|sakta|mujhe|bhai)\b/i.test(text)) return 'hinglish';
+  if (/\bke\s+liye\b|\b(?:course|lesson|video|app|photo|image|prompt|settings)\s+me\b/i.test(text)) return 'hinglish';
+  if (/\b(?:prompt|template|line|rules?|fix|answer)\s+do\b/i.test(text)
+    && !/\b(?:what|how|why)\s+(?:does|do|did|can|could|will|would|should)\b|^\s*(?:can|could|will|would|should|does|do|did)\b/i.test(text)) return 'hinglish';
   return 'english';
 }
 
@@ -622,7 +626,7 @@ function explicitLanguagePreference(message) {
   const text = String(message || '').toLowerCase();
   if (/\b(?:answer|reply|respond|explain|bolo|batao)\s+(?:in\s+)?english\b/i.test(text)
     || /\bin\s+english\b/i.test(text)
-    || /\benglish\s+mein\b/i.test(text)) {
+    || /\benglish\s+(?:mein|me)\b/i.test(text)) {
     return 'english';
   }
   if (/\bhinglish\b/i.test(text)
@@ -631,7 +635,7 @@ function explicitLanguagePreference(message) {
   }
   if (/\b(?:answer|reply|respond|explain|bolo|batao)\s+(?:in\s+)?hindi\b/i.test(text)
     || /\bin\s+hindi\b/i.test(text)
-    || /\bhindi\s+mein\b/i.test(text)) {
+    || /\bhindi\s+(?:mein|me)\b/i.test(text)) {
     return 'hindi';
   }
   return '';
@@ -1381,6 +1385,7 @@ async function callFalOpenRouter({ context, message, pagePath, assistantName, hi
 
 
 module.exports = {
+  selectedLessonSummary,
   FAL_API_KEY,
   compactText,
   sanitizeHistory,

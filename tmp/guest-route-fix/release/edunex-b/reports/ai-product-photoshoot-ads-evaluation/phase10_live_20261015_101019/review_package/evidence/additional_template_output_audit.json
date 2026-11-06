@@ -1,0 +1,64 @@
+{
+  "method": "Exhaustive full-template exposure review supplements 35 precommitted executable-template checks. Three additional unrequested complete source bodies were discovered in workflow replies; expectations reconstructed only from frozen original source and frozen questions. These are NOT added to the precommitted denominator. A partial colour correction quote in unseen_015 is reviewed as an excerpt, not a requested complete asset.",
+  "results": [
+    {
+      "id": "phase10_unseen_036",
+      "turn": 1,
+      "template": "L02 Product Sheet",
+      "knownSlots": {
+        "product": "pleated saffron lens pouch"
+      },
+      "expectedCompleteBody": "Use all the uploaded photos of this pleated saffron lens pouch. Create a clean product reference sheet on a plain white background showing the exact same pleated saffron lens pouch in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the pleated saffron lens pouch exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.",
+      "actualQuotedBody": "Use all the uploaded photos of this pleated saffron lens pouch. Create a clean product reference sheet on a plain white background showing the exact same pleated saffron lens pouch in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the pleated saffron lens pouch exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.",
+      "passed": true,
+      "reason": null,
+      "fullExpectedBodyPrecomputedBeforeResponses": false,
+      "evidenceFrozenBeforeResponse": "Original source and user question; headings/slots independently read here without runtime or grader parsing.",
+      "severity": "none"
+    },
+    {
+      "id": "phase10_unseen_039",
+      "turn": 1,
+      "template": "L04 Colour Variant Sheet",
+      "knownSlots": {
+        "part": "all the hinge covers",
+        "colour": "smoky teal"
+      },
+      "expectedCompleteBody": "Use the uploaded product sheet as the reference. Only change the colour of all the hinge covers to smoky teal. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.",
+      "actualQuotedBody": "Use the uploaded product sheet as the reference. Only change the colour of all the hinge covers to smoky teal. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.",
+      "passed": true,
+      "reason": null,
+      "fullExpectedBodyPrecomputedBeforeResponses": false,
+      "evidenceFrozenBeforeResponse": "Original source and user question; headings/slots independently read here without runtime or grader parsing.",
+      "severity": "none"
+    },
+    {
+      "id": "phase10_unseen_046",
+      "turn": 1,
+      "template": "L02 Product Sheet",
+      "knownSlots": {
+        "product": "mint-green quilted pencil saddle"
+      },
+      "expectedCompleteBody": "Use all the uploaded photos of this mint-green quilted pencil saddle. Create a clean product reference sheet on a plain white background showing the exact same mint-green quilted pencil saddle in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the mint-green quilted pencil saddle exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.",
+      "actualQuotedBody": "Use all the uploaded photos of this [PRODUCT]. Create a clean product reference sheet on a plain white background showing the exact same [PRODUCT] in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the [PRODUCT] exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.",
+      "passed": false,
+      "reason": "Known product remains unresolved inside the literal body; explanatory manual-substitution instruction is outside it.",
+      "fullExpectedBodyPrecomputedBeforeResponses": false,
+      "evidenceFrozenBeforeResponse": "Original source and user question; headings/slots independently read here without runtime or grader parsing.",
+      "severity": "moderate: workflow quotation explicitly tells user to substitute, unlike a requested filled template."
+    }
+  ],
+  "additionalCompleteBodies": 3,
+  "passed": 2,
+  "failed": 1,
+  "allCompleteBodyExposures": {
+    "total": 38,
+    "passed": 30,
+    "failed": 8
+  },
+  "partialInstructionReview": {
+    "id": "phase10_unseen_015",
+    "turn": 1,
+    "finding": "The quoted colour-correction excerpt preserves the original clauses after the reference preamble. It is labelled a correction, and unknown desired colour is not fabricated. Not represented as a complete approved asset."
+  }
+}

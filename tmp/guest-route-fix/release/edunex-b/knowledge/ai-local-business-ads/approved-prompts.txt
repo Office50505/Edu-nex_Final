@@ -1,0 +1,261 @@
+AI Local Business Ads
+Saare Prompts
+Poore course mein use hue saare prompts. [Brackets] wali jagah apni dukaan ki
+details daalo — baaki prompt waisa hi rakho.
+Kaise use karein
+•Prompt copy karo, [brackets] mein apni dukaan ki asli details likho — naam, ilaaka, menu,
+daam, timing.
+•chat G.P.T wale prompts ek hi chat mein order se chalao, taaki use pichhli baatein yaad
+rahein.
+•Image prompts: Flow → Image → Nano Banana Pro. Video prompts: Flow → Video →
+Ingredients.
+•"Do not add..." aur "keep exactly the same" wali lines kabhi mat hatao — yahi dukaan ko
+sachcha rakhti hain.
+•Result achha na aaye toh 1–2 baar aur generate karo.
+Lesson 02 — Business Brief (chat G.P.T, ek hi chat
+mein, order se)
+Step 1: Details → customers, time, ad angles
+I run a small [cafe / salon / bakery / shop] in [area, city]. Details:
+- Menu / services: [list]
+- Price range: [₹ – ₹]
+- Timing: [opening – closing]
+- Seating / size: [if any]
+- Who usually comes: [students, office people, families...]
+- What's special: [only write what is true]
+Make a simple business brief:
+1. Types of customers and what time of day they come
+2. What each type cares about most
+3. One ad angle for each type
+Keep it short, in simple Hinglish.
+Step 2: 5 offers
+Suggest 5 offer ideas for this [shop] that are simple and won't hurt profit much — like
+combos, a happy hour, or a student deal. For each one, say who it is for and the best day
+or time to run it. Don't decide prices — write [price] wherever the owner should fill it
+in.
+
+Step 3: 30 din ka post plan
+Make a 30-day post plan for this [shop] starting [date]. For each week, tell me what to
+post on Instagram and WhatsApp status — a food/product photo, an offer poster, a short
+reel, or a behind-the-counter moment. Include any Indian festivals in these dates and mark
+them clearly with "(check date)" so I can verify them.
+Step 4: Ek page ka Business Brief
+Now put everything into one short Business Brief I can save and reuse: business details,
+customer types, 3 ad angles, 5 offers, and the 30-day plan. Clean headings, no extra text.
+Lesson 03 — Dukaan Ki Photos (Flow · Image · Nano
+Banana Pro)
+Andar ki photo upgrade
+Turn this phone photo of my [shop] into a professional interior photograph, like one shot
+by a good photographer for Instagram and Google Maps. Keep the same room, same furniture,
+same counter, same boards and same layout — do not add or remove any furniture.
+Make these improvements boldly:
+- Lighting: replace the harsh tube-light look with warm, soft, inviting light
+- Colours: rich and warm, clean walls, natural shine on surfaces
+- Camera: straighten the photo, fix the tilt and the stretched wide-angle look, frame it
+at normal eye level
+- Clean-up: tables wiped clean, chairs neatly pushed in, floor clean, remove clutter,
+wires and stains
+- Quality: sharp focus, no grain, natural depth, looks like a real DSLR photo
+No people, no new decorations, no plants, no text added. Realistic, not AI-looking.
+Shop front, shaam ka look
+Turn this phone photo of my [shop]'s front into a professional evening photograph. Keep
+the same building, same door, same chairs outside and the same signboard — the text "[SHOP
+NAME]" must stay exactly the same, do not change, re-write or translate it.
+Make these improvements boldly:
+- Time: early evening, soft deep-blue sky, warm golden light glowing from inside
+- Camera: straighten the photo, fix the tilt, frame the shop front centred and balanced
+- Clean-up: remove parked vehicles, wrappers and dust, tidy the overhead wires, clean
+footpath
+- Colours: rich and warm, sharp focus, no grain, looks like a real DSLR photo
+No people, no new signs, no new lights or decorations added. Realistic, not AI-looking.
+WhatsApp status version (9:16)
+Use this [shop] photo. Make a vertical 9:16 version of the same [shop] for WhatsApp status
+— same interior, same furniture, nothing new added. Keep clean empty space in the top
+third (a plain warm wall or soft blur) so text can be added later. Do not write any text.
+
+Galat example — dukaan badal deta hai (sirf comparison)
+Make my cafe look luxurious and premium.
+Lesson 04 — Menu Ki Food Photos
+Dish re-shoot
+Use this phone photo only as a reference for what our dish looks like. Now re-shoot this
+same dish from scratch as a professional food photographer would, for our menu and
+Instagram.
+The dish: [describe it exactly — e.g. one normal single portion of masala Maggi on a round
+steel plate with a steel fork] — exactly the ingredients you see in the reference, nothing
+extra.
+The new shot:
+- Freshly plated, hot and glossy, with light natural steam rising
+- Soft warm window light from the left, gentle shadows, rich appetising colours
+- 45-degree food angle, close-up, shallow depth of field, sharp focus on the food
+- Set on a clean warm wooden table, softly blurred cosy background
+Do NOT add cheese, vegetables, coriander, egg or any garnish that is not in the reference.
+Same portion size, not bigger. No text, no people. Must look like a real DSLR food photo,
+not AI.
+Drink re-shoot
+Use this phone photo only as a reference for what our drink looks like. Now re-shoot this
+same drink from scratch as a professional drink photographer would, for our menu and
+Instagram.
+The drink: [describe it exactly — e.g. one tall plain glass of cold coffee with a little
+foam on top and a straw] — exactly as in the reference, nothing extra.
+The new shot:
+- Freshly poured, rich colour, light cold condensation drops on the glass
+- Soft bright light from behind and the side so the glass glows
+- Straight-on eye-level angle, close-up, shallow depth of field
+- Set on a clean warm wooden table, softly blurred cosy background
+Do NOT add ice cream, whipped cream, syrup, ice on top or any garnish that is not in the
+reference. Same glass size, same amount. No text, no people. Must look like a real DSLR
+drink photo, not AI.
+Combo photo (dono results upload karke)
+Use these two photos as reference for the dishes. Re-shoot them together as one
+professional "[combo name]" photo: this same [item 1] and this same [item 2] placed side
+by side on one clean warm wooden table. Same portions, nothing extra added. Soft warm
+window light, 45-degree angle, both sharp, softly blurred background. Leave clean empty
+space at the top for text later. Do not write any text. Real DSLR photo, not AI.
+
+Galat example — extra garnish aa jaata hai (sirf comparison)
+Make this food look extremely delicious and tempting.
+Lesson 05 — Posters
+Offer poster
+Use this photo of our [items] as the main image. Turn it into a clean, modern offer poster
+for Instagram for our [shop]. Keep the food exactly as it is in the photo — do not add or
+change anything on the plate or in the glass.
+Write ONLY this text, spelled exactly like this, nothing else:
+- Top, big bold: "[OFFER NAME]"
+- Below it: "[item 1] + [item 2]"
+- Big price badge: "₹[price]"
+- Small: "[days, time]"
+- Bottom: "[SHOP NAME] · [area, city]"
+Warm colours, easy-to-read bold fonts, clean layout with the food clearly visible. Do not
+add any other words, discounts, percentages, logos or claims.
+Tyohaar greeting poster
+Use this photo of our shop front as the main image. Make a warm [festival] greeting
+poster. Keep the shop, the building and the "[SHOP NAME]" signboard exactly the same — do
+not change the shop itself.
+Add festive feeling only as a decorative design around the photo: a soft glowing frame of
+[diyas / lights / festival elements] along the edges, gentle golden sparkles. Do not place
+decorations on the real shop.
+Write ONLY this text, spelled exactly like this:
+- Top: "[Happy Diwali]"
+- Bottom: "Warm wishes from [SHOP NAME]"
+Elegant, easy-to-read fonts. No offers, no prices, no other words.
+Galat example — AI khud offer bana deta hai (sirf comparison)
+Make a Diwali offer poster for my cafe Chai Kona.
+Lesson 06 — Dukaan Ka Video (Flow · Video ·
+Ingredients · 9:16 · 6 sec)
+
+Shop front push-in
+Use this photo of our shop front as the exact reference. Make a 6-second vertical video:
+the camera slowly pushes forward toward the glowing door, smooth and steady, like a calm
+evening walk-up. Warm light glows from inside, a gentle breeze, the evening sky slowly
+darkens a little. Keep the building, the shutter, the chairs and the "[SHOP NAME]"
+signboard exactly the same — the text on the board must not change. Do not add people,
+cars, new signs, decorations or lights. Ambient street sound only, no music, no voices, no
+text on screen.
+Andar glide
+Use this photo of our [shop] interior as the exact reference. Make a 6-second vertical
+video: the camera slowly glides forward into the [shop] at eye level, as if a customer is
+walking in, moving gently toward the counter. Soft warm light, a little steam rising from
+the [chai urn / coffee machine]. Keep the same tables, chairs, counter, boards and walls
+exactly as in the photo. Do not add people, new furniture, plants, decorations or any
+objects that are not in the photo. Soft ambient sound only, no music, no voices, no text
+on screen.
+Food close-up
+Use this photo of our [dish] as the exact reference. Make a 6-second vertical close-up
+video: the camera slowly circles a little around the plate, warm natural steam rising,
+soft window light. Keep the same plate and the same portion — do not add any other food or
+garnish. No hands, no people. Gentle ambient sound only, no music, no voices, no text on
+screen.
+Galat example — dukaan badal jaati hai (sirf comparison)
+Make a cinematic video of my cafe.
+Lesson 07 — Hindi Voiceover Reel
+Step 1: 3 lines (chat G.P.T)
+I'm making a 24-second Instagram reel for my [shop] [SHOP NAME] in [area, city]. It has 3
+clips of 8 seconds each:
+1) the shop front
+2) inside the [shop]
+3) a close-up of our [best item]
+Write one short Hindi voiceover line for each clip, in Devanagari script.
+Rules:
+- Each line must be easy to say in 6 seconds — maximum 12 words
+- Friendly and natural, like talking to a friend
+- No claims like "best", "No.1", "sabse sasta" or "famous"
+- Use only these facts: [menu, offer with price and timing, opening hours]
+
+Step 2: Awaaz wali clip (Flow · Video · 8 sec · 9:16) — har clip ke liye line badlo
+Use this photo of our [shop front / interior / dish] as the exact reference. Make an
+8-second vertical video: [one slow camera move — push toward the door / glide inside /
+circle the plate]. Keep everything exactly as in the photo — the "[SHOP NAME]" signboard
+text must not change. No people on screen.
+Voiceover: a warm, friendly young Indian [male / female] narrator, off-screen, speaking
+clear natural Hindi at a relaxed pace. Nobody on screen speaks.
+TIMING: 0–1s: ambient sound only. 1–7s: the narrator says: "[LINE from chat G.P.T, in
+Devanagari]" 7–8s: ambient sound only.
+Soft ambient sound under the voice, no music, no text on screen.
+Lesson 08 — Posting (chat G.P.T)
+Instagram caption + hashtags
+Write an Instagram caption for our 24-second reel (shop front → inside → [best item]
+close-up). Keep it short and friendly in Hinglish. Mention [area, city] and [offer with
+price and timing]. Add 8–10 hashtags — mostly local ones ([city], [area], [type of shop])
+and a few [food / service] ones. No claims like "best" or "No.1".
+WhatsApp status + broadcast
+Now write for WhatsApp:
+1) 3 short status lines for this week — one for the reel, one for the offer poster, one
+for the festival greeting. Max 10 words each.
+2) One short broadcast message for regular customers who have saved our number — friendly,
+no pressure, with our timing [opening – closing].
+No fake urgency like "only today" or "last chance" unless it is true.
+Google Business Profile
+Now help with our Google Business Profile:
+1) A short "Offer" post for [offer] (max 50 words)
+2) Which photos to upload (shop front, inside, food/products) and in what order
+3) A polite reply template for a good review, and one for a bad review
+Don't write any reviews for us — only the replies.
+Hafte ka posting plan
+Make a simple weekly posting plan as a table: Day | Instagram | WhatsApp Status | Google
+Business. Use the customer timings from our brief to suggest a posting time for each. Keep
+it simple enough for one person to manage in about 15 minutes a day.
+Lesson 09 — Service (chat G.P.T)
+
+3 packages
+I want to offer AI-made marketing content as a service to small local shops in my area —
+cafes, salons, bakeries, kirana stores. I only use ChatGPT, Google Flow and CapCut.
+Suggest 3 simple monthly packages: Basic, Standard and Plus. For each, list exactly what
+the shop gets (for example: number of photo upgrades, offer posters, festival posters,
+reels, Google Business posts per month) and roughly how many hours it takes me.
+Don't suggest any prices — write [price] where I should fill it in. No promises about
+sales, followers or results.
+Pehla WhatsApp message
+Write a short, polite first WhatsApp message in simple Hinglish that I can send to a local
+shop owner I know or have visited. In one line say what I do, offer to make one free
+sample poster from a photo of their shop, and say clearly that it's completely okay if
+they're not interested. No promises about sales or followers. Maximum 60 words.
+Client se sawaal
+Make a simple checklist of questions I should ask a shop owner before starting work:
+business details, what real photos they can give me, which offers and prices they approve,
+festivals they celebrate, which platforms they use, and who will approve posts. Keep it as
+a short list I can send on WhatsApp.
+"Main kaise kaam karta hoon" note
+Write a short "how I work" note I can share with every client, in simple Hinglish: I only
+use their real photos and their real prices, every poster and caption is sent to them for
+approval before posting, they own all the content I make for them, and how changes work.
+Maximum 120 words.
+Quick fixes
+
+ProblemPrompt mein yeh add/badlo
+Photo bas thodi si badli, upgrade
+nahi dikha
+"Make these improvements boldly:" + light, rang, angle, safai alag-alag
+likho
+Ceiling/khaali jagah lambi ho gayiRatio wahi rakho jo photo ka hai (1:1 ya 4:3)
+Food photo chipki hui lag rahi"Use this photo only as a reference... re-shoot this same dish from
+scratch"
+Extra garnish / bada portion"Do NOT add... not in the reference. Same portion size, not bigger"
+Board ka naam badal gaya"the text "[SHOP NAME]" must stay exactly the same, do not change,
+re-write or translate it"
+Poster pe extra offer/shabd"Write ONLY this text, spelled exactly... Do not add any other words,
+discounts"
+Diye/sajawat dukaan pe lag gaye"only as a decorative design around the photo... Do not place decorations
+on the real shop"
+Video mein bheed / nayi cheezein"Do not add people, new furniture or any objects that are not in the
+photo"
+Awaaz har clip mein alagVoiceover wala description teeno clips mein hubahu same rakho
+Script bahut lambi"maximum 12 words, easy to say in 6 seconds"

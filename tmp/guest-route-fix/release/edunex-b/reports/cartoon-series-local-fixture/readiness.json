@@ -1,0 +1,199 @@
+{
+  "checked_at_utc": "2026-10-24T05:42:24.382176+00:00",
+  "local_fixture_supported": true,
+  "eight_lesson_validation": true,
+  "deterministic_checks_passed": 36,
+  "deterministic_checks_failed": 0,
+  "checks": [
+    {
+      "label": "backend-health",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "isolated-mongodb",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "authenticated-synthetic-user",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "unauthenticated-rejected",
+      "passed": true,
+      "http_status": 401
+    },
+    {
+      "label": "invalid-token-rejected",
+      "passed": true,
+      "http_status": 401
+    },
+    {
+      "label": "exact-prompt:ai-cartoon-series:exact-template:016",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "exact-prompt:ai-cartoon-series:exact-template:017",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "exact-prompt:ai-cartoon-series:exact-template:018",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "exact-prompt:ai-cartoon-series:exact-template:019",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "exact-prompt:ai-cartoon-series:exact-template:020",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "exact-prompt:ai-cartoon-series:exact-template:021",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "exact-prompt:ai-cartoon-series:exact-template:022",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "exact-prompt:ai-cartoon-series:exact-template:023",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "exact-prompt:ai-cartoon-series:exact-template:024",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "exact-prompt:ai-cartoon-series:exact-template:025",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "exact-prompt:ai-cartoon-series:exact-template:026",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "exact-prompt:ai-cartoon-series:exact-template:027",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "exact-prompt:ai-cartoon-series:exact-template:028",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "exact-prompt:ai-cartoon-series:exact-template:029",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "exact-prompt:ai-cartoon-series:exact-template:030",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "exact-prompt:ai-cartoon-series:exact-template:031",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "exact-prompt:ai-cartoon-series:exact-template:032",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "exact-prompt:ai-cartoon-series:exact-template:033",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "lesson-retrieval:ai-cartoon-series:lesson-summary:001",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "lesson-retrieval:ai-cartoon-series:lesson-summary:002",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "lesson-retrieval:ai-cartoon-series:lesson-summary:003",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "lesson-retrieval:ai-cartoon-series:lesson-summary:004",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "lesson-retrieval:ai-cartoon-series:lesson-summary:005",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "lesson-retrieval:ai-cartoon-series:lesson-summary:006",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "lesson-retrieval:ai-cartoon-series:lesson-summary:007",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "lesson-retrieval:ai-cartoon-series:lesson-summary:008",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "other-course-entitlement-denied",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "foreign-template-blocked-before-transport",
+      "passed": true,
+      "http_status": 502
+    },
+    {
+      "label": "deterministic-followup-persistence",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "deterministic-followup-persistence",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "label": "zero-provider-attempts",
+      "passed": true
+    }
+  ],
+  "runtime_path": "/private/tmp/skillomate-mvp-TZFnCZ/runtime.json",
+  "fixture_course_id": "6adc450c59f1eabf60217cc5",
+  "fixture_slug": "local-fixture-ai-cartoon-series",
+  "database": "skillomate_mvp_eval_cartoon_fixture_1792820492836_4f9bdd1a",
+  "endpoint": "http://127.0.0.1:3128",
+  "cases_sha256": "eb73038e68aa684d5e5b47bc7c7fcb50c58ea3e0f1230f128ad660f9e88f606c",
+  "provider_invocations": 0,
+  "blocked_provider_attempts": 0,
+  "provider_approval_exists": false,
+  "playback_verified": false,
+  "production_registration": false
+}

@@ -1,0 +1,55 @@
+{
+  "source_report": "reports/cartoon-series-cs11-v2/live_5c30a1ce99ff469ab21860edabd41875_results.json",
+  "source_report_sha256": "e633503930b3e6e455028391741cfdf2489ad7b03b7cf0261eb55bbc45c190c1",
+  "run_id": "5c30a1ce99ff469ab21860edabd41875",
+  "case_id": "CS-11",
+  "cases_sha256": "346ce72c31c7a3b4f08167e26b85298c529e416e84a904c496d84b5c080405a6",
+  "turns": [
+    {
+      "query": "Series name: Tara Aur Momo; Character 1: Tara, yellow coat; Character 2: Momo the rabbit; Locations: library. Ye meri original details yaad rakho.",
+      "answer": "Theek hai, maine aapki series details note kar li hain:\n\n*   **Series name:** Tara Aur Momo\n*   **Character 1:** Tara, yellow coat\n*   **Character 2:** Momo the rabbit\n*   **Locations:** library\n\nMain in details ko yaad rakhunga jab aap apni series ke baare mein sawal poochhenge.",
+      "status": "PASS",
+      "errors": [],
+      "query_sha256": "09cfd64e74c73cd8895a46d222f63359e88d5271e17b6ca1fa643c85fb58e3f8",
+      "answer_sha256": "9548059dae4a0232e2626bdc6fd908f2787692d3a207b997e9bf664a5370869d",
+      "http_status": 200,
+      "original_grade": "PASS",
+      "original_errors": [],
+      "recorded_provider": "fal-openrouter",
+      "recorded_outcome": {
+        "type": "live_model",
+        "liveModelAnswer": true,
+        "providerStatus": "success",
+        "responseIssue": null
+      },
+      "recorded_provider_response_statuses": [
+        200
+      ]
+    },
+    {
+      "query": "Lesson 05 ke start frame ki reference checklist meri series ke hisaab se batao; demo characters use mat karo.",
+      "answer": "Lesson 05 mein start frame banane ke liye aapko yeh cheezein chahiye hongi (aapki series ke hisaab se):\n\n1.  **Tara (yellow coat) ka character sheet:** Yeh aapki Tara ka reference image hoga.\n2.  **Momo the rabbit ka character sheet:** Yeh aapke Momo ka reference image hoga.\n3.  **Library ka image:** Yeh aapki location ka reference image hoga.\n4.  **Scene 1 ka pehla moment:** Aapko pata hona chahiye ki aapke pehle scene ka bilkul shuruati pal kaisa dikhega (jaise Tara library mein Momo ke saath ek book dekh rahi hai).\n\nAapko Nano Banana Pro prompt mein yeh sab details use karni hongi. Yeh Lesson 05 mein sikhaya gaya hai.",
+      "status": "FAIL",
+      "errors": [
+        "Unconditional reference sheet required for character not confirmed in scene: Momo"
+      ],
+      "query_sha256": "705fb30b75d86f7b7cf157ee1324727d659b67d471a2de0cea942799f2965d3a",
+      "answer_sha256": "5d29e3a5f491224c03c58f1a67321420c16f6706154eddc2d4638eba314fce16",
+      "http_status": 200,
+      "original_grade": "FAIL",
+      "original_errors": [
+        "Unconditional reference sheet required for character not confirmed in scene: Momo"
+      ],
+      "recorded_provider": "fal-openrouter",
+      "recorded_outcome": {
+        "type": "live_model",
+        "liveModelAnswer": true,
+        "providerStatus": "success",
+        "responseIssue": null
+      },
+      "recorded_provider_response_statuses": [
+        200
+      ]
+    }
+  ]
+}

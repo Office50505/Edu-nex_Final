@@ -1,0 +1,15 @@
+CS-11 v2 targeted retest plan; working directory Untitled/edunex-b.
+
+No live execution or approval creation performed.
+V2 changes only second-turn grading; all 15 questions/13 scenarios and original scenario IDs remain. Select only CS-11 (two turns) for any approved retest.
+
+Before retest: stop the old fixture backend on 3128 and restart it bound to the v2 cases/report. The old running backend is still bound to v1 and must not be used for v2.
+SKILLOMATE_EVAL_CARTOON_FIXTURE=true SKILLOMATE_EVAL_COURSE_PACK=ai-cartoon-series SKILLOMATE_EVAL_CASES=scripts/eval/cartoon-series-fast15-cases-v2.json SKILLOMATE_EVAL_REPORT=reports/cartoon-series-cs11-v2 node scripts/eval/mvp-local-backend.cjs
+
+Obtain separate explicit approval bound to the v2 SHA-256/model in this new report directory. The old approval cannot authorize v2. A limited two-turn retest needs at most 4 provider attempts with the existing two-attempt retry setting. No approval file is created by this plan.
+Preserve all v1 reports/approval/attempt traces; the new retest has its own approval and ledger.
+
+Future limited live command, only after the v2 backend and approval are ready:
+python3 -B chatbot_eval.py --cases scripts/eval/cartoon-series-fast15-cases-v2.json --report reports/cartoon-series-cs11-v2 --mode live --only CS-11
+
+Do not run the full suite. Recorded v1 FAIL remains historical and unchanged. Open-ended v2 answers still require semantic review.

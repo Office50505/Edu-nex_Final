@@ -1,0 +1,27 @@
+{
+  "node_tests": 1215,
+  "node_pass": 1201,
+  "node_fail": 14,
+  "node_new_failures": [],
+  "python_tests": 173,
+  "python_fail": 0,
+  "focused_regression_tests": 110,
+  "provider_calls": 0,
+  "external_inference_approval": "pending",
+  "remaining_failure_test_locations": [
+    "test at tests/android-hardening.test.cjs:17:3",
+    "test at tests/annual-billing.test.cjs:59:1",
+    "test at tests/annual-billing.test.cjs:65:1",
+    "test at tests/app-store-mobile-compliance.test.cjs:367:1",
+    "test at tests/app-store-mobile-compliance.test.cjs:503:1",
+    "test at tests/app-store-mobile-compliance.test.cjs:565:1",
+    "test at tests/mobile-player.test.cjs:30:3",
+    "test at tests/mobile-player.test.cjs:30:3",
+    "test at tests/mobile-player.test.cjs:41:1",
+    "test at tests/mobile-player.test.cjs:73:1",
+    "test at tests/mobile-player.test.cjs:157:1",
+    "test at tests/phonepe-multi-instance.test.cjs:324:1",
+    "test at tests/phonepe-multi-instance.test.cjs:352:1",
+    "test at tests/thumbnail-cdn.test.cjs:230:1"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "suite": "AI_Product_Photoshoot_Ads_Knowledge_Eval",
+  "evaluationType": "PHASE_4_ACTUAL_APPLICATION_PIPELINE",
+  "generatedAt": "2026-10-15T07:16:08.120Z",
+  "mode": "probe_sandbox",
+  "configuredModel": "google/gemini-2.5-flash",
+  "results": []
+}

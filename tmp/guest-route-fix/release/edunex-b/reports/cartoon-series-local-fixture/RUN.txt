@@ -1,0 +1,16 @@
+Working directory: Untitled/edunex-b
+
+LOCAL FIXTURE ONLY. No uploaded videos or playback validation.
+The existing synthetic evaluator uses the fixed test YouTube ID MVPTEST0001. No CloudFront URL is fabricated, no source validation is disabled.
+The synthetic Course is published only in a fresh isolated localhost database so the existing authentication/entitlement/retrieval path can be tested. The actual course pack registry remains disabled.
+
+Start/restart (stop the prior fixture process first if 3128 is occupied):
+SKILLOMATE_EVAL_CARTOON_FIXTURE=true SKILLOMATE_EVAL_COURSE_PACK=ai-cartoon-series SKILLOMATE_EVAL_CASES=scripts/eval/cartoon-series-fast15-cases.json SKILLOMATE_EVAL_REPORT=reports/cartoon-series-local-fixture node scripts/eval/mvp-local-backend.cjs
+
+Deterministic local readiness only; refuses an open provider gate:
+python3 -B scripts/eval/cartoon-fixture-readiness.py
+
+Future live evaluation ONLY after separate explicit provider approval:
+python3 -B chatbot_eval.py --cases scripts/eval/cartoon-series-fast15-cases.json --report reports/cartoon-series-local-fixture --mode live
+
+15 questions / 13 scenarios / two two-turn conversations. Current approval absent, zero provider requests sent. Approval and persistent attempt ledger must use this separate report directory. Preserve pipeline_traces.jsonl across restarts.

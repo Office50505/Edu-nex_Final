@@ -1,0 +1,14 @@
+# Phase 11 remaining issues
+
+All final local test executions pass, all 35 source/known-slot template replays pass, and both saved critical advertising answers are blocked. No fresh external-provider test occurred.
+
+1. Fresh model generalization is unmeasured. Twenty historical replay turns intentionally delegate to the model and remain unexecuted. Do not infer 95% accuracy or production readiness from deterministic replays, historical regrading or mocked route tests.
+2. Free-form entity/attribute/intent recognition is bounded. Unsupported declaration grammar may still require clarification or model synthesis. Labelled learner attributes are evidence; assistant suggestions and hypothetical product uses are not. Names, descriptive adjectives and actual field values are not verified physical product properties.
+3. Advertising copy validation deliberately constrains wording. It can regenerate a conservative draft when a safe but unfamiliar phrasing is not proven by the fact vocabulary. This trades expressiveness for grounded copy; it is not unrestricted semantic verification. Hypothetical scene props must not become included accessories or benefit claims. Learner-supplied factual claims are not independently authenticated. Fake testimonials and earnings guarantees remain prohibited even if requested.
+4. Compound generation and repair can still fail. One repair stays within the original provider time budget. If grounding repair fails, a safe factual draft is retained and incomplete reasoning is disclosed. No real provider repair latency/reliability was measured in this phase; mocked successful/failed repairs are covered.
+5. The evaluator remains finite. V7 corrects confirmed errors and strengthens strict slot/whole-body/copy/completion checks. Historical Phase 10 text still scores 51/80 with different outcomes. Independent full-template and semantic audits remain necessary; no unrestricted language or hallucination-detection claim is made.
+6. State uses existing authenticated course/conversation gates and optional schema additions. It passes local legacy, mismatch, expired-access and other-course checks. No production migration/database persistence, deployed UI, load or sustained session stress was tested. Conversation history remains bounded; no unlimited recall is promised.
+7. No live AI Influencer/AI Filmmaking responses were generated. Their existing local access, history, retrieval and mobile tests pass unchanged. No deployment, commit, push, AWS resource change or unrelated business-logic edit was made.
+
+Stop at local evidence and packaging. A later separately authorized live run should freeze V7, independent product slots and unseen definitions before generation, record actual origins and raw outputs, and audit every critical response. No readiness declaration is supported by this phase alone.
+

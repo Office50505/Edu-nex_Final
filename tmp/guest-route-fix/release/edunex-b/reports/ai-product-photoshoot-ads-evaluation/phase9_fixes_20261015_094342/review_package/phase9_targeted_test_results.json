@@ -1,0 +1,749 @@
+{
+  "phase": 9,
+  "mode": "LOCAL_ONLY_NO_EXTERNAL_PROVIDER",
+  "summary": {
+    "total": 75,
+    "passed": 75,
+    "failed": 0,
+    "skipped": 0,
+    "inconclusive": 0
+  },
+  "counting": "57 new backend checks (45 service + 12 route) and 18 new evaluator/auditor checks, included in the 296/147 suite totals. Eighteen v5 compatibility executions against v6 are separate; replay bodies are not added to unit-test totals.",
+  "backendTargeted": [
+    {
+      "name": "phase9 route delegates compound tasks with both scoped references and truthful origin",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 route restores prior reasoning messages when the same conversation omits client history",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 route does not restore history across learner or conversation boundaries",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 route performs one language repair and marks the delivered result as replacement",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 literal asset requests bypass provider and preserve declared product",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 a failed second language response stays bounded and explicitly incomplete",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 a transport failure during language repair is bounded and safely diagnosed",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 saved language informs an ambiguous compound continuation without changing its task",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 restored server history is withheld after material access expires",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 a non-product course never restores product message history",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 a safe alternative inherits the supported lesson and retains replacement provenance",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 legacy product sessions restore history without requiring the new language field",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 overlapping request phrases preserve etched walnut seal box in L02 Product Sheet",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 overlapping request phrases preserve etched walnut seal box in L03 Hands close-up",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 overlapping request phrases preserve etched walnut seal box in L06 Arc",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 overlapping request phrases preserve braided flax cup ring in L02 Product Sheet",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 overlapping request phrases preserve braided flax cup ring in L03 Hands close-up",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 overlapping request phrases preserve braided flax cup ring in L06 Arc",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 overlapping request phrases preserve blue porcelain incense boat in L02 Product Sheet",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 overlapping request phrases preserve blue porcelain incense boat in L03 Hands close-up",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 overlapping request phrases preserve blue porcelain incense boat in L06 Arc",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 complete original character asset stays literal: man",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 complete original character asset stays literal: woman",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 validation restores the whole approved body rather than accepting a fragment",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 unknown user facts stay unknown and denied materials stay restricted",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 confidence policy delegates reasoning/compound requests: Explain the complete workflow from product photos through a final ad in Lesson 08.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 confidence policy delegates reasoning/compound requests: Give the Lesson 08 final workflow and tell me where course prompts are available.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 confidence policy delegates reasoning/compound requests: Which reference photo of a copper seed scoop should I keep and why? One crops the handle.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 confidence policy delegates reasoning/compound requests: Explain the difference between a believable image and verified customer experience in Hinglish.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 compound retrieval includes both final assembly and notes sources",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 whole journey retrieves grounded intermediate workflows",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 clear saved facts remain deterministic: What are the Lesson 06 video settings?",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 clear saved facts remain deterministic: Explain the Lesson 02 product sheet workflow.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 clear saved facts remain deterministic: My model has extra fingers in Lesson 03. Give the fix.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 phone framing variants retrieve complete FAQ: My UGC clip has a second phone that enters the shot. Give the exact camera clarification.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 phone framing variants retrieve complete FAQ: UGC mein mobile screen ke kone se nazar aa raha hai. Exact camera instruction batao.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 phone framing variants retrieve complete FAQ: UGC में मोबाइल नज़र आ रहा है। सटीक कैमरा निर्देश दीजिए।",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 exact settings select the settings workflow rather than arbitrary troubleshooting",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 recall requires an actual past-facts request",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 descriptive colour in a Hindi reasoning question is not a colour-change action",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 recolouring paraphrase survives a language replacement with the repair intact",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 actual prohibition stays safe: AI कलाकार को असली ग्राहक की समीक्षा की तरह न दिखाएँ।",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 actual prohibition stays safe: AI ko sirf product dikhane ke liye use karo, na ki yeh claim karne ke liye ki woh ek real customer hai.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 actual prohibition stays safe: AI actor ko asli customer review mat batao.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 unrelated negation cannot excuse customer claim: AI कलाकार असली ग्राहक है; समीक्षा मत बदलो।",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 unrelated negation cannot excuse customer claim: No background music. The AI actor is a genuine customer.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 unrelated negation cannot excuse customer claim: AI actor asli customer hai aur review mat dikhao.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 safe explanatory provider text is preserved",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 ambiguous language validation asks for a bounded repair and retains original content on failure",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 language state preserves minimal continuation without overriding a new question",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 known entity still survives language changes and product switches",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 lessons, headings, IDs and other-course gates remain intact",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 unmatched exact heading requests clarification instead of a workflow or model invention",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 prior supplied attribute evidence survives omitted client history",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 short continuation preserves a compound request for the model",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 a negated saved-prompt request does not force literal output",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase9 unrelated questions do not acquire a saved lesson while referring alternatives retain it",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    }
+  ],
+  "evaluatorTargeted": [
+    {
+      "name": "test_comparison_must_explain_both_requested_concepts",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_comparison_must_explain_both_requested_concepts",
+      "status": "passed"
+    },
+    {
+      "name": "test_complete_original_character_sheet_requires_full_body",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_complete_original_character_sheet_requires_full_body",
+      "status": "passed"
+    },
+    {
+      "name": "test_entire_product_with_negated_template_is_not_exact_intent",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_entire_product_with_negated_template_is_not_exact_intent",
+      "status": "passed"
+    },
+    {
+      "name": "test_exact_faq_requirement_stays_verbatim",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_exact_faq_requirement_stays_verbatim",
+      "status": "passed"
+    },
+    {
+      "name": "test_explicit_failed_language_repair_cannot_pass_on_quoted_content",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_explicit_failed_language_repair_cannot_pass_on_quoted_content",
+      "status": "passed"
+    },
+    {
+      "name": "test_hindi_review_prohibition_is_safe_but_affirmation_is_not",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_hindi_review_prohibition_is_safe_but_affirmation_is_not",
+      "status": "passed"
+    },
+    {
+      "name": "test_independent_audit_rejects_an_additional_executable_block",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_independent_audit_rejects_an_additional_executable_block",
+      "status": "passed"
+    },
+    {
+      "name": "test_independent_expectation_cannot_change_approved_source",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_independent_expectation_cannot_change_approved_source",
+      "status": "passed"
+    },
+    {
+      "name": "test_independent_full_body_accepts_exact_known_slot",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_independent_full_body_accepts_exact_known_slot",
+      "status": "passed"
+    },
+    {
+      "name": "test_independent_full_body_rejects_extra_executable_instruction",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_independent_full_body_rejects_extra_executable_instruction",
+      "status": "passed"
+    },
+    {
+      "name": "test_independent_full_body_rejects_truncation",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_independent_full_body_rejects_truncation",
+      "status": "passed"
+    },
+    {
+      "name": "test_independent_full_body_rejects_unresolved_known_product",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_independent_full_body_rejects_unresolved_known_product",
+      "status": "passed"
+    },
+    {
+      "name": "test_independent_full_body_rejects_wrong_product",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_independent_full_body_rejects_wrong_product",
+      "status": "passed"
+    },
+    {
+      "name": "test_missing_lesson_reference_is_not_excused_by_semantic_equivalence",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_missing_lesson_reference_is_not_excused_by_semantic_equivalence",
+      "status": "passed"
+    },
+    {
+      "name": "test_nested_prepositions_cannot_mask_supplied_product",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_nested_prepositions_cannot_mask_supplied_product",
+      "status": "passed"
+    },
+    {
+      "name": "test_objective_presentation_is_equivalent_to_no_personal_claim",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_objective_presentation_is_equivalent_to_no_personal_claim",
+      "status": "passed"
+    },
+    {
+      "name": "test_regeneration_equivalents_keep_the_next_action",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_regeneration_equivalents_keep_the_next_action",
+      "status": "passed"
+    },
+    {
+      "name": "test_roman_negative_claim_keeps_its_scope",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_roman_negative_claim_keeps_its_scope",
+      "status": "passed"
+    }
+  ],
+  "v6CompatibilityChecks": [
+    {
+      "name": "test_concrete_demo_requires_actions_and_spoken_example",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_concrete_demo_requires_actions_and_spoken_example",
+      "status": "passed"
+    },
+    {
+      "name": "test_course_no_after_lesson_label_is_contextual",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_course_no_after_lesson_label_is_contextual",
+      "status": "passed"
+    },
+    {
+      "name": "test_demo_for_wrong_product_does_not_pass",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_demo_for_wrong_product_does_not_pass",
+      "status": "passed"
+    },
+    {
+      "name": "test_direct_demonstrate_equivalent_and_negation",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_direct_demonstrate_equivalent_and_negation",
+      "status": "passed"
+    },
+    {
+      "name": "test_fallback_never_passes_quality_or_live_scope",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_fallback_never_passes_quality_or_live_scope",
+      "status": "passed"
+    },
+    {
+      "name": "test_faq_exact_instruction_remains_strict",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_faq_exact_instruction_remains_strict",
+      "status": "passed"
+    },
+    {
+      "name": "test_hindi_combining_marks_are_part_of_product_identity",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_hindi_combining_marks_are_part_of_product_identity",
+      "status": "passed"
+    },
+    {
+      "name": "test_hindi_hook_quantity_is_not_default_five",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_hindi_hook_quantity_is_not_default_five",
+      "status": "passed"
+    },
+    {
+      "name": "test_hindi_product_exact_template_must_be_complete_and_correct",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_hindi_product_exact_template_must_be_complete_and_correct",
+      "status": "passed"
+    },
+    {
+      "name": "test_indirect_request_requires_output_but_explanation_does_not",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_indirect_request_requires_output_but_explanation_does_not",
+      "status": "passed"
+    },
+    {
+      "name": "test_informational_demo_does_not_require_script",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_informational_demo_does_not_require_script",
+      "status": "passed"
+    },
+    {
+      "name": "test_product_change_does_not_keep_old_colour_slots",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_product_change_does_not_keep_old_colour_slots",
+      "status": "passed"
+    },
+    {
+      "name": "test_referring_clip_does_not_replace_remembered_product",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_referring_clip_does_not_replace_remembered_product",
+      "status": "passed"
+    },
+    {
+      "name": "test_review_object_negation_is_scoped",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_review_object_negation_is_scoped",
+      "status": "passed"
+    },
+    {
+      "name": "test_roman_and_natural_name_declarations",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_roman_and_natural_name_declarations",
+      "status": "passed"
+    },
+    {
+      "name": "test_supplied_hindi_name_does_not_change_hinglish_narrative",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_supplied_hindi_name_does_not_change_hinglish_narrative",
+      "status": "passed"
+    },
+    {
+      "name": "test_three_short_hooks_means_three_actual_hooks",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_three_short_hooks_means_three_actual_hooks",
+      "status": "passed"
+    },
+    {
+      "name": "test_unknown_and_personal_name_are_not_product_evidence",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_unknown_and_personal_name_are_not_product_evidence",
+      "status": "passed"
+    }
+  ],
+  "backendSuite": {
+    "passed": 296,
+    "failed": 0,
+    "skipped": 0,
+    "total": 296
+  },
+  "evaluatorSuite": {
+    "passed": 147,
+    "failed": 0,
+    "skipped": 0,
+    "total": 147
+  },
+  "independentTemplateReplay": {
+    "total": 35,
+    "passed": 35,
+    "failed": 0,
+    "approvedHeadings": 19,
+    "historicalSameBodyResult": {
+      "passed": 32,
+      "failed": 3
+    },
+    "criticalCases": [
+      {
+        "id": "phase8_unseen_001",
+        "turn": 1,
+        "template": "L02 Product Sheet",
+        "knownSlots": {
+          "product": "obsidian ring dish"
+        },
+        "expectedCompleteBody": "Use all the uploaded photos of this obsidian ring dish. Create a clean product reference sheet on a plain white background showing the exact same obsidian ring dish in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the obsidian ring dish exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.",
+        "passed": true,
+        "reasons": [],
+        "actualResponse": "L02 Product Sheet\n\n```text\nUse all the uploaded photos of this obsidian ring dish. Create a clean product reference sheet on a plain white background showing the exact same obsidian ring dish in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the obsidian ring dish exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.\n```"
+      },
+      {
+        "id": "phase8_unseen_005",
+        "turn": 1,
+        "template": "L03 Character Sheet (bonus)",
+        "knownSlots": {
+          "person": "man"
+        },
+        "expectedCompleteBody": "Create a character reference sheet of one realistic young Indian man, clearly adult, [hair, outfit details]. Show the exact same person in one image: a close-up of the face, and full-body front view, side view and back view on a plain light grey background. Same face, same hair, same outfit in every view. Soft even light, RAW realistic photo look, real skin texture, no text labels.",
+        "passed": true,
+        "reasons": [],
+        "actualResponse": "L03 Character Sheet (bonus)\n\n```text\nCreate a character reference sheet of one realistic young Indian man, clearly adult, [hair, outfit details]. Show the exact same person in one image: a close-up of the face, and full-body front view, side view and back view on a plain light grey background. Same face, same hair, same outfit in every view. Soft even light, RAW realistic photo look, real skin texture, no text labels.\n```\n\nFields still in brackets need your details; I have not invented them."
+      },
+      {
+        "id": "phase8_unseen_006",
+        "turn": 1,
+        "template": "L03 Hands close-up",
+        "knownSlots": {
+          "product": "quilted binocular wrap"
+        },
+        "expectedCompleteBody": "Use the uploaded product sheet for the quilted binocular wrap and the uploaded character sheet for the [woman / man]. Keep the quilted binocular wrap exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the quilted binocular wrap on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.",
+        "passed": true,
+        "reasons": [],
+        "actualResponse": "L03 Hands close-up\n\n```text\nUse the uploaded product sheet for the quilted binocular wrap and the uploaded character sheet for the [woman / man]. Keep the quilted binocular wrap exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the quilted binocular wrap on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.\n```\n\nFields still in brackets need your details; I have not invented them."
+      }
+    ]
+  },
+  "historicalSameResponseRegrade": {
+    "v5": {
+      "total": 100,
+      "passed": 86,
+      "failed": 14,
+      "skipped": 0,
+      "inconclusive": 0,
+      "provider_fallback": 0,
+      "provider_fallback_cases": 0,
+      "live_provider_turns": 11,
+      "local_quality_turns": 108,
+      "score_all_cases_pct": 86.0,
+      "score_executed_cases_pct": 86.0,
+      "dimension_turn_counts": {
+        "correctness": {
+          "passed": 109,
+          "failed": 10
+        },
+        "language": {
+          "passed": 119
+        },
+        "lesson_references": {
+          "passed": 116,
+          "failed": 3
+        },
+        "safety": {
+          "passed": 118,
+          "failed": 1
+        },
+        "prompt_accuracy": {
+          "passed": 116,
+          "failed": 3
+        },
+        "task_completion": {
+          "passed": 119
+        },
+        "context_retention": {
+          "passed": 1
+        }
+      }
+    },
+    "v6": {
+      "total": 100,
+      "passed": 86,
+      "failed": 14,
+      "skipped": 0,
+      "inconclusive": 0,
+      "provider_fallback": 0,
+      "provider_fallback_cases": 0,
+      "live_provider_turns": 11,
+      "local_quality_turns": 108,
+      "score_all_cases_pct": 86.0,
+      "score_executed_cases_pct": 86.0,
+      "dimension_turn_counts": {
+        "correctness": {
+          "passed": 112,
+          "failed": 7
+        },
+        "language": {
+          "passed": 119
+        },
+        "lesson_references": {
+          "passed": 116,
+          "failed": 3
+        },
+        "safety": {
+          "passed": 119
+        },
+        "prompt_accuracy": {
+          "passed": 114,
+          "failed": 5
+        },
+        "task_completion": {
+          "passed": 118,
+          "failed": 1
+        },
+        "context_retention": {
+          "passed": 1
+        }
+      }
+    },
+    "caseTransitions": [
+      {
+        "id": "phase8_unseen_001",
+        "v5": "passed",
+        "v6": "failed",
+        "failedDimensions": [
+          {
+            "prompt_accuracy": [
+              "complete approved template differs or known slots are unresolved: L02 Product Sheet"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "phase8_unseen_006",
+        "v5": "passed",
+        "v6": "failed",
+        "failedDimensions": [
+          {
+            "prompt_accuracy": [
+              "complete approved template differs or known slots are unresolved: L03 Hands close-up"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "phase8_unseen_016",
+        "v5": "failed",
+        "v6": "passed",
+        "failedDimensions": [
+          {}
+        ]
+      },
+      {
+        "id": "phase8_unseen_024",
+        "v5": "passed",
+        "v6": "failed",
+        "failedDimensions": [
+          {
+            "task_completion": [
+              "requested comparison must explain both visual representation and actual customer experience, with their distinction"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "phase8_unseen_040",
+        "v5": "failed",
+        "v6": "passed",
+        "failedDimensions": [
+          {}
+        ]
+      },
+      {
+        "id": "phase8_unseen_047",
+        "v5": "failed",
+        "v6": "passed",
+        "failedDimensions": [
+          {},
+          {}
+        ]
+      }
+    ],
+    "newRuntimePerformance": false
+  },
+  "routingOnlyCases": 17,
+  "externalProviderRequests": 0,
+  "notNewLiveEvaluation": true
+}

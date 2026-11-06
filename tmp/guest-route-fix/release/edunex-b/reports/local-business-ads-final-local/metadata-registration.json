@@ -1,0 +1,21 @@
+{
+  "PASS": true,
+  "database": "skillomate_mvp_eval_lba_real_20261022",
+  "course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+  "slug": "ai-local-buisness-ads",
+  "lessons": 10,
+  "all_real_references_preserved": true,
+  "course_records": [
+    {
+      "_id": "6ad9fe8ed0076b8d5e3b4f6d",
+      "title": "AI Local Buisness ADS",
+      "slug": "ai-local-buisness-ads"
+    },
+    {
+      "_id": "6ada09a9214bdc9b2a2775d5",
+      "title": "Local authorization control",
+      "slug": "local-lba-isolation-control"
+    }
+  ],
+  "production_writes": false
+}

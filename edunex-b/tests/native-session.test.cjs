@@ -15,6 +15,31 @@ async function setup(fetcher, options = {}) {
   session.setUser({ ...initial }); await session.flush();
   return { session, storage, saved: () => saved && JSON.parse(saved), ended: () => ended };
 }
+test('cancelling one caller aborts its network request while preserving other requests and login', async () => {
+  const h = await setup(async (url, { signal }) => {
+    if (url.endsWith('/other')) return reply(200, { ok: true });
+    return new Promise((_, reject) => {
+      const abort = () => reject(Object.assign(new Error('cancelled'), { name: 'AbortError' }));
+      if (signal.aborted) abort(); else signal.addEventListener('abort', abort, { once: true });
+    });
+  });
+  const controller = new AbortController();
+  const pending = h.session.requestJson('/download-grant', { signal: controller.signal });
+  controller.abort();
+  await assert.rejects(pending, { name: 'AbortError' });
+  assert.equal((await h.session.requestJson('/other')).ok, true);
+  assert.equal(h.ended(), 0); assert.ok(h.session.getUser());
+});
+
+test('caller cancellation also aborts a stalled response body', async () => {
+  const controller = new AbortController();
+  const h = await setup(async (_url, { signal }) => ({ status: 200, ok: true, json: () => new Promise((_, reject) => {
+    signal.addEventListener('abort', () => reject(Object.assign(new Error('cancelled'), { name: 'AbortError' })), { once: true });
+    controller.abort();
+  }) }));
+  await assert.rejects(h.session.requestJson('/download-status', { signal: controller.signal }), { name: 'AbortError' });
+  assert.equal(h.ended(), 0);
+});
 test('expired tutor token refreshes, rotates both tokens and retries exactly once with identical history', async () => {
   const calls = [];
   const h = await setup(async (url, options) => {

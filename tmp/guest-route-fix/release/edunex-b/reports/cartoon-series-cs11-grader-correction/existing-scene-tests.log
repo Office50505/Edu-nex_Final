@@ -1,0 +1,23 @@
+test_all_preserved_files_still_match_snapshot (test_cartoon_cs11_v2.CartoonCS11V2Tests.test_all_preserved_files_still_match_snapshot) ... ok
+test_demo_character_substitution_still_fails (test_cartoon_cs11_v2.CartoonCS11V2Tests.test_demo_character_substitution_still_fails) ... ok
+test_explicit_single_character_scene_needs_only_that_sheet (test_cartoon_cs11_v2.CartoonCS11V2Tests.test_explicit_single_character_scene_needs_only_that_sheet) ... ok
+test_explicit_two_character_scene_needs_both_sheets (test_cartoon_cs11_v2.CartoonCS11V2Tests.test_explicit_two_character_scene_needs_both_sheets) ... ok
+test_fallback_cannot_become_a_corrected_live_pass (test_cartoon_cs11_v2.CartoonCS11V2Tests.test_fallback_cannot_become_a_corrected_live_pass) ... ok
+test_library_name_alone_is_not_location_reference_guidance (test_cartoon_cs11_v2.CartoonCS11V2Tests.test_library_name_alone_is_not_location_reference_guidance) ... ok
+test_live_answer_still_requires_real_provider_evidence (test_cartoon_cs11_v2.CartoonCS11V2Tests.test_live_answer_still_requires_real_provider_evidence) ... ok
+test_names_are_case_data_not_hardcoded (test_cartoon_cs11_v2.CartoonCS11V2Tests.test_names_are_case_data_not_hardcoded) ... ok
+test_old_criteria_retain_original_behavior (test_cartoon_cs11_v2.CartoonCS11V2Tests.test_old_criteria_retain_original_behavior) ... ok
+test_only_cs11_second_turn_criteria_changed (test_cartoon_cs11_v2.CartoonCS11V2Tests.test_only_cs11_second_turn_criteria_changed) ... ok
+test_original_frozen_cases_unchanged (test_cartoon_cs11_v2.CartoonCS11V2Tests.test_original_frozen_cases_unchanged) ... ok
+test_security_failure_still_overrides_scene_guidance (test_cartoon_cs11_v2.CartoonCS11V2Tests.test_security_failure_still_overrides_scene_guidance) ... ok
+test_tara_name_alone_is_not_reference_guidance (test_cartoon_cs11_v2.CartoonCS11V2Tests.test_tara_name_alone_is_not_reference_guidance) ... ok
+test_unneeded_momo_sheet_can_be_explicitly_declined (test_cartoon_cs11_v2.CartoonCS11V2Tests.test_unneeded_momo_sheet_can_be_explicitly_declined) ... ok
+test_unspecified_second_character_accepts_conditional_guidance (test_cartoon_cs11_v2.CartoonCS11V2Tests.test_unspecified_second_character_accepts_conditional_guidance) ... ok
+test_unspecified_second_character_cannot_be_required_unconditionally (test_cartoon_cs11_v2.CartoonCS11V2Tests.test_unspecified_second_character_cannot_be_required_unconditionally) ... ok
+test_unspecified_second_character_may_be_omitted (test_cartoon_cs11_v2.CartoonCS11V2Tests.test_unspecified_second_character_may_be_omitted) ... ok
+test_v2_has_separate_freeze_and_cannot_reuse_v1_approval (test_cartoon_cs11_v2.CartoonCS11V2Tests.test_v2_has_separate_freeze_and_cannot_reuse_v1_approval) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 0.008s
+
+OK

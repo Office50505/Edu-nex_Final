@@ -1,0 +1,114 @@
+{
+  "createdAt": "2026-10-15T10:03:07.628433+00:00",
+  "sourceChanges": [
+    {
+      "path": "routes/ai.js",
+      "changeType": "modified",
+      "beforeSha256": "9aaad4e17231eff87b0fd63d8ab94227f48a7fb813b3f8ebe18760d705273c9d",
+      "afterSha256": "4926c88b3180c9a3d39c8d07a3a3ea4f89f744d1de1f2fbdf74c9e03c267958d"
+    },
+    {
+      "path": "services/aiTutorService.js",
+      "changeType": "modified",
+      "beforeSha256": "5f3bb1819b40dda96d836e8f7be23cace9f24a74dfd23a463b3304a112a4e20d",
+      "afterSha256": "97816797edfe6ce356b32e9baaa939dc209dba83dfb036350cd1ace2e72c02f3"
+    },
+    {
+      "path": "services/tutorKnowledge.js",
+      "changeType": "modified",
+      "beforeSha256": "765d78ee36365a781f801cb4eb25ac900ea0684c54887b8564127c3b4768ba89",
+      "afterSha256": "b8de0f8d1f15240334835f7fb1fb3b1c377e21b7a20a9d2e6b572d9dcb89025e"
+    },
+    {
+      "path": "services/productTutorKnowledge.js",
+      "changeType": "modified",
+      "beforeSha256": "0abce3970d13b6afa40561ab0ec3b808cd552cff821a73354b9c172d49ccd610",
+      "afterSha256": "b05b65cd697423bf5e4a200a9b76849b4b84e581daa357a25594e707aadd7f33"
+    },
+    {
+      "path": "services/productTutorResponse.js",
+      "changeType": "modified",
+      "beforeSha256": "93a16fe62b5271c1cba297a8822ca680ff10ef2c72f5e675c800dbc5f449098d",
+      "afterSha256": "f47d58e1a9e5dac5b2b58b974fdb9f69b374527ede458612bdccaa840700c441"
+    },
+    {
+      "path": "models/AiTutorSession.js",
+      "changeType": "modified",
+      "beforeSha256": "7b7c969430c23ad04ee5a8e33cff7c866c9946e5b64fde2b008936d522110986",
+      "afterSha256": "5a7dae016f52985e0eff67bf16ce4562becb1083376586832e5b255ab2940bcc"
+    },
+    {
+      "path": "tests/ai-chat-history.test.cjs",
+      "changeType": "modified",
+      "beforeSha256": "4f73259aac3246ccc48fa35df81fa019b45d8259ce6b58c18697f2cd8f7ccd49",
+      "afterSha256": "bc94b25a0f180d971922d213618d182d66d2e8549657fe5099f8bd03082eadbe"
+    },
+    {
+      "path": "scripts/eval/README.md",
+      "changeType": "modified",
+      "beforeSha256": "47ae57184836b0f9b4a92aade5f7322e72025ad5c37fb88c7e93fe3fd04b4ba0",
+      "afterSha256": "fc4d1ecc3a76198656b868dbb994ace02f8e88552d2a10d22d8b115fd01f34a0"
+    },
+    {
+      "path": "services/productTutorIntent.js",
+      "changeType": "added",
+      "beforeSha256": null,
+      "afterSha256": "838e3e9c1a57a87b93558b339d95fb81911d72301d4daa6f0707c95e1147e6be"
+    },
+    {
+      "path": "scripts/eval/grade_product_photoshoot_ads_results_v6.py",
+      "changeType": "added",
+      "beforeSha256": null,
+      "afterSha256": "161801b0462e3c276e05e82685ff9af6ba2e0cba912e49037de94bda00afac78"
+    },
+    {
+      "path": "scripts/eval/audit_product_templates.py",
+      "changeType": "added",
+      "beforeSha256": null,
+      "afterSha256": "f23c18608408441aa049aa52098da953a2ff32bb6e84517b75a6cbaf7fb881eb"
+    },
+    {
+      "path": "tests/product-tutor-phase9.test.cjs",
+      "changeType": "added",
+      "beforeSha256": null,
+      "afterSha256": "512b9435fbd57088219a802b0a9cb6a7b303c10672add977228c83098a2a6de0"
+    },
+    {
+      "path": "tests/test_product_evaluator_v6.py",
+      "changeType": "added",
+      "beforeSha256": null,
+      "afterSha256": "46c46430134c26118551a3f2aee55427924f51bfcfb4e64afee55163d91bd1e9"
+    }
+  ],
+  "historicalFilesVerifiedUnchanged": 432,
+  "historicalZipsVerifiedUnchanged": 7,
+  "rawTrainingTextUnchanged": true,
+  "v5EvaluatorUnchanged": true,
+  "guidanceFactsUnchanged": true,
+  "environment": {
+    "os": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "python": "3.14.6",
+    "node": "v26.7.0",
+    "backend": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b"
+  },
+  "providerRequests": 0,
+  "liveEvaluationExecuted": false,
+  "backendEvidence": "final_backend_legacy_verified/node_verified_execution.json",
+  "evaluatorEvidence": "final_evaluator_validation/python_verified_execution.json",
+  "templateEvidence": "verified_replays/independent_local_template_audit.json",
+  "sourceFilesEditedBeforeCorrespondingFinalExecution": true,
+  "existingRegressionAssertionAdaptation": {
+    "file": "tests/ai-chat-history.test.cjs",
+    "reason": "The old wrong-language fixture assumed one call and no retained wrong-language text anywhere. New architecture makes one bounded repair call and explicitly retains an untranslated reference on failure. Assertions now require two calls maximum, non-live replacement provenance, correct-language explanation outside the quoted reference, explicit failure notice and repair diagnostics. Original safety/access/other-course assertions remain."
+  },
+  "sourceScope": [
+    "product-course request selection/extraction/guards",
+    "shared route/service product-only history and bounded repair integration",
+    "optional product session language",
+    "new evaluator/auditor and local tests/docs"
+  ],
+  "noProductionModification": true,
+  "deployed": false,
+  "committed": false,
+  "pushed": false
+}

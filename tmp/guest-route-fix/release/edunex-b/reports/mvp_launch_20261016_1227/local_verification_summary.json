@@ -1,0 +1,15 @@
+{
+  "backend_tests": 1210,
+  "backend_pass": 1186,
+  "backend_fail": 24,
+  "existing_failure_names_unchanged": true,
+  "new_failures": [],
+  "python_evaluator_tests": 167,
+  "python_evaluator_fail": 0,
+  "new_mvp_regression_tests": 15,
+  "source_files_changed": [
+    "services/productTutorState.js",
+    "services/productTutorIntent.js"
+  ],
+  "source_assets_or_existing_tests_changed": false
+}

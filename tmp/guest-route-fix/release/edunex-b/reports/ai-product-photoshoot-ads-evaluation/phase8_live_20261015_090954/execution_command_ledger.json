@@ -1,0 +1,82 @@
+{
+  "createdAt": "2026-10-15T09:21:02.804012+00:00",
+  "workingDirectory": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b",
+  "commands": [
+    {
+      "stage": "initialize",
+      "command": "node /Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase8_live_20261015_090954/evaluation_runner.cjs --initialize",
+      "evidence": "execution_manifest.json",
+      "externalProviderRequests": 0
+    },
+    {
+      "stage": "provider_preflight",
+      "command": "node /Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase8_live_20261015_090954/evaluation_runner.cjs --probe",
+      "startedAt": "2026-10-15T09:12:41.163Z",
+      "completedAt": "2026-10-15T09:12:45.862Z",
+      "evidence": "connectivity_probe.json",
+      "externalProviderRequests": 1
+    },
+    {
+      "stage": "100_case_live_execution",
+      "command": "node /Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase8_live_20261015_090954/evaluation_runner.cjs",
+      "startedAt": "2026-10-15T09:13:08.965Z",
+      "completedAt": "2026-10-15T09:13:33.117Z",
+      "evidence": "application_raw_results.json",
+      "externalProviderRequests": 13
+    },
+    {
+      "stage": "v5_integrated_grading",
+      "command": "python3 -B scripts/eval/grade_product_photoshoot_ads_results_v5.py --tests /Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase8_live_20261015_090954/all_test_cases_frozen.json --results /Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase8_live_20261015_090954/application_raw_results.json --scope end_to_end --out /Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase8_live_20261015_090954/v5_integrated_grades.json",
+      "evidence": "v5_integrated_grades.json",
+      "externalProviderRequests": 0
+    },
+    {
+      "stage": "v5_live_model_scope_grading",
+      "command": "python3 -B scripts/eval/grade_product_photoshoot_ads_results_v5.py --tests /Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase8_live_20261015_090954/all_test_cases_frozen.json --results /Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase8_live_20261015_090954/application_raw_results.json --scope live_model --out /Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase8_live_20261015_090954/v5_model_only_grades.json",
+      "evidence": "v5_model_only_grades.json",
+      "externalProviderRequests": 0
+    },
+    {
+      "stage": "post_evaluation_regressions",
+      "command": "python3 -B /Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase8_live_20261015_090954/run_verified_validation.py",
+      "subcommands": [
+        [
+          "node",
+          "--test",
+          "--test-reporter=junit",
+          "tests/ai-chat-history.test.cjs",
+          "tests/tutor-knowledge.test.cjs",
+          "tests/product-tutor-quality.test.cjs",
+          "tests/product-tutor-phase3.test.cjs",
+          "tests/product-tutor-phase5.test.cjs",
+          "tests/product-tutor-phase7.test.cjs",
+          "tests/mobile-course-ai.test.cjs",
+          "tests/mobile-course-ai-cache.test.cjs"
+        ],
+        [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-p",
+          "test_product_evaluator*.py",
+          "-v"
+        ]
+      ],
+      "evidence": [
+        "node_verified_execution.json",
+        "python_verified_execution.json"
+      ],
+      "externalProviderRequests": 0
+    },
+    {
+      "stage": "offline_audit_reproduction",
+      "command": "python3 -B /Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase8_live_20261015_090954/independent_template_audit.py /Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase8_live_20261015_090954/template_audit_reproducibility_check.json",
+      "sameResultRowsAsInitialIndependentAudit": true,
+      "externalProviderRequests": 0
+    }
+  ]
+}

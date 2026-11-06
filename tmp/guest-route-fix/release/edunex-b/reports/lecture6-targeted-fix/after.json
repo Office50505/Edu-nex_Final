@@ -1,0 +1,405 @@
+{
+  "scope": "Local route replay using synthetic course/access records and existing route/service fixture; external network disabled. Incorrect assistant turn below is a reconstruction from the reported symptom, not recovered original history.",
+  "inputSafety": {
+    "ok": true,
+    "message": "ai film me 6 lacture me kya pahle image chatgpt se mangu or flow me 15 sec ka video generate nahi hota to kya usko tukdo me chatgpt se bolu"
+  },
+  "first": {
+    "answer": "Pehle ChatGPT se character reference sheet ka prompt aur shot prompts lo (Lesson 5). Character sheet ki image Flow me generate karke best reference lock karo; har clip ke liye ChatGPT se nayi image lena zaroori nahi. Lecture 6 me Flow ke Reference-to-video mode me wahi locked reference attach karo, Shot 1 ka prompt paste karo aur generate karo.\n\nHaan—ChatGPT ko bolo ki action ko chhote, connected shot prompts me baante, har part tumhare Flow me available clip duration ke andar ho. Har part alag generate karo; ek clip me ek simple action aur same character + location rakho. Ye course ke per-shot workflow ka practical use hai; lamba video ek hi generation me force karna zaroori nahi.\n\nClips connect karne ke liye (Lecture 6), best clip ka last frame save karo. Next generation me Start/End select karke us image ko Start frame banao aur agla shot prompt paste karo. Chehra clear na ho to Ingredients me saved last frame + character sheet dono attach karo. Parts me same face, outfit aur location rakho.",
+    "reply": "Pehle ChatGPT se character reference sheet ka prompt aur shot prompts lo (Lesson 5). Character sheet ki image Flow me generate karke best reference lock karo; har clip ke liye ChatGPT se nayi image lena zaroori nahi. Lecture 6 me Flow ke Reference-to-video mode me wahi locked reference attach karo, Shot 1 ka prompt paste karo aur generate karo.\n\nHaan—ChatGPT ko bolo ki action ko chhote, connected shot prompts me baante, har part tumhare Flow me available clip duration ke andar ho. Har part alag generate karo; ek clip me ek simple action aur same character + location rakho. Ye course ke per-shot workflow ka practical use hai; lamba video ek hi generation me force karna zaroori nahi.\n\nClips connect karne ke liye (Lecture 6), best clip ka last frame save karo. Next generation me Start/End select karke us image ko Start frame banao aur agla shot prompt paste karo. Chehra clear na ho to Ingredients me saved last frame + character sheet dono attach karo. Parts me same face, outfit aur location rakho.",
+    "provider": "course-knowledge-rule",
+    "sources": [],
+    "messageId": "1f1a1a8b-1101-43ed-b2ba-6231651bd470",
+    "notice": null,
+    "outcome": {
+      "type": "local_rule",
+      "liveModelAnswer": false,
+      "providerStatus": "not_requested",
+      "responseIssue": null
+    },
+    "knowledge": "course-materials",
+    "debug": {
+      "conversation_id": "targeted-lecture6",
+      "request_active_course_id": "6abe5bb2bced21d7211be185",
+      "resolved_active_course_id": "6abe5bb2bced21d7211be185",
+      "current_topic": "shot_generation_and_connection",
+      "current_intent": "reference,duration,splitting",
+      "rewritten_retrieval_query": "ai film me 6 lacture me kya pahle image chatgpt se mangu or flow me 15 sec ka video generate nahi hota to kya usko tukdo me chatgpt se bolu\nLesson 6 generate first shot connect shots\nLesson 5 character sheet prompt ChatGPT Flow reference\none simple action per clip shorter shot prompts\nlast frame Start End Ingredients character sheet",
+      "retrieved_chunk_ids": [
+        "ai-filmmaking-course:training.txt:═══════════════════════════════════════════════ ## LESSON 6 — Pehla Shot Generate + Shots Connect (Google Flow) Learn: Flow me Reference-to-video → locked chara:0",
+        "ai-filmmaking-course:training.txt:═══════════════════════════════════════════════ ## LESSON 6 — Pehla Shot Generate + Shots Connect (Google Flow) Learn: Flow me Reference-to-video → locked chara:1400",
+        "ai-filmmaking-course:training.txt:═══════════════════════════════════════════════ ## LESSON 5 — chat G.P.T se Generation Prompt + Character Sheet Learn: Usi chat G.P.T chat me (jahaan story+stru:0",
+        "ai-filmmaking-course:training.txt:═══════════════════════════════════════════════ ## LESSON 5 — chat G.P.T se Generation Prompt + Character Sheet Learn: Usi chat G.P.T chat me (jahaan story+stru:1400",
+        "ai-filmmaking-course:training.txt:AI FILMMAKING COURSE — CHATBOT TRAINING KNOWLEDGE BASE (Lessons 1–8):1400",
+        "ai-filmmaking-course:training.txt:AI FILMMAKING COURSE — CHATBOT TRAINING KNOWLEDGE BASE (Lessons 1–8):2800"
+      ],
+      "retrieved_chunk_hashes": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "retrieved_source_hashes": [],
+      "retrieved_translation_hashes": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "retrieved_course_ids": [
+        "6abe5bb2bced21d7211be185"
+      ],
+      "retrieved_course_names": [
+        "AI Filmmaking"
+      ],
+      "scores_ranks": [
+        {
+          "rank": 1,
+          "score": "168.8436",
+          "course_id": "6abe5bb2bced21d7211be185",
+          "section": "═══════════════════════════════════════════════ ## LESSON 6 — Pehla Shot Generate + Shots Connect (Google Flow) Learn: Flow me Reference-to-video → locked chara"
+        },
+        {
+          "rank": 2,
+          "score": "160.0923",
+          "course_id": "6abe5bb2bced21d7211be185",
+          "section": "═══════════════════════════════════════════════ ## LESSON 6 — Pehla Shot Generate + Shots Connect (Google Flow) Learn: Flow me Reference-to-video → locked chara"
+        },
+        {
+          "rank": 3,
+          "score": "82.2470",
+          "course_id": "6abe5bb2bced21d7211be185",
+          "section": "═══════════════════════════════════════════════ ## LESSON 5 — chat G.P.T se Generation Prompt + Character Sheet Learn: Usi chat G.P.T chat me (jahaan story+stru"
+        },
+        {
+          "rank": 4,
+          "score": "77.8005",
+          "course_id": "6abe5bb2bced21d7211be185",
+          "section": "═══════════════════════════════════════════════ ## LESSON 5 — chat G.P.T se Generation Prompt + Character Sheet Learn: Usi chat G.P.T chat me (jahaan story+stru"
+        },
+        {
+          "rank": 5,
+          "score": "77.6550",
+          "course_id": "6abe5bb2bced21d7211be185",
+          "section": "AI FILMMAKING COURSE — CHATBOT TRAINING KNOWLEDGE BASE (Lessons 1–8)"
+        },
+        {
+          "rank": 6,
+          "score": "70.1955",
+          "course_id": "6abe5bb2bced21d7211be185",
+          "section": "AI FILMMAKING COURSE — CHATBOT TRAINING KNOWLEDGE BASE (Lessons 1–8)"
+        }
+      ],
+      "selected_exact_prompt_template_id": "",
+      "provider_model_path": "course-knowledge-rule",
+      "response_selection": null,
+      "history_restored": false,
+      "provider": {
+        "status": "not_requested",
+        "attempts": []
+      },
+      "validation_repair": null
+    }
+  },
+  "serverRestoredFollowUp": {
+    "answer": "Pehle ChatGPT se character reference sheet ka prompt aur shot prompts lo (Lesson 5). Character sheet ki image Flow me generate karke best reference lock karo; har clip ke liye ChatGPT se nayi image lena zaroori nahi. Lecture 6 me Flow ke Reference-to-video mode me wahi locked reference attach karo, Shot 1 ka prompt paste karo aur generate karo.\n\nHaan—ChatGPT ko bolo ki action ko chhote, connected shot prompts me baante, har part tumhare Flow me available clip duration ke andar ho. Har part alag generate karo; ek clip me ek simple action aur same character + location rakho. Ye course ke per-shot workflow ka practical use hai; lamba video ek hi generation me force karna zaroori nahi.\n\nClips connect karne ke liye (Lecture 6), best clip ka last frame save karo. Next generation me Start/End select karke us image ko Start frame banao aur agla shot prompt paste karo. Chehra clear na ho to Ingredients me saved last frame + character sheet dono attach karo. Parts me same face, outfit aur location rakho.",
+    "reply": "Pehle ChatGPT se character reference sheet ka prompt aur shot prompts lo (Lesson 5). Character sheet ki image Flow me generate karke best reference lock karo; har clip ke liye ChatGPT se nayi image lena zaroori nahi. Lecture 6 me Flow ke Reference-to-video mode me wahi locked reference attach karo, Shot 1 ka prompt paste karo aur generate karo.\n\nHaan—ChatGPT ko bolo ki action ko chhote, connected shot prompts me baante, har part tumhare Flow me available clip duration ke andar ho. Har part alag generate karo; ek clip me ek simple action aur same character + location rakho. Ye course ke per-shot workflow ka practical use hai; lamba video ek hi generation me force karna zaroori nahi.\n\nClips connect karne ke liye (Lecture 6), best clip ka last frame save karo. Next generation me Start/End select karke us image ko Start frame banao aur agla shot prompt paste karo. Chehra clear na ho to Ingredients me saved last frame + character sheet dono attach karo. Parts me same face, outfit aur location rakho.",
+    "provider": "course-knowledge-rule",
+    "sources": [],
+    "messageId": "af708c33-8c5f-452a-b4e3-9312657e4c8f",
+    "notice": null,
+    "outcome": {
+      "type": "local_rule",
+      "liveModelAnswer": false,
+      "providerStatus": "not_requested",
+      "responseIssue": null
+    },
+    "knowledge": "course-materials",
+    "debug": {
+      "conversation_id": "targeted-lecture6",
+      "request_active_course_id": "6abe5bb2bced21d7211be185",
+      "resolved_active_course_id": "6abe5bb2bced21d7211be185",
+      "current_topic": "shot_generation_and_connection",
+      "current_intent": "reference,duration,splitting",
+      "rewritten_retrieval_query": "ai film me 6 lacture me kya pahle image chatgpt se mangu or flow me 15 sec ka video generate nahi hota to kya usko tukdo me chatgpt se bolu\nnahi mera matlab dono sawal samjhao\nLesson 6 generate first shot connect shots\nLesson 5 character sheet prompt ChatGPT Flow reference\none simple action per clip shorter shot prompts\nlast frame Start End Ingredients character sheet",
+      "retrieved_chunk_ids": [
+        "ai-filmmaking-course:training.txt:═══════════════════════════════════════════════ ## LESSON 6 — Pehla Shot Generate + Shots Connect (Google Flow) Learn: Flow me Reference-to-video → locked chara:0",
+        "ai-filmmaking-course:training.txt:═══════════════════════════════════════════════ ## LESSON 6 — Pehla Shot Generate + Shots Connect (Google Flow) Learn: Flow me Reference-to-video → locked chara:1400",
+        "ai-filmmaking-course:training.txt:═══════════════════════════════════════════════ ## LESSON 5 — chat G.P.T se Generation Prompt + Character Sheet Learn: Usi chat G.P.T chat me (jahaan story+stru:0",
+        "ai-filmmaking-course:training.txt:AI FILMMAKING COURSE — CHATBOT TRAINING KNOWLEDGE BASE (Lessons 1–8):1400",
+        "ai-filmmaking-course:training.txt:═══════════════════════════════════════════════ ## LESSON 5 — chat G.P.T se Generation Prompt + Character Sheet Learn: Usi chat G.P.T chat me (jahaan story+stru:1400",
+        "ai-filmmaking-course:training.txt:AI FILMMAKING COURSE — CHATBOT TRAINING KNOWLEDGE BASE (Lessons 1–8):2800"
+      ],
+      "retrieved_chunk_hashes": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "retrieved_source_hashes": [],
+      "retrieved_translation_hashes": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "retrieved_course_ids": [
+        "6abe5bb2bced21d7211be185"
+      ],
+      "retrieved_course_names": [
+        "AI Filmmaking"
+      ],
+      "scores_ranks": [
+        {
+          "rank": 1,
+          "score": "174.0607",
+          "course_id": "6abe5bb2bced21d7211be185",
+          "section": "═══════════════════════════════════════════════ ## LESSON 6 — Pehla Shot Generate + Shots Connect (Google Flow) Learn: Flow me Reference-to-video → locked chara"
+        },
+        {
+          "rank": 2,
+          "score": "162.6877",
+          "course_id": "6abe5bb2bced21d7211be185",
+          "section": "═══════════════════════════════════════════════ ## LESSON 6 — Pehla Shot Generate + Shots Connect (Google Flow) Learn: Flow me Reference-to-video → locked chara"
+        },
+        {
+          "rank": 3,
+          "score": "85.5954",
+          "course_id": "6abe5bb2bced21d7211be185",
+          "section": "═══════════════════════════════════════════════ ## LESSON 5 — chat G.P.T se Generation Prompt + Character Sheet Learn: Usi chat G.P.T chat me (jahaan story+stru"
+        },
+        {
+          "rank": 4,
+          "score": "81.0579",
+          "course_id": "6abe5bb2bced21d7211be185",
+          "section": "AI FILMMAKING COURSE — CHATBOT TRAINING KNOWLEDGE BASE (Lessons 1–8)"
+        },
+        {
+          "rank": 5,
+          "score": "79.8531",
+          "course_id": "6abe5bb2bced21d7211be185",
+          "section": "═══════════════════════════════════════════════ ## LESSON 5 — chat G.P.T se Generation Prompt + Character Sheet Learn: Usi chat G.P.T chat me (jahaan story+stru"
+        },
+        {
+          "rank": 6,
+          "score": "71.2177",
+          "course_id": "6abe5bb2bced21d7211be185",
+          "section": "AI FILMMAKING COURSE — CHATBOT TRAINING KNOWLEDGE BASE (Lessons 1–8)"
+        }
+      ],
+      "selected_exact_prompt_template_id": "",
+      "provider_model_path": "course-knowledge-rule",
+      "response_selection": null,
+      "history_restored": true,
+      "provider": {
+        "status": "not_requested",
+        "attempts": []
+      },
+      "validation_repair": null
+    }
+  },
+  "reconstructedHistory": [
+    {
+      "role": "user",
+      "content": "ai film me 6 lacture me kya pahle image chatgpt se mangu or flow me 15 sec ka video generate nahi hota to kya usko tukdo me chatgpt se bolu"
+    },
+    {
+      "role": "assistant",
+      "content": "Person clearly adult rakho, clothing modest rakho aur graphic content hatao. Kya tum safety prompt rewrite chahte ho?"
+    }
+  ],
+  "recoveryFromReconstructedHistory": {
+    "answer": "Pehle ChatGPT se character reference sheet ka prompt aur shot prompts lo (Lesson 5). Character sheet ki image Flow me generate karke best reference lock karo; har clip ke liye ChatGPT se nayi image lena zaroori nahi. Lecture 6 me Flow ke Reference-to-video mode me wahi locked reference attach karo, Shot 1 ka prompt paste karo aur generate karo.\n\nHaan—ChatGPT ko bolo ki action ko chhote, connected shot prompts me baante, har part tumhare Flow me available clip duration ke andar ho. Har part alag generate karo; ek clip me ek simple action aur same character + location rakho. Ye course ke per-shot workflow ka practical use hai; lamba video ek hi generation me force karna zaroori nahi.\n\nClips connect karne ke liye (Lecture 6), best clip ka last frame save karo. Next generation me Start/End select karke us image ko Start frame banao aur agla shot prompt paste karo. Chehra clear na ho to Ingredients me saved last frame + character sheet dono attach karo. Parts me same face, outfit aur location rakho.",
+    "reply": "Pehle ChatGPT se character reference sheet ka prompt aur shot prompts lo (Lesson 5). Character sheet ki image Flow me generate karke best reference lock karo; har clip ke liye ChatGPT se nayi image lena zaroori nahi. Lecture 6 me Flow ke Reference-to-video mode me wahi locked reference attach karo, Shot 1 ka prompt paste karo aur generate karo.\n\nHaan—ChatGPT ko bolo ki action ko chhote, connected shot prompts me baante, har part tumhare Flow me available clip duration ke andar ho. Har part alag generate karo; ek clip me ek simple action aur same character + location rakho. Ye course ke per-shot workflow ka practical use hai; lamba video ek hi generation me force karna zaroori nahi.\n\nClips connect karne ke liye (Lecture 6), best clip ka last frame save karo. Next generation me Start/End select karke us image ko Start frame banao aur agla shot prompt paste karo. Chehra clear na ho to Ingredients me saved last frame + character sheet dono attach karo. Parts me same face, outfit aur location rakho.",
+    "provider": "course-knowledge-rule",
+    "sources": [],
+    "messageId": "01b7015d-1da9-4396-b2f2-1f234d754afa",
+    "notice": null,
+    "outcome": {
+      "type": "local_rule",
+      "liveModelAnswer": false,
+      "providerStatus": "not_requested",
+      "responseIssue": null
+    },
+    "knowledge": "course-materials",
+    "debug": {
+      "conversation_id": "",
+      "request_active_course_id": "6abe5bb2bced21d7211be185",
+      "resolved_active_course_id": "6abe5bb2bced21d7211be185",
+      "current_topic": "shot_generation_and_connection",
+      "current_intent": "reference,duration,splitting",
+      "rewritten_retrieval_query": "ai film me 6 lacture me kya pahle image chatgpt se mangu or flow me 15 sec ka video generate nahi hota to kya usko tukdo me chatgpt se bolu\nnahi mera matlab video ko parts me banana hai\nLesson 6 generate first shot connect shots\nLesson 5 character sheet prompt ChatGPT Flow reference\none simple action per clip shorter shot prompts\nlast frame Start End Ingredients character sheet",
+      "retrieved_chunk_ids": [
+        "ai-filmmaking-course:training.txt:═══════════════════════════════════════════════ ## LESSON 6 — Pehla Shot Generate + Shots Connect (Google Flow) Learn: Flow me Reference-to-video → locked chara:0",
+        "ai-filmmaking-course:training.txt:═══════════════════════════════════════════════ ## LESSON 6 — Pehla Shot Generate + Shots Connect (Google Flow) Learn: Flow me Reference-to-video → locked chara:1400",
+        "ai-filmmaking-course:training.txt:═══════════════════════════════════════════════ ## LESSON 5 — chat G.P.T se Generation Prompt + Character Sheet Learn: Usi chat G.P.T chat me (jahaan story+stru:0",
+        "ai-filmmaking-course:training.txt:═══════════════════════════════════════════════ ## LESSON 5 — chat G.P.T se Generation Prompt + Character Sheet Learn: Usi chat G.P.T chat me (jahaan story+stru:1400",
+        "ai-filmmaking-course:training.txt:AI FILMMAKING COURSE — CHATBOT TRAINING KNOWLEDGE BASE (Lessons 1–8):1400",
+        "ai-filmmaking-course:training.txt:AI FILMMAKING COURSE — CHATBOT TRAINING KNOWLEDGE BASE (Lessons 1–8):2800"
+      ],
+      "retrieved_chunk_hashes": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "retrieved_source_hashes": [],
+      "retrieved_translation_hashes": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "retrieved_course_ids": [
+        "6abe5bb2bced21d7211be185"
+      ],
+      "retrieved_course_names": [
+        "AI Filmmaking"
+      ],
+      "scores_ranks": [
+        {
+          "rank": 1,
+          "score": "168.8436",
+          "course_id": "6abe5bb2bced21d7211be185",
+          "section": "═══════════════════════════════════════════════ ## LESSON 6 — Pehla Shot Generate + Shots Connect (Google Flow) Learn: Flow me Reference-to-video → locked chara"
+        },
+        {
+          "rank": 2,
+          "score": "160.0923",
+          "course_id": "6abe5bb2bced21d7211be185",
+          "section": "═══════════════════════════════════════════════ ## LESSON 6 — Pehla Shot Generate + Shots Connect (Google Flow) Learn: Flow me Reference-to-video → locked chara"
+        },
+        {
+          "rank": 3,
+          "score": "82.2470",
+          "course_id": "6abe5bb2bced21d7211be185",
+          "section": "═══════════════════════════════════════════════ ## LESSON 5 — chat G.P.T se Generation Prompt + Character Sheet Learn: Usi chat G.P.T chat me (jahaan story+stru"
+        },
+        {
+          "rank": 4,
+          "score": "77.8005",
+          "course_id": "6abe5bb2bced21d7211be185",
+          "section": "═══════════════════════════════════════════════ ## LESSON 5 — chat G.P.T se Generation Prompt + Character Sheet Learn: Usi chat G.P.T chat me (jahaan story+stru"
+        },
+        {
+          "rank": 5,
+          "score": "77.6550",
+          "course_id": "6abe5bb2bced21d7211be185",
+          "section": "AI FILMMAKING COURSE — CHATBOT TRAINING KNOWLEDGE BASE (Lessons 1–8)"
+        },
+        {
+          "rank": 6,
+          "score": "70.1955",
+          "course_id": "6abe5bb2bced21d7211be185",
+          "section": "AI FILMMAKING COURSE — CHATBOT TRAINING KNOWLEDGE BASE (Lessons 1–8)"
+        }
+      ],
+      "selected_exact_prompt_template_id": "",
+      "provider_model_path": "course-knowledge-rule",
+      "response_selection": null,
+      "history_restored": false,
+      "provider": {
+        "status": "not_requested",
+        "attempts": []
+      },
+      "validation_repair": null
+    }
+  },
+  "providerCalls": 0,
+  "verifiedSources": [
+    {
+      "path": "knowledge/ai-filmmaking/training.txt",
+      "sha256": "19d9b79de6f3994cfaa2f58822384a6f15b32da651e050e4d1293208cd65a3cd"
+    },
+    {
+      "path": "services/aiCompliance.js",
+      "sha256": "4ade54cd78363f803195267d0721befdd8821c9fe79acf6449945c06c13118c1"
+    }
+  ],
+  "retrievedGrounding": [
+    {
+      "courseId": "6abe5bb2bced21d7211be185",
+      "lessonNumber": 6,
+      "sourceDocument": "training.txt",
+      "chunkStart": 0,
+      "contentHash": "0fed02ba5c15f6046d63e3ba4697dffdc071585046df516aa581fba844e7a778"
+    },
+    {
+      "courseId": "6abe5bb2bced21d7211be185",
+      "lessonNumber": 6,
+      "sourceDocument": "training.txt",
+      "chunkStart": 1400,
+      "contentHash": "1a35f67be8a1324a97703c6228e009a9984d36a05a2f958030d3d94369736bb3"
+    },
+    {
+      "courseId": "6abe5bb2bced21d7211be185",
+      "lessonNumber": 5,
+      "sourceDocument": "training.txt",
+      "chunkStart": 0,
+      "contentHash": "e6cc4aeab869f085d08bf7a309b200744164b9a72373bb4854589916d0ee1049"
+    },
+    {
+      "courseId": "6abe5bb2bced21d7211be185",
+      "lessonNumber": 5,
+      "sourceDocument": "training.txt",
+      "chunkStart": 1400,
+      "contentHash": "3cc0995e6d2971b7cce0d0fba61561f692f6e7b24789732c179468c0d57935ae"
+    },
+    {
+      "courseId": "6abe5bb2bced21d7211be185",
+      "lessonNumber": null,
+      "sourceDocument": "training.txt",
+      "chunkStart": 1400,
+      "contentHash": "25f8dd485a7a627baf8db67f05360d235d7aa7a46f484a2d3b9c7d84dc87725e"
+    },
+    {
+      "courseId": "6abe5bb2bced21d7211be185",
+      "lessonNumber": null,
+      "sourceDocument": "training.txt",
+      "chunkStart": 2800,
+      "contentHash": "890ed3045a81b3784eadc197842b7ffa490c2209cf1566c40b957f16240916f3"
+    }
+  ],
+  "tests": {
+    "baseline": {
+      "passed": 243,
+      "failed": 0
+    },
+    "newWorkflow": {
+      "passed": 42,
+      "failed": 0
+    },
+    "finalTargetedSuites": {
+      "passed": 694,
+      "failed": 0,
+      "skipped": 0
+    },
+    "log": "regression-tests.log",
+    "command": "NODE_OPTIONS=--require=./tests/helpers/deny-network.cjs node --test tests/filmmaking-workflow.test.cjs tests/ai-chat-history.test.cjs tests/tutor-knowledge.test.cjs tests/tutor-course-isolation.test.cjs tests/product-tutor-*.test.cjs"
+  },
+  "limitations": [
+    "Full original student conversation was absent from repository and local chatbot sessions. Historical irrelevant safety response not reproduced or attributed to a specific model decision.",
+    "Live provider replay was rejected by automatic approval review; no request was sent.",
+    "Clip duration is adapted to the learner’s Flow UI; source notes describe approximately 10 seconds, which is not treated as a verified current provider limit.",
+    "New direct workflow explanations cover Roman Hinglish and English; Hindi explanations use existing response handling."
+  ],
+  "confirmedFindings": {
+    "safety": "Supplied question passes checkAiInput; no local safety-rule match.",
+    "routing": "Pre-fix direct answer was empty and intent was unset; question fell through to model generation.",
+    "retrieval": "The reversed, misspelled lesson reference \"6 lacture\" was not parsed. Lesson 5 outranked Lesson 6 in the captured baseline.",
+    "history": "Empty incoming history was only restored for product-course context; filmmaking had no matching restoration.",
+    "historicalSafetyResponse": "Unverified: original prior turns, erroneous response text and provider diagnostics unavailable."
+  }
+}

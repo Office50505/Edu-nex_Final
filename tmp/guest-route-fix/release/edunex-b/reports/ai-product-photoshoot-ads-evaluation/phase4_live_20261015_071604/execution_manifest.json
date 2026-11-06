@@ -1,0 +1,134 @@
+{
+  "initializedAt": "2026-10-15T07:17:25.426Z",
+  "backend": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b",
+  "runDir": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase4_live_20261015_071604",
+  "model": "google/gemini-2.5-flash",
+  "providerEndpoint": "https://fal.run/openrouter/router/openai/v1/chat/completions",
+  "originalCaseCount": 55,
+  "heldOutCaseCount": 15,
+  "unseenCaseCount": 10,
+  "concurrency": 2,
+  "perTurnProviderAttempts": 2,
+  "perTurnProviderBudgetMs": 25000,
+  "pipeline": "Real loopback HTTP POST /api/ai/chat through Express and the unchanged application router, rate limiter, handler, routing, retrieval, prompt assembly, fal provider adapter and response guards. Synthetic auth/account/course/entitlement fixtures and in-memory persisted conversation storage replace the production data boundary. No production DB.",
+  "outboundProjection": "Only course context and evaluation messages leave the process. Transport excludes unrelated platform context and synthetic learner summaries after actual prompt assembly; tutor instructions and retrieved course material remain unchanged.",
+  "sourceHashes": {
+    "routes/ai.js": "9aaad4e17231eff87b0fd63d8ab94227f48a7fb813b3f8ebe18760d705273c9d",
+    "services/aiTutorService.js": "5f3bb1819b40dda96d836e8f7be23cace9f24a74dfd23a463b3304a112a4e20d",
+    "services/aiCompliance.js": "4ade54cd78363f803195267d0721befdd8821c9fe79acf6449945c06c13118c1",
+    "services/tutorKnowledge.js": "a411d73f309491d16c1ac49f1728d521a7118357325b3cd8c7d0c3abb3e7af1f",
+    "services/productTutorKnowledge.js": "64f228a08b34299f94277521a57d805bd689266e7de008bbedf823909c2f1f35",
+    "services/productTutorResponse.js": "8cd21492240d6af58c6736b35dc6180b3a4380f959a5dda06ada8ac739450bde",
+    "services/productTutorTasks.js": "bcc5b5dbd1fa6dec5b716ecf85ff77ccf87f15f76a05a248b4fef9969f0e7b08",
+    "services/tutorProvider.js": "501ed3b619515e2d8eda3a36e2acd80b99b28697de7dd9ddf5b6b5682121d064",
+    "models/AiTutorSession.js": "627ff1c8ab2930e9f740c82104a303c87bb24a627a89f738921eba38444bbefe",
+    "services/subscriptionAccess.js": "19f77a134d270297b88c3bddc30bec3e20a203abab1a3770ae2d836418905e0d",
+    "knowledge/ai-product-photoshoot-ads/training.txt": "96471b6991c3724f9b8315fc7b3d1bb73b409eb0272517432cbfdd98882127df",
+    "knowledge/ai-product-photoshoot-ads/guidance.json": "9bc8c1a83461bb38b4fabf3fe9866d828836601400e1428df1ce95dbfe1ca4f1",
+    "scripts/eval/grade_product_photoshoot_ads_results_v3.py": "0585242679ac4edce267c033556cc108d0e18f79d285cd2a745bfe4552cda409",
+    "scripts/eval/product_photoshoot_ads_test_cases.json": "4b8f22be87e1c754eccda7f5e766acf96a906f359d5fd8254a58b1e0c24b3691",
+    "tests/ai-chat-history.test.cjs": "d741170a5e55468ca55f108a07fa70edbd1ab31b274d70475c732ee60b6ac4d8",
+    "tests/tutor-knowledge.test.cjs": "6bcb400559addc89f0d2213c1e0b01b9765de8fe05aa9e534175e5748a998366",
+    "tests/product-tutor-quality.test.cjs": "55b388805edec37d8aefb06db656396d14eeb0872d12688db052dace94a8832f",
+    "tests/mobile-course-ai.test.cjs": "8033d8d12a84a299990d1900430ba32ef66f3de06432688f25a0c8c120795c93",
+    "tests/mobile-course-ai-cache.test.cjs": "04b32ea256a5661ec99655064aa62973f710a94f5c5cc0a554343b081faf852c",
+    "tests/test_product_evaluator.py": "ba40f2e9ef459f3aebdd70a551711d59f6fbbf1908686413aa8ba4eef0de1563",
+    "tests/helpers/deny-network.cjs": "67607ea4825b2e220a964da4ce06f2c13ba8ae43df88c00f1f915b3d7bfe0443"
+  },
+  "historicalHashes": {
+    "reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/course_routing_report.md": "be54425e88d76ddf10b4a3b8aa5439924e475316310f2a45f34f2e1e05af585e",
+    "reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/failed_test_analysis.md": "e3d2378f13a217bb06e5eaf2f5848787cbbafbfeb991b72adde882d93ee631f9",
+    "reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/failure_analysis_detailed.md": "008ddcd0510c8b7b627d35dd276ee4f13822a9246cb38503e61ca4da4bf302de",
+    "reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/failure_categories.json": "4704c091ec37c425845facd488066814c363401c9e52bf7cca87b4130c72f246",
+    "reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/live_evaluation_summary.md": "3db1de68373fff794327993bfe194750b4276703ccbb76a204f2c081de07a86e",
+    "reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/live_evaluation_summary_data.json": "2b248c14b37a307fcd99df66548f7dee589e177e2fc483e9df22b99b1022b088",
+    "reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/live_graded_results.json": "fb50b776200aa50bdd7acfe20715dd39ad8c54da18ec869827b9359e939f83c1",
+    "reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/live_merged_graded_results.json": "fb538a9a55c13904896be15b32190d342525255b741e2f841db063c765d07c1e",
+    "reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/live_merged_raw_results.json": "6afc2802bedab6ba583c098481541e0e1f988ec654b5bff34bfd131c10166a02",
+    "reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/live_raw_results.json": "344e3786740f29676c602681d09d0861a4d41a4709e2b6e838adead8d77aa066",
+    "reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/live_retry2_raw_results.json": "f36fc771a7f02b57337aae52af158bfd23df4c5b621fca1ca4b9a1b6e513d756",
+    "reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/live_retry_raw_results.json": "a3c43ce0e7a1a0ec09566c0efcad90c2375aadf7d818cd70d81ba1418aafc81c",
+    "reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/provider_connectivity_report.md": "8882aeaeb3499cbc1022b215d8d4dd65d5cac74512465eb72860d1313094671d",
+    "reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/recommended_fixes.md": "6f7c5139513aca5ee1b2a494bd9bae182ddc780a9394ab44689f81df87f12697",
+    "reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/regression_evidence.md": "ff43a44c3551896ca422f12dc5108160132efa933d098ee13603e99212e8cea2",
+    "reports/ai-product-photoshoot-ads-evaluation/quality_improvement_20261015/corrected_evaluation_results.json": "a67c6462d620860d14b847f78827adb0842bd22f20ad067b988d72e3ad8bf01a",
+    "reports/ai-product-photoshoot-ads-evaluation/quality_improvement_20261015/corrected_evaluation_summary.md": "8af0ff5e6f2f3da41d2e27f5ff35ede59cee64ec410d54eea0fef4c2d646c0cc",
+    "reports/ai-product-photoshoot-ads-evaluation/quality_improvement_20261015/evaluator_test_output.log": "0a80ecae64df6364509f5d68899e252d4b0d1fdfbfc68f087fe8f8ebef2ed07e",
+    "reports/ai-product-photoshoot-ads-evaluation/quality_improvement_20261015/implementation_changes.md": "3a1690de22d6d455f74e628eb066b723fdea8736a506252103bad820aaba8521",
+    "reports/ai-product-photoshoot-ads-evaluation/quality_improvement_20261015/node_test_output.log": "bbd11e26a2bd702f97712ad50e27c8a8cfa5d2d72651b8e3c0fefb57b2e13560",
+    "reports/ai-product-photoshoot-ads-evaluation/quality_improvement_20261015/regression_results.md": "b7c488325430698bae040d1479e7e0825343b8028d5664601650ad568886b097",
+    "reports/ai-product-photoshoot-ads-evaluation/quality_improvement_20261015/remaining_issues.md": "58190b75bbd3b1de8006ccf8ca71f03a5fbb9c1575b15679ef564fa03a561b4e",
+    "reports/ai-product-photoshoot-ads-evaluation/quality_improvement_20261015/verification_manifest.json": "1b748b170de19afd0d3028a7d064189a937aa28f64548c7838ac830999890471",
+    "reports/ai-product-photoshoot-ads-evaluation/phase2_live_20261015_115107/application_raw_results.json": "ddd6cee0b570b45d4e82f95a6ca94c01ccdb959eb48d239a2f63aa4062ce4760",
+    "reports/ai-product-photoshoot-ads-evaluation/phase2_live_20261015_115107/artifact_integrity.json": "83020104ff5f8e5296bde1ef8752f6cd96f5523a75097d6967edefb91c61ea37",
+    "reports/ai-product-photoshoot-ads-evaluation/phase2_live_20261015_115107/connectivity_probe.json": "cddbbbab3cd808dfba339c32dde0ed5d97d9ccd0c77f8011a5c168e37a7152ea",
+    "reports/ai-product-photoshoot-ads-evaluation/phase2_live_20261015_115107/evaluation_runner.cjs": "08f33c3c2340183d6c90f3ff2caa544892373a6ff4604307d1f8036f2e5d897e",
+    "reports/ai-product-photoshoot-ads-evaluation/phase2_live_20261015_115107/execution_manifest.json": "737f1b7b8ef993bcc3eb1f2ba7fb2367bf2e4655361d7d7b50647c41f10611dc",
+    "reports/ai-product-photoshoot-ads-evaluation/phase2_live_20261015_115107/fresh_evaluator_execution.json": "fbeac147e59634aa76b785a9f02e8f4432a5e76d82352546502c50aa1bff2060",
+    "reports/ai-product-photoshoot-ads-evaluation/phase2_live_20261015_115107/fresh_evaluator_test_output.log": "758ca7a3696d7559d297d49b564feab06b0dfded31015ca126d6c044bbc2ef3d",
+    "reports/ai-product-photoshoot-ads-evaluation/phase2_live_20261015_115107/fresh_failure_analysis.md": "3ac89feb21951e43fccb380c2d30b47913aa9faa6e40f7595de63995e1dca692",
+    "reports/ai-product-photoshoot-ads-evaluation/phase2_live_20261015_115107/fresh_live_results.json": "beabe83ecece3c7abe3a4986da07f0c04037dda4e529f33f1921b3ed8d5917e6",
+    "reports/ai-product-photoshoot-ads-evaluation/phase2_live_20261015_115107/fresh_live_summary.md": "49d1df5b5b38bdaee833555747c9e96d22e6a51b531eb2df09aa2cde4c321f45",
+    "reports/ai-product-photoshoot-ads-evaluation/phase2_live_20261015_115107/fresh_node_execution.json": "ed5812213424fb26c8c421f9841a22e5a09ffc9745ba8e5072aaea92a84ecee8",
+    "reports/ai-product-photoshoot-ads-evaluation/phase2_live_20261015_115107/fresh_node_test_output.log": "df456ddd11e2e6aaa56bdfab5ed414217c60b83736414f1e469dd8498d3f3931",
+    "reports/ai-product-photoshoot-ads-evaluation/phase2_live_20261015_115107/fresh_regression_results.md": "f93c11e1afd192f8893b29330fb4e36a93ddcc11954a6be6c69ad201b68a39e3",
+    "reports/ai-product-photoshoot-ads-evaluation/phase2_live_20261015_115107/held_out_end_to_end_grades.json": "da45fc704cdbf622d7305cd67c5ffc7c78904ffc4426c0b86028bb48c832d3dc",
+    "reports/ai-product-photoshoot-ads-evaluation/phase2_live_20261015_115107/held_out_live_model_grades.json": "404e82b31bb40b35273ea2a4ed48d279d85c75f4fe27daa8e6e827e51eb6b010",
+    "reports/ai-product-photoshoot-ads-evaluation/phase2_live_20261015_115107/held_out_test_cases.json": "aa0529ffe4d4430d98ecea902e9095d8ed6abd3c8a495235c007f4c1f5f8e21c",
+    "reports/ai-product-photoshoot-ads-evaluation/phase2_live_20261015_115107/offline_grading_command.py": "24748e1acb3bb843711470a41ff90a59d9283ba8118cb05ce922d70df12857d3",
+    "reports/ai-product-photoshoot-ads-evaluation/phase2_live_20261015_115107/original_end_to_end_grades.json": "f493359aa458a2bb0771539f2e2781a47d08dfccaa5c3cc368dd51a12e3ff701",
+    "reports/ai-product-photoshoot-ads-evaluation/phase2_live_20261015_115107/original_live_model_grades.json": "f6dce2fb30effef3195ad4cbb2252aa1f467b77eb7058b54273ba7033df8d2fd",
+    "reports/ai-product-photoshoot-ads-evaluation/phase2_live_20261015_115107/original_test_cases.json": "afaf5a007ffa987581a89ace23602c9cc328d7b79060df0361a134eda252dfc0",
+    "reports/ai-product-photoshoot-ads-evaluation/phase2_live_20261015_115107/preservation_verification.json": "470c705b1308a54acf37d8982947b0d8573335ffa104effcfb3e1edcbf6fafb7",
+    "reports/ai-product-photoshoot-ads-evaluation/phase2_live_20261015_115107/report_generation_and_review.py": "755d87c32d5f0f2028acec2be6e106d786274f5903464c5a8e97883ecae4dc8f"
+  },
+  "gitStatusAtStart": "M  ../appcopyai/App.js\n M ../appcopyai/ios/Podfile.lock\nM  knowledge/README.md\n M models/AiTutorSession.js\nM  reports/architecture_validation_results.json\n M routes/ai.js\nMM services/aiTutorService.js\nMM services/tutorKnowledge.js\n M tests/ai-chat-history.test.cjs\nM  tests/architecture_validation_tests.json\nMM tests/tutor-knowledge.test.cjs\nM  ../edunex-f/package.json\nD  ../edunex-f/public/assets/brand/skillomate-admin-icon-dark.png\nD  ../edunex-f/public/assets/brand/skillomate-admin-icon-light.png\nD  ../edunex-f/public/assets/offer-video/offer-3.mov\nD  ../edunex-f/public/assets/offer-video/offer-4.mov\nM  ../edunex-f/src/main.jsx\n?? ../Skillomate_AI_Product_Photoshoot_Chatbot_Review.zip\n?? ../Skillomate_Chatbot_Failure_Analysis.zip\n?? ../Skillomate_Chatbot_Failure_Analysis/\n?? \"../Skillomate_Chatbot_Final_Review_Package 2/\"\n?? ../Skillomate_Chatbot_Final_Review_Package.zip\n?? ../Skillomate_Chatbot_Final_Review_Package/\n?? ../Skillomate_Chatbot_Improvement_Review.zip\n?? ../Skillomate_Chatbot_Phase2_Live_Review.zip\n?? ../Skillomate_Chatbot_Phase2_Live_Review/\n?? ../Skillomate_Chatbot_Phase3_Fix_Review.zip\n?? ../chatbot-review-package/\n?? knowledge/ai-filmmaking/training-l9-15.txt\n?? knowledge/ai-product-photoshoot-ads/\n?? reports/ai-product-photoshoot-ads-evaluation/\n?? reports/l9_15_graded_results.json\n?? reports/l9_15_graded_results_round2.json\n?? reports/l9_15_graded_results_round3.json\n?? reports/l9_15_raw_results.json\n?? reports/l9_15_raw_results_round2.json\n?? reports/l9_15_raw_results_round3.json\n?? scripts/eval/\n?? services/productTutorKnowledge.js\n?? services/productTutorResponse.js\n?? services/productTutorTasks.js\n?? services/tutorProvider.js\n?? tests/helpers/\n?? tests/product-tutor-phase3.test.cjs\n?? tests/product-tutor-quality.test.cjs\n?? tests/test_product_evaluator.py\n?? tests/test_product_evaluator_v3.py\n?? ../tmp/pdfs/phase3-fix-comparison-20261015/\n",
+  "fixture": {
+    "_id": "6d0000000000000000000000",
+    "slug": "ai-product-photoshoot-ads",
+    "title": "AI Product Photoshoot & Ads",
+    "description": "Create AI product photos, product videos and honest UGC-style ads.",
+    "videos": [
+      {
+        "_id": "6d0000000000000000000001",
+        "title": "Lesson 01 — Course Intro",
+        "description": "Course Intro Course mein kya banega, tools, kya chahiye"
+      },
+      {
+        "_id": "6d0000000000000000000002",
+        "title": "Lesson 02 — Phone Photo Se Studio Photo",
+        "description": "Phone Photo Se Studio Photo Angle photos → Product Sheet → white studio, lifestyle, dark premium"
+      },
+      {
+        "_id": "6d0000000000000000000003",
+        "title": "Lesson 03 — Model Ke Saath Product",
+        "description": "Model Ke Saath Product Character sheet + product sheet saath, 3 model shots, haathon ki galtiyan"
+      },
+      {
+        "_id": "6d0000000000000000000004",
+        "title": "Lesson 04 — Festive Shoot + Colour Variants",
+        "description": "Festive Shoot + Colour Variants Diwali, wedding gift scenes; har rang ki nayi product sheet"
+      },
+      {
+        "_id": "6d0000000000000000000005",
+        "title": "Lesson 05 — chat G.P.T Se Ad Plan",
+        "description": "chat G.P.T Se Ad Plan Buyers, problems, angles; hooks, script, caption; Flow prompts"
+      },
+      {
+        "_id": "6d0000000000000000000006",
+        "title": "Lesson 06 — Photo Se Product Video",
+        "description": "Photo Se Product Video Ingredients mode, ek movement: push-in, arc, light sweep"
+      },
+      {
+        "_id": "6d0000000000000000000007",
+        "title": "Lesson 07 — UGC-Style Video",
+        "description": "UGC-Style Video AI insaan phone-style video, 9:16; phone frame mein na aaye"
+      },
+      {
+        "_id": "6d0000000000000000000008",
+        "title": "Lesson 08 — Finale",
+        "description": "Finale Poora workflow, top galtiyan, imaandari, final project; prompts notes mein"
+      }
+    ]
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "verifiedAt": "2026-10-15T10:13:08.558Z",
+  "recordCount": 53,
+  "lessonCount": 8,
+  "templateCount": 19,
+  "lessons": [
+    {
+      "number": 1,
+      "heading": "Lesson 01 — Course Intro",
+      "chunkId": "ai-product-photoshoot-ads:training:lesson-summary:lesson-01-course-intro"
+    },
+    {
+      "number": 2,
+      "heading": "Lesson 02 — Phone Photo Se Studio Photo",
+      "chunkId": "ai-product-photoshoot-ads:training:lesson-summary:lesson-02-phone-photo-se-studio-photo"
+    },
+    {
+      "number": 3,
+      "heading": "Lesson 03 — Model Ke Saath Product",
+      "chunkId": "ai-product-photoshoot-ads:training:lesson-summary:lesson-03-model-ke-saath-product"
+    },
+    {
+      "number": 4,
+      "heading": "Lesson 04 — Festive Shoot + Colour Variants",
+      "chunkId": "ai-product-photoshoot-ads:training:lesson-summary:lesson-04-festive-shoot-colour-variants"
+    },
+    {
+      "number": 5,
+      "heading": "Lesson 05 — chat G.P.T Se Ad Plan",
+      "chunkId": "ai-product-photoshoot-ads:training:lesson-summary:lesson-05-chat-g-p-t-se-ad-plan"
+    },
+    {
+      "number": 6,
+      "heading": "Lesson 06 — Photo Se Product Video",
+      "chunkId": "ai-product-photoshoot-ads:training:lesson-summary:lesson-06-photo-se-product-video"
+    },
+    {
+      "number": 7,
+      "heading": "Lesson 07 — UGC-Style Video",
+      "chunkId": "ai-product-photoshoot-ads:training:lesson-summary:lesson-07-ugc-style-video"
+    },
+    {
+      "number": 8,
+      "heading": "Lesson 08 — Finale",
+      "chunkId": "ai-product-photoshoot-ads:training:lesson-summary:lesson-08-finale"
+    }
+  ],
+  "templates": [
+    {
+      "heading": "L02 Product Sheet",
+      "lessonNumber": 2,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l02-product-sheet"
+    },
+    {
+      "heading": "L02 White Studio",
+      "lessonNumber": 2,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l02-white-studio"
+    },
+    {
+      "heading": "L02 Lifestyle",
+      "lessonNumber": 2,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l02-lifestyle"
+    },
+    {
+      "heading": "L02 Dark Premium",
+      "lessonNumber": 2,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l02-dark-premium"
+    },
+    {
+      "heading": "L03 Character Sheet (bonus)",
+      "lessonNumber": 3,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l03-character-sheet-bonus"
+    },
+    {
+      "heading": "L03 Hands close-up",
+      "lessonNumber": 3,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l03-hands-close-up"
+    },
+    {
+      "heading": "L03 Desk",
+      "lessonNumber": 3,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l03-desk"
+    },
+    {
+      "heading": "L03 Showing to camera",
+      "lessonNumber": 3,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l03-showing-to-camera"
+    },
+    {
+      "heading": "L04 Diwali",
+      "lessonNumber": 4,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l04-diwali"
+    },
+    {
+      "heading": "L04 Wedding Gift",
+      "lessonNumber": 4,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l04-wedding-gift"
+    },
+    {
+      "heading": "L04 Colour Variant Sheet",
+      "lessonNumber": 4,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l04-colour-variant-sheet"
+    },
+    {
+      "heading": "L05 Step 1 Brief",
+      "lessonNumber": 5,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l05-step-1-brief"
+    },
+    {
+      "heading": "L05 Step 2 Hooks + Script",
+      "lessonNumber": 5,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l05-step-2-hooks-script"
+    },
+    {
+      "heading": "L05 Step 3 Flow prompts",
+      "lessonNumber": 5,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l05-step-3-flow-prompts"
+    },
+    {
+      "heading": "L06 Push-in",
+      "lessonNumber": 6,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l06-push-in"
+    },
+    {
+      "heading": "L06 Arc",
+      "lessonNumber": 6,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l06-arc"
+    },
+    {
+      "heading": "L06 Light Sweep",
+      "lessonNumber": 6,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l06-light-sweep"
+    },
+    {
+      "heading": "L07 UGC 1",
+      "lessonNumber": 7,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l07-ugc-1"
+    },
+    {
+      "heading": "L07 UGC 2",
+      "lessonNumber": 7,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l07-ugc-2"
+    }
+  ],
+  "uniqueChunkIds": true
+}

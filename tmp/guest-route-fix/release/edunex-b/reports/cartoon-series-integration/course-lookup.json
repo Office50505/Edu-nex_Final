@@ -1,0 +1,8 @@
+{
+  "checked_at_utc": "2026-10-24T05:35:30.570779+00:00",
+  "scope": "read-only configured backend catalog; all four existing course titles/slugs inspected",
+  "matching_actual_course_records": [],
+  "actual_course_id": null,
+  "actual_published_slug": null,
+  "production_writes": false
+}

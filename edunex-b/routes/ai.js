@@ -15,6 +15,7 @@ const {
   learnerContextDirectReply,
   callFalOpenRouter,
   builtInCourseGuide,
+  selectedLessonSummary,
   cleanLearnerReply,
   aiFilmmakingDirectReply,
   resolveRequestedCourseScope,
@@ -279,6 +280,10 @@ async function handleTutorChat(req, res) {
         if(Array.isArray(knowledge?.conversationHistory)){
           history=knowledge.conversationHistory;
           historyRestored=!incomingHistoryLength && Boolean(history.length);
+        }
+        if (!reply) {
+          reply = selectedLessonSummary({ message, knowledge });
+          if (reply) selectedTemplateId = 'selected-lesson-summary';
         }
         const packRule = !reply && packDirectReply({message,history,knowledge});
         if (packRule) { reply = packRule.reply; selectedTemplateId = packRule.templateId; }

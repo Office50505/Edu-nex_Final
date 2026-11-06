@@ -1,0 +1,30 @@
+{
+  "same_failures": true,
+  "existing_failures": [
+    "Back exits enrolled playback one level and keeps lessons",
+    "Back exits preview playback one level and keeps lessons",
+    "Home displays course metadata before its playback request finishes",
+    "PDF extraction reads selectable text from a real PDF",
+    "PhonePe amount mismatch never grants one-time access",
+    "annual checkout selects server-owned plan/price and returns annual checkout metadata",
+    "appcopyai disables backups, cleartext traffic, overlays, and unverified deep links",
+    "blank vertical URL clears legacy storage while preserving the horizontal thumbnail",
+    "config, status and verification reject unauthenticated and revoked sessions before billing work",
+    "course detail back returns to the courses page instead of home",
+    "environment overrides control purchase configuration even when a stored purchase has an older product",
+    "mute and playback speed changes do not trigger a source reload",
+    "nonterminal callback state remains retryable for a later provider success event",
+    "notifications require Pub/Sub authentication and the correct package before processing",
+    "on-screen Back uses the same lesson-preserving transition",
+    "pending monthly checkout cannot be reused as annual; invalid types and wrong plans cannot create mandates",
+    "profile avatar picker keeps unique bundled choices and falls back from unknown legacy values",
+    "root page swipe is bidirectional and disabled while search is open",
+    "server exposes authenticated Google config under /api exactly once with the confirmed defaults",
+    "status returns authenticated entitlement state without caching",
+    "verification errors preserve safe client codes and hide provider internals",
+    "verification rate limit applies before another verification call",
+    "verification rejects missing, malformed and oversized tokens and malformed JSON",
+    "verification uses the authenticated owner and token, ignoring client-claimed product/package/status"
+  ],
+  "new_failures": []
+}

@@ -1,0 +1,9 @@
+{
+  "recordedAt": "2026-10-15T06:33:09.641040+00:00",
+  "attempt": "controlled fallback drills using loopback HTTP in restricted sandbox",
+  "outcome": "blocked_before_handler",
+  "safeError": "listen EPERM: operation not permitted 127.0.0.1",
+  "externalProviderRequests": 0,
+  "notCountedInScores": true,
+  "nextAction": "Retry authorized local HTTP execution with explicitly injected transport failures; no external provider request in fault mode."
+}

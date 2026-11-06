@@ -1,0 +1,69 @@
+{
+  "course": "AI Product Photoshoot & Ads",
+  "audit_date": "2026-10-14",
+  "report": "edunex-b/reports/ai-product-photoshoot-ads-evaluation/implementation_verification_report.md",
+  "constraints": {
+    "code_modified_during_audit": false,
+    "deployed": false,
+    "production_resources_modified": false,
+    "live_user_data_modified": false
+  },
+  "artifacts": {
+    "knowledge_file": "edunex-b/knowledge/ai-product-photoshoot-ads/training.txt",
+    "evaluation_pack": "edunex-b/scripts/eval/product_photoshoot_ads_test_cases.json",
+    "grader": "edunex-b/scripts/eval/grade_product_photoshoot_ads_results.py",
+    "report_directory": "edunex-b/reports/ai-product-photoshoot-ads-evaluation/"
+  },
+  "test_evidence": {
+    "mocked_unit_tests": {
+      "command": "npm run test:ai",
+      "passed": 49,
+      "failed": 0,
+      "skipped": 0,
+      "status": "PASS"
+    },
+    "static_checks": {
+      "node_syntax_ai_tutor_service": "PASS",
+      "python_compile_product_grader": "PASS",
+      "git_diff_check": "PASS"
+    },
+    "retrieval_probes": {
+      "exact_l06_push_in": "PASS",
+      "lesson_04_colour_variant": "PASS",
+      "ai_filmmaking_isolation": "PASS"
+    },
+    "real_api_checks": {
+      "api_health": "PASS",
+      "api_ai_chat_product_eval": "NOT TESTED"
+    },
+    "evaluation_pack_execution": {
+      "total_tests": 55,
+      "single_turn_tests": 47,
+      "conversation_tests": 8,
+      "live_eval_status": "NOT TESTED",
+      "raw_results_file_exists": false
+    }
+  },
+  "final_status": {
+    "architecture_reuse": "PASS",
+    "product_course_knowledge_ingestion": "PASS",
+    "exact_prompt_preservation": "PASS",
+    "troubleshooting_coverage": "PASS",
+    "course_identification": "PASS",
+    "previous_course_regression": "PASS",
+    "english_language_handling": "PARTIAL",
+    "hindi_language_handling": "PARTIAL",
+    "hinglish_language_handling": "PARTIAL",
+    "course_isolation": "PASS",
+    "unsupported_claims_fake_testimonials": "PARTIAL",
+    "evaluation_pack": "PASS",
+    "live_55_test_evaluation": "NOT TESTED",
+    "production_safety": "PASS",
+    "worktree_readiness_for_commit": "PARTIAL"
+  },
+  "notes": [
+    "The 55-test pack and grader are prepared, but no live product-course raw result file exists yet.",
+    "Language and safety handling are prompt/guardrail covered but require live model evaluation before marking PASS.",
+    "The worktree contains unrelated dirty files from prior work/pull reapply and should be reviewed before commit."
+  ]
+}

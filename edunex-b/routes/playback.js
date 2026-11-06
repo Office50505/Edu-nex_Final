@@ -129,6 +129,17 @@ router.post('/admin/playback-preview',protectAdminRead,run(async(req,res)=>{
   if(video.provider==='aws_cloudfront')res.json(cf.issueGrant(video.videoUrl,{preview:true}));
   else res.json(video);
 }));
+router.post('/public/courses/:courseId/videos/:videoId/playback-access',run(async(req,res)=>{
+  const course = await Course.findOne({_id:req.params.courseId,status:'published'})
+    .select(require('../services/publicCourseAccess').publicCourseProjection).lean();
+  const video = course?.videos.find(item => String(item._id) === req.params.videoId);
+  if (!course || !video) return res.status(404).json({error:'Published lesson not found.'});
+  if (!require('../services/publicCourseAccess').isPublicLesson(course, video)) {
+    return res.status(403).json({error:'A purchase is required for this lesson.'});
+  }
+  if (inferProvider(video) !== 'aws_cloudfront') return res.json(require('../services/mobileCompatibilityService').publicPlayableVideoInfo(video));
+  res.json(cf.issueGrant(video.videoUrl, {publicLesson:true, courseId:String(course._id), videoId:String(video._id)}));
+}));
 router.post('/courses/:courseId/videos/:videoId/playback-access',requireCompatibleAuth({userProjection:'_id isActive subscriptionStatus subscriptionExpiry purchasedCourses courseEntitlements +activeSessionId'}),run(async(req,res)=>{
   const [,course]=await Promise.all([
     access(req.compatUser,req.params.courseId),
@@ -283,7 +294,15 @@ router.get('/courses/:courseId/videos/:videoId/download.mp4',async(req,res)=>{
 });
 router.get('/playback/hls.m3u8',run(async(req,res)=>{
   let grant;try{grant=cf.decodeGrant(req.query.grant);}catch{return res.status(401).json({error:'Playback access expired. Reload or renew playback.'});}
-  if(!grant.preview){
+  if(grant.publicLesson){
+    const course = await Course.findOne({_id:grant.courseId,status:'published'})
+      .select(require('../services/publicCourseAccess').publicCourseProjection).lean();
+    const video = course?.videos.find(item => String(item._id) === grant.videoId);
+    if (!video || !require('../services/publicCourseAccess').isPublicLesson(course, video)
+      || inferProvider(video) !== 'aws_cloudfront' || video.videoUrl !== grant.reference) {
+      return res.status(403).json({error:'This public lesson is no longer available.'});
+    }
+  } else if(!grant.preview){
     const user=await User.findById(grant.userId).select('_id isActive subscriptionStatus subscriptionExpiry purchasedCourses courseEntitlements +activeSessionId').lean();
     if(!user||user.isActive===false||!await isSessionValidForUser(user,grant.sessionId))return res.status(401).json({error:'Playback session is no longer active.'});
     const [,course]=await Promise.all([

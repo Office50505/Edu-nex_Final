@@ -1,0 +1,20 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "tests/ai-chat-history.test.cjs",
+    "tests/tutor-knowledge.test.cjs",
+    "tests/product-tutor-quality.test.cjs",
+    "tests/mobile-course-ai.test.cjs",
+    "tests/mobile-course-ai-cache.test.cjs"
+  ],
+  "environment_overrides": {
+    "NODE_OPTIONS": "--require=./tests/helpers/deny-network.cjs"
+  },
+  "startedAt": "2026-10-15T06:33:49.334080+00:00",
+  "completedAt": "2026-10-15T06:33:49.893568+00:00",
+  "durationSeconds": 0.5594306659995709,
+  "exitCode": 0,
+  "log": "node_test_output.log",
+  "provider_requests": 0
+}

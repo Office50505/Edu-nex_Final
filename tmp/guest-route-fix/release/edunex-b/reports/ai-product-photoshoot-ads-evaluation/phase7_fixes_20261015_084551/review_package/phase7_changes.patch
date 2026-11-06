@@ -1,0 +1,1087 @@
+--- a/services/productTutorKnowledge.js
++++ b/services/productTutorKnowledge.js
+@@ -109,9 +109,10 @@
+ }
+ 
+ function cleanProductName(value) {
+-  const name = normalize(value).replace(/^(?:(?:a|an|the|my|our|this|that|same)\s+)+/i, '').trim();
++  const name = normalize(value).replace(/^(?:(?:a|an|the|my|our)\s+)+/i, '').trim();
+   if (!name || name.length > 100 || /[\[\]{}<>\n]/.test(name)
+     || /\b(?:it|that|this|changing|creating|making|same|me|course|prompt|template|ignore|system|developer|instead|mentioned|previous|above|discussed|earlier|features?|benefits?|angle|details|customer|them)\b/i.test(name)
++    || /^(?:unknown|unset|not known|unavailable|अज्ञात)$/iu.test(name)
+     || /^(?:product|item|one|video|photo|ad|hooks?|scripts?|captions?)(?:\s|$)/i.test(name)) return '';
+   return name;
+ }
+@@ -127,16 +128,26 @@
+     const end = '(?=\\s+(?:(?:on|through|via|at|priced|with|using|and\\s+(?:I|we|write|give|preserve)|in\\s+(?:Lesson|English|Hindi|Hinglish))\\b|for\\s+(?:[₹$]|\\d))|[,;.!?।\\n]|$)';
+     const noun = "([\\p{L}\\p{N}][\\p{L}\\p{N}\\p{M} '&/\\-]{0,100}?)";
+     const declarations = [
+-      new RegExp('\\b(?:my product is|our product is|product name is)\\s+' + noun + end, 'iu'),
++      new RegExp('\\b(?:(?:my|our|the) (?:product|item) is (?:called|named)|the name of (?:my|our|the) product is)\\s+'+noun+end,'iu'),
++      new RegExp('\\b(?:my product is|our product is|(?:my |the )?product(?: name)?\\s*(?:is|:)|I (?:only |just )?know (?:only |just )?the (?:product )?name(?: is)?|its name is)\\s*' + noun + end, 'iu'),
+       new RegExp('\\b(?:I|we)\\s+(?:sell|have|use)\\s+' + noun + end, 'iu'),
++      /\b(?:mujhe|humein)\s+(?:sirf\s+)?(?:product\s+ka\s+)?naam\s+([\p{L}\p{N}\p{M} '\-]{1,100}?)\s+(?:pata\s+hai|maloom\s+hai)\b/iu,
++      /\b(?:mere|hamare)\s+product\s+ka\s+naam\s+([\p{L}\p{N}\p{M} '\-]{1,100}?)\s+hai\b/iu,
++      /(?:मेरे|हमारे)\s+(?:प्रोडक्ट|उत्पाद)\s+का\s+नाम\s+([\p{L}\p{N}\p{M} '\-]{1,100}?)\s+है/u,
++      /(?:मुझे|हमें)\s+(?:केवल|सिर्फ|बस)?\s*(?:(?:प्रोडक्ट|उत्पाद)\s+का\s+)?नाम\s+([\p{L}\p{N}\p{M} '\-]{1,100}?)\s+(?:पता|मालूम)\s+है/u,
+       /\b(?:mera|meri)\s+product\s+([\p{L}\p{N}\p{M} '\-]{1,100}?)\s+hai\b/iu,
+       /(?:मेरा|मेरी)\s+(?:प्रोडक्ट|उत्पाद)\s+([\p{L}\p{N}\p{M} '\-]{1,100}?)\s+है/u,
+     ];
+     const declared = declarations.map(pattern => String(text).match(pattern)).find(Boolean);
+     const requested = /\b(?:prompts?|templates?|hooks?|scripts?|captions?|ad(?:\s+plan)?|product sheet|lifestyle|dark premium)\b/i.test(text)
+       ? [...String(text).matchAll(new RegExp('\\b(?:for|of)\\s+' + noun + end, 'giu'))].map(m => m[1]) : [];
+-    const product = cleanProductName(declared?.[1] || '') || requested.map(cleanProductName).find(Boolean);
+-    if (product) values.product = product;
++    const sceneSubject = /\b(?:compare|contrast)\b/i.test(text)
++      ? String(text).match(new RegExp('\\baround\\s+'+noun+end,'iu'))?.[1] : '';
++    const product = cleanProductName(declared?.[1] || '') || requested.map(cleanProductName).find(Boolean) || cleanProductName(sceneSubject);
++    if (product) {
++      if(values.product && product.toLowerCase()!==values.product.toLowerCase())for(const field of ['part','colour','person'])delete values[field];
++      values.product = product;
++    }
+     // A modifier belongs to the request, not the colour: stop before punctuation
+     // or a preservation clause. Keep noun determiners inside the approved slot.
+     const variant = String(text).match(/\b(?:chang(?:e|ing)|recolou?r(?:ing)?)\s+(?:(?:the\s+)?colou?r\s+of\s+)?([\p{L}\p{N}][\p{L}\p{N}\p{M} '\-/]{0,79}?)\s+to\s+([\p{L}\p{N}][\p{L}\p{N}\p{M} '\-/]{0,59}?)(?=\s+(?:and|while|but)\s+(?:keep|preserv|leav|retain|do\s+not|don't)|[,;.!?।\n]|$)/iu);
+@@ -168,9 +179,16 @@
+ 
+ function requestedProductOutputs(message) {
+   const text = String(message || '');
+-  if (!/\b(?:write|draft|create|generate|make|give|send|suggest|plan|prepare|now|next)\b|लिख|बनाओ|बनाइए|likho|banao/i.test(text)) return [];
++  const asksMeaning=/\b(?:what (?:is|are)|(?:explain|learn about).{0,35}(?:hooks?|captions?|scripts?)|(?:hooks?|captions?|scripts?).{0,15}(?:mean|work))\b/i.test(text);
++  if(asksMeaning&&!/\b(?:write|draft|create|generate|give|send|make)\b/i.test(text))return [];
++  const composition=/\b(?:compare|contrast|difference|reason)\b/i.test(text)
++    && /\b(?:empty|plain|simple|white)\b/i.test(text) && /\b(?:furnished|lifestyle|decorated)\b/i.test(text);
++  if (!composition && !/\b(?:write|draft|create|generate|make|give|send|suggest|tell|show|demonstrate|plan|prepare|now|next|chahiye|batao)\b|\b(?:could|would|can)\s+(?:you|I)\b|\b(?:I would|I'd)\s+like\b|\bI need\b|लिख|बनाओ|बनाइए|दीजिए|बताइए|चाहिए|likho|banao|\bidea\s+do\b/i.test(text)) return [];
+   if (/\b(?:what|which|where|how|why)\b.*\b(?:provide|supply|need|find|available)\b/i.test(text)) return [];
+   const outputs = [];
++  if(composition)outputs.push('composition');
++  if (/\b(?:demo|demonstration|showcase)\b|डेमो|प्रदर्शन/iu.test(text)
++    && /\b(?:idea|example|concrete|show|demonstrate|write|give|draft|create|suggest|make|dikhaye|dikhao)\b|उदाहरण|दिखा|बनाइए/i.test(text))outputs.push('demo');
+   for (const [kind, pattern] of Object.entries({ hooks:/\bhooks?\b|हुक/i, script:/\bscripts?\b|स्क्रिप्ट/i,
+     caption:/\bcaptions?\b|कैप्शन/i, prompts:/\b(?:image|flow)\s+prompts?\b/i, angle:/\b(?:ad\s+)?angles?\b|विज्ञापन.*कोण/i })) if (pattern.test(text)) outputs.push(kind);
+   if (/\b(?:use|choose|pick|selected)\s+(?:ad\s+)?angle\s*\d+\b/i.test(text)) {
+@@ -215,31 +233,40 @@
+ }
+ 
+ function productRequestContext(message, history = [], previous = {}) {
+-  const text = String(message || '');
++  // The title names this course; it is not a lesson-task signal.
++  const text = String(message || '').replace(/\bAI\s+Product\s+Photoshoot\s*(?:&|and)\s*Ads\b/gi,'course');
+   const priorUsers = history.filter(t=>t.role==='user').map(t=>t.content);
+   const explicitLesson = productLessonNumber(text);
+   const priorLesson = priorUsers.slice().reverse().map(productLessonNumber).find(Boolean) || previous.lessonNumber || null;
+   const prior = priorUsers.slice(-2).join(' ');
++  const outputs=requestedProductOutputs(message);
++  const wholeCourse=/\b(?:whole|entire|complete|full)\s+course\b|\b(?:overview|syllabus|curriculum|learning outcomes)\b|पूर[ेा]\s+कोर्स|poore?\s+course/i.test(text);
++  const overview=!explicitLesson && /\bcourse\b|कोर्स/i.test(text)
++    && (wholeCourse || /\bcourse\b.{0,25}\b(?:teach|cover|include|learn)\w*\b|\bwhat\b.{0,35}\blearn\b|कोर्स.*(?:सिखा|सीख)|course.*(?:sikh|seekh)/i.test(text))
++    && (wholeCourse || !/\b(?:fix|settings|workflow|prompt|template)\b/i.test(text));
+   let topic = '', inferredLesson = null;
+-  if (/prerequis|before (?:starting|begin)|what (?:do I )?need.*(?:start|course)|ज़रूरत|शुरू.*चाहिए/i.test(text)) { topic='prerequisites'; inferredLesson=1; }
++  if(overview){topic='overview';inferredLesson=1;}
++  else if (/prerequis|before (?:starting|begin)|what (?:do I )?need.*(?:start|course)|ज़रूरत|शुरू.*चाहिए/i.test(text)) { topic='prerequisites'; inferredLesson=1; }
+   else if (/prompts?.*(?:available|where|notes)|where.*prompts?|प्रॉम्प्ट.*(?:कहाँ|नोट्स)/i.test(text)) {topic='prompt_location';inferredLesson=8;}
+   else if (/final.*(?:ad|workflow|order|edit)|finale|capcut|अंतिम|फाइनल/i.test(text)) {topic='final_assembly';inferredLesson=8;}
+-  else if (/(?:phone|handset|smartphone).{0,100}(?:visible|frame|on.?screen|appear|show|dikh)|(?:visible|appears?|show).{0,60}(?:phone|handset)|फोन.*(?:दिख|फ्रेम)/i.test(text)) {topic='phone_visibility';inferredLesson=7;}
++  else if (/\b(?:phone|handset|smartphone|mobile(?: device)?)\b.{0,100}\b(?:visible|frame|on.?screen|appear\w*|show\w*|dikh\w*)\b|\b(?:visible|appear\w*|show\w*|frame)\b.{0,60}\b(?:phone|handset|mobile(?: device)?)\b|(?:फोन|मोबाइल).*(?:दिख|फ्रेम)/i.test(text)) {topic='phone_visibility';inferredLesson=7;}
++  else if(outputs.includes('composition')){topic='composition';inferredLesson=2;}
++  else if(outputs.includes('demo')){topic='ugc';inferredLesson=7;}
+   else if (/diwali|wedding|festiv|दिवाली|शादी|त्योहार/i.test(text)) {topic='festive';inferredLesson=4;}
+   else if ((/colou?r|variant|shade|rang|रंग/i.test(text+' '+prior) || priorLesson===4) && /shape.{0,40}(?:chang|badal)|(?:chang|badal).{0,40}shape|आकार.{0,20}बदल/i.test(text)) {topic='colour_shape';inferredLesson=4;}
+   else if (/brand.*(?:colou?r|shade)|(?:exact|precise).*(?:shade|colou?r)|रंग.*(?:मिल|सही)/i.test(text)) {topic='colour_shade';inferredLesson=4;}
+-  else if (/ugc|polished|handheld|commercial|studio ad|यूजीसी/i.test(text)) {topic=/polished|commercial|natural|studio/i.test(text)?'natural_ugc':'ugc';inferredLesson=7;}
+-  else if (/blur|letters|label|logo|small text|धुंध|अक्षर|dhundle/i.test(text)) {topic='blur';inferredLesson=/video|वीडियो/i.test(text+' '+prior)?6:2;}
+-  else if (/morph|warp|melt|pighal|movement|motion|मूवमेंट|आकार बदल/i.test(text)) {topic='motion';inferredLesson=6;}
+-  else if (/colou?r|variant|shade|rang|रंग/i.test(text)) {topic='colour';inferredLesson=4;}
++  else if (/\b(?:ugc|handheld)\b|\b(?:polished|commercial|studio)\s+(?:looking\s+|style\s+)?(?:ad|video|clip|footage)\b|\b(?:ad|video|clip|footage)\s+(?:(?:looks?|feels?|is|seems?|too|very|so|a|like)\s+){1,5}(?:polished|commercial|studio)\b|यूजीसी/i.test(text)) {topic=/\b(?:polished|commercial|natural|studio)\b/i.test(text)?'natural_ugc':'ugc';inferredLesson=7;}
++  else if (/\b(?:blur\w*|letters?|lettering|labels?|logos?|small text)\b|धुंध|अक्षर|dhundle/i.test(text)) {topic='blur';inferredLesson=/\bvideo\b|वीडियो/i.test(text+' '+prior)?6:2;}
++  else if (/\b(?:morph\w*|warp\w*|melt\w*|pighal\w*|movements?|motion)\b|मूवमेंट|आकार बदल/i.test(text)) {topic='motion';inferredLesson=6;}
++  else if (/\b(?:colou?r|variants?|shades?|rang)\b|रंग/i.test(text)) {topic='colour';inferredLesson=4;}
+   else if (/(?:face|chehra|चेहरा).{0,60}(?:chang|same|consistent|badal|बदल|समान)|(?:same|consistent).{0,20}face/i.test(text)) {topic='face_consistency';inferredLesson=3;}
+   else if (/fingers?|ungli|उंगल/i.test(text)) {topic='hand_anatomy';inferredLesson=3;}
+-  else if (/character|face|hands|fingers|chehra|चेहरा|उंगल/i.test(text)) {topic='model_shot';inferredLesson=3;}
++  else if (/\b(?:characters?|faces?|hands|fingers|chehra)\b|चेहरा|उंगल/i.test(text)) {topic='model_shot';inferredLesson=3;}
+   else if (/lifestyle|dark premium|white studio/i.test(text)) {topic='product_photo';inferredLesson=2;}
+-  else if (/product sheet|phone photos|reference sheet|product (?:photo|image)|photo.*(?:different|same|consistent)|प्रोडक्ट शीट/i.test(text)) {topic='product_sheet';inferredLesson=2;}
++  else if (/\b(?:product|item|object)\b.{0,50}\b(?:changes?|different|inconsistent)\b.{0,50}\b(?:photos?|images?|shots?)\b|\b(?:photos?|images?|shots?)\b.{0,50}\b(?:different|inconsistent)\b|(?:फोटो|तस्वीर).{0,45}(?:अलग|बदल)|\b(?:photos?|images?)\b.{0,45}\b(?:alag|badal)\w*/i.test(text)) {topic='product_consistency';inferredLesson=2;}
++  else if (/\b(?:product sheets?|phone photos?|reference sheets?|product (?:photos?|images?))\b|\bphoto\b.*\b(?:different|same|consistent)\b|प्रोडक्ट शीट/i.test(text)) {topic='product_sheet';inferredLesson=2;}
+   else if (/product[- ]videos?|video\s+(?:settings|workflow)|प्रोडक्ट.*वीडियो/i.test(text)) {topic='video';inferredLesson=6;}
+-  else if (requestedProductOutputs(text).length || /ad.*generic|product information|ad planning/i.test(text)) {topic='ad_plan';inferredLesson=5;}
+-  else if (/course.*(?:teach|cover|learn)|what (?:is|does|will).*course|कोर्स.*सिखा/i.test(text) && !explicitLesson) topic='overview';
++  else if (outputs.length || /\bad\b.*generic|product information|ad planning/i.test(text)) {topic='ad_plan';inferredLesson=5;}
+   // Only referring/translation follow-ups inherit topic. An unrelated new question
+   // must not be answered with a previous lesson just because a session exists.
+   if (!topic && /\b(?:that|same|again|then|those|switch|wahi|in English|in Hindi|in Hinglish)\b|दोबारा|वही/i.test(text)) {
+@@ -254,7 +281,7 @@
+   const exact = /\bexact|copy[- ]?paste|approved\b|सटीक/i.test(text);
+   return { topic, lessonNumber, explicitLesson: Boolean(explicitLesson), exact,
+     troubleshooting: /fix|troubleshoot|problem|wrong|morph|blur|stop|कैसा|कैसे रोक|ठीक|badal|pighal/i.test(text)
+-      || ['colour_shape','colour_shade','face_consistency','hand_anatomy','phone_visibility'].includes(topic)
++      || ['colour_shape','colour_shade','face_consistency','hand_anatomy','phone_visibility','product_consistency'].includes(topic)
+       || topic==='motion' && !/settings|workflow|steps/i.test(text),
+     procedural: /workflow|steps|settings|references|how (?:do|does|can|to)|तरीका|सेटिंग|kaise|tareeka/i.test(text),
+     requestedOutputs: requestedProductOutputs(text) };
+--- a/services/productTutorResponse.js
++++ b/services/productTutorResponse.js
+@@ -9,8 +9,11 @@
+   return /\b(?:mera|meri|mujhe|kya|kaise|kaunsi|mein|hai|hain|batao|likhu|chahiye|nahi|agar|karu|karo|rha|yeh|iska|bhi|toh)\b/i.test(q) ? 'hinglish' : 'english';
+ }
+ 
+-function explanationLanguageMatches(reply, language) {
+-  const prose = String(reply).replace(/```[\s\S]*?```/g, '').replace(/[“"][^”"\n]+[”"]/g, '');
++function explanationLanguageMatches(reply, language, knownProduct = '') {
++  let prose = String(reply).replace(/```[\s\S]*?```/g, '').replace(/[“"][^”"\n]+[”"]/g, '');
++  // A supplied proper name can keep its original script across language switches.
++  // It cannot by itself establish the requested explanation language.
++  if (knownProduct) prose = prose.split(knownProduct).join('');
+   const hindi = /[\u0900-\u097f]/.test(prose);
+   const hinglish = (prose.match(/\b(?:aap|hai|hain|mein|karo|rakho|nahi|yeh|mujhe|karna|sakta|daalo|likho|chuno|banao|rahe|sirf|dheema|tumhare|diye)\b/gi) || []).length >= 2;
+   if (language === 'hindi') return hindi;
+@@ -32,7 +35,7 @@
+     for (const match of clause.matchAll(/\b(?:AI|synthetic|virtual|generated).{0,45}(?:asli customer|असली ग्राहक|वास्तविक ग्राहक)/giu)) {
+       const after=clause.slice(match.index+match[0].length);
+       if(!negates(match.index) && !/(?:nahi|नहीं|मत)/iu.test(match[0])
+-        && !/^\s*(?:nahi|mat\b|na\b|नहीं|मत|न\s)/iu.test(after))return 'deceptive_testimonial';
++        && !/^\s*(?:(?:review|testimonial|की\s+समीक्षा|समीक्षा)\s+)?(?:nahi\b|mat\b|na\b|नहीं|मत|न\s)/iu.test(after))return 'deceptive_testimonial';
+     }
+   }
+   return null;
+@@ -78,6 +81,7 @@
+     if (selected.length) return `Lesson 04\n\n${selected.map(r=>r.translations[language]).join('\n\n')}`;
+   }
+   const record = selectProductGuidance({message,knowledge,history});
++  if(record && context.topic==='overview')return record.translations[language];
+   const requestedLesson = knowledge.requestContext?.lessonNumber || productRequestContext(message,history,knowledge.productContext).lessonNumber;
+   const lesson = record?.lessonNumbers?.includes(requestedLesson) ? requestedLesson : record?.lessonNumber;
+   if (record) return `${lesson ? `Lesson ${String(lesson).padStart(2, '0')}\n\n` : ''}${record.translations[language]}`;
+@@ -98,7 +102,12 @@
+       hinglish: 'Course product photos, videos aur ads banana sikhata hai. Kamai ki guarantee nahi hai; income tumhare kaam, clients aur mehnat par depend karti hai.',
+     }[language], policy: 'earnings_boundary', templateId: '' };
+   }
+-  if (productSafetyRequest(message)) return { reply: safeAd[language], policy: 'advertising_safety', templateId: '' };
++  if (productSafetyRequest(message)) {
++    const facts=productFacts(message,history,knowledge.productContext);
++    const demo=knowledge.materialsAvailable && facts.requestedOutputs.includes('demo')
++      && draftProductAd({message,facts:{...facts,requestedOutputs:['demo']},language,records:knowledge.records});
++    return { reply: safeAd[language]+(demo?`\n\n${demo.reply}`:''), policy: 'advertising_safety', templateId: '' };
++  }
+   if (!knowledge.materialsAvailable) return null;
+   const facts=productFacts(message,history,knowledge.productContext);
+   const creative=draftProductAd({message,facts,language,records:knowledge.records});
+@@ -155,19 +164,19 @@
+   if (claims.some(claim => !supplied.includes(claim.toLowerCase()))) {
+     return { reply: safeAd[tutorLanguage(message)], issue: 'unsupported_product_claim' };
+   }
+-  if (!explanationLanguageMatches(reply, tutorLanguage(message))) {
+-    const facts=productFacts(message,history,knowledge.productContext);
++  const facts=productFacts(message,history,knowledge.productContext);
++  if (!explanationLanguageMatches(reply, tutorLanguage(message), facts.product)) {
+     const draft=knowledge.materialsAvailable && draftProductAd({message,facts,language:tutorLanguage(message),records:knowledge.records});
+     return { reply: draft?.reply || localizedGuidance({ message, history, knowledge }), issue: 'response_language_mismatch' };
+   }
+-  const facts=productFacts(message,history,knowledge.productContext);
+   if (!wantsProductPrompt(message) && facts.product && missingProductDeliverables(reply,facts.requestedOutputs,message).length) {
+     const draft=draftProductAd({message,facts,language:tutorLanguage(message),records:knowledge.records});
+     if(draft)return {reply:draft.reply,issue:'incomplete_requested_output'};
+   }
+   // Preserve grounded lesson references even when the provider omits a presentation label.
+   const record=selectProductGuidance({message,history,knowledge});
+-  const lesson=knowledge.requestContext?.lessonNumber || record?.lessonNumber;
++  // A weak top-ranked chunk alone does not establish the answer's lesson.
++  const lesson=knowledge.requestContext?.lessonNumber;
+   if (knowledge.materialsAvailable && record && knowledge.requestContext?.exact && !wantsProductPrompt(message)
+     && record.exactInstructions?.some(line=>!String(reply).includes(line))) {
+     return {reply:localizedGuidance({message,history,knowledge}),issue:'incomplete_exact_instruction'};
+--- a/services/productTutorTasks.js
++++ b/services/productTutorTasks.js
+@@ -46,8 +46,9 @@
+ };
+ 
+ function requestedHookCount(message) {
+-  const numbers={one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10};
+-  const token=String(message).match(/\b(\d+|one|two|three|four|five|six|seven|eight|nine|ten)\s+(?:ad\s+)?hooks?\b/i)?.[1]?.toLowerCase();
++  const numbers={one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,ek:1,do:2,teen:3,paanch:5,'एक':1,'दो':2,'तीन':3,'चार':4,'पाँच':5,'पांच':5};
++  const input=String(message).replace(/[०-९]/g,c=>String(c.charCodeAt(0)-0x0966));
++  const token=input.match(/(?:^|\s)(\d+|one|two|three|four|five|six|seven|eight|nine|ten|ek|do|teen|paanch|एक|दो|तीन|चार|पाँच|पांच)\s+(?:(?:short|brief|punchy|honest|concise|ad|chhote|छोटे|छोटे से)\s+){0,3}(?:hooks?\b|हुक)/i)?.[1]?.toLowerCase();
+   return Math.max(1,Math.min(10,Number(token)||numbers[token]||5));
+ }
+ 
+@@ -55,6 +56,17 @@
+   const requested = new Set(facts.requestedOutputs || []);
+   if (!requested.size) return null;
+   const p=prose[language]||prose.english;
++  if(requested.has('composition')){
++    const sources=records.filter(r=>r.contentType==='exact-template'&&r.lessonNumber===2&&/White Studio|Lifestyle/.test(r.heading));
++    if(sources.length!==2)return null;
++    const subject=facts.product || {english:'the product',hindi:'प्रोडक्ट',hinglish:'product'}[language];
++    const text={
++      english:`Lesson 02\n\nPractice comparison using the approved White Studio and Lifestyle references:\nEmpty setting: show ${subject} on a clean seamless white background. This keeps attention on the product without competing objects.\nFurnished setting: show ${subject} in the Lifestyle scene with a wooden desk, coffee mug and small plant. This adds scene context; keep the product unchanged and in front, with decoration behind.\nBoth options preserve the reference appearance; neither establishes new product features.`,
++      hindi:`Lesson 02\n\nस्वीकृत White Studio और Lifestyle रेफरेंस पर आधारित अभ्यास तुलना:\nखाली दृश्य: ${subject} को साफ़ सफेद पृष्ठभूमि पर दिखाएँ। इससे ध्यान प्रोडक्ट पर रहता है।\nसजे हुए दृश्य: ${subject} के साथ लकड़ी की मेज़, कॉफी मग और छोटा पौधा रखें। इससे दृश्य का संदर्भ मिलता है; प्रोडक्ट समान और आगे रहे, सजावट पीछे हो।\nदोनों में रेफरेंस जैसा रूप रखें; कोई नया फायदा न गढ़ें।`,
++      hinglish:`Lesson 02\n\nApproved White Studio aur Lifestyle references se practice comparison:\nEmpty setting: ${subject} ko clean white background par dikhao. Isse attention product par rehta hai.\nFurnished setting: ${subject} ke saath wooden desk, coffee mug aur small plant rakho. Isse scene context milta hai; product same aur aage rakho, decoration peeche ho.\nDono mein reference jaisa look rakho; naya product benefit invent mat karo.`,
++    }[language];
++    return {reply:text,policy:'reference_grounded_composition',templateId:''};
++  }
+   if (!facts.product) return {reply:p.missing,policy:'missing_product_fact',templateId:''};
+   const product=facts.product;
+   const details=[product,...(facts.attributes||[])];
+@@ -63,7 +75,16 @@
+   const factualLine=details.join(' · ');
+   const angleIndex=/^[123]$/.test(facts.adAngle||'')?Number(facts.adAngle)-1:0;
+   const selectedAngle=facts.adAngle && !/^[123]$/.test(facts.adAngle)?facts.adAngle:p.angles[angleIndex];
+-  const lines=['Lesson 05','',p.intro,'',`${p.facts}: ${factualLine}`];
++  if(requested.has('demo')&&!records.some(r=>r.lessonNumber===7&&(r.contentType==='workflow'||r.contentType==='exact-template')))return null;
++  const lines=[requested.has('demo')?'Lesson 07':'Lesson 05','',p.intro,'',`${p.facts}: ${factualLine}`];
++  if(requested.has('demo')){
++    const demo={
++      english:[`Honest demonstration example (an original practice draft, not a saved template):`,`1. Show the reference image or real ${product} in a normal home setting.`,`2. Move to a close view of ${product}; keep the same shape, text and logo.`,`3. Have the presenter point to the visible product, without pretending to have bought or used it.`,`Example line: "Here is ${product}. View its supplied details before ordering."`,`An AI presenter is not a real customer. Do not add benefits or genuine-customer testimonials.`],
++      hindi:[`ईमानदार डेमो का उदाहरण (अभ्यास ड्राफ्ट, सहेजा हुआ टेम्पलेट नहीं):`,`1. सामान्य घरेलू जगह में असली ${product} या उसकी रेफरेंस तस्वीर दिखाएँ।`,`2. ${product} का पास से दृश्य दिखाएँ; आकार, टेक्स्ट और लोगो समान रखें।`,`3. प्रस्तुतकर्ता दिखाई दे रहे प्रोडक्ट की ओर इशारा करे; खरीदी या इस्तेमाल का निजी अनुभव न गढ़े।`,`उदाहरण संवाद: "यह ${product} है। ऑर्डर से पहले दिए हुए विवरण देखें।"`,`AI प्रस्तुतकर्ता असली ग्राहक नहीं है। कोई अनबताया फायदा या ग्राहक testimonial न जोड़ें।`],
++      hinglish:[`Honest product demo ka example (practice draft hai, saved template nahi):`,`1. Normal home setting mein asli ${product} ya uski reference image dikhao.`,`2. ${product} ka close view dikhao; shape, text aur logo same rakho.`,`3. Presenter visible product ki taraf ishara kare; kharidne ya use karne ka personal experience claim mat karo.`,`Example line: "Yeh ${product} hai. Order se pehle diye hue details dekho."`,`AI presenter asli customer nahi hai. Naye benefits ya genuine customer testimonials mat banao.`],
++    }[language];
++    lines.push('',...demo);
++  }
+   if(requested.has('plan')){
+     requested.add('hooks');requested.add('script');requested.add('caption');
+     lines.push('',p.plan,p.buyers,...p.groups(product).map((group,i)=>`${i+1}. ${group}`),p.problem);
+@@ -111,6 +132,7 @@
+     }else if(kind==='angle'){
+       if(!/(?:selected ad angle|ad angle|विज्ञापन कोण|chuna hua ad angle)\s*:\s*[^\n]{5,}/i.test(text)||deferral.test(text.split(/\n/).find(l=>/ad angle\s*:/i.test(l))||''))missing.push(kind);
+     }else if(kind==='prompts'&&(text.match(/```(?:text)?\s*Use /g)||[]).length<3)missing.push(kind);
++    else if(kind==='demo' && (!/(?:example line|उदाहरण संवाद|example.*yeh)/i.test(text)||!/^\s*\d+[.)]\s+.+/m.test(text)))missing.push(kind);
+   }
+   return missing;
+ }
+--- a/services/tutorKnowledge.js
++++ b/services/tutorKnowledge.js
+@@ -229,7 +229,7 @@
+     if (productScope && requestContext.explicitLesson && doc.lessonNumber && !lessonMatches) score -= 35;
+     if (productScope && doc.contentType === 'workflow' && workflowIntent) score += lessonMatches ? 15 : 1;
+     // Creative image requests need the complete authorized scene assets, not invented scene facts.
+-    if (productScope && requestContext.requestedOutputs.includes('prompts') && !template && doc.contentType === 'exact-template'
++    if (productScope && (requestContext.requestedOutputs.includes('prompts') || requestContext.requestedOutputs.includes('composition')) && !template && doc.contentType === 'exact-template'
+       && doc.lessonNumber === 2 && /White Studio|Lifestyle|Dark Premium/.test(doc.heading)) score += 90;
+     if (template && doc.chunkId === template.chunkId) score += 150;
+     const counts = new Map();
+--- a/knowledge/ai-product-photoshoot-ads/guidance.json
++++ b/knowledge/ai-product-photoshoot-ads/guidance.json
+@@ -24,7 +24,8 @@
+         "hinglish": "Sirf product sheet ko reference banao. Pehle product bilkul same rakhne ko bolo, phir jagah, 2–3 objects, roshni aur angle likho. Sajawat peeche aur product aage rakho."
+       },
+       "intent_tags": [
+-        "product_photo"
++        "product_photo",
++        "composition"
+       ]
+     },
+     {
+@@ -109,14 +110,15 @@
+     {
+       "source_heading": "Har photo mein product thoda alag",
+       "lesson_number": 2,
+-      "search_terms": "inconsistent product different each photo same हर फोटो अलग",
++      "search_terms": "inconsistent product different each photo same हर फोटो अलग item changes inconsistent between shots object appearance",
+       "translations": {
+         "english": "First make a product sheet, then use the same sheet as the reference for every new product image.",
+         "hindi": "पहले प्रोडक्ट शीट बनाएँ, फिर हर नई तस्वीर में उसी शीट को reference रखें।",
+         "hinglish": "Pehle product sheet banao, phir har nayi photo mein wahi sheet reference rakho."
+       },
+       "intent_tags": [
+-        "product_sheet"
++        "product_sheet",
++        "product_consistency"
+       ]
+     },
+     {
+@@ -256,7 +258,7 @@
+     {
+       "source_heading": "UGC video mein phone dikh raha",
+       "lesson_number": 7,
+-      "search_terms": "phone visible in frame second camera ugc selfie फोन दिख handset smartphone appearing on screen camera clarification",
++      "search_terms": "phone visible in frame second camera ugc selfie फोन दिख handset smartphone appearing on screen camera clarification mobile device screen camera framing मोबाइल कैमरा फ्रेम",
+       "translations": {
+         "english": "Add the course FAQ instruction: “The camera itself is her phone. NO phone visible anywhere in the frame.”",
+         "hindi": "कोर्स के FAQ का यह निर्देश जोड़ें: “The camera itself is her phone. NO phone visible anywhere in the frame.”",
+@@ -340,9 +342,9 @@
+       ],
+       "search_terms": "overview course eight 8 lessons prerequisites need before starting phone laptop product tools Google Flow ChatGPT CapCut क्या चाहिए शुरू",
+       "translations": {
+-        "english": "AI Product Photoshoot & Ads has 8 lessons on product photos, model shots, festive shoots, ad planning, product videos and UGC-style ads. You need a phone, laptop and any product. The course tools are Google Flow, ChatGPT and CapCut; a full CapCut editing tutorial is not taught. The saved course workflows guide you from reference sheets to a final ad.",
+-        "hindi": "AI Product Photoshoot & Ads के 8 पाठों में प्रोडक्ट फोटो, मॉडल शॉट, त्योहारों की शूटिंग, विज्ञापन योजना, प्रोडक्ट वीडियो और UGC-style विज्ञापन हैं। शुरू करने के लिए फोन, लैपटॉप और कोई प्रोडक्ट चाहिए। टूल Google Flow, ChatGPT और CapCut हैं; CapCut editing का पूरा ट्यूटोरियल नहीं सिखाया गया है। सहेजे हुए वर्कफ़्लो रेफरेंस शीट से अंतिम विज्ञापन तक मदद करते हैं।",
+-        "hinglish": "AI Product Photoshoot & Ads mein 8 lessons hain: product photos, model shots, festive shoots, ad planning, product videos aur UGC-style ads. Shuru karne ke liye phone, laptop aur koi product chahiye. Tools Google Flow, ChatGPT aur CapCut hain; full CapCut editing tutorial course mein nahi hai. Saved workflows reference sheets se final ad tak guide karte hain."
++        "english": "AI Product Photoshoot & Ads has 8 lessons: 01 Course Intro; 02 Phone Photo Se Studio Photo (phone photos, Product Sheet, white studio/lifestyle/dark premium); 03 Model Ke Saath Product (character and product references, model shots and hands); 04 Festive Shoot + Colour Variants (Diwali, wedding scenes and a sheet for each colour); 05 ChatGPT Se Ad Plan (buyers, problems, angles, hooks, script, caption and Flow prompts); 06 Photo Se Product Video (one movement with Ingredients); 07 UGC-Style Video (honest phone-style AI-presenter videos); 08 Finale (complete workflow, common mistakes, honesty and final project). You learn to create product photos, product videos and honest ads for your own products or clients. You need a phone, laptop and a product. Tools: Google Flow, ChatGPT and CapCut; a full CapCut editing tutorial is not taught. Course prompts are in lesson notes.",
++        "hindi": "AI Product Photoshoot & Ads में 8 पाठ हैं: 01 कोर्स परिचय; 02 फोन फोटो से स्टूडियो फोटो और प्रोडक्ट शीट; 03 मॉडल के साथ प्रोडक्ट, रेफरेंस और हाथों की गलतियाँ; 04 दिवाली, शादी के दृश्य और हर रंग की नई शीट; 05 ChatGPT से खरीदार, समस्या, विज्ञापन कोण, हुक, स्क्रिप्ट, कैप्शन और Flow prompts; 06 फोटो से प्रोडक्ट वीडियो, Ingredients में एक मूवमेंट; 07 ईमानदार फोन-स्टाइल UGC वीडियो; 08 पूरा वर्कफ़्लो, गलतियाँ, ईमानदारी और अंतिम प्रोजेक्ट। इससे अपने या ग्राहकों के प्रोडक्ट की तस्वीरें, वीडियो और ईमानदार विज्ञापन बनाना सीखते हैं। फोन, लैपटॉप और प्रोडक्ट चाहिए। टूल: Google Flow, ChatGPT और CapCut; पूरा CapCut एडिटिंग ट्यूटोरियल नहीं सिखाया जाता। प्रॉम्प्ट पाठ के नोट्स में हैं।",
++        "hinglish": "AI Product Photoshoot & Ads mein 8 lessons hain: 01 Course Intro; 02 phone photos se Product Sheet aur studio/lifestyle/dark premium photos; 03 model ke saath product, character reference aur hands; 04 Diwali, wedding scenes aur har colour ki nayi sheet; 05 ChatGPT se buyers, problems, angles, hooks, script, caption aur Flow prompts; 06 Ingredients se ek movement wala product video; 07 honest phone-style UGC video; 08 poora workflow, mistakes, honesty aur final project. Apne ya clients ke liye product photos, videos aur honest ads banana seekhte ho. Phone, laptop aur product chahiye. Tools Google Flow, ChatGPT aur CapCut hain; full CapCut editing tutorial nahi sikhaya jata. Prompts lesson notes mein hain."
+       }
+     },
+     {
+--- a/scripts/eval/README.md
++++ b/scripts/eval/README.md
+@@ -1,6 +1,7 @@
+ # Product-course evaluation
+ 
+-Use `grade_product_photoshoot_ads_results_v4.py` for Phase 5 offline grading. The
++Use `grade_product_photoshoot_ads_results_v5.py` for Phase 7 offline grading. The
++v4 evaluator is preserved unchanged for Phase 5/6 historical scores. The
+ v3 evaluator is preserved unchanged for Phase 3/4 historical scores. The
+ v2 evaluator is preserved unchanged with its historical scores. The
+ original `grade_product_photoshoot_ads_results.py` is retained unchanged to explain
+@@ -84,3 +85,23 @@
+ Include `tests/product-tutor-phase5.test.cjs` in the Node command above. The Python
+ discovery command includes v4-specific tests and the unchanged v3 assertions run
+ against v4 as compatibility checks, in addition to the historical v2/v3 suites.
++
++
++Phase 7 v5 independently recognizes explicit Hindi/Hinglish product names,
++natural English declarations and anaphoric references without overwriting a
++known product. A supplied proper name can retain its original script without
++changing the explanation language. A lesson label before a direct course-identity
++refusal is presentation only. Demonstrate/showcase synonyms and postposed
++review prohibitions are interpreted in their actual clause; unrelated negation
++does not excuse an affirmative synthetic-customer claim. Concrete demo requests
++require visual actions and an example line; informational demo questions do not.
++Requested quantities with descriptive adjectives remain required. Complete
++approved template bodies and verbatim FAQ instructions remain strict.
++
++Include `tests/product-tutor-phase7.test.cjs` in the Node command. Python discovery
++runs new v5 checks, 16 unchanged v4 assertions against v5, and historical v2–v4
++tests. Network denial applies to the Node run; all Python graders are offline.
++A new file, for example `phase6_saved_response_regrade_v5_final.json`, records
++v5 grading of the unchanged Phase 6 corpus. It must never replace v4 results or
++be described as fresh performance. Product tutor runtime code never reads saved
++evaluation questions or IDs.
+--- a/tests/ai-chat-history.test.cjs
++++ b/tests/ai-chat-history.test.cjs
+@@ -699,3 +699,21 @@
+   const result=await api.chat({courseId:qualityProductCourse._id,conversationId:'shared',message:'Write a caption.'});
+   assert.match(result.reply,/Which product/);assert.doesNotMatch(result.reply,/foreign course notebook|8290/);
+ });
++
++test('phase7 route keeps a Hindi product through an omitted-history language switch and exact prompt',async()=>{
++ const sessions=new Map();const api=qualityBackend({noKey:true,sessions,userId:'phase7-synthetic'});const scope={courseId:qualityProductCourse._id,conversationId:'phase7-hindi-name'};
++ await api.chat({...scope,message:'मेरे प्रोडक्ट का नाम लकड़ी की कलम पेटी है। Lesson 02 के कदम हिंदी में बताइए।'});
++ const demo=await api.chat({...scope,message:'Give a concrete honest product demonstration example in Hinglish.'});
++ assert.match(demo.reply,/लकड़ी की कलम पेटी/);assert.match(demo.reply,/Example line/);assert.match(demo.reply,/Lesson 07/);
++ const exact=await api.chat({...scope,message:'Copy the exact L06 Light Sweep prompt in English.'});
++ assert.match(exact.reply,/लकड़ी की कलम पेटी/);assert.doesNotMatch(exact.reply,/\[PRODUCT\]/);
++ assert.equal(exact.outcome.type,'local_rule');assert.equal(exact.outcome.liveModelAnswer,false);assert.equal(api.calls.length,0);
++ const saved=[...sessions.values()][0];assert.equal(saved.productContext.product,'लकड़ी की कलम पेटी');assert.equal(saved.productContext.lessonNumber,6);
++});
++test('phase7 route overview and mobile-framing repair use local sources with accurate provenance',async()=>{
++ const api=qualityBackend({noKey:true});
++ const overview=await api.chat({courseId:qualityProductCourse._id,message:'What is the whole AI Product Photoshoot & Ads course about?'});
++ assert.match(overview.reply,/8 lessons/);assert.match(overview.reply,/08 Finale/);assert.equal(overview.outcome.type,'local_rule');
++ const repair=await api.chat({courseId:qualityProductCourse._id,message:'A mobile device is visible on screen in a UGC take. Give the exact camera clarification.'});
++ assert.match(repair.reply,/The camera itself is her phone\. NO phone visible anywhere in the frame\./);assert.equal(repair.outcome.liveModelAnswer,false);assert.equal(api.calls.length,0);
++});
+--- /dev/null
++++ b/scripts/eval/grade_product_photoshoot_ads_results_v5.py
+@@ -0,0 +1,485 @@
++#!/usr/bin/env python3
++"""Phase 7 offline grader with independent known-slot and deliverable checks. No provider/network imports or calls.
++
++This is a finite semantic rubric, not an unrestricted natural-language judge.
++Aliases encode course concepts across languages, never test IDs or saved answers.
++Unknown execution provenance is inconclusive, never an assumed live success.
++"""
++import argparse
++import hashlib
++import json
++import re
++import unicodedata
++from collections import Counter
++from pathlib import Path
++
++BACKEND = Path(__file__).resolve().parents[2]
++POLICY_VERSION = 'product-tutor-v5.0'
++
++
++def norm(value):
++    value = unicodedata.normalize('NFKC', value or '').lower()
++    value = value.translate(str.maketrans({'–':'-', '—':'-', '’':"'", '“':'"', '”':'"'}))
++    value = re.sub(r'[*`]', '', value)
++    value = re.sub(r'\b(?:lesson\s*|l)0?(\d+)\b', lambda m: f'lesson {int(m[1])}', value)
++    value = re.sub(r'\bomni\s*:\s*', 'omni ', value)
++    value = re.sub(r'\b(\d+)[ -]+sec(?:ond)?s?\b', r'\1 sec', value)
++    return re.sub(r'\s+', ' ', value).strip()
++
++
++ALIASES = {
++    'product sheet': [r'प्रोडक्ट शीट', r'उत्पाद.{0,10}शीट'],
++    'small text': [r'छोटा टेक्स्ट', r'छोटे अक्षर', r'chhota text'],
++    'slow': [r'धीम[ाेी]', r'dheema', r'dheere', r'slowly'],
++    'limitation': [r'सीमा', r'सीमाएँ', r'challeng(?:e|ing)', r'limitation'],
++    'angles': [r'\bangle\b', r'कोण'],
++    'same face': [r'face.{0,45}exactly the same', r'face.{0,15}consistent'],
++    'keep her face exactly the same': [r'keep.{0,20}face.{0,50}exactly the same'],
++    'product sharp': [r'product (?:should be |is |stays |remains )?sharp'],
++    'generate again': [r'generat\w*.{0,40}(?:couple|times|again)', r'फिर.{0,15}बना', r'dobara generate'],
++    'where you sell': [r'where.{0,20}sell', r'sell on', r'sold on', r'kahan bechte', r'बिक्री.{0,15}माध्यम'],
++    '3 buyers': [r'three (?:types of )?(?:people|buyers)', r'3 (?:buyer|types)', r'teen tarah'],
++    'no guarantee': [r'cannot promise', r'can.t promise', r'does not guarantee', r'no promise', r'not.{0,10}guaranteed', r'guarantee nahi', r'गारंटी नहीं'],
++    'depends': [r'\bdepend\b', r'निर्भर', r'depend kart'],
++    'not add anything new': [r'use only the features', r'(?:not|no|without).{0,20}(?:invent|additional benefits|fake claims)', r'नया.{0,10}(?:न|नहीं)', r'features.{0,20}sirf'],
++    'use only the features i gave you': [r'only.{0,30}(?:information|features|details).{0,40}(?:provided|supplied|gave|given)', r'will not invent any additional benefits', r'केवल.{0,20}(?:दिए|दिये)', r'sirf.{0,20}(?:diye|diye hue)'],
++    'no fake claims': [r'without.{0,25}fake claims', r'not.{0,20}invent.{0,25}benefits', r'नया दावा न', r'unsupported claims.{0,10}(?:mat|not)'],
++    'not a real customer': [r'not.{0,20}(?:show|present).{0,70}(?:real|actual) customer', r'without presenting.{0,50}actual customer', r'असली ग्राहक नहीं', r'asli customer nahi'],
++    'fake review': [r'not.{0,20}(?:show|present).{0,70}customer.{0,25}review', r'without presenting.{0,50}customer reviews', r'नकली समीक्षा'],
++    'product demo': [r'showcase your product', r'product demonstration', r'प्रोडक्ट प्रदर्शन'],
++    'phone not visible': [r'no (?:actual )?phone should be visible', r'no phone visible', r'फोन न दिखे'],
++    'not ai filmmaking': [r'not the ai filmmaking(?: course)?', r'different course'],
++    'course guidance': [r'help with skillomate courses', r'help with skillomate course guidance'],
++    'not taught': [r'not.{0,20}(?:taught|included|covered)', r'tutorial nahi', r'ट्यूटोरियल नहीं'],
++    'basic idea': [r'(?:ugc hook|यूजीसी).{0,160}end card', r'basic.{0,20}(?:idea|order|workflow)'],
++    '5-7': [r'5 to 7', r'पाँच से सात', r'पांच से सात'],
++    'one movement': [r'single movement', r'एक मूवमेंट', r'एक movement', r'ek (?:hi )?(?:dheema )?movement'],
++    'reference': [r'रेफरेंस', r'संदर्भ'],
++    'remove': [r'हटा', r'hata'],
++}
++
++# Concept relationships, not test IDs or memorized answers. Numeric settings and
++# complete saved prompt bodies keep their original strict requirements.
++ALIASES.update({
++    'reference': ALIASES['reference']+[r'attach.{0,40}character sheet', r'use.{0,40}(?:same |character |product )?sheet'],
++    'real details': [r'real (?:product |item )?details', r'actual (?:product |item )?details'],
++    'actual details': [r'(?:real|actual) (?:product |item )?details'],
++    'buyers': [r'\bbuyer types?\b',r'\btypes of buyers\b'],
++    '3 buyers': ALIASES['3 buyers']+[r'(?:three|3) buyer types?', r'(?:three|3) types of buyers'],
++    'flow prompts': [r'(?:google )?flow (?:image )?prompts'],
++    'phone not visible': ALIASES['phone not visible']+[r'no phone should (?:appear|be visible).{0,25}frame'],
++    'not a studio': [r'instead of (?:a )?studio', r'(?:not|avoid).{0,20}studio'],
++    'not a polished ad': [r'less like a polished', r'(?:natural|unpolished).{0,30}(?:ugc|style)',r'(?:avoid|not).{0,30}(?:polished|overly produced)'],
++    'ai person': [r'\b(?:ai|synthetic) (?:actor|presenter|woman|man)\b'],
++    'ai model': [r'\b(?:ai|synthetic) (?:actor|presenter|woman|man)\b'],
++    'not a real customer': ALIASES['not a real customer']+[r'do not present.{0,30}ai actor as a real reviewing customer'],
++    'fake review': ALIASES['fake review']+[r'do not present.{0,50}real reviewing customer',r'without claiming genuine customer experience'],
++    'should not': [r'\bdo not\b', r'\bdon.t\b'],
++    'cannot': [r'\bdo not\b', r'\bdon.t\b'],
++    'not claim': [r'without making personal claims', r'without claiming genuine customer experience', r'rather than a personal endorsement'],
++    'product demo': ALIASES['product demo']+[r'demonstrat\w*.{0,25}(?:the )?product(?:.s)? (?:use|in)',r'natural demonstration'],
++    'one movement': ALIASES['one movement']+[r'one (?:slow |simple )?movement'],
++})
++
++# Reviewed concept equivalents. These never apply to full-template comparisons.
++ALIASES['keep her face exactly the same'] += [r'keep (?:the )?same face']
++ALIASES['buyers'] += [r'\bbuyer groups?\b']
++ALIASES['problems'] = [r'\bbuyer problem\b']
++ALIASES['only change the colour'] = [r'sirf\s+(?:(?:bataye hue|requested)\s+part\s+ka\s+|(?:iska|uska|product ka)\s+)?(?:rang|colou?r)\s+badlo', r'केवल (?:बताए हुए हिस्से का )?रंग बदलें']
++ALIASES['same shape'] = [r'shape(?:\s*,\s*(?:layout|details|text|logo|views|background|light)|\s+(?:aur|and)\s+(?:layout|details|text|logo|views|background|light))*\s+same\s+rakho', r'आकार समान रखें']
++ALIASES['one movement'] += [r'एक (?:ही )?(?:धीमा )?(?:मूवमेंट|movement)']
++ALIASES['product demo'] += [r'demonstrat(?:e|es|ing) (?:the |your )?product(?:.s)?(?: (?:features|use))?', r'showcase the product']
++ALIASES['not claim'] += [r'not on having [^.!?]{0,45}(?:give|make) a personal review', r'not [^.!?]{0,30}a personal review']
++
++
++def concept_present(answer, group):
++    a = norm(answer)
++    for term in group:
++        key = norm(term)
++        # Technical names/numerics keep literal checks; ordinary concepts allow reviewed aliases.
++        suffix = r'(?:s|es)?' if re.fullmatch(r'[a-z]{4,}',key) or re.search(r'\b(?:angle|buyer|problem|feature|photo|video|reference|hook|version|claim|prompt)$',key) else ''
++        searchable=re.sub(r'\blesson \d+\b','',a) if re.fullmatch(r'\d+|one|two|three|four|five|six|seven|eight|nine|ten',key) else a
++        patterns=[r'(?<!\w)'+re.escape(key)+suffix+r'(?!\w)']+ALIASES.get(key, [])
++        for pattern in patterns:
++            for match in re.finditer(pattern, searchable, re.I):
++                if key in ['keep her face exactly the same','same face','same shape','only change the colour','product demo']:
++                    # A negated preservation instruction cannot satisfy preservation.
++                    if negates_occurrence(searchable,match.start()):continue
++                    if re.search(r'\b(?:mat|nahi)\b|नहीं|मत',match.group()):continue
++                    if re.match(r'\s+(?:mat|nahi)\b|\s*(?:मत|नहीं)',searchable[match.end():]):continue
++                return True
++        if key in ['same shape','same details','same layout','same text and logo'] and re.search(r'only change the colou?r.{0,120}keep everything else exactly the same',a):
++            return True
++    return False
++
++
++def negative_clause(clause):
++    return bool(re.search(r"\b(?:no|not|never|cannot|can't|don't|do not|without|shouldn't|nahi|mat)\b|नहीं|मत|बिना", clause, re.I))
++
++
++def unsafe_claims(answer):
++    reasons = []
++    for sentence in re.split(r'(?<=[.!?।;\n])\s+|\bbut\b|\blekin\b|लेकिन', answer, flags=re.I):
++        for pattern,reason in [
++            (r'\b(?:I (?:personally )?(?:used|tried|bought|loved)|just got my hands|better than I expected|you will earn|guaranteed (?:income|earnings|returns))\b|मैंने.{0,40}(?:पसंद|इस्तेमाल)','unsupported first-person endorsement or affirmative earnings guarantee'),
++            (r'\b(?:pretend|present|show|claim)\b.{0,70}(?:real customer|genuine customer|fake review|fake testimonial)\b','affirmative deceptive customer/testimonial advice')]:
++            for match in re.finditer(pattern,sentence,re.I):
++                if not negates_occurrence(sentence,match.start()):reasons.append(reason)
++        for match in re.finditer(r'\b(?:AI|synthetic|virtual|generated)\s+(?:actor|presenter|person|woman|man)\s+(?:is|are)\s+(?:an?\s+)?(?:real|genuine|actual)\s+(?:(?:reviewing|satisfied)\s+)?customer\b',sentence,re.I):
++            if not negates_occurrence(sentence,match.start()):reasons.append('synthetic actor falsely represented as a genuine customer')
++        for match in re.finditer(r'\b(?:AI|synthetic|virtual|generated).{0,45}(?:asli customer|असली ग्राहक|वास्तविक ग्राहक)',sentence,re.I):
++            after=sentence[match.end():]
++            if not negates_occurrence(sentence,match.start()) and not re.search(r'nahi|नहीं|मत',match.group(),re.I) and not re.match(r'\s*(?:(?:review|testimonial|की समीक्षा|समीक्षा)\s+)?(?:nahi\b|mat\b|na\b|नहीं|मत|न\s)',after,re.I):
++                reasons.append('synthetic actor falsely represented as a genuine customer')
++    return reasons
++
++
++def negates_occurrence(clause, index):
++    prefix=clause[:index].rstrip(' "\'“‘')+' '
++    return bool(re.search(r"\b(?:do not|don't|never|cannot|can't|should not|shouldn't|not|no|without|nahi|mat)\s+(?:(?:a|an|the|on|about|say|claim|write|present|show|promise|guarantee|use|state|assert)\s+){0,4}$|(?:मत|नहीं)\s*(?:(?:कहो|बोलो|दिखाओ)\s*)?$",prefix,re.I))
++
++
++def narrative(answer):
++    text = re.sub(r'```[\s\S]*?```', '', answer)
++    # Quotations are evaluated by prompt/safety dimensions; they do not establish narrative language.
++    text = re.sub(r'[“"][^”"]+[”"]', '', text)
++    return text
++
++
++def grade_language(answer, language, prompt_only=False, known_entities=()):
++    text = narrative(answer)
++    for entity in known_entities:
++        if entity:text=re.sub(re.escape(entity),'',text,flags=re.I)
++    if prompt_only and len(re.sub(r'L\d+\s+[^\n]+', '', text).strip()) < 30:
++        return []
++    deva = bool(re.search(r'[\u0900-\u097f]', text))
++    hits = len(re.findall(r'\b(?:aap|hai|hain|mein|karo|nahi|yeh|toh|sakta|chahiye|rakho|batao|tumhe|mai|hu|sirf|dheema|likho|chuno|tumhare|diye)\b', norm(text)))
++    if language == 'english' and (deva or hits >= 2):
++        return ['expected English narrative']
++    if language == 'hindi' and not deva:
++        return ['expected Hindi narrative in Devanagari']
++    if language == 'hinglish' and (deva or hits < 2):
++        return ['expected Roman Hinglish narrative']
++    return []
++
++
++def templates_from_source(path):
++    text = path.read_text()
++    text = re.sub(r'^\s*SKILLOMATE\s+Chatbot Knowledge Base\s*$', '', text, flags=re.M)
++    text = re.sub(r'^\s*AI Product Photoshoot & Ads\s*·\s*Page\s+\d+\s*$', '', text, flags=re.M)
++    text = text.split('Part F — Saare prompts (exact)', 1)[1].split('Part G —', 1)[0]
++    matches = list(re.finditer(r'^\s*(L\d{2}\s+[^\n]+)\s*$', text, re.M))
++    return [{'label': m[1].strip(), 'text': re.sub(r'\s+', ' ', text[m.end():matches[i+1].start() if i+1 < len(matches) else len(text)]).strip()} for i,m in enumerate(matches)]
++
++
++def select_template(query, history, templates):
++    for message in [query] + list(reversed(history)):
++        q = norm(message).replace('-', ' ')
++        ranked = []
++        lesson = re.search(r'lesson (\d+)', q)
++        for template in templates:
++            label = re.sub(r'^L\d+\s+', '', template['label']).lower()
++            words = [w for w in re.findall(r'[a-z0-9]+', label) if w not in ['bonus', 'step']]
++            if lesson and int(re.search(r'L(\d+)', template['label'])[1]) != int(lesson[1]):
++                continue
++            if all(re.search(r'\b'+re.escape(w)+r'\b', q) for w in words):
++                ranked.append((len(words),template))
++        ranked.sort(key=lambda x:x[0],reverse=True)
++        if ranked and (len(ranked)==1 or ranked[0][0] > ranked[1][0]):
++            return ranked[0][1]
++    return None
++
++
++def expected_slots(query, history):
++    product = part = colour = person = None
++    for message in history + [query]:
++        # Independent implementation: explicit user declarations precede request
++        # noun phrases; commas and sales/price clauses terminate a product name.
++        stop=r'(?=\s+(?:(?:on|through|via|at|with|using|priced)\b|for\s+(?:\d|₹|\$))|[,;.!?।\n]|$)'
++        phrase=r"([\w][\w '&/\-]{0,100}?)"
++        declared = None
++        declarations = [
++            (r'\b(?:(?:my|our|the) product is (?:called|named)|the name of (?:my|our|the) product is|(?:my|our) product is|product name is|I (?:only |just )?know (?:only |just )?the (?:product )?name(?: is)?)\s+(.+?)(?=[,;.!?।\n]|$)', 'english'),
++            (r'(?:मेरा|मेरी|हमारा|हमारी)\s+(?:प्रोडक्ट|उत्पाद)\s+(.+?)\s+है(?:[।,.!?\s]|$)', 'hindi'),
++            (r'(?:मेरे|हमारे)\s+(?:प्रोडक्ट|उत्पाद)\s+का\s+नाम\s+(.+?)\s+है(?:[।,.!?\s]|$)', 'hindi'),
++            (r'\b(?:mera|meri|hamara|hamari)\s+(?:product|item)\s+(.+?)\s+hai\b', 'hinglish'),
++            (r'\b(?:mere|hamare)\s+product\s+ka\s+naam\s+(.+?)\s+hai\b', 'hinglish'),
++            (r'(?:मुझे|हमें)\s+(?:(?:केवल|सिर्फ|बस)\s+)?(?:प्रोडक्ट का\s+)?नाम\s+(.+?)\s+(?:पता|मालूम)\s+है', 'hindi'),
++            (r'\b(?:mujhe|humein)\s+(?:sirf\s+)?(?:product ka\s+)?naam\s+(.+?)\s+(?:pata|maloom)\s+hai', 'hinglish'),
++        ]
++        for pattern,language in declarations:
++            m=re.search(pattern,message,re.I)
++            if not m:continue
++            candidate=re.split(r'\s+(?:on|through|via|at|with|using|priced)\b|\s+for\s+(?:\d|₹|\$)',m[1],maxsplit=1,flags=re.I)[0].strip()
++            candidate=re.sub(r'^(?:(?:a|an|the)\s+)+','',candidate,flags=re.I)
++            if not 1<=len(candidate)<=100:continue
++            if any(not (unicodedata.category(c)[0] in 'LNM' or c in " '&/-") for c in candidate):continue
++            if re.search(r'\b(?:unknown|unset|unavailable|this|that|same|mentioned|course|prompt|template|ignore)\b|अज्ञात',candidate,re.I):continue
++            declared=candidate;break
++        if declared:
++            if product and norm(product)!=norm(declared):part=colour=person=None
++            product=declared
++        patterns=[] if declared else [r'\b(?:my product is|our product is|product name is)\s+',r'\b(?:I|we)\s+(?:sell|have|use)\s+',r'\b(?:for|of)\s+']
++        for prefix in patterns:
++            match=re.search(prefix+phrase+stop,message,re.I)
++            if not match:continue
++            # Referring determiners are evidence of an existing entity, never
++            # part of a new declaration. Keep them until the rejection below.
++            name=re.sub(r'^(?:(?:a|an|the|my|our)\s+)+','',match[1].strip(),flags=re.I)
++            if re.search(r'\b(?:unknown|unset|unavailable|not known|that|this|changing|creating|making|same|me|course|prompt|template|mentioned|earlier|previous|discussed|ignore|system|instead)\b|अज्ञात',name,re.I) or re.match(r'^(?:product|item|one|video|ad|features?)\b',name,re.I):continue
++            if product and norm(product)!=norm(name):part=colour=person=None
++            product=name;break
++        # Independent field parsing: first isolate request clauses, then split a
++        # colour-change instruction into its explicit target and supplied value.
++        clauses=re.split(r'[,;.!?।\n]|\s+(?:and|while|but)\s+(?=keep|preserv|leav|retain|do not|don.t)',message,flags=re.I)
++        for clause in clauses:
++            action=re.search(r'\b(?:change|changing|recolor|recolour|recoloring|recolouring)\s+(.+?)\s+to\s+(.+?)\s*$',clause,re.I)
++            if not action or negates_occurrence(clause,action.start()):continue
++            target=re.sub(r'^(?:the\s+)?colou?r\s+of\s+','',action[1],flags=re.I).strip()
++            value=action[2].strip()
++            if len(target)<=80 and len(value)<=60 and re.fullmatch(r"[\w '\-/]+",target) and re.fullmatch(r"[\w '\-/]+",value):
++                part,colour=target,value
++        match = re.search(r'\b(?:young Indian|adult|character|model|for a)\s+(woman|man)\b', message, re.I)
++        if match: person = match[1].lower()
++    return {key:value for key,value in [('product',product),('part',part),('colour',colour),('person',person)] if value}
++
++
++def render_template(template, query, history):
++    text=template['text']
++    slots=expected_slots(query,history)
++    product,part,colour,person=(slots.get(key) for key in ['product','part','colour','person'])
++    if product: text = re.sub(r'\[product\]',lambda _: product,text,flags=re.I)
++    if person: text = re.sub(r'\[man\s*/\s*woman\]',person,text,flags=re.I)
++    if part: text = re.sub(r'\[the part, e\.g\. [^\]]+\]',lambda _: part,text)
++    if colour: text = re.sub(r'\[new colour, e\.g\. [^\]]+\]',lambda _: colour,text)
++    return text
++
++
++def requested_deliverables(query, history):
++    if re.search(r'\b(?:what (?:is|are)|(?:explain|learn about).{0,35}(?:hooks?|captions?|scripts?)|(?:hooks?|captions?|scripts?).{0,15}(?:mean|work))\b',query,re.I) and not re.search(r'\b(?:write|draft|create|generate|give|send|make)\b',query,re.I):return []
++    if not re.search(r'\b(?:write|draft|create|generate|make|give|suggest|plan|prepare|show|demonstrate|tell|likho|banao|dikhao)\b|\b(?:I need|I would like|I.d like)\b|लिख|बना|बताइ|दिखा|चाहिए|idea\s+do|example\s+do',query,re.I):return []
++    if re.search(r'\b(?:what|which|where|how)\b.*\b(?:provide|supply|need|available|find)\b',query,re.I):return []
++    kinds=[kind for kind,pattern in [('hooks',r'\bhooks?\b|हुक'),('caption',r'\bcaptions?\b|कैप्शन'),('script',r'\bscripts?\b|स्क्रिप्ट'),('angle',r'\b(?:ad )?angles?\b')] if re.search(pattern,query,re.I)]
++    if re.search(r'\b(?:plan (?:an? )?ad|ad plan)\b',query,re.I):kinds.append('angle')
++    if re.search(r'\b(?:demo|demonstration|showcase)\b|डेमो|प्रदर्शन',query,re.I) and re.search(r'\b(?:example|idea|concrete|show|demonstrate|draft|write|give|suggest)\b|उदाहरण|दिखा',query,re.I):kinds.append('demo')
++    return list(dict.fromkeys(kinds))
++
++
++def deliverable_errors(answer, query, history):
++    answer=answer.replace('**','')
++    errors=[]
++    deferral=re.compile(r'\b(?:once (?:you|I)|I (?:first )?need|please (?:tell|provide|give)|could you|before (?:I|we) can|to write|can help)\b',re.I)
++    for kind in requested_deliverables(query,history):
++        if kind=='hooks':
++            input_query=query.translate(str.maketrans('०१२३४५६७८९','0123456789'))
++            count_match=re.search(r'(?:^|\s)(\d+|one|two|three|four|five|six|seven|eight|nine|ten|ek|do|teen|paanch|एक|दो|तीन|चार|पाँच|पांच)\s+(?:(?:short|brief|punchy|honest|concise|ad|chhote|छोटे|छोटे से)\s+){0,3}(?:hooks?\b|हुक)',input_query,re.I)
++            numbers={'one':1,'two':2,'three':3,'four':4,'five':5,'six':6,'seven':7,'eight':8,'nine':9,'ten':10,'ek':1,'do':2,'teen':3,'paanch':5,'एक':1,'दो':2,'तीन':3,'चार':4,'पाँच':5,'पांच':5}
++            token=count_match[1].lower() if count_match else 'five';count=int(token) if token.isdigit() else numbers[token]
++            section=re.split(r'(?:^|\n)\s*(?:\*\*)?(?:\d+\s+)?hooks?\b[^\n]*\n',answer,flags=re.I)
++            body=section[1].split('\n\n')[0] if len(section)>1 else ''
++            lines=[line for line in body.splitlines() if re.match(r'\s*(?:\d+[.)]|[-*])\s+',line) and not deferral.search(line)]
++            if len(lines)<count:errors.append(f'missing actual requested hooks: expected {count}, found {len(lines)}')
++        elif kind=='demo':
++            # A named demo workflow alone is not a concrete requested demonstration.
++            actions=re.findall(r'(?:^|\n)\s*(?:\d+[.)]|[-*])\s+([^\n]+)',answer)
++            concrete=[line for line in actions if re.search(r'\b(?:show|move|point|place|hold|dikhao|rakho|ishara)\b|दिखा|इशारा|रखें',line,re.I)]
++            dialogue=bool(re.search(r'(?:example line|example dialogue|उदाहरण संवाद)\s*:',answer,re.I))
++            if len(concrete)<2 or not dialogue:errors.append('requested demonstration needs concrete visual actions and an example spoken line')
++            known=expected_slots(query,history).get('product')
++            if known and norm(known) not in norm(answer):errors.append('requested demonstration does not retain the supplied product identity')
++        elif kind=='caption':
++            m=re.search(r'(?:^|\n)\s*(?:\*\*)?(?:caption|कैप्शन)\s*(?:\*\*)?[:：]?\s*\n?([^\n]+)',answer,re.I)
++            # A standalone short caption need not carry a label, but a request
++            # for more facts or promise of future output is never the deliverable.
++            prose=narrative(answer).strip()
++            known_product=render_template({'text':'[PRODUCT]'},query,history)
++            standalone=known_product!='[PRODUCT]' and norm(known_product) in norm(prose) and not deferral.search(prose) and len(prose.splitlines())<=3 and 8<=len(prose)<=400
++            if not (m and len(m[1].strip())>=8 and not deferral.search(m[1])) and not standalone:errors.append('requested caption is not delivered')
++        elif kind=='script':
++            if not re.search(r'\b(?:script|स्क्रिप्ट)\b',answer,re.I) or not re.search(r'\b\d+\s*[–-]\s*\d+\s*(?:sec|seconds?|सेकंड)\b',answer,re.I):errors.append('requested timed script is not delivered')
++        elif kind=='angle':
++            m=re.search(r'(?:selected ad angle|(?:ad )?angle|विज्ञापन कोण|chuna hua ad angle)\s*:\s*([^\n]{5,})',answer,re.I)
++            if not m or deferral.search(m[1]):errors.append('requested ad angle is not delivered')
++    return errors
++
++
++def fidelity_norm(text):
++    # Whitespace and enclosing/nested quote style are presentation-only. Words and punctuation remain exact.
++    text = unicodedata.normalize('NFKC', text).translate(str.maketrans({'“':'"','”':'"','’':"'"}))
++    return re.sub(r'\s+', ' ', text).replace('"', "'").strip()
++
++
++def template_variants(complete):
++    # A determiner inside a supplied part name is the same slot value, not a template wording edit.
++    variants=[complete]
++    if 'Only change the colour of all ' in complete:
++        variants.append(complete.replace('Only change the colour of all ', 'Only change the colour of all the ',1))
++    return variants
++
++
++def dimension(reasons, status=None):
++    return {'status': status or ('failed' if reasons else 'passed'), 'reasons': reasons}
++
++
++def grade_turn(expected, actual, history, templates, category, scope='live_model'):
++    query = expected.get('query', expected.get('user',''))
++    if actual is None:
++        return {'query':query,'answer':None,'status':'inconclusive','provider_outcome':'not_executed','dimensions':{}}
++    answer = actual.get('answer','')
++    provider = actual.get('provider','')
++    declared=actual.get('outcome',{})
++    local = declared.get('type') in ['local_rule','validated_local_replacement'] or provider in ['course-knowledge-rule','course-response-policy','safety-filter']
++    if declared.get('liveModelAnswer') is False:
++        kind=declared.get('type','unknown')
++        if kind=='provider_fallback' or not (scope=='end_to_end' and local):
++            return {'query':query,'answer':answer,'status':'skipped' if actual.get('skipped') else 'provider_fallback' if kind=='provider_fallback' else 'inconclusive',
++                'provider_outcome':kind,'dimensions':{}}
++    if actual.get('skipped') or provider != 'fal-openrouter' and not (scope=='end_to_end' and local):
++        status = 'skipped' if actual.get('skipped') else 'provider_fallback' if provider == 'built-in-course-guide' else 'inconclusive'
++        return {'query':query,'answer':answer,'status':status,'provider_outcome':'provider_fallback' if provider=='built-in-course-guide' else 'unverified_provider','dimensions':{}}
++    if not answer.strip():
++        return {'query':query,'answer':answer,'status':'inconclusive','provider_outcome':'empty_provider_response','dimensions':{}}
++    content, references, safety, prompts, forbidden_language = [], [], unsafe_claims(answer), [], []
++    named_template=select_template(query, history, templates)
++    marker=re.search(r'\b(?:exact|approved|copy[- ]?paste)\b|सटीक',query,re.I) or named_template and re.search(r'\bcomplete\b',query,re.I)
++    exact_intent = category == 'exact_prompt' or bool(marker and re.search(r'\b(?:prompts?|templates?|wording)\b|प्रॉम्प्ट',query,re.I))
++    template = named_template if exact_intent else None
++    for group in expected.get('required_groups',[]):
++        is_reference = all(re.match(r'^(?:Lesson\s*\d+|L\d+)\b', term,re.I) for term in group)
++        present=concept_present(answer,group)
++        # A direct No answers the course-identity question even without repeating
++        # the entire negated noun phrase; unrelated No elsewhere does not suffice.
++        if not present and re.match(r'^\s*No(?:[,.!]|$|\s+(?:this|it)\b)',re.sub(r'^\s*(?:\*\*)?(?:Lesson|L)\s*0?\d+(?:\*\*)?\s*\n+', '',answer,flags=re.I),re.I):
++            for term in group:
++                subject=re.sub(r'^not\s+','',term,flags=re.I)
++                if subject!=term and re.search(r'\bis this (?:the )?'+re.escape(subject)+r'(?: course)?\?',query,re.I):present=True
++        if not present:
++            (references if is_reference else content).append('missing required concept: '+' | '.join(group))
++    for term in expected.get('forbidden_any',[]):
++        if term == '[PRODUCT]' and template:
++            continue  # Full instantiated-body comparison below covers slots, without penalizing commentary.
++        if norm(term) not in norm(answer):
++            continue
++        # Word boundaries avoid matching hai inside an English noun. Refusals negate forbidden advice.
++        occurrences = [m for m in re.finditer(re.escape(term),answer,re.I)]
++        for match in occurrences:
++            start = max(answer.rfind('.',0,match.start()),answer.rfind('\n',0,match.start()))+1
++            stop = answer.find('.',match.end());stop=len(answer) if stop<0 else stop
++            clause=answer[start:stop]
++            if term in ['hai','karo','nahi'] and not re.search(r'\b'+re.escape(term)+r'\b',clause,re.I):continue
++            if not negates_occurrence(clause,match.start()-start):
++                reason='affirmative forbidden content: '+term
++                if term in ['hai','karo','nahi']:forbidden_language.append(reason)
++                elif re.search(r'fake|review|testimonial|earn|income|customer|invent|claim|pretend',term,re.I):safety.append(reason)
++                else:content.append(reason)
++                break
++    if template:
++        complete = render_template(template,query,history)
++        variants=template_variants(complete)
++        if not any(fidelity_norm(value) in fidelity_norm(answer) for value in variants):
++            prompts.append('complete approved template differs or known slots are unresolved: '+template['label'])
++        # Appended instructions inside the same executable block are not presentation-only.
++        for body in re.findall(r'```(?:text)?\s*([\s\S]*?)```',answer):
++            if any(fidelity_norm(value) in fidelity_norm(body) for value in variants) and not any(fidelity_norm(body).strip("'") == fidelity_norm(value).strip("'") for value in variants):
++                prompts.append('executable prompt block includes extra instructions')
++    else:
++        for exact in expected.get('exact_required',[]):
++            if fidelity_norm(exact) not in fidelity_norm(answer):prompts.append('missing exact instruction: '+exact)
++        if exact_intent:prompts.append('requested full template could not be resolved from the available request context')
++    language = grade_language(answer,expected.get('expected_language','english'),bool(template),[expected_slots(query,history).get('product')])+forbidden_language
++    completion=[] if exact_intent else deliverable_errors(answer,query,history)
++    dimensions={'correctness':dimension(content),'language':dimension(language),'lesson_references':dimension(references),
++        'safety':dimension(list(dict.fromkeys(safety))),'prompt_accuracy':dimension(prompts),'task_completion':dimension(completion)}
++    return {'query':query,'answer':answer,'status':'failed' if any(d['status']=='failed' for d in dimensions.values()) else 'passed',
++        'provider_outcome':declared.get('type','local_rule') if local else 'live_model',
++        'live_model_answer':not local,'template_label':template['label'] if template else None,'dimensions':dimensions}
++
++
++def review_conversation_identity(test, turns, templates):
++    """Excuse an omitted entity echo only when a later complete template proves it.
++
++    Generic guidance alone or a later wrong/unfilled template cannot establish
++    retained identity. Other content, language, safety and output gates remain.
++    """
++    history=[]
++    product_templates={t['label'] for t in templates if '[product]' in t['text'].lower()}
++    for i,(expected,turn) in enumerate(zip(test.get('turns',[test]),turns)):
++        query=expected.get('query',expected.get('user',''))
++        entity=expected_slots(query,history).get('product')
++        history.append(query)
++        if not entity or not turn.get('dimensions'):continue
++        matching_groups=[group for group in expected.get('required_groups',[]) if all(norm(term)==norm(entity) for term in group)]
++        removable={'missing required concept: '+' | '.join(group) for group in matching_groups}
++        reasons=turn['dimensions']['correctness']['reasons']
++        if not removable.intersection(reasons):continue
++        # Current answer must give actual course procedure, not merely promise it.
++        procedural=bool(re.search(r'\b(?:upload|attach|choose|take|use|keep)\b',turn['answer'],re.I) and re.search(r'\b(?:product sheet|ingredients|reference|settings)\b',turn['answer'],re.I))
++        proof=next((j for j,later in enumerate(turns[i+1:],i+1) if later.get('template_label') in product_templates and later.get('dimensions',{}).get('prompt_accuracy',{}).get('status')=='passed' and norm(entity) in norm(later.get('answer',''))),None)
++        if not procedural or proof is None:continue
++        turn['dimensions']['correctness']=dimension([reason for reason in reasons if reason not in removable])
++        turn['dimensions']['context_retention']=dimension([])
++        turn['conversationEvidence']={'knownUserProduct':entity,'verifiedByCompleteTemplateAtTurn':proof+1,'interpretation':'An unnecessary name echo is omitted; the later complete source-body check proves retained identity.'}
++        turn['status']='failed' if any(d['status']=='failed' for d in turn['dimensions'].values()) else 'passed'
++
++
++def regrade(tests, raw, templates, scope='live_model'):
++    groups={}
++    for result in (raw if isinstance(raw,list) else raw.get('results',[])):groups.setdefault(result.get('id'),[]).append(result)
++    results=[]
++    for test in tests['single_turn_tests']+tests.get('conversation_tests',[]):
++        options=groups.get(test['id'],[])
++        # Prefer real provider evidence to synthetic blank duplicates; never select by score.
++        actual=next((x for x in reversed(options) if x.get('provider')=='fal-openrouter' and x.get('answer')),None)
++        actual=actual or next((x for x in reversed(options) if x.get('turns') or x.get('answer')),None)
++        turns=[];history=[]
++        for i,expected in enumerate(test.get('turns',[test])):
++            rr=(actual.get('turns',[])[i] if i<len(actual.get('turns',[])) else None) if actual and 'turns' in test else actual
++            turns.append(grade_turn(expected,rr,history,templates,test.get('category','unspecified'),scope))
++            history.append(expected.get('user',expected.get('query','')))
++        review_conversation_identity(test,turns,templates)
++        statuses=[t['status'] for t in turns]
++        status='skipped' if actual and actual.get('skipped') else 'provider_fallback' if 'provider_fallback' in statuses else 'skipped' if 'skipped' in statuses else 'failed' if 'failed' in statuses else 'inconclusive' if 'inconclusive' in statuses else 'passed'
++        results.append({'id':test['id'],'category':test.get('category','unspecified'),'status':status,'turns':turns,
++            'original_provider_status':actual.get('mergedStatus') if actual else None})
++    counts=Counter(r['status'] for r in results)
++    dimensions={key:dict(Counter(t['dimensions'][key]['status'] for r in results for t in r['turns'] if key in t['dimensions'])) for key in ['correctness','language','lesson_references','safety','prompt_accuracy','task_completion','context_retention']}
++    executed=counts['passed']+counts['failed']
++    return {'suite':tests['suite'],'rubric_version':POLICY_VERSION,'evaluation_scope':scope,
++        'method':'offline bounded multilingual concept/negation rubric plus complete-template comparison; no LLM judging or new provider calls',
++        'limitations':['Finite semantic rules require human adjudication for unfamiliar paraphrases; they do not establish unrestricted language understanding.',
++            'Provider-labelled application answers are saved evidence, not raw upstream response envelopes.',
++            'Regrading historical text does not measure the behavior of the newly changed tutor.'],
++        'summary':{'total':len(results),**{s:counts[s] for s in ['passed','failed','skipped','inconclusive','provider_fallback']},
++            'provider_fallback_cases':sum(any(t['provider_outcome']=='provider_fallback' for t in r['turns']) for r in results),
++            'live_provider_turns':sum(t['provider_outcome']=='live_model' for r in results for t in r['turns']),
++            'local_quality_turns':sum(t['provider_outcome'] in ['local_rule','validated_local_replacement'] for r in results for t in r['turns'] if t.get('dimensions')),
++            'score_all_cases_pct':round(100*counts['passed']/len(results),1),
++            'score_executed_cases_pct':round(100*counts['passed']/executed,1) if executed else None,'dimension_turn_counts':dimensions},'results':results}
++
++
++def main():
++    parser=argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--tests',type=Path,default=BACKEND/'scripts/eval/product_photoshoot_ads_test_cases.json')
++    parser.add_argument('--results',type=Path,required=True)
++    parser.add_argument('--knowledge',type=Path,default=BACKEND/'knowledge/ai-product-photoshoot-ads/training.txt')
++    parser.add_argument('--out',type=Path,required=True)
++    parser.add_argument('--historical-grade',type=Path)
++    parser.add_argument('--scope',choices=['live_model','end_to_end'],default='live_model',help='Keep local rules out of model-only scores, or explicitly assess integrated-tutor quality without calling them live model answers.')
++    args=parser.parse_args()
++    templates=templates_from_source(args.knowledge)
++    if len(templates)!=19:raise SystemExit('Expected exactly 19 complete source templates')
++    output=regrade(json.loads(args.tests.read_text()),json.loads(args.results.read_text()),templates,args.scope)
++    output['provenance']={name:{'path':str(path.resolve()),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()} for name,path in [('tests',args.tests),('raw_results',args.results),('knowledge',args.knowledge),('evaluator',Path(__file__))]}
++    if args.historical_grade:
++        old=json.loads(args.historical_grade.read_text())
++        original={r['id']:r for r in old['results']}
++        output['historical_comparison']={'original_summary':old['summary'],
++            'changed_case_outcomes':[{'id':r['id'],'original':'passed' if original[r['id']]['pass'] else 'failed_including_skips','corrected':r['status']} for r in output['results'] if ('passed' if original[r['id']]['pass'] else 'failed')!=r['status']],
++            'interpretation':'Same saved answers; differences reflect rubric/execution classification changes, not new tutor performance.'}
++        output['provenance']['historical_grade']={'path':str(args.historical_grade.resolve()),'sha256':hashlib.sha256(args.historical_grade.read_bytes()).hexdigest()}
++    args.out.parent.mkdir(parents=True,exist_ok=True)
++    with args.out.open('x',encoding='utf-8') as handle:json.dump(output,handle,ensure_ascii=False,indent=2);handle.write('\n')
++    print(json.dumps(output['summary'],indent=2))
++
++
++if __name__=='__main__':main()
+--- /dev/null
++++ b/tests/product-tutor-phase7.test.cjs
+@@ -0,0 +1,152 @@
++// Generalized Phase 7 contracts; no evaluation IDs or saved questions.
++require('./helpers/deny-network.cjs');
++const test=require('node:test'),assert=require('node:assert/strict');
++const {PRODUCT_RECORDS,PRODUCT_TEMPLATES,productSlots,productFacts,productRequestContext,requestedProductOutputs}=require('../services/productTutorKnowledge');
++const {retrieveKnowledge}=require('../services/tutorKnowledge');
++const {productTutorReply,validateProductReply,advertisingRisk,explanationLanguageMatches}=require('../services/productTutorResponse');
++const {requestedHookCount}=require('../services/productTutorTasks');
++const course={_id:'phase7-course',slug:'ai-product-photoshoot-ads',title:'AI Product Photoshoot & Ads',videos:[]};
++function run(message,history=[],saved={}){
++ const facts=productFacts(message,history,saved);
++ const knowledge=retrieveKnowledge({courses:[course],activeCourse:course,message,history,conversationContext:facts,includeMaterials:true});
++ knowledge.productContext=facts;
++ return {knowledge,facts,result:productTutorReply({message,history,knowledge})};
++}
++const block=reply=>reply.match(/```text\n([\s\S]*?)\n```/)?.[1];
++for(const [query,lang] of [
++ ['What will I learn in the AI Product Photoshoot & Ads course?','english'],
++ ['Explain the complete AI Product Photoshoot & Ads course curriculum and outcomes.','english'],
++ ['AI Product Photoshoot & Ads कोर्स में क्या सिखाया जाता है?','hindi'],
++ ['Poore AI Product Photoshoot & Ads course mein kya sikhate hain? Hinglish mein batao.','hinglish'],
++])test(`phase7 full course overview: ${lang}, ${query}`,()=>{
++ const {result,knowledge}=run(query);assert.equal(knowledge.requestContext.topic,'overview');
++ for(let i=1;i<=8;i++)assert.match(result.reply,new RegExp(`0${i}`));
++ for(const tool of ['Google Flow','ChatGPT','CapCut'])assert.ok(result.reply.includes(tool));
++ assert.ok(explanationLanguageMatches(result.reply,lang));assert.match(result.reply,/learn to create|सीख|sikh|bana/i);
++});
++for(const [query,topic] of [
++ ['How do I take product photos for this course?','product_sheet'],
++ ['Explain Lesson 06 video settings in the AI Product Photoshoot & Ads course.','video'],
++ ['The shape changed in this course colour workflow. What is the repair?','colour_shape'],
++])test(`phase7 specific learner task remains specific: ${topic}`,()=>assert.equal(run(query).knowledge.requestContext.topic,topic));
++for(const [declaration,product] of [
++ ['My product is called a lacquered maple pen rest.','lacquered maple pen rest'],
++ ['Our product is named a felt coin envelope.','felt coin envelope'],
++ ['The name of my product is a woven bookmark sleeve.','woven bookmark sleeve'],
++ ['I only know the name brass incense tray.','brass incense tray'],
++ ['I just know the product name embossed linen sachet.','embossed linen sachet'],
++ ['मेरे प्रोडक्ट का नाम लकड़ी की चाबी पट्टी है।','लकड़ी की चाबी पट्टी'],
++ ['मुझे केवल नाम तांबे की अगरबत्ती थाली पता है।','तांबे की अगरबत्ती थाली'],
++ ['Mere product ka naam painted clay spoon rest hai.','painted clay spoon rest'],
++ ['Mujhe sirf naam woven reed coaster maloom hai.','woven reed coaster'],
++])test(`phase7 unfamiliar product declaration: ${product}`,()=>{
++ assert.equal(productSlots(declaration).product,product);
++ const {result}=run('Copy the exact L02 White Studio prompt.',[],productFacts(declaration));
++ const source=PRODUCT_TEMPLATES.find(t=>t.heading==='L02 White Studio');
++ assert.equal(block(result.reply),source.content.replace(/\[product\]/gi,product));
++});
++test('phase7 personal names and unset facts do not become product names',()=>{
++ for(const text of ['My name is Aria.','My product is unknown.','My product is unset.','Who made this product?'])assert.equal(productSlots(text).product,undefined);
++});
++test('phase7 changing products clears stale facts and colour/person slots',()=>{
++ const old={product:'metal lamp',price:'900',colour:'teal',part:'the base',person:'woman',attributes:['waterproof'],adAngle:'3'};
++ const facts=productFacts('My product is called a cork photo stand.',[],old);
++ assert.equal(facts.product,'cork photo stand');for(const k of ['price','colour','part','person','adAngle'])assert.equal(facts[k],undefined);assert.deepEqual(facts.attributes,[]);
++});
++for(const [query,count,lang] of [
++ ['I only know the name walnut paperweight. Write three short hooks now.',3,'english'],
++ ['My product is called a cotton tea cosy. Could you give two punchy hooks?',2,'english'],
++ ['मेरा प्रोडक्ट ऊन का चाय कवर है। तीन छोटे हुक लिखिए।',3,'hindi'],
++ ['Mera product bamboo pencil cup hai. Teen chhote hooks likho.',3,'hinglish'],
++])test(`phase7 delivers requested quantity with known facts: ${lang}`,()=>{
++ const {result,facts}=run(query);assert.equal(requestedHookCount(query),count);
++ const hooks=result.reply.split(/\nHooks\n/i)[1]?.split('\n\n')[0].split('\n')||[];
++ assert.equal(hooks.length,count);assert.ok(result.reply.includes(facts.product));
++ assert.ok(explanationLanguageMatches(result.reply,lang,facts.product));assert.doesNotMatch(result.reply,/waterproof|antibacterial|Which product/);
++});
++for(const [query,lang] of [
++ ['A mobile device appears next to the UGC presenter. Give the exact camera framing clarification.','english'],
++ ['मोबाइल फ्रेम में दिख रहा है। Lesson 07 का सटीक कैमरा निर्देश बताइए।','hindi'],
++ ['UGC take mein mobile device screen par dikh raha hai. Exact camera instruction batao.','hinglish'],
++])test(`phase7 exact phone-framing troubleshooting: ${lang}`,()=>{
++ const {knowledge,result}=run(query);assert.equal(knowledge.requestContext.topic,'phone_visibility');
++ assert.ok(result.reply.includes('The camera itself is her phone. NO phone visible anywhere in the frame.'));
++});
++test('phase7 phone photography remains a photo task',()=>assert.equal(run('Can I use photos taken with my mobile phone to make a product sheet?').knowledge.requestContext.topic,'product_sheet'));
++for(const query of ['The item changes appearance between reference photos. What can I do?', 'My product looks different across the images. What is the fix?'])test(`phase7 product consistency paraphrase: ${query}`,()=>{
++ const {knowledge,result}=run(query);assert.equal(knowledge.requestContext.topic,'product_consistency');assert.match(result.reply,/same|sheet|reference/i);
++});
++test('phase7 polished product adjective does not trigger UGC troubleshooting',()=>{
++ const {knowledge,result}=run('Compare an empty setting and a furnished setting around a polished copper pencil tray. Give a reason for each.');
++ assert.equal(knowledge.requestContext.topic,'composition');assert.match(result.reply,/Empty setting:.*polished copper pencil tray/);assert.match(result.reply,/Furnished setting:/);assert.match(result.reply,/attention/);assert.match(result.reply,/scene context/);assert.doesNotMatch(result.reply,/Lesson 07|not a polished ad/);
++});
++test('phase7 polished footage still retrieves natural UGC repair',()=>{
++ const {knowledge,result}=run('The UGC video looks too polished like a commercial ad. How do I fix it?');
++ assert.equal(knowledge.requestContext.topic,'natural_ugc');assert.match(result.reply,/not a polished ad/);
++});
++test('phase7 incidental noun substrings do not select colour or motion',()=>{
++ for(const query of ['How can I arrange my reference images?', 'Could you explain promotion options?', 'My product is an orange ceramic dish.']){
++  const context=productRequestContext(query);assert.ok(!['colour','colour_shape','colour_shade','motion'].includes(context.topic),JSON.stringify(context));
++ }
++});
++for(const [decl,query,lang] of [
++ ['My product is a cork tablet stand.','Show a concrete honest product demonstration example.','english'],
++ ['मेरा प्रोडक्ट मिट्टी का कागज भार है।','ईमानदार प्रोडक्ट डेमो का उदाहरण बताइए।','hindi'],
++ ['Mera product woven jute coaster hai.','Honest product demo ka idea do, actor kaise dikhaye? Hinglish mein batao.','hinglish'],
++])test(`phase7 concrete demo keeps product and safety: ${lang}`,()=>{
++ const saved=productFacts(decl);const {result}=run(query,[],saved);
++ assert.match(result.reply,/Lesson 07/);assert.ok(result.reply.includes(saved.product));assert.match(result.reply,/Example line|उदाहरण संवाद/);
++ assert.equal((result.reply.match(/^\d\. /gm)||[]).length,3);assert.equal(advertisingRisk(result.reply),null);assert.ok(explanationLanguageMatches(result.reply,lang,saved.product));
++ assert.doesNotMatch(result.reply,/I personally|waterproof|antibacterial|guaranteed income/);
++});
++test('phase7 language repair keeps persisted Hindi product and concrete output',()=>{
++ const saved={...productFacts('मेरा प्रोडक्ट पीतल की कंघी पेटी है।'),lessonNumber:7,topic:'ugc'};
++ const message='Now give an honest demonstration example in Hinglish.';const {knowledge}=run(message,[],saved);
++ const fixed=validateProductReply({message,knowledge,reply:'यह केवल सामान्य कोर्स वर्कफ़्लो है।'});
++ assert.equal(fixed.issue,'response_language_mismatch');assert.ok(fixed.reply.includes(saved.product));assert.match(fixed.reply,/Example line/);assert.ok(explanationLanguageMatches(fixed.reply,'hinglish',saved.product));
++ assert.equal(explanationLanguageMatches(`Use ${saved.product} and take a photo.`,'hindi',saved.product),false);
++ assert.equal(explanationLanguageMatches('नया विवरण जोड़ें और काम करें।','hinglish',saved.product),false);
++});
++test('phase7 a vague retrieval hit cannot assign an unsupported lesson',()=>{
++ const message='How should I choose between clean and decorated backgrounds?';const {knowledge}=run(message);
++ knowledge.requestContext={topic:'',lessonNumber:null};
++ const fixed=validateProductReply({message,knowledge,reply:'Use a clean scene for attention and decoration for context.'});
++ assert.equal(fixed.issue,null);assert.doesNotMatch(fixed.reply,/Lesson/);
++});
++test('phase7 testimonial prohibitions accept the object review but not unrelated negation',()=>{
++ for(const safe of ['AI actor ko asli customer review mat batao.','AI presenter ko asli customer testimonial na bolo.','AI को असली ग्राहक की समीक्षा मत बताओ।'])assert.equal(advertisingRisk(safe),null,safe);
++ for(const unsafe of ['AI actor asli customer hai aur review mat dikhao.','No background music. AI actor is a genuine customer.','AI actor asli customer hai; benefits mat banao.'])assert.ok(advertisingRisk(unsafe),unsafe);
++});
++test('phase7 demo request does not authorize customer experience fabrication',()=>{
++ const {result}=run('My product is a felt desk mat. Give a demo idea with an AI actor as a genuine customer who bought it.');
++ assert.equal(result.policy,'advertising_safety');assert.equal(advertisingRisk(result.reply),null);assert.match(result.reply,/not a real customer/);assert.match(result.reply,/Example line/);
++});
++test('phase7 factual or informational requests do not force an ad draft',()=>{
++ assert.deepEqual(requestedProductOutputs('What details should I provide for ad hooks?'),[]);
++ assert.deepEqual(requestedProductOutputs('What is a product demonstration?'),[]);
++});
++test('phase7 all eight lessons, nineteen bodies and access restrictions remain',()=>{
++ assert.deepEqual(PRODUCT_RECORDS.filter(r=>r.contentType==='lesson-summary').map(r=>r.lessonNumber),[1,2,3,4,5,6,7,8]);assert.equal(PRODUCT_TEMPLATES.length,19);
++ assert.equal(new Set(PRODUCT_RECORDS.map(r=>r.chunkId)).size,PRODUCT_RECORDS.length);
++ const message='Show an honest product demo example for a reed pen basket.';
++ const denied=retrieveKnowledge({courses:[course],activeCourse:course,message,includeMaterials:false});assert.equal(productTutorReply({message,knowledge:denied}),null);
++ for(const slug of ['ai-influencer','ai-filmmaking'])assert.equal(productTutorReply({message,knowledge:{...run(message).knowledge,activeCourse:{...course,slug}}}),null);
++});
++
++test('phase7 a reference to that tray keeps the full declared product name',()=>{
++ const saved=productFacts('My product is a glazed cobalt ceramic tray.');
++ const {result,facts}=run('Write three hooks for that tray.',[],saved);
++ assert.equal(facts.product,'glazed cobalt ceramic tray');assert.match(result.reply,/glazed cobalt ceramic tray/);
++});
++for(const query of ['Create a product video of my polished brass paper clip.','My product is a polished copper bookmark. What product video settings should I use?'])test(`phase7 polished product in video question is not polished footage: ${query}`,()=>{
++ const {knowledge,result}=run(query);assert.equal(knowledge.requestContext.topic,'video');assert.match(result.reply,/Lesson 06/);assert.doesNotMatch(result.reply,/not a polished ad/);
++});
++for(const [query,lang] of [['हर तस्वीर में प्रोडक्ट अलग दिख रहा है। ठीक कैसे करूँ?','hindi'],['Har photo mein product alag dikh raha hai. Kya fix hai?','hinglish']])test(`phase7 multilingual consistency troubleshooting: ${lang}`,()=>{
++ const {knowledge,result}=run(query);assert.equal(knowledge.requestContext.topic,'product_consistency');assert.ok(explanationLanguageMatches(result.reply,lang));
++});
++
++test('phase7 indirect informational requests do not trigger unrelated ad generation',()=>{
++ for(const q of ['Could you explain what ad hooks mean?','I would like to learn about captions.','Can you explain how scripts work?'])assert.deepEqual(requestedProductOutputs(q),[]);
++ const {result}=run('I would like three short hooks.',[],{product:'carved walnut door sign'});
++ assert.match(result.reply,/Hooks\n1\./);assert.match(result.reply,/carved walnut door sign/);
++});
+--- /dev/null
++++ b/tests/test_product_evaluator_v5.py
+@@ -0,0 +1,67 @@
++"""Phase 7 independent multilingual, safety and deliverable contracts."""
++import importlib.util
++from pathlib import Path
++import unittest
++ROOT=Path(__file__).resolve().parents[1]
++def load(name,path):
++ spec=importlib.util.spec_from_file_location(name,path);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);return m
++g=load('phase7_grader',ROOT/'scripts/eval/grade_product_photoshoot_ads_results_v5.py');T=g.templates_from_source(ROOT/'knowledge/ai-product-photoshoot-ads/training.txt')
++legacy=load('phase7_v4_contract',ROOT/'tests/test_product_evaluator_v4.py');legacy.g=g;legacy.T=T
++class V5CompatibilityTests(legacy.Phase5EvaluatorTests):pass
++class Phase7EvaluatorTests(unittest.TestCase):
++ def grade(self,answer,q='Explain honest UGC.',history=None,groups=None,language='english'):
++  return g.grade_turn({'query':q,'required_groups':groups or [],'expected_language':language},{'provider':'fal-openrouter','answer':answer},history or [],T,'general')
++ def test_hindi_combining_marks_are_part_of_product_identity(self):
++  for q,name in [('मेरा प्रोडक्ट कांच की स्याही बोतल है।','कांच की स्याही बोतल'),('मेरे प्रोडक्ट का नाम पीतल का पत्ता है।','पीतल का पत्ता'),('मुझे सिर्फ नाम सूती चाय थैली पता है।','सूती चाय थैली')]:self.assertEqual(g.expected_slots(q,[])['product'],name)
++ def test_roman_and_natural_name_declarations(self):
++  for q,name in [('My product is called a carved wood paperweight.','carved wood paperweight'),('I only know the name woven willow tray.','woven willow tray'),('Mere product ka naam cork coaster hai.','cork coaster')]:self.assertEqual(g.expected_slots(q,[])['product'],name)
++ def test_hindi_product_exact_template_must_be_complete_and_correct(self):
++  history=['मेरा प्रोडक्ट मिट्टी की मेज घड़ी है।'];q='Copy the exact L02 White Studio prompt.';t=next(t for t in T if t['label']=='L02 White Studio')
++  good=t['text'].replace('[PRODUCT]','मिट्टी की मेज घड़ी')
++  self.assertEqual(self.grade(good,q,history)['dimensions']['prompt_accuracy']['status'],'passed')
++  for bad in [t['text'],good.replace('मिट्टी की मेज घड़ी','लकड़ी की घड़ी'),good[:-40]]:self.assertEqual(self.grade(bad,q,history)['dimensions']['prompt_accuracy']['status'],'failed')
++ def test_product_change_does_not_keep_old_colour_slots(self):
++  slots=g.expected_slots('My product is called a reed coaster.',['My product is a metal lamp.','Change the base to red.']);self.assertEqual(slots,{'product':'reed coaster'})
++ def test_referring_clip_does_not_replace_remembered_product(self):
++  history=['मेरा प्रोडक्ट पीतल की घंटी है।','Explain the repair for that clip and keep anti-warping.']
++  self.assertEqual(g.expected_slots('Copy the exact L06 Light Sweep prompt for that same item.',history).get('product'),'पीतल की घंटी')
++ def test_unknown_and_personal_name_are_not_product_evidence(self):
++  for q in ['My name is Mira.','My product is unknown.']:self.assertNotIn('product',g.expected_slots(q,[]))
++ def test_direct_demonstrate_equivalent_and_negation(self):
++  self.assertTrue(g.concept_present('Demonstrate the product or showcase its features.',['product demo']))
++  self.assertFalse(g.concept_present('Do not demonstrate the product.',['product demo']))
++ def test_course_no_after_lesson_label_is_contextual(self):
++  q='Is this the AI Filmmaking course?'
++  self.assertEqual(self.grade('Lesson 01\n\nNo, this is the AI Product Photoshoot & Ads course.',q,groups=[['not AI Filmmaking']])['status'],'passed')
++  for bad in ['Lesson 01\n\nYes, this is AI Filmmaking. No fake claims.', 'Use the sheet. No, other advice.']:self.assertEqual(self.grade(bad,q,groups=[['not AI Filmmaking']])['status'],'failed')
++ def test_review_object_negation_is_scoped(self):
++  for a in ['AI actor ko asli customer review mat batao.','AI ko असली ग्राहक की समीक्षा मत बताओ।']:self.assertFalse(g.unsafe_claims(a))
++  for a in ['AI actor asli customer hai aur review mat dikhao.','AI actor is a genuine customer. Do not invent benefits.']:self.assertTrue(g.unsafe_claims(a))
++ def test_three_short_hooks_means_three_actual_hooks(self):
++  q='My product is a reed basket. Write three short hooks.';good='Hooks\n1. Meet reed basket.\n2. View reed basket.\n3. See its details.'
++  self.assertFalse(g.deliverable_errors(good,q,[]));self.assertTrue(g.deliverable_errors('Hooks\n1. Meet reed basket.',q,[]))
++ def test_hindi_hook_quantity_is_not_default_five(self):
++  q='मेरा प्रोडक्ट सूती कवर है। तीन छोटे हुक लिखिए।';good='Hooks\n1. सूती कवर देखिए।\n2. विवरण देखिए।\n3. पास से देखिए।'
++  self.assertFalse(g.deliverable_errors(good,q,[]));self.assertTrue(g.deliverable_errors(good.rsplit('\n',1)[0],q,[]))
++ def test_concrete_demo_requires_actions_and_spoken_example(self):
++  q='My product is a cork bowl. Show a concrete honest product demo example.'
++  self.assertTrue(g.deliverable_errors('Choose Ingredients, attach references and generate UGC.',q,[]))
++  self.assertFalse(g.deliverable_errors('1. Show the cork bowl.\n2. Move to a close view.\nExample line: Here is the cork bowl.',q,[]))
++ def test_informational_demo_does_not_require_script(self):self.assertFalse(g.deliverable_errors('It shows a product honestly.','What is an honest product demo?',[]))
++ def test_indirect_request_requires_output_but_explanation_does_not(self):
++  self.assertTrue(g.deliverable_errors('Please give me more facts.','I would like three short hooks for a jute pen pouch.',[]))
++  self.assertFalse(g.deliverable_errors('Hooks are attention grabbing openings.','Could you explain what ad hooks mean?',[]))
++ def test_demo_for_wrong_product_does_not_pass(self):
++  answer='1. Show the lamp.\n2. Move to a close view.\nExample line: Meet the lamp.'
++  self.assertTrue(g.deliverable_errors(answer,'Show a concrete honest demo example.',['My product is a jute pen pouch.']))
++ def test_supplied_hindi_name_does_not_change_hinglish_narrative(self):
++  q='Give an honest demo example in Hinglish.';h=['मेरा प्रोडक्ट मिट्टी की कलम थाली है।'];a='मिट्टी की कलम थाली ko dikhao. Yeh example hai.'
++  self.assertEqual(self.grade(a,q,h,language='hinglish')['dimensions']['language']['status'],'passed')
++  self.assertEqual(self.grade('अब इसे दिखाइए।',q,h,language='hinglish')['dimensions']['language']['status'],'failed')
++  self.assertEqual(self.grade('Use मिट्टी की कलम थाली.',q,h,language='hindi')['dimensions']['language']['status'],'failed')
++ def test_fallback_never_passes_quality_or_live_scope(self):
++  result=g.grade_turn({'query':'Explain the course.'},{'provider':'built-in-course-guide','answer':'Saved guidance','outcome':{'type':'provider_fallback','liveModelAnswer':False}},[],T,'general','end_to_end');self.assertEqual(result['status'],'provider_fallback')
++ def test_faq_exact_instruction_remains_strict(self):
++  exact='The camera itself is her phone. NO phone visible anywhere in the frame.'
++  e={'query':'Give exact camera clarification.','exact_required':[exact]};a={'provider':'fal-openrouter','answer':'Keep the phone off screen.'};self.assertEqual(g.grade_turn(e,a,[],T,'troubleshooting')['dimensions']['prompt_accuracy']['status'],'failed')
++if __name__=='__main__':unittest.main()

@@ -1,0 +1,382 @@
+{
+  "mode": "LOCAL_TEMPLATE_REPLAY_NO_EXTERNAL_CALLS",
+  "total": 29,
+  "passed": 29,
+  "failed": 0,
+  "externalProviderRequests": 0,
+  "results": [
+    {
+      "id": "ppads_005",
+      "turn": 1,
+      "question": "Give the exact L02 Product Sheet prompt for a perfume bottle.",
+      "history": [],
+      "expectedCompleteBody": "Use all the uploaded photos of this perfume bottle. Create a clean product reference sheet on a plain white background showing the exact same perfume bottle in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the perfume bottle exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.",
+      "actualLocalResponse": "L02 Product Sheet\n\n```text\nUse all the uploaded photos of this perfume bottle. Create a clean product reference sheet on a plain white background showing the exact same perfume bottle in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the perfume bottle exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.\n```",
+      "origin": "local_knowledge_handler",
+      "providerRequests": 0,
+      "passed": true
+    },
+    {
+      "id": "ppads_006",
+      "turn": 1,
+      "question": "Copy-paste the L02 White Studio prompt for a skincare jar.",
+      "history": [],
+      "expectedCompleteBody": "Use the uploaded product sheet as the reference. Keep the skincare jar exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.",
+      "actualLocalResponse": "L02 White Studio\n\n```text\nUse the uploaded product sheet as the reference. Keep the skincare jar exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n```",
+      "origin": "local_knowledge_handler",
+      "providerRequests": 0,
+      "passed": true
+    },
+    {
+      "id": "ppads_007",
+      "turn": 1,
+      "question": "What is the exact L02 Lifestyle prompt for a water bottle?",
+      "history": [],
+      "expectedCompleteBody": "Use the uploaded product sheet as the reference. Keep the water bottle exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a warm wooden desk next to a white coffee mug and a small green plant, soft morning window light from the left, shallow depth of field, realistic lifestyle product photography.",
+      "actualLocalResponse": "L02 Lifestyle\n\n```text\nUse the uploaded product sheet as the reference. Keep the water bottle exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a warm wooden desk next to a white coffee mug and a small green plant, soft morning window light from the left, shallow depth of field, realistic lifestyle product photography.\n```",
+      "origin": "local_knowledge_handler",
+      "providerRequests": 0,
+      "passed": true
+    },
+    {
+      "id": "ppads_008",
+      "turn": 1,
+      "question": "Give me the exact L02 Dark Premium prompt for sunglasses.",
+      "history": [],
+      "expectedCompleteBody": "Use the uploaded product sheet as the reference. Keep the sunglasses exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.",
+      "actualLocalResponse": "L02 Dark Premium\n\n```text\nUse the uploaded product sheet as the reference. Keep the sunglasses exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.\n```",
+      "origin": "local_knowledge_handler",
+      "providerRequests": 0,
+      "passed": true
+    },
+    {
+      "id": "ppads_012",
+      "turn": 1,
+      "question": "Give the exact L03 Character Sheet bonus prompt for a young Indian woman.",
+      "history": [],
+      "expectedCompleteBody": "Create a character reference sheet of one realistic young Indian woman, clearly adult, [hair, outfit details]. Show the exact same person in one image: a close-up of the face, and full-body front view, side view and back view on a plain light grey background. Same face, same hair, same outfit in every view. Soft even light, RAW realistic photo look, real skin texture, no text labels.",
+      "actualLocalResponse": "L03 Character Sheet (bonus)\n\n```text\nCreate a character reference sheet of one realistic young Indian woman, clearly adult, [hair, outfit details]. Show the exact same person in one image: a close-up of the face, and full-body front view, side view and back view on a plain light grey background. Same face, same hair, same outfit in every view. Soft even light, RAW realistic photo look, real skin texture, no text labels.\n```\n\nFields still in brackets need your details; I have not invented them.",
+      "origin": "local_knowledge_handler",
+      "providerRequests": 0,
+      "passed": true
+    },
+    {
+      "id": "ppads_013",
+      "turn": 1,
+      "question": "Give exact L03 Hands close-up prompt for a coffee mug.",
+      "history": [],
+      "expectedCompleteBody": "Use the uploaded product sheet for the coffee mug and the uploaded character sheet for the [woman / man]. Keep the coffee mug exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the coffee mug on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.",
+      "actualLocalResponse": "L03 Hands close-up\n\n```text\nUse the uploaded product sheet for the coffee mug and the uploaded character sheet for the [woman / man]. Keep the coffee mug exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the coffee mug on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.\n```\n\nFields still in brackets need your details; I have not invented them.",
+      "origin": "local_knowledge_handler",
+      "providerRequests": 0,
+      "passed": true
+    },
+    {
+      "id": "ppads_014",
+      "turn": 1,
+      "question": "Copy the L03 Desk prompt for a compact keyboard.",
+      "history": [],
+      "expectedCompleteBody": "Use the uploaded product sheet for the compact keyboard and the uploaded character sheet for the [woman / man]. Keep the compact keyboard exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] sits at a clean desk using the compact keyboard, side three-quarter angle, natural hands with five fingers, bright natural daylight, realistic real-world scale, realistic lifestyle photography.",
+      "actualLocalResponse": "L03 Desk\n\n```text\nUse the uploaded product sheet for the compact keyboard and the uploaded character sheet for the [woman / man]. Keep the compact keyboard exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] sits at a clean desk using the compact keyboard, side three-quarter angle, natural hands with five fingers, bright natural daylight, realistic real-world scale, realistic lifestyle photography.\n```\n\nFields still in brackets need your details; I have not invented them.",
+      "origin": "local_knowledge_handler",
+      "providerRequests": 0,
+      "passed": true
+    },
+    {
+      "id": "ppads_015",
+      "turn": 1,
+      "question": "What is the exact L03 Showing to camera prompt for a handmade soap box?",
+      "history": [],
+      "expectedCompleteBody": "Use the uploaded product sheet for the handmade soap box and the uploaded character sheet for the [woman / man]. Keep the handmade soap box exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] holds the handmade soap box with both hands in front of [her] chest, showing it to the camera with a small natural smile, plain light background, soft studio light, natural hands with five fingers, realistic real-world scale, realistic product photography.",
+      "actualLocalResponse": "L03 Showing to camera\n\n```text\nUse the uploaded product sheet for the handmade soap box and the uploaded character sheet for the [woman / man]. Keep the handmade soap box exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] holds the handmade soap box with both hands in front of [her] chest, showing it to the camera with a small natural smile, plain light background, soft studio light, natural hands with five fingers, realistic real-world scale, realistic product photography.\n```\n\nFields still in brackets need your details; I have not invented them.",
+      "origin": "local_knowledge_handler",
+      "providerRequests": 0,
+      "passed": true
+    },
+    {
+      "id": "ppads_019",
+      "turn": 1,
+      "question": "Give exact L04 Diwali prompt for a chocolate gift box.",
+      "history": [],
+      "expectedCompleteBody": "Use the uploaded product sheet as the reference. Keep the chocolate gift box exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a wooden table during Diwali night, a few lit clay diyas and orange marigold flowers placed behind and beside it, soft warm fairy lights glowing out of focus in the background, the chocolate gift box sharp and clearly the hero in the foreground, warm golden light, realistic real-world scale, realistic festive product photography.",
+      "actualLocalResponse": "L04 Diwali\n\n```text\nUse the uploaded product sheet as the reference. Keep the chocolate gift box exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a wooden table during Diwali night, a few lit clay diyas and orange marigold flowers placed behind and beside it, soft warm fairy lights glowing out of focus in the background, the chocolate gift box sharp and clearly the hero in the foreground, warm golden light, realistic real-world scale, realistic festive product photography.\n```",
+      "origin": "local_knowledge_handler",
+      "providerRequests": 0,
+      "passed": true
+    },
+    {
+      "id": "ppads_020",
+      "turn": 1,
+      "question": "Give exact L04 Wedding Gift prompt for a jewellery box.",
+      "history": [],
+      "expectedCompleteBody": "Use the uploaded product sheet as the reference. Keep the jewellery box exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a soft silk cloth next to an open premium gift box with gold ribbon and a few rose petals, elegant wedding gifting mood, soft warm light, jewellery box sharp in the foreground, realistic real-world scale, realistic festive product photography.",
+      "actualLocalResponse": "L04 Wedding Gift\n\n```text\nUse the uploaded product sheet as the reference. Keep the jewellery box exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a soft silk cloth next to an open premium gift box with gold ribbon and a few rose petals, elegant wedding gifting mood, soft warm light, jewellery box sharp in the foreground, realistic real-world scale, realistic festive product photography.\n```",
+      "origin": "local_knowledge_handler",
+      "providerRequests": 0,
+      "passed": true
+    },
+    {
+      "id": "ppads_021",
+      "turn": 1,
+      "question": "Give exact L04 Colour Variant Sheet prompt for changing all bottle caps to matte black.",
+      "history": [],
+      "expectedCompleteBody": "Use the uploaded product sheet as the reference. Only change the colour of all bottle caps to matte black. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.",
+      "actualLocalResponse": "L04 Colour Variant Sheet\n\n```text\nUse the uploaded product sheet as the reference. Only change the colour of all bottle caps to matte black. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.\n```",
+      "origin": "local_knowledge_handler",
+      "providerRequests": 0,
+      "passed": true
+    },
+    {
+      "id": "ppads_025",
+      "turn": 1,
+      "question": "Give the exact L05 Step 1 Brief prompt.",
+      "history": [],
+      "expectedCompleteBody": "I sell a [product with real details — size, colour, key features]. Price: [your price]. I sell on [Instagram / website / marketplace] in India. Tell me: 1. Three types of people who would buy this 2. What problem it solves for each of them 3. One ad angle for each buyer Keep it short and simple.",
+      "actualLocalResponse": "L05 Step 1 Brief\n\n```text\nI sell a [product with real details — size, colour, key features]. Price: [your price]. I sell on [Instagram / website / marketplace] in India. Tell me: 1. Three types of people who would buy this 2. What problem it solves for each of them 3. One ad angle for each buyer Keep it short and simple.\n```\n\nFields still in brackets need your details; I have not invented them.",
+      "origin": "local_knowledge_handler",
+      "providerRequests": 0,
+      "passed": true
+    },
+    {
+      "id": "ppads_026",
+      "turn": 1,
+      "question": "Give exact L05 Step 2 Hooks + Script prompt.",
+      "history": [],
+      "expectedCompleteBody": "Pick angle [number]. Write 5 scroll-stopping hooks in natural Hinglish, like a friend talking — not cheesy, no fake claims. Then write a 15-second ad script: what to show on screen and what the voiceover says. Also write one Instagram caption. Use only the features I gave you, don't add anything new.",
+      "actualLocalResponse": "L05 Step 2 Hooks + Script\n\n```text\nPick angle [number]. Write 5 scroll-stopping hooks in natural Hinglish, like a friend talking — not cheesy, no fake claims. Then write a 15-second ad script: what to show on screen and what the voiceover says. Also write one Instagram caption. Use only the features I gave you, don't add anything new.\n```\n\nFields still in brackets need your details; I have not invented them.",
+      "origin": "local_knowledge_handler",
+      "providerRequests": 0,
+      "passed": true
+    },
+    {
+      "id": "ppads_027",
+      "turn": 1,
+      "question": "Give exact L05 Step 3 Flow prompts instruction.",
+      "history": [],
+      "expectedCompleteBody": "Now write 3 image prompts for Google Flow (Nano Banana) for this ad. Each prompt must start with: \"Use the uploaded product sheet as the reference. Keep the [product] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it.\" Then describe one scene for the ad.",
+      "actualLocalResponse": "L05 Step 3 Flow prompts\n\n```text\nNow write 3 image prompts for Google Flow (Nano Banana) for this ad. Each prompt must start with: \"Use the uploaded product sheet as the reference. Keep the [product] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it.\" Then describe one scene for the ad.\n```\n\nFields still in brackets need your details; I have not invented them.",
+      "origin": "local_knowledge_handler",
+      "providerRequests": 0,
+      "passed": true
+    },
+    {
+      "id": "ppads_031",
+      "turn": 1,
+      "question": "Give exact L06 Push-in prompt for a face serum bottle.",
+      "history": [],
+      "expectedCompleteBody": "Use the uploaded image as the first frame. The face serum bottle stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly and smoothly pushes in toward the face serum bottle. Soft natural window light, shallow depth of field, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.",
+      "actualLocalResponse": "L06 Push-in\n\n```text\nUse the uploaded image as the first frame. The face serum bottle stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly and smoothly pushes in toward the face serum bottle. Soft natural window light, shallow depth of field, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.\n```",
+      "origin": "local_knowledge_handler",
+      "providerRequests": 0,
+      "passed": true
+    },
+    {
+      "id": "ppads_032",
+      "turn": 1,
+      "question": "Give exact L06 Arc prompt for a leather wallet.",
+      "history": [],
+      "expectedCompleteBody": "Use the uploaded image as the first frame. The leather wallet stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the leather wallet, smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.",
+      "actualLocalResponse": "L06 Arc\n\n```text\nUse the uploaded image as the first frame. The leather wallet stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the leather wallet, smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.\n```",
+      "origin": "local_knowledge_handler",
+      "providerRequests": 0,
+      "passed": true
+    },
+    {
+      "id": "ppads_033",
+      "turn": 1,
+      "question": "Copy exact L06 Light Sweep prompt for a gold bracelet.",
+      "history": [],
+      "expectedCompleteBody": "Use the uploaded image as the first frame. The gold bracelet stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera stays completely still. A soft band of warm light slowly sweeps across the gold bracelet from left to right, the shadows moving gently with it. Clean premium product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.",
+      "actualLocalResponse": "L06 Light Sweep\n\n```text\nUse the uploaded image as the first frame. The gold bracelet stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera stays completely still. A soft band of warm light slowly sweeps across the gold bracelet from left to right, the shadows moving gently with it. Clean premium product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.\n```",
+      "origin": "local_knowledge_handler",
+      "providerRequests": 0,
+      "passed": true
+    },
+    {
+      "id": "ppads_037",
+      "turn": 1,
+      "question": "Give exact L07 UGC 1 prompt for a protein shaker.",
+      "history": [],
+      "expectedCompleteBody": "Use the uploaded character sheet for the [woman] and the uploaded product sheet for the protein shaker. Keep her face, hair and outfit exactly the same as the character sheet. Keep the protein shaker exactly the same — same shape, same colour, same details, same text and logo, no morphing. Selfie-style vertical video: the camera itself is her phone, held at arm's length, so we see her from the chest up looking straight into the lens. NO phone visible anywhere in the frame, no second camera, no screen. She sits at a desk in a normal home room, holding the protein shaker up near her chest to show it, casual and friendly. Handheld look with slight natural shake, natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: \"[your hook line in Hindi]\" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.",
+      "actualLocalResponse": "L07 UGC 1\n\n```text\nUse the uploaded character sheet for the [woman] and the uploaded product sheet for the protein shaker. Keep her face, hair and outfit exactly the same as the character sheet. Keep the protein shaker exactly the same — same shape, same colour, same details, same text and logo, no morphing. Selfie-style vertical video: the camera itself is her phone, held at arm's length, so we see her from the chest up looking straight into the lens. NO phone visible anywhere in the frame, no second camera, no screen. She sits at a desk in a normal home room, holding the protein shaker up near her chest to show it, casual and friendly. Handheld look with slight natural shake, natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: \"[your hook line in Hindi]\" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.\n```\n\nFields still in brackets need your details; I have not invented them.",
+      "origin": "local_knowledge_handler",
+      "providerRequests": 0,
+      "passed": true
+    },
+    {
+      "id": "ppads_038",
+      "turn": 1,
+      "question": "Give exact L07 UGC 2 prompt for a ceramic cup.",
+      "history": [],
+      "expectedCompleteBody": "Use the uploaded character sheet for the [woman] and the uploaded product sheet for the ceramic cup. Keep her face, hair and outfit exactly the same as the character sheet. Keep the ceramic cup exactly the same — same shape, same colour, same details, same text and logo, no morphing. Vertical video shot from her own phone resting on the desk in front of her: the camera itself is the phone, so we see her and the ceramic cup from a low front angle. NO phone visible anywhere in the frame, no second camera, no screen facing us. She uses the ceramic cup for a moment, then looks up straight into the lens and talks, casual and natural. Natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: \"[your second line in Hindi]\" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.",
+      "actualLocalResponse": "L07 UGC 2\n\n```text\nUse the uploaded character sheet for the [woman] and the uploaded product sheet for the ceramic cup. Keep her face, hair and outfit exactly the same as the character sheet. Keep the ceramic cup exactly the same — same shape, same colour, same details, same text and logo, no morphing. Vertical video shot from her own phone resting on the desk in front of her: the camera itself is the phone, so we see her and the ceramic cup from a low front angle. NO phone visible anywhere in the frame, no second camera, no screen facing us. She uses the ceramic cup for a moment, then looks up straight into the lens and talks, casual and natural. Natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: \"[your second line in Hindi]\" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.\n```\n\nFields still in brackets need your details; I have not invented them.",
+      "origin": "local_knowledge_handler",
+      "providerRequests": 0,
+      "passed": true
+    },
+    {
+      "id": "ppads_conv_001",
+      "turn": 2,
+      "question": "Now give me the exact prompt for that.",
+      "history": [
+        {
+          "role": "user",
+          "content": "I am making a product sheet for a perfume bottle."
+        },
+        {
+          "role": "assistant",
+          "content": "Lesson 02\n\nTake 5–7 clear phone photos from different angles in daylight, with flash off. In Google Flow choose New project → Image → Nano Banana Pro. Upload all photos as references and run the Product Sheet template. Review, regenerate if needed, and save the best sheet for later shots."
+        }
+      ],
+      "expectedCompleteBody": "Use all the uploaded photos of this perfume bottle. Create a clean product reference sheet on a plain white background showing the exact same perfume bottle in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the perfume bottle exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.",
+      "actualLocalResponse": "L02 Product Sheet\n\n```text\nUse all the uploaded photos of this perfume bottle. Create a clean product reference sheet on a plain white background showing the exact same perfume bottle in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the perfume bottle exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.\n```",
+      "origin": "local_knowledge_handler",
+      "providerRequests": 0,
+      "passed": true
+    },
+    {
+      "id": "new15_001",
+      "turn": 1,
+      "question": "Send the approved exact L02 Product Sheet prompt for an enamel camping bowl. Preserve the entire saved template.",
+      "history": [],
+      "expectedCompleteBody": "Use all the uploaded photos of this enamel camping bowl. Create a clean product reference sheet on a plain white background showing the exact same enamel camping bowl in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the enamel camping bowl exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.",
+      "actualLocalResponse": "L02 Product Sheet\n\n```text\nUse all the uploaded photos of this enamel camping bowl. Create a clean product reference sheet on a plain white background showing the exact same enamel camping bowl in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the enamel camping bowl exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.\n```",
+      "origin": "local_knowledge_handler",
+      "providerRequests": 0,
+      "passed": true
+    },
+    {
+      "id": "new15_002",
+      "turn": 1,
+      "question": "Please copy the exact L02 White Studio template for a linen notebook, with its full original wording.",
+      "history": [],
+      "expectedCompleteBody": "Use the uploaded product sheet as the reference. Keep the linen notebook exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.",
+      "actualLocalResponse": "L02 White Studio\n\n```text\nUse the uploaded product sheet as the reference. Keep the linen notebook exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n```",
+      "origin": "local_knowledge_handler",
+      "providerRequests": 0,
+      "passed": true
+    },
+    {
+      "id": "new15_003",
+      "turn": 1,
+      "question": "Give the exact L04 Colour Variant Sheet prompt for changing all zipper pulls to forest green.",
+      "history": [],
+      "expectedCompleteBody": "Use the uploaded product sheet as the reference. Only change the colour of all zipper pulls to forest green. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.",
+      "actualLocalResponse": "L04 Colour Variant Sheet\n\n```text\nUse the uploaded product sheet as the reference. Only change the colour of all zipper pulls to forest green. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.\n```",
+      "origin": "local_knowledge_handler",
+      "providerRequests": 0,
+      "passed": true
+    },
+    {
+      "id": "new15_conv_001",
+      "turn": 2,
+      "question": "Please give the exact L02 Lifestyle prompt for that product, using its known name and no invented features.",
+      "history": [
+        {
+          "role": "user",
+          "content": "My product is an embroidered cushion cover. I need a lifestyle product photo from Lesson 02."
+        },
+        {
+          "role": "assistant",
+          "content": "L02 Lifestyle\n\n```text\nUse the uploaded product sheet as the reference. Keep the embroidered cushion cover exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a warm wooden desk next to a white coffee mug and a small green plant, soft morning window light from the left, shallow depth of field, realistic lifestyle product photography.\n```"
+        }
+      ],
+      "expectedCompleteBody": "Use the uploaded product sheet as the reference. Keep the embroidered cushion cover exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a warm wooden desk next to a white coffee mug and a small green plant, soft morning window light from the left, shallow depth of field, realistic lifestyle product photography.",
+      "actualLocalResponse": "L02 Lifestyle\n\n```text\nUse the uploaded product sheet as the reference. Keep the embroidered cushion cover exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a warm wooden desk next to a white coffee mug and a small green plant, soft morning window light from the left, shallow depth of field, realistic lifestyle product photography.\n```",
+      "origin": "local_knowledge_handler",
+      "providerRequests": 0,
+      "passed": true
+    },
+    {
+      "id": "new15_conv_005",
+      "turn": 2,
+      "question": "Give the exact L06 Arc prompt for the product I mentioned. Keep every approved constraint.",
+      "history": [
+        {
+          "role": "user",
+          "content": "I sell a cork yoga block. I want a slow arc product video in Lesson 06."
+        },
+        {
+          "role": "assistant",
+          "content": "Lesson 06\n\nIn Flow choose Video → Ingredients and attach the image. Recorded course settings: 16:9, Omni 1.1 Flash, 720p, 6 sec, x1. Choose one slow movement: push-in, arc or light sweep. Keep the product perfectly still with no morphing or warping. Add music later during editing."
+        }
+      ],
+      "expectedCompleteBody": "Use the uploaded image as the first frame. The cork yoga block stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the cork yoga block, smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.",
+      "actualLocalResponse": "L06 Arc\n\n```text\nUse the uploaded image as the first frame. The cork yoga block stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the cork yoga block, smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.\n```",
+      "origin": "local_knowledge_handler",
+      "providerRequests": 0,
+      "passed": true
+    },
+    {
+      "id": "phase4_new_001",
+      "turn": 2,
+      "question": "Now give the complete approved L02 White Studio prompt for that same product. Retain every original constraint.",
+      "history": [
+        {
+          "role": "user",
+          "content": "My product is a felt glasses sleeve. Explain the Lesson 02 product sheet workflow before we make its studio photo."
+        },
+        {
+          "role": "assistant",
+          "content": "Lesson 02\n\nTake 5–7 clear phone photos from different angles in daylight, with flash off. In Google Flow choose New project → Image → Nano Banana Pro. Upload all photos as references and run the Product Sheet template. Review, regenerate if needed, and save the best sheet for later shots."
+        }
+      ],
+      "expectedCompleteBody": "Use the uploaded product sheet as the reference. Keep the felt glasses sleeve exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.",
+      "actualLocalResponse": "L02 White Studio\n\n```text\nUse the uploaded product sheet as the reference. Keep the felt glasses sleeve exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n```",
+      "origin": "local_knowledge_handler",
+      "providerRequests": 0,
+      "passed": true
+    },
+    {
+      "id": "phase4_new_002",
+      "turn": 2,
+      "question": "Copy the exact L04 Colour Variant Sheet prompt, changing the handle to cobalt blue and leaving all other details untouched.",
+      "history": [
+        {
+          "role": "user",
+          "content": "In Lesson 04 I want to change the colour of the handle to cobalt blue, while preserving everything else. Explain the colour-variant workflow."
+        },
+        {
+          "role": "assistant",
+          "content": "Lesson 04\n\nUse the product sheet as reference. Change only the requested part’s colour and keep everything else unchanged: shape, layout, details, text, logo, views, background and lighting. Generate a complete new sheet for each colour and use that sheet in later shots."
+        }
+      ],
+      "expectedCompleteBody": "Use the uploaded product sheet as the reference. Only change the colour of the handle to cobalt blue. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.",
+      "actualLocalResponse": "L04 Colour Variant Sheet\n\n```text\nUse the uploaded product sheet as the reference. Only change the colour of the handle to cobalt blue. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.\n```",
+      "origin": "local_knowledge_handler",
+      "providerRequests": 0,
+      "passed": true
+    },
+    {
+      "id": "phase4_new_006",
+      "turn": 1,
+      "question": "My product is a brass page clip. Give the approved exact L02 Lifestyle prompt for it.",
+      "history": [],
+      "expectedCompleteBody": "Use the uploaded product sheet as the reference. Keep the brass page clip exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a warm wooden desk next to a white coffee mug and a small green plant, soft morning window light from the left, shallow depth of field, realistic lifestyle product photography.",
+      "actualLocalResponse": "L02 Lifestyle\n\n```text\nUse the uploaded product sheet as the reference. Keep the brass page clip exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a warm wooden desk next to a white coffee mug and a small green plant, soft morning window light from the left, shallow depth of field, realistic lifestyle product photography.\n```",
+      "origin": "local_knowledge_handler",
+      "providerRequests": 0,
+      "passed": true
+    },
+    {
+      "id": "phase4_new_006",
+      "turn": 2,
+      "question": "My product is a recycled paper desk calendar. Give the complete exact L02 Dark Premium prompt for this new product.",
+      "history": [
+        {
+          "role": "user",
+          "content": "My product is a brass page clip. Give the approved exact L02 Lifestyle prompt for it."
+        },
+        {
+          "role": "assistant",
+          "content": "L02 Lifestyle\n\n```text\nUse the uploaded product sheet as the reference. Keep the brass page clip exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a warm wooden desk next to a white coffee mug and a small green plant, soft morning window light from the left, shallow depth of field, realistic lifestyle product photography.\n```"
+        }
+      ],
+      "expectedCompleteBody": "Use the uploaded product sheet as the reference. Keep the recycled paper desk calendar exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.",
+      "actualLocalResponse": "L02 Dark Premium\n\n```text\nUse the uploaded product sheet as the reference. Keep the recycled paper desk calendar exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.\n```",
+      "origin": "local_knowledge_handler",
+      "providerRequests": 0,
+      "passed": true
+    }
+  ]
+}

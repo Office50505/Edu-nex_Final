@@ -1,0 +1,13 @@
+{
+  "frozenAt": "2026-10-15T11:02:38.702144+00:00",
+  "providerRequestsBeforeFreeze": 0,
+  "frozenFiles": {
+    "acceptance_criteria_frozen.json": "268c6a5e9d0b541a744c76c30bd023ec837e46ae185c6f17018190ade30d9d54",
+    "existing_definitions_frozen.json": "258f71784dabdaaf9205876c5c6807d60ca8034787c615497dad22eef329d7f5",
+    "unseen_definitions_frozen.json": "26d473691fbd87aab4e02df44da904a99a3148f2484e138c0d66f62e80f203f5",
+    "all_test_cases_frozen.json": "700a26d2ee8c30dfe60929f7c475663cdedc4ea33cc956c614c996a675310b10",
+    "independent_template_expectations_frozen.json": "7f7112c7375f85821ee433f7d5a8bb4238585bcc31a6c9557d65bb80bec864a6",
+    "all_turn_asset_expectations_frozen.json": "1ee9db734ce8b281ecb927185123b4ce1d6f64e472ecb6aafebd81348eeb7f30",
+    "test_design_metadata.json": "d0621491a42f0bd6a0fb21f43d701852193f6f5799b7e0edf0f4337dcd12d44a"
+  }
+}

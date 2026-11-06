@@ -1,0 +1,60 @@
+[
+  {
+    "id": "phase6_new_001",
+    "turn": 1,
+    "template": "L02 Lifestyle",
+    "slots": {
+      "product": "hand-carved avocado spoon"
+    }
+  },
+  {
+    "id": "phase6_new_002",
+    "turn": 1,
+    "template": "L02 White Studio",
+    "slots": {
+      "product": "धातु की बुकमार्क क्लिप"
+    }
+  },
+  {
+    "id": "phase6_new_003",
+    "turn": 1,
+    "template": "L04 Colour Variant Sheet",
+    "slots": {
+      "part": "the fabric binding",
+      "colour": "russet orange"
+    }
+  },
+  {
+    "id": "phase6_new_013",
+    "turn": 1,
+    "template": "L02 Product Sheet",
+    "slots": {
+      "product": "stoneware pour-over stand"
+    }
+  },
+  {
+    "id": "phase6_new_013",
+    "turn": 2,
+    "template": "L02 Lifestyle",
+    "slots": {
+      "product": "stoneware pour-over stand"
+    }
+  },
+  {
+    "id": "phase6_new_014",
+    "turn": 3,
+    "template": "L06 Light Sweep",
+    "slots": {
+      "product": "पीतल की मसाला डिब्बी"
+    }
+  },
+  {
+    "id": "phase6_new_016",
+    "turn": 2,
+    "template": "L04 Colour Variant Sheet",
+    "slots": {
+      "part": "all four corner caps",
+      "colour": "teal grey"
+    }
+  }
+]

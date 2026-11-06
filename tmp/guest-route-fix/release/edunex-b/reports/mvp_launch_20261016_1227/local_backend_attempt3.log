@@ -1,0 +1,3 @@
+MVP isolation ready: loopback port 3127; synthetic local DB; external inference blocked until approval.
+✅ MongoDB connected
+Skillomate API listening on http://127.0.0.1:3127

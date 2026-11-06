@@ -1,0 +1,651 @@
+===== PAGE 1 =====
+
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+
+
+  AI Cartoon Series — Golu & Chiku
+
+ Chatbot Knowledge Base
+
+  Nex AI (Skillomate app tutor) ko is course ke baare mein train karne ke liye — course
+  ki saari jaankari, workflows, settings, galtiyan, troubleshooting aur bot ke jawab
+  dene ke rules.
+
+ Part A — Bot ke liye rules
+    • Jawab Hinglish mein, dost jaisa, chhota aur seedha. Zaroorat ho toh steps numbered do.
+    • Jahan kaam ka lesson hai, uska number batao (jaise "ye Lesson 05 mein hai").
+    • Prompt maange toh course ka exact chat G.P.T message do (Part F), [brackets] mein user
+      ki series ki details daal ke.
+    •  Sirf original characters aur original rhymes — kisi famous cartoon character, brand ya
+    mashoor rhyme ko copy karne mein help mat karo.
+    • Bachchon ke content mein kuch bhi daraavna, unsafe ya galat seekh dene wala nahi —
+     jaise zameen pe gira khaana khaana. Kid check hamesha.
+    • Kamai, views ya subscribers ka koi promise ya number mat do. YouTube ki policies badalti
+     rehti hain — user ko current guidelines check karne ko bolo.
+    • Tools ki price, credits ya limits ke pakke number mat batao.
+    • Course ke tools: chat G.P.T, Google Flow (Nano Banana Pro + Video), CapCut. Bahar ke
+     tools course ka part nahi.
+    • Pata na ho toh saaf bolo, guess mat karo.
+
+ Part B — Course overview
+
+  Naam: AI Cartoon Series — Golu & Chiku (Skillomate). Format: Hinglish video lessons, ek AI
+  presenter, screen recordings. Lessons: 8. Audience: adults aur teenagers jo bachchon ke
+   liye cartoon series banana chahte hain (parents, teachers, creators). Example series: Golu
+  (6 saal ka bachcha) aur Chiku (uski gilahri); Episode 1 "Chiku Aur Gayab Laddoo" (8 scenes,
+  64 sec); rhyme "Chiku Ki Chhalaang" (4 clips, 32 sec).
+
+ #    Lesson                Kya seekha
+
+  01    Course Intro                Cartoon cold open, course kya hai, kiske liye, kya chahiye
+
+  02    Golu Ka Janam              chat G.P.T se characters, sheet prompts, Master Style line, test
+
+  03    Golu Ki Duniya            3 location sets, characters + location test
+
+  04    Kahani Likho               Episode story, 8-scene table, kid check
+
+  05    Pehla Scene Chala            Start frame → Frames mode video, ek action
+
+  06    Poora Episode              Voice bible, production sheet, last-frame trick, 64 sec episode
+
+  07   Rhyme + Troubleshooting    Original rhyme video, fix table, golden rule
+
+  08    Edit + Publish              CapCut, thumbnail, title, Made for Kids, series plan, final project
+
+
+
+
+
+                                         AI Cartoon Series (Golu & Chiku)  · Page 1
+
+===== PAGE 2 =====
+
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+ Part C — Key concepts (glossary)
+
+  Term              Matlab
+
+  Character sheet      Ek image mein character ke 4 views (front, three-quarter, side, back) + 4 expressions.
+                      Har scene mein reference.
+
+  Master Style line     Ek fixed "Style:" line jo har image/video prompt ki shuruaat mein jaati hai — look kabhi
+                        nahi badalta.
+
+  Location set           Khaali jagah ki image (ghar, mohalla, school) — har scene mein reference, taaki jagah
+                   same rahe.
+
+  Scene table          Kahani 8-8 sec ke scenes mein: location, characters, ek action, dialogue, camera.
+
+   Start frame          Scene ki pehli image — video isi se shuru hota hai (Frames mode).
+
+  Frames vs           Frames: start (aur end) frame se video. Ingredients: reference images se video bina
+  Ingredients            fixed first frame.
+
+  Last-frame trick        Jo scene continue hota hai, uska start frame = pichhle video ka last frame (save
+                         frame).
+
+  Voice bible          Har character ki ek fixed English voice line, har video prompt mein copy.
+
+  Production sheet      Saare scenes ke start frame + video prompts ek saath, chat G.P.T se.
+
+  Made for Kids        YouTube setting bachchon ke videos ke liye — comments aur personalised ads band ho
+                          jaate hain.
+
+  Unlisted                  Sirf link wale dekh sakte hain — publish se pehle check karne ke liye.
+
+
+ Part D — Workflows (short)
+
+ Lesson 02 — Golu Ka Janam (Character Sheets)
+    • chat G.P.T se dono characters design karwaye: Golu "The Little Explorer" (yellow t-shirt,
+    blue shorts, red sandals, catchphrase "Arre waah! Ye kya hai?") aur Chiku "The Tiny
+    Troublemaker" (catchphrase "Chik-chik! Pakdo mujhe!"). Har rang ka exact hex code bhi
+     mila.
+    • Usi chat se sheet ke prompts likhwaye — copy, Nano Banana Pro mein paste: 4 views
+     (front, three-quarter, side, back) + 4 expressions.
+    • chat G.P.T ne ek Master Style line di — yahi line har image aur video prompt mein jaati
+     hai.
+    • Test: dono sheets reference mein daal ke seedha video banaya — Golu aur Chiku dono
+   same rahe.
+    • chat G.P.T ka note: sirf text prompt se character same nahi rehta — sheets save rakho.
+
+ Lesson 03 — Golu Ki Duniya (Locations)
+    • chat G.P.T se 3 locations ke prompts: ghar (living room), mohalla (gali), school (classroom).
+    Har prompt Master Style line se shuru.
+    • Locations khaali rakho — koi character nahi. Yahi tumhare "sets" hain.
+    • Test: Golu ki sheet + Chiku ki sheet + ghar ki image, teeno reference mein — video mein
+     sofa, deewar, Golu sab same.
+    • chat G.P.T ki tip: har scene mein us jagah ki image reference mein daalo, warna
+    khidki-darwaza badal jaata hai.
+
+
+
+
+
+                                         AI Cartoon Series (Golu & Chiku)  · Page 2
+
+===== PAGE 3 =====
+
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+
+ Lesson 04 — Kahani Likho
+    • Usi chat mein pehla episode: "Chiku Aur Gayab Laddoo" — ek laddoo gayab, Golu ko
+     lagta hai Chiku ne khaaya, sach kuch aur nikalta hai.
+    • Kahani ko 8-8 sec ke 8 scenes mein toda: location, characters, ek action, chhota dialogue,
+    camera.
+    • chat G.P.T ne saare scenes ghar mein rakhe — kam locations = animation aasan aur
+     consistent.
+    • Kid check: laddoo galti se plate se gir ke roll hota hai, Golu daantta nahi pyaar se poochhta
+     hai, Chiku furniture ke peeche nahi bhaagta, moral: "Bina jaane kisi ko dosh mat do."
+    • Baareek baat: gira hua laddoo koi nahi khaata — bachche yahi dekh ke seekhte hain.
+
+ Lesson 05 — Pehla Scene Chala
+    • Pehle start frame: chat G.P.T se Nano Banana prompt (Golu sheet + ghar image) — scene
+    ka bilkul pehla moment.
+    • Phir usi image ko chat G.P.T mein upload karke Scene 1 ka video prompt: ek action, abhi
+     koi dialogue nahi.
+    • Flow → Video → Frames mode → start frame + prompt → 8 sec. Golu move karta hai,
+    kamra same rehta hai.
+    • Scene 2 bhi same tareeke se.
+    • Pro tip: start frame ka style zara bhi alag dikhe toh trash karo aur dobara generate — video
+     usi frame se banta hai.
+
+ Lesson 06 — Poora Episode, Awaaz Ke Saath
+    • Ek hi message mein: voice bible (Golu, Chiku, narrator — har ek ki ek fixed English voice
+     line) + 8 scenes ki production sheet.
+    • Har scene: start frame prompt ya "Use last frame of Scene X", aur video prompt —
+     dialogue, voice line, TIMING, "only [character] speaks".
+    • Pro trick: jo scene pichhle se continue hota hai, uska start frame pichhle video ka last
+    frame.
+    • 1–2 scenes on camera, baaki off camera — phir aathon scenes jod ke 64 sec ka poora
+    episode.
+    • Scene 8 mein narrator moral bolta hai.
+
+ Lesson 07 — Rhyme Video + Troubleshooting
+    • Original rhyme "Chiku Ki Chhalaang" — 4 verse, har verse 2 lines, 8 sec mein gaane
+     laayak, mohalla mein.
+    • Production sheet: 4 clips; Clip 2–4 ka start frame pichhli clip ka last frame — poori rhyme
+    ek flow mein.
+    • Golu saare verse gaata hai, Chiku act karta hai. Har clip mein tune thodi badal sakti hai —
+    music baad mein CapCut mein.
+    • Troubleshooting table: problem, kyun hoti hai, aur prompt mein kaunsi line daalni hai.
+    • Golden rule: characters lock karo, jagah lock karo, aur sirf utna animate karo jitna scene
+    mein chahiye.
+
+
+
+
+
+                                         AI Cartoon Series (Golu & Chiku)  · Page 3
+
+===== PAGE 4 =====
+
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+
+ Lesson 08 — Edit, Thumbnail, Publish + Final Project
+    • CapCut: 8 clips order mein, title card ("Golu & Chiku — Episode 1"), library se halka kids
+    music dialogue ke neeche, check karke 1080p export.
+    • Thumbnail: chat G.P.T ka prompt + 3 references (dono sheets + episode ka ek frame) →
+    "Laddoo kahan gaya?"
+    •  Title, description, 10 tags — bina clickbait, bina jhoothe claims.
+    • Upload settings: Audience → "Yes, it's made for kids"; pehle Unlisted rakh ke check, phir
+     Public.
+    • Series plan: agle 10 episodes (title, story, moral) same characters aur locations mein + har
+     hafte ek episode ka schedule. Tip: publish se pehle 2 episodes ready rakho.
+
+
+
+
+
+                                         AI Cartoon Series (Golu & Chiku)  · Page 4
+
+===== PAGE 5 =====
+
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+ Part E — Troubleshooting (FAQ)
+
+  User ka sawaal / problem         Jawab
+
+  Har scene mein mera character alag   Character sheet reference mein daalo + Master Style line + STRICT
+  dikh raha                      CHARACTER LOCK. (L02)
+
+  Room/jagah badal jaati hai            Location image reference mein daalo + SCALE AND ENVIRONMENT
+                                   LOCK. (L03)
+
+  Image cartoon ki jagah real photo aa   Master Style line missing hai — pehli line mein daalo. (L03)
+  gayi
+
+  Kahani bahut lambi/generic aayi       Usi chat mein likhwao jahan characters hain; length, umar, moral,
+                                           locations saaf likho. (L04)
+
+  Video mein character ka look bigad    Frames mode mein start frame se banao; start frame galat ho toh
+  gaya                                  trash karke dobara. (L05)
+
+  Scenes ke beech jump lagta hai       Last-frame trick: pichhle video ka last frame agle scene ka start frame.
+                                         (L06)
+
+  Awaaz har clip mein alag              Voice bible ki exact line har prompt mein; zyada pakka chahiye toh
+                                           fixed audio CapCut mein. (L06, L07)
+
+  Rhyme ki tune har clip mein alag      Normal hai — music CapCut mein upar daalo, clips mein background
+                                    music nahi. (L07)
+
+  Ungliyan ajeeb aayi              HAND ANATOMY LOCK + gestures simple rakho, dobara generate.
+                                         (L07)
+
+  Random text/board aa gaya        NO TEXT RULE line add karo. (L07)
+
+  Thumbnail ki Hindi spelling galat      Dobara generate, ya bina text ka thumbnail banake text khud daalo.
+                                         (L08)
+
+  Made for Kids lagaun ya nahi?        Bachchon ke liye bana hai toh haan — ye YouTube ki requirement hai;
+                                         current guidelines bhi check karo. (L08)
+
+  Famous cartoon/rhyme bana du?      Nahi — sirf original characters aur rhymes, warna copyright problem.
+                                         (L07)
+
+  Prompts kahan milenge?             Prompts PDF mein, aur chat G.P.T ki production sheet mein.
+
+
+ Part F — Saare chat G.P.T messages (exact)
+
+   [Brackets] mein user ki series ki details daal ke do.
+
+  Master Style line (example)
+
+
+   Style: Soft, colourful, high-quality 3D animated kids' cartoon, rounded character shapes,
+   smooth clay-like textures, warm gentle lighting, expressive oversized eyes, friendly
+   Indian children's animation aesthetic, clean polished rendering, consistent character
+   proportions.
+
+
+
+
+
+                                         AI Cartoon Series (Golu & Chiku)  · Page 5
+
+===== PAGE 6 =====
+
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+
+
+  Lesson 02 · Step 1: Character design
+
+
+   I'm making a short animated cartoon series for Indian kids aged 3–8. Help me design the
+   two main characters.
+
+
+   1) [Character 1 — e.g. Golu, a 6-year-old Indian boy who lives in a small mohalla in an
+   Indian city]
+   2) [Character 2 — e.g. Chiku, Golu's pet squirrel and best friend]
+
+
+   For each character give me: personality in 3 words, one funny habit or catchphrase in
+   simple Hindi, a simple outfit/look with exact colours, and face and body details. Keep the
+   look simple so AI can repeat it every time — plain clothes, no logos, no patterns, no text
+   on clothes.
+
+
+
+  Lesson 02 · Step 2: Sheet ke prompts + Master Style line
+
+
+   Now write ready-to-paste prompts for Google Flow's image generator (Nano Banana Pro) to
+   make a character reference sheet for each character.
+
+
+   Rules for both prompts:
+   - Start each prompt with one fixed "Style:" line for a soft, colourful 3D animated kids'
+   cartoon look. Use the EXACT same Style line in both prompts — I will reuse it in every
+   future prompt.
+   - Layout: plain light-grey background; top row = four full-body views (front,
+   three-quarter, side profile, back); bottom row = four face close-ups (happy, surprised,
+   sad, angry).
+   - Every view must be exactly the same character.
+   - 16:9, no text, no labels, no background scenery.
+
+
+   Give me the [Character 1] prompt and the [Character 2] prompt in separate code boxes, and
+   the Style line separately at the end.
+
+
+
+  Lesson 02 · Step 3: Test scene (dono sheets upload)
+
+
+   Now write one Nano Banana Pro prompt where I upload both character sheets as reference
+   images. Scene: [simple scene — e.g. Golu happily running across a small green park in an
+   Indian neighbourhood on a sunny morning, with Chiku sitting on his shoulder]. Tell the
+   model to keep both characters exactly the same as the sheets. Use the same Style line.
+   16:9, no text.
+
+
+
+  Lesson 03 · 3 locations ke prompts
+
+
+   Now let's build [Character]'s world. Write ready-to-paste Nano Banana Pro prompts for 3
+   locations where our episodes will happen:
+
+
+   1) [Location 1 — e.g. Golu's home — a small, cosy Indian living room]
+   2) [Location 2 — e.g. Golu's mohalla — a narrow, colourful Indian neighbourhood street]
+   3) [Location 3 — e.g. Golu's school — a cheerful classroom in a small Indian school]
+
+
+   Rules:
+   - Start every prompt with our exact Master Style line.
+   - Empty scenes — no people, no characters, no animals.
+   - Simple, clear layout that is easy to repeat in every episode.
+   - Wide 16:9 shot, no text, no signs with words.
+
+
+   Give each prompt in a separate code box.
+
+
+
+
+
+                                         AI Cartoon Series (Golu & Chiku)  · Page 6
+
+===== PAGE 7 =====
+
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+
+
+  Lesson 03 · Test: characters + location
+
+
+   Now write one Nano Banana Pro prompt where I upload 3 reference images: [Character 1]'s
+   sheet, [Character 2]'s sheet, and the [location] image. Scene: [e.g. Golu is sitting on
+   the sofa reading a picture book, and Chiku is peeking out from behind a cushion]. Keep the
+   room exactly the same as the location image and both characters exactly the same as their
+   sheets. Use the Master Style line. 16:9, no text.
+
+
+
+  Lesson 04 · Step 1: Episode ki kahani
+
+
+   Now let's write [Character]'s first episode: "[Episode title — e.g. Chiku Aur Gayab
+   Laddoo]".
+
+
+   - Length: about 60 seconds when animated
+   - For kids aged 3–8: simple, funny, warm, nothing scary
+   - Story: [one-line story — e.g. a laddoo goes missing at home, Golu thinks Chiku ate it,
+   but the truth turns out to be different]
+   - Moral: [e.g. don't blame someone without checking first] — say it simply at the end
+   - Use only our 3 locations
+   - Use both catchphrases at least once
+   - Very simple Hindi words that small kids understand
+
+
+   Write the story in short Hindi (Devanagari), like a storybook.
+
+
+
+  Lesson 04 · Step 2: Scene table
+
+
+   Now break this story into 7–8 scenes of 8 seconds each, as a table with these columns:
+   Scene no. | Location (only our 3) | Characters | What happens (only ONE simple action) |
+   Dialogue (who speaks + max 10 simple Hindi words) | Camera (wide / medium / close-up)
+
+
+   Rules: one action per scene, short dialogue that fits in 8 seconds, and the story must
+   flow clearly from scene to scene.
+
+
+
+  Lesson 04 · Step 3: Kid check
+
+
+   Now check this episode for kids aged 3–8: is anything scary, unsafe, rude or confusing?
+   Are any words too hard? Fix those parts and give me the final scene table again.
+
+
+
+  Lesson 05 · Step 1: Start frame prompt
+
+
+   Let's turn Scene 1 of our episode into a video. First I need a START FRAME image.
+
+
+   Write one ready-to-paste Nano Banana Pro prompt for the first frame of Scene 1. I will
+   upload 2 reference images: [Character]'s character sheet and the [location] image. Show
+   the exact moment the scene begins — [e.g. Golu in the living room, looking at a plate with
+   two round laddoos]. Keep the character and the room exactly the same as the references.
+   Use our Master Style line. 16:9, no text.
+
+
+
+
+
+                                         AI Cartoon Series (Golu & Chiku)  · Page 7
+
+===== PAGE 8 =====
+
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+
+
+  Lesson 05 · Step 2: Scene video prompt (Frames mode)
+
+
+   Now write a Google Flow video prompt for Scene 1 (8 seconds) that starts from this start
+   frame.
+
+
+   Rules:
+   - Only ONE simple action from our scene table
+   - Keep the character, the props and the room exactly as in the start frame
+   - Simple camera (tell me which)
+   - No dialogue yet — only soft ambient sounds
+   - Same Master Style line
+
+
+
+  Lesson 05 · Step 3: Agla scene
+
+
+   Now do the same for Scene 2: first the start frame prompt (same references), then the
+   8-second video prompt. One action only, no dialogue yet.
+
+
+
+  Lesson 06 · Voice bible + 8 scenes ki production sheet
+
+
+   Now let's produce the full episode "[Episode title]" with voices.
+
+
+   Part A — Voice bible: write ONE fixed English voice line each for [Character 1],
+   [Character 2] and a warm narrator (tone, pitch, speed, energy, fun cartoon style). I will
+   paste these exact lines into every video prompt so the voices never change.
+
+
+   Part B — Production sheet for all 8 scenes from our final table. For each scene give me:
+   1) Start frame: either a ready Nano Banana Pro prompt (say which references to upload:
+   character sheets / location image), OR write "Use last frame of Scene X" if the scene
+   continues directly from the previous one.
+   2) An 8-second Google Flow video prompt with: our Master Style line, ONE action, the Hindi
+   dialogue from the table, the exact voice line of whoever speaks, a TIMING block, and "only
+   [character] speaks".
+
+
+   In Scene 8, add the narrator saying the moral at the end.
+   Keep every prompt in its own code box, scene by scene.
+
+
+
+  Lesson 07 · Original rhyme + production sheet
+
+
+   Now let's make a short ORIGINAL rhyme video for our series: "[Rhyme title — e.g. Chiku Ki
+   Chhalaang]", set in [location].
+
+
+   Part A — Write a 4-verse Hindi rhyme for kids aged 3–8 (Devanagari). Each verse = 2 short
+   lines that rhyme, easy to sing in 8 seconds, with a bouncy nursery-rhyme rhythm. Both
+   characters appear. Fully original — do not copy or imitate any famous rhyme.
+
+
+   Part B — Production sheet for 4 clips (one verse per clip, 8 seconds each). For each clip
+   give:
+   1) Start frame: a Nano Banana Pro prompt (say which references to upload), OR "Use last
+   frame of Clip X" if it continues.
+   2) A Google Flow video prompt with our Master Style line, ONE simple action that matches
+   the lyrics, the verse sung in a cheerful nursery-rhyme melody on a steady beat, the exact
+   voice line from our voice bible for whoever sings, a TIMING block, and "no background
+   music" (I'll add music later).
+
+
+   Each prompt in its own code box.
+
+
+
+
+
+                                         AI Cartoon Series (Golu & Chiku)  · Page 8
+
+===== PAGE 9 =====
+
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+
+
+  Lesson 07 · Troubleshooting table
+
+
+   Make me a quick troubleshooting table for Google Flow cartoon videos with 3 columns:
+   Problem | Why it happens | Exact line to add or change in the prompt.
+
+
+   Cover: character's face or outfit changes, extra or merged fingers, voice changes between
+   clips, lip-sync is off, character size or room changes between scenes, random text or
+   signs appear, extra characters appear, the action is too fast or too much.
+
+
+
+  Lesson 08 · Thumbnail prompt
+
+
+   Write a Nano Banana Pro prompt for a YouTube thumbnail for [Episode title]. I will upload
+   [Character 1]'s sheet, [Character 2]'s sheet and one frame from the episode as references.
+   Make it bright and eye-catching for kids: [e.g. Golu with a big surprised face, Chiku
+   peeking cheekily, the laddoo clearly visible], simple background, 16:9. Add only this
+   short text in big bold Hindi letters: "[short text — e.g. Laddoo kahan gaya?]" — nothing
+   else.
+
+
+
+  Lesson 08 · Title, description, tags + Made for Kids
+
+
+   Now write a YouTube title, a short description and 10 tags for this episode. Kid-friendly,
+   honest — no clickbait, no fake claims. Also explain in simple words what the "Made for
+   Kids" setting on YouTube means for this video.
+
+
+
+  Lesson 08 · Agle 10 episodes + schedule
+
+
+   Plan the next 10 episodes of [series name]: for each give a title, a one-line story and a
+   simple moral. Use only our characters and our 3 locations so I can reuse all sheets. Also
+   suggest a simple, realistic posting schedule for one person.
+
+
+  Troubleshooting lines
+
+  Problem            Kyun hota hai             Prompt mein kya daalo
+
+  Chehra ya kapde badal    AI har frame/clip mein         STRICT CHARACTER LOCK: reference jaisa exact
+  gaye                    character dobara banata hai    chehra, baal, skin, kapde, proportions — koi
+                                                          redesign nahi
+
+  Extra ya judi hui         Chhote haath aur complex     HAND ANATOMY LOCK: har haath mein exactly 5
+  ungliyan                 gestures mushkil                ungliyan, gestures simple
+
+   Clips mein awaaz badal   Har generation alag awaaz     VOICE IDENTITY LOCK: voice bible ki exact line har
+  gayi                  bana sakta hai                     clip mein; zyada pakka chahiye toh fixed audio
+                                                   CapCut mein
+
+  Lip-sync off              Dialogue lamba ya bahut tez    Chhota dialogue + lip-sync line: munh tabhi chale
+                                                             jab awaaz ho
+
+  Size ya kamra badal      AI har baar background naya   SCALE AND ENVIRONMENT LOCK + location image
+  gaya                   banata hai                     reference mein
+
+  Random text/board aa    AI books, deewar pe likh deta  NO TEXT RULE: koi letters, numbers, signs,
+  gaye                     hai                         watermark nahi
+
+  Extra characters aa       AI background bharne ke liye   CHARACTER COUNT LOCK: sirf naam diye gaye
+  gaye                     log daal deta hai                characters
+
+  Action bahut tez/zyada   8 sec mein bahut kuch       ONE ACTION ONLY + TIMING block, static camera
+
+
+
+
+
+                                         AI Cartoon Series (Golu & Chiku)  · Page 9
+
+===== PAGE 10 =====
+
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+ Part G — Example answers (bot ka tone)
+
+  User: mera character har video mein thoda alag lag raha hai
+  Bot: Ye sabse common problem hai. Teen cheezein check karo: (1) character sheet har baar
+  reference mein hai? (2) prompt ki pehli line Master Style line hai? (3) video Frames mode
+  mein start frame se ban raha hai? Phir bhi badle toh prompt mein STRICT CHARACTER LOCK
+  wali line daalo (Lesson 07 ki table) aur usi start frame se dobara generate karo.
+
+  User: kya main Chhota Bheem jaisa character bana sakta hoon?
+  Bot: Kisi existing cartoon ka character copy mat karo — copyright problem hogi aur channel
+  pe strike aa sakti hai. Lesson 02 ke tareeke se apna original character banao: naam, look,
+  catchphrase sab tumhara.
+
+  User: ek episode se kitna kama lunga?
+  Bot: Course koi kamai ka number nahi deta. Focus consistent, achhe episodes pe rakho —
+  Lesson 08 wala plan follow karo: har hafte ek episode, aur publish se pehle do episodes
+  ready.
+
+
+
+
+
+                                         AI Cartoon Series (Golu & Chiku)  · Page 10

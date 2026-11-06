@@ -1,0 +1,19 @@
+{
+  "courseId": "6ae1b4694e1af14d4adc9e2b",
+  "slug": "viral-hook-formula",
+  "binding": "verified published catalog snapshot",
+  "lessons": 10,
+  "hookCategories": 8,
+  "exactTemplates": 2,
+  "records": 27,
+  "originalTxtSHA256": "940c2aeac8fd7b73966a7aad2081202cec9e3b8c26c1d2b5b4c9b210cb395708",
+  "supplementaryPdfSHA256": "185dd08e9df2ddccc113508d7ca0dc5caaea19912756e8e4ed2a07c1cad27530",
+  "supplementaryFilename": "Viral_Hook_Formula_Course_Notes.pdf",
+  "requestedSupplementaryFilenamePresent": false,
+  "indexingTransforms": [
+    "Page headers and footers removed only in derived non-template records.",
+    "Original TXT/PDF bytes and both Part F body byte ranges preserved."
+  ],
+  "productionWrites": false,
+  "paidCalls": 0
+}

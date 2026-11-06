@@ -1,0 +1,7 @@
+{
+  "command": "NODE_OPTIONS=--require=./tests/helpers/deny-network.cjs node --test tests/ai-chat-history.test.cjs tests/tutor-knowledge.test.cjs tests/product-tutor-quality.test.cjs tests/mobile-course-ai.test.cjs tests/mobile-course-ai-cache.test.cjs",
+  "startedAt": "2026-10-15T06:23:18.711995+00:00",
+  "completedAt": "2026-10-15T06:23:19.270438+00:00",
+  "durationSeconds": 0.5584093329998723,
+  "exitCode": 0
+}

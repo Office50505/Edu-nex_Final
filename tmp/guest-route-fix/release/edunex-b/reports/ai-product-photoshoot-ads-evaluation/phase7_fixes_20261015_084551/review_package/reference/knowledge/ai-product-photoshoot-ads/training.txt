@@ -1,0 +1,473 @@
+SKILLOMATE                                                                  Chatbot Knowledge Base
+
+
+
+
+ AI Product Photoshoot & Ads
+
+
+ Chatbot Knowledge Base
+ Nex AI (Skillomate app tutor) ko is course ke baare mein train karne ke liye. Is
+ document mein course ki saari jaankari, workflows, settings, galtiyan,
+ troubleshooting aur bot ke jawab dene ke rules hain.
+
+
+ Part A — Bot ke liye rules
+  • Jawab Hinglish mein, dost jaisa, chhota aur seedha. Zaroorat ho toh steps numbered do.
+  • Jahan kaam ka lesson hai, uska number batao (jaise "yeh Lesson 03 mein hai").
+  • Prompt maange toh course ka exact prompt do (Part F), [PRODUCT] ki jagah user ka
+    product daal ke.
+  • Tools ki price, plan, credits ya feature limits ke baare mein pakka number mat batao — yeh
+    badalte rehte hain. Kaho: "tool mein abhi jo dikh raha hai wahi check karo".
+  • Kamai ka koi promise ya number mat do. Course ad banana sikhata hai, kamai guarantee
+    nahi karta.
+  • Fake reviews, fake testimonials, ya AI insaan ko asli grahak batana — iski help mat karo.
+    Imaandari wala tareeka batao.
+  • Course ke bahar ke tools (jaise Midjourney, Kling, Runway) ke detailed steps course ka part
+    nahi hain. Course ke tools: Google Flow, chat G.P.T, CapCut.
+  • CapCut editing course mein sikhayi nahi gayi — sirf final result dikhaya gaya. User puche
+    toh basic idea do aur bata do ki course mein iska tutorial nahi hai.
+  • Pata na ho toh saaf bolo, guess mat karo.
+
+
+ Part B — Course overview
+ Naam: AI Product Photoshoot & Ads (Skillomate). Format: Hinglish, chhote video lessons, ek
+ AI presenter. Lessons: 8. Example product: white 60% compact mechanical keyboard, red
+ accent keys, price ₹2,599 (sirf example). Kiske liye: jo apna product online bechte hain, aur
+ jo dusron ke liye product ads banana chahte hain. Zarurat: phone, laptop, koi bhi product.
+
+
+
+
+                                 AI Product Photoshoot & Ads · Page 1
+SKILLOMATE                                                                                  Chatbot Knowledge Base
+
+
+
+
+ #      Lesson                                 Kya seekha
+
+ 01     Course Intro                           Course mein kya banega, tools, kya chahiye
+
+ 02     Phone Photo Se Studio Photo            Angle photos → Product Sheet → white studio, lifestyle, dark
+                                               premium
+
+ 03     Model Ke Saath Product                 Character sheet + product sheet saath, 3 model shots, haathon ki
+                                               galtiyan
+
+ 04     Festive Shoot + Colour Variants        Diwali, wedding gift scenes; har rang ki nayi product sheet
+
+ 05     chat G.P.T Se Ad Plan                  Buyers, problems, angles; hooks, script, caption; Flow prompts
+
+ 06     Photo Se Product Video                 Ingredients mode, ek movement: push-in, arc, light sweep
+
+ 07     UGC-Style Video                        AI insaan phone-style video, 9:16; phone frame mein na aaye
+
+ 08     Finale                                 Poora workflow, top galtiyan, imaandari, final project; prompts
+                                               notes mein
+
+
+
+
+ Part C — Key concepts (glossary)
+ Term                     Matlab
+
+ Product Sheet            Ek hi image mein product ke 4 views (front, top, side, three-quarter). Har nayi
+                          photo/video ka reference. Product ko har baar same rakhne ki chaabi.
+
+ Character Sheet          Model ki sheet: chehra close-up + front, side, back. Model ko har shot mein same
+                          rakhti hai.
+
+ Reference /              Flow mein jo image(s) prompt ke saath lagate ho. Video mode mein option ka naam
+ Ingredients              "Ingredients" tha.
+
+ Lifestyle shot           Product asli zindagi ki jagah pe (desk, ghar) — kharidne wala khud ko imagine kar
+                          sake.
+
+ Ad angle                 Ek buyer type + uski problem ke hisaab se ad ki baat. Ek ad = ek angle.
+
+ Hook                     Ad ke pehle 1–3 second ki line jo scroll rokti hai.
+
+ UGC                      User-generated-content style: aam insaan apne phone se product dikha raha ho jaisa
+                          video.
+
+ Morphing                 Video mein product ka shape/details badalna ya pighalna. Zyada movement se hota
+                          hai.
+
+ Aspect ratio             16:9 = landscape (desk/product videos), 9:16 = vertical (reels, UGC), 1:1 = square.
+
+
+
+
+ Part D — Step-by-step workflows
+ Product sheet banana (L02)
+  • Phone se product ki 5–7 photos, alag angles, din ki roshni, flash off, details saaf.
+  • Google Flow → New project → Image → Nano Banana Pro.
+  • Saari photos upload/reference mein lagao → product sheet prompt chalao.
+  • Sheet achhi na aaye toh dobara generate karo. Achhi sheet ko save rakho — poore course
+    mein yahi reference hai.
+
+ Product photos (L02, L04)
+  • Reference mein sirf product sheet.
+  • Prompt ki pehli line: product bilkul waisa hi.
+
+
+
+                                        AI Product Photoshoot & Ads · Page 2
+SKILLOMATE                                                                  Chatbot Knowledge Base
+
+
+
+
+  • Phir scene: jagah, 2–3 cheezein, roshni, angle. Sajawat peeche, product aage.
+
+ Model shots (L03)
+  • Character sheet + product sheet dono reference mein.
+  • Model ke kapde/look prompt mein sheet se match karke likho.
+  • "natural hands with five fingers" likho. 2–3 versions banao.
+
+ Colour variants (L04)
+  • Reference: product sheet.
+  • "Only change the colour of [part] to [colour]. Keep everything else exactly the same."
+  • Har rang ki poori sheet banao, aage ke shots usi se.
+
+ Ad plan (L05)
+  • Ek hi chat mein: details + price + kahan bechte ho → 3 buyers, problems, angles.
+  • Angle chuno → 5 hooks + 15-sec script + caption, "use only the features I gave you".
+  • Flow ke 3 image prompts likhwao → Flow mein product sheet ke saath chalao.
+  • Output padh ke jhoothe/unproven claims hatao.
+
+ Product video (L06)
+  • Flow → Video → Ingredients → photo daalo.
+  • Course settings: 16:9, Omni 1.1 Flash, 720p, 6 sec, x1.
+  • Ek movement: push-in / arc / light sweep. Music nahi — baad mein editing mein.
+
+ UGC video (L07)
+  • Flow → Video → Ingredients: chehra + character sheet + product sheet.
+  • Course settings: 9:16, 720p, 8 sec.
+  • Prompt: camera hi phone hai, frame mein koi phone nahi; ghar ka kamra, studio nahi.
+  • Dialogue chhota (Hindi, Devanagari mein likho), L05 ke hook se.
+
+
+ Part E — Troubleshooting (FAQ)
+
+
+
+
+                                 AI Product Photoshoot & Ads · Page 3
+SKILLOMATE                                                                               Chatbot Knowledge Base
+
+
+
+
+ User ka sawaal / problem                Jawab
+
+ Label ke akshar / keys ke letters       Product sheet reference lagao, pehli line "keep exactly the same,
+ badal gaye                              same text and logo". Chhota text AI ki limitation hai — 2–3 versions
+                                         banao, best chuno. (L02)
+
+ Har photo mein product thoda alag       Sheet ke bina bana rahe ho. Pehle product sheet banao, phir har
+ dikh raha                               photo usi se. (L02, L08)
+
+ Product bahut chhota/bada dikh raha     Prompt mein "realistic real-world scale" add karo.
+
+ Model ki ungliyan judi / extra          "natural hands with five fingers" + dobara generate. Haath AI ke liye
+                                         mushkil hain. (L03)
+
+ Model ke haath kisi aur ke lag rahe     Prompt mein kapde/details character sheet se alag likhe hain. Match
+                                         karo. (L03)
+
+ Model ka chehra badal gaya              Character sheet reference mein lagao aur "keep her face exactly the
+                                         same as the character sheet" likho.
+
+ Rang badla toh shape bhi badal gaya     "Only change the colour… keep everything else exactly the same".
+                                         (L04)
+
+ Brand ka exact colour nahi aa raha      Exact shade hamesha nahi aata. 2–3 baar banao, sabse paas wala
+                                         chuno. (L04)
+
+ chat G.P.T ka ad bahut generic          Asli details, price, kahan bechte ho do; pehle buyers aur angles
+                                         poocho. (L05)
+
+ chat G.P.T ne aisa feature likha jo     Hata do. Prompt mein "use only the features I gave you" likho. (L05)
+ product mein nahi
+
+ Video mein product pighal/morph         Ek hi dheema movement rakho, "stays perfectly still, no morphing".
+ raha                                    (L06)
+
+ Video mein letters blur                 Movement mein chhota text bigad sakta hai. Dheema movement, 2–3
+                                         baar banao. (L06)
+
+ UGC video mein phone dikh raha          "The camera itself is her phone. NO phone visible anywhere in the
+                                         frame." (L07)
+
+ UGC bahut polished/ad jaisa             "normal home room, handheld look, not a studio, not a polished ad".
+                                         (L07)
+
+ Vertical clip landscape mein side       Clip 9:16 bana hai. Reels ke liye project 9:16 rakho; landscape chahiye
+ mein blur                               toh Flow mein 16:9 select karke dobara banao.
+
+ Kya AI model ko customer review         Nahi. AI insaan asli grahak nahi hai — ise review/testimonial bata ke
+ bata sakte hain?                        mat chalao. Product dikhane ke liye use karo. (L07)
+
+ Final ad kaise edit karein?             Course mein CapCut tutorial nahi hai; final ad ka order: UGC hook →
+                                         product videos → UGC → end card (price + order kaise karein). Text
+                                         aur price editing mein daalo, AI se nahi.
+
+ Prompts kahan milenge?                  Saare prompts notes section mein hain (L08).
+
+
+
+
+ Part F — Saare prompts (exact)
+ [PRODUCT] ki jagah user ka product daal ke do. Labels wahi jo lesson mein.
+
+
+
+
+                                       AI Product Photoshoot & Ads · Page 4
+SKILLOMATE                                                                Chatbot Knowledge Base
+
+
+
+
+  L02 Product Sheet
+
+  Use all the uploaded photos of this [PRODUCT]. Create a clean product reference sheet on a
+  plain white background showing the exact same [PRODUCT] in four views arranged in a neat
+  grid: front view, top-down view, side view and three-quarter angle view. Keep the
+  [PRODUCT] exactly the same in every view — same shape, same colour, same details, same
+  text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text
+  labels, realistic product photography.
+
+
+  L02 White Studio
+
+  Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same —
+  same shape, same colour, same details, same text and logo, do not redesign it. Place it on
+  a clean seamless white background, soft even studio lighting, a soft natural shadow under
+  it, slight top-down angle, sharp focus, realistic product photography.
+
+
+  L02 Lifestyle
+
+  Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same —
+  same shape, same colour, same details, same text and logo, do not redesign it. Place it on
+  a warm wooden desk next to a white coffee mug and a small green plant, soft morning window
+  light from the left, shallow depth of field, realistic lifestyle product photography.
+
+
+  L02 Dark Premium
+
+  Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same —
+  same shape, same colour, same details, same text and logo, do not redesign it. Place it on
+  a matte black surface against a dark background, a single soft rim light outlining its
+  edges, a subtle reflection on the surface, premium moody look, realistic product
+  photography.
+
+
+  L03 Character Sheet (bonus)
+
+  Create a character reference sheet of one realistic young Indian [man / woman], clearly
+  adult, [hair, outfit details]. Show the exact same person in one image: a close-up of the
+  face, and full-body front view, side view and back view on a plain light grey background.
+  Same face, same hair, same outfit in every view. Soft even light, RAW realistic photo
+  look, real skin texture, no text labels.
+
+
+  L03 Hands close-up
+
+  Use the uploaded product sheet for the [PRODUCT] and the uploaded character sheet for the
+  [woman / man]. Keep the [PRODUCT] exactly the same — same shape, same colour, same
+  details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the
+  [PRODUCT] on a wooden desk, [clothing that matches the character sheet, e.g. bare arms
+  matching her blue tank top], natural hands with five fingers each, soft window light,
+  shallow depth of field, realistic real-world scale, realistic lifestyle product
+  photography.
+
+
+
+
+                                AI Product Photoshoot & Ads · Page 5
+SKILLOMATE                                                                Chatbot Knowledge Base
+
+
+
+
+  L03 Desk
+
+  Use the uploaded product sheet for the [PRODUCT] and the uploaded character sheet for the
+  [woman / man]. Keep the [PRODUCT] exactly the same — same shape, same colour, same
+  details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same
+  as the character sheet. [She] sits at a clean desk using the [PRODUCT], side three-quarter
+  angle, natural hands with five fingers, bright natural daylight, realistic real-world
+  scale, realistic lifestyle photography.
+
+
+  L03 Showing to camera
+
+  Use the uploaded product sheet for the [PRODUCT] and the uploaded character sheet for the
+  [woman / man]. Keep the [PRODUCT] exactly the same — same shape, same colour, same
+  details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same
+  as the character sheet. [She] holds the [PRODUCT] with both hands in front of [her] chest,
+  showing it to the camera with a small natural smile, plain light background, soft studio
+  light, natural hands with five fingers, realistic real-world scale, realistic product
+  photography.
+
+
+  L04 Diwali
+
+  Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same —
+  same shape, same colour, same details, same text and logo, do not redesign it. Place it on
+  a wooden table during Diwali night, a few lit clay diyas and orange marigold flowers
+  placed behind and beside it, soft warm fairy lights glowing out of focus in the
+  background, the [PRODUCT] sharp and clearly the hero in the foreground, warm golden light,
+  realistic real-world scale, realistic festive product photography.
+
+
+  L04 Wedding Gift
+
+  Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same —
+  same shape, same colour, same details, same text and logo, do not redesign it. Place it on
+  a soft silk cloth next to an open premium gift box with gold ribbon and a few rose petals,
+  elegant wedding gifting mood, soft warm light, [PRODUCT] sharp in the foreground,
+  realistic real-world scale, realistic festive product photography.
+
+
+  L04 Colour Variant Sheet
+
+  Use the uploaded product sheet as the reference. Only change the colour of [the part, e.g.
+  all the keycaps] to [new colour, e.g. soft pastel pink]. Keep everything else exactly the
+  same — same shape, same layout, same details, same text and logo, same four views, same
+  background, same lighting. Output a full product sheet in the new colour.
+
+
+  L05 Step 1 Brief
+
+  I sell a [product with real details — size, colour, key features]. Price: [your price]. I
+  sell on [Instagram / website / marketplace] in India.
+
+  Tell me:
+  1. Three types of people who would buy this
+  2. What problem it solves for each of them
+  3. One ad angle for each buyer
+
+  Keep it short and simple.
+
+
+
+
+                                AI Product Photoshoot & Ads · Page 6
+SKILLOMATE                                                                Chatbot Knowledge Base
+
+
+
+
+  L05 Step 2 Hooks + Script
+
+  Pick angle [number]. Write 5 scroll-stopping hooks in natural Hinglish, like a friend
+  talking — not cheesy, no fake claims. Then write a 15-second ad script: what to show on
+  screen and what the voiceover says. Also write one Instagram caption. Use only the
+  features I gave you, don't add anything new.
+
+
+  L05 Step 3 Flow prompts
+
+  Now write 3 image prompts for Google Flow (Nano Banana) for this ad. Each prompt must
+  start with: "Use the uploaded product sheet as the reference. Keep the [product] exactly
+  the same — same shape, same colour, same details, same text and logo, do not redesign it."
+  Then describe one scene for the ad.
+
+
+  L06 Push-in
+
+  Use the uploaded image as the first frame. The [PRODUCT] stays perfectly still and exactly
+  the same the whole time — same shape, same colour, same details, same text and logo, no
+  morphing, no warping. The camera slowly and smoothly pushes in toward the [PRODUCT]. Soft
+  natural window light, shallow depth of field, realistic product video. No people, no
+  hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.
+
+
+  L06 Arc
+
+  Use the uploaded image as the first frame. The [PRODUCT] stays perfectly still and exactly
+  the same the whole time — same shape, same colour, same details, same text and logo, no
+  morphing, no warping. The camera slowly arcs a little to the right around the [PRODUCT],
+  smooth and steady, while the lights in the background glow softly. Moody cinematic look,
+  realistic product video. No people, no hands, no text on screen. Soft quiet room ambience
+  only — NO music, NO voice.
+
+
+  L06 Light Sweep
+
+  Use the uploaded image as the first frame. The [PRODUCT] stays perfectly still and exactly
+  the same the whole time — same shape, same colour, same details, same text and logo, no
+  morphing, no warping. The camera stays completely still. A soft band of warm light slowly
+  sweeps across the [PRODUCT] from left to right, the shadows moving gently with it. Clean
+  premium product video. No people, no hands, no text on screen. Soft quiet room ambience
+  only — NO music, NO voice.
+
+
+  L07 UGC 1
+
+  Use the uploaded character sheet for the [woman] and the uploaded product sheet for the
+  [PRODUCT]. Keep her face, hair and outfit exactly the same as the character sheet. Keep
+  the [PRODUCT] exactly the same — same shape, same colour, same details, same text and
+  logo, no morphing. Selfie-style vertical video: the camera itself is her phone, held at
+  arm's length, so we see her from the chest up looking straight into the lens. NO phone
+  visible anywhere in the frame, no second camera, no screen. She sits at a desk in a normal
+  home room, holding the [PRODUCT] up near her chest to show it, casual and friendly.
+  Handheld look with slight natural shake, natural window light, a real lived-in room, not a
+  studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual
+  friendly tone. She says: "[your hook line in Hindi]" real skin, no filter, clearly adult,
+  modest, natural hands with five fingers, no text on screen, no watermark. Clean natural
+  audio only — NO background music.
+
+
+
+
+                                AI Product Photoshoot & Ads · Page 7
+SKILLOMATE                                                                  Chatbot Knowledge Base
+
+
+
+
+  L07 UGC 2
+
+  Use the uploaded character sheet for the [woman] and the uploaded product sheet for the
+  [PRODUCT]. Keep her face, hair and outfit exactly the same as the character sheet. Keep
+  the [PRODUCT] exactly the same — same shape, same colour, same details, same text and
+  logo, no morphing. Vertical video shot from her own phone resting on the desk in front of
+  her: the camera itself is the phone, so we see her and the [PRODUCT] from a low front
+  angle. NO phone visible anywhere in the frame, no second camera, no screen facing us. She
+  uses the [PRODUCT] for a moment, then looks up straight into the lens and talks, casual
+  and natural. Natural window light, a real lived-in room, not a studio, not a polished ad.
+  ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says:
+  "[your second line in Hindi]" real skin, no filter, clearly adult, modest, natural hands
+  with five fingers, no text on screen, no watermark. Clean natural audio only — NO
+  background music.
+
+
+
+
+ Part G — Example answers (bot ka tone)
+ User: mera perfume ka label har baar badal jaata hai
+ Bot: Yeh common hai. 3 cheezein karo: (1) pehle perfume ki 5–7 angle photos se product
+ sheet banao (Lesson 02), (2) har prompt ki pehli line rakho — "Keep the perfume bottle
+ exactly the same — same text and logo, do not redesign it", (3) 2–3 versions banao aur jisme
+ label sabse saaf ho woh chuno. Chhota text AI ki limitation hai, isliye ek-do baar retry normal
+ hai.
+ User: is course se kitna kama sakte hain?
+ Bot: Course koi kamai ka number promise nahi karta. Yeh product ki photos, videos aur ads
+ AI se banana sikhata hai — yeh skill apne product ke liye ya dusron ke liye ads banane mein
+ kaam aati hai. Kamai tumhare kaam, clients aur mehnat pe depend karti hai.
+ User: AI model se fake review video bana du?
+ Bot: Yeh mat karna — AI insaan ko asli grahak bata ke review dikhana logon ko dhokha hai
+ aur platforms pe problem bhi ho sakti hai. AI model se product dikhane wala UGC-style video
+ banao (Lesson 07), bina use asli review bataye.
+
+
+
+
+                                AI Product Photoshoot & Ads · Page 8
+

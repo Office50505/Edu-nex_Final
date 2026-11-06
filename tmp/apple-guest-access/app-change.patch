@@ -1,0 +1,524 @@
+--- tmp/apple-guest-access/before/appcopyai/App.js	2026-11-06 13:07:18
++++ appcopyai/App.js	2026-11-06 13:13:48
+@@ -484,6 +484,12 @@
+ }
+ 
+ const hasCourseAccess = user => DEV_UI_QA_ENABLED || hasActivePremiumEntitlement(user);
++async function requestCourseVideos(session, user, courseId) {
++  const path = `/api/${hasCourseAccess(user) && user?._id ? "" : "public/"}courses/${encodeURIComponent(courseId)}/videos`;
++  return hasCourseAccess(user) && user?._id
++    ? session.requestJson(path)
++    : fetchApiJson(path, null);
++}
+ const AI_FEATURE_ENABLED = true;
+ 
+ const SPEEDS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+@@ -821,7 +827,7 @@
+     {
+       title: "Course Access",
+       icon: "play-circle-outline",
+-      body: "Public course catalogues and previews may be available, while protected lessons require sign-in and a qualifying trial or subscription.",
++      body: "Browse published courses and watch free lessons without signing in. Paid lessons require a qualifying purchase. Sign in to manage your membership and sync account features.",
+     },
+     {
+       title: "Trials And Subscriptions",
+@@ -2180,12 +2186,13 @@
+   }
+   const requestTimer = setTimeout(() => controller.abort(), timeoutMs);
+   try {
+-    const url = `${API_BASE}/api/courses/${courseId}/videos/${video._id}/playback-access`;
+-    const body = JSON.stringify({ userId: user?._id, sessionId: user?.sessionId });
++    const publicPath = video.publicPlayback ? "/public" : "";
++    const url = `${API_BASE}/api${publicPath}/courses/${courseId}/videos/${video._id}/playback-access`;
++    const body = JSON.stringify(video.publicPlayback ? {} : { userId: user?._id, sessionId: user?.sessionId });
+     let response = await fetch(url, {
+       method: "POST",
+       signal: controller.signal,
+-      headers: authHeadersForUser(user, { "Content-Type": "application/json" }),
++      headers: authHeadersForUser(video.publicPlayback ? null : user, { "Content-Type": "application/json" }),
+       body,
+     });
+     if ((response.status === 401 || response.status === 403) && (user?.accessToken || user?.token)) {
+@@ -6523,7 +6530,7 @@
+   );
+ }
+ 
+-function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onReportProblem, user, session, onVideoComplete, onVideoProgress, downloads, onDownloadVideo, preloadedVideos, useAppBackTransition = false }) {
++function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onReportProblem, user, session, onVideoComplete, onVideoProgress, downloads, onDownloadVideo, preloadedVideos, onRequireSignIn, useAppBackTransition = false }) {
+   const { width: viewportWidth } = useWindowDimensions();
+   const [videos, setVideos] = useState(preloadedVideos || []);
+   const [loading, setLoading] = useState(!preloadedVideos);
+@@ -6944,12 +6951,12 @@
+   }, []);
+ 
+   useEffect(() => {
+-    if (!user?._id || !user?.sessionId) { setError("Subscription required."); setLoading(false); return; }
++    if (preloadedVideos) { setLoading(false); return; }
+     let cancelled = false;
+-    session.requestJson(`/api/courses/${courseId}/videos`)
++    requestCourseVideos(session, user, courseId)
+       .then(d => {
+         if (cancelled) return;
+-        const freshVideos = Array.isArray(d.videos) ? d.videos : [];
++        const freshVideos = Array.isArray(d?.videos) ? d.videos.filter(video => !video.locked) : [];
+         setVideos(previous => {
+           if (!preloadedVideos) return freshVideos;
+           return mergeVideoListWithDetails(previous, freshVideos);
+@@ -7176,7 +7183,7 @@
+                   pointerEvents={cellChromePointerEvents}
+                   importantForAccessibility={isCurrent && !playerChromeHidden ? "auto" : "no-hide-descendants"}
+                 >
+-                  <TouchableOpacity onPress={() => setShowCourseAi(true)} style={s.webPlayerRailBtn} accessibilityRole="button" accessibilityLabel="Ask Course AI">
++                  <TouchableOpacity onPress={() => user?._id ? setShowCourseAi(true) : onRequireSignIn?.()} style={s.webPlayerRailBtn} accessibilityRole="button" accessibilityLabel="Ask Course AI">
+                     <Ionicons name="sparkles" size={20} color="#fff" />
+                     <Text style={s.webPlayerRailText}>AI chat</Text>
+                   </TouchableOpacity>
+@@ -7672,7 +7679,7 @@
+                 pressOpacity={0.92}
+                 android_ripple={{ color: C.isDark ? "rgba(231,188,104,0.1)" : "rgba(197,139,42,0.1)", borderless: false }}
+                 accessibilityRole="button"
+-                accessibilityLabel={`Play lesson ${index + 1}: ${item.title || `Video ${index + 1}`}${durationLabel ? `, ${durationLabel}` : ""}`}
++                accessibilityLabel={`${item.locked ? "Premium lesson" : item.isFree ? "Play free lesson" : "Play lesson"} ${index + 1}: ${item.title || `Video ${index + 1}`}${durationLabel ? `, ${durationLabel}` : ""}`}
+                 accessibilityHint="Opens the lesson player"
+               >
+                 <View style={s.videoThumbSmall}>
+@@ -7689,7 +7696,7 @@
+                     </View>
+                   )}
+                   <View style={s.videoThumbPlay}>
+-                    <Ionicons name="play" size={10} color="#fff" />
++                    <Ionicons name={item.locked ? "lock-closed" : "play"} size={10} color="#fff" />
+                   </View>
+                   {!!durationLabel && (
+                     <View style={s.videoDurationBadge}>
+@@ -7704,6 +7711,7 @@
+                 </View>
+                 <View style={{ flex: 1 }}>
+                   <Text style={s.videoRowTitle} numberOfLines={2}>{item.title || `Video ${index + 1}`}</Text>
++                  <Text style={{ color: C.textSub, fontSize: 12, marginTop: 4 }}>{item.locked ? "Premium lesson" : item.isFree ? "Free · No sign-in required" : "Included with your membership"}</Text>
+                   {isDownloading && (
+                     <View style={s.dlProgressBar}>
+                       <View style={[s.dlProgressFill, { width: `${downloadProgress}%` }]} />
+@@ -8480,7 +8488,7 @@
+                 accessibilityRole="button"
+                 accessibilityLabel="Open profile"
+               >
+-                <AvatarImage avatarId={user.avatar || "a1"} size={38} style={{ borderRadius: 0 }} />
++                <AvatarImage avatarId={user?.avatar || "a1"} size={38} style={{ borderRadius: 0 }} />
+               </TouchableOpacity>
+             </View>
+           </View>
+@@ -8852,7 +8860,6 @@
+           if (!cancelled) {
+             const enrichedById = new Map(enrichedCourses.map(course => [String(course._id), course]));
+             const nextCourses = candidates.map(course => enrichedById.get(String(course._id)) || course);
+-            homeCatalogCourses = nextCourses;
+             setCatalogCourses(nextCourses);
+           }
+         }
+@@ -9043,10 +9050,6 @@
+     () => buildCourseSearchReferences(homeCourses, {
+       onOpenCourse: targetCourse => {
+         if (!targetCourse) return;
+-        if (!hasAccess) {
+-          setShowUpgrade(true);
+-          return;
+-        }
+         onSelectCourse(targetCourse);
+       },
+       onHome: () => {},
+@@ -9061,13 +9064,7 @@
+     ? Math.min(216, Math.max(176, width * 0.2))
+     : Math.min(174, Math.max(144, width * 0.42));
+ 
+-  const requireAccess = useCallback(action => {
+-    if (!hasAccess) {
+-      setShowUpgrade(true);
+-      return;
+-    }
+-    action();
+-  }, [hasAccess]);
++  const requireAccess = useCallback(action => action(), []);
+ 
+   const openLesson = useCallback((lesson, targetCourse = course) => {
+     if (!targetCourse || !lesson) return;
+@@ -9130,7 +9127,7 @@
+                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                 testID="home-profile-button"
+               >
+-                <AvatarImage avatarId={user.avatar || "a1"} size={40} style={{ borderRadius: 20 }} />
++                <AvatarImage avatarId={user?.avatar || "a1"} size={40} style={{ borderRadius: 20 }} />
+               </TouchableOpacity>
+             </View>
+           </View>
+@@ -9155,6 +9152,14 @@
+           />
+         }
+       >
++        {!user && (
++          <View style={{ marginHorizontal: 14, marginBottom: 16, padding: 16, borderRadius: 12, backgroundColor: HOME_PALETTE.surface }}>
++            <Text style={{ color: HOME_PALETTE.text, fontWeight: "800", fontSize: 16 }}>Learn without an account</Text>
++            <Text style={{ color: HOME_PALETTE.textSecondary, lineHeight: 20, marginTop: 6 }}>
++              Browse any course and watch its free lessons. Sign in whenever you want to save your learning across devices.
++            </Text>
++          </View>
++        )}
+         {loading && !course ? (
+           <View style={homeStyles.stateCard}>
+             <ActivityIndicator color={HOME_PALETTE.gold} />
+@@ -9424,13 +9429,8 @@
+   const courseListFrameWidth = isTablet ? Math.min(920, Math.max(320, width - 96)) : Math.max(288, width - 32);
+   const courseThumbHeight = Math.round(courseListFrameWidth * 9 / 16);
+   const openCourse = useCallback(course => {
+-    if (!course) return;
+-    if (!hasAccess) {
+-      setShowUpgrade(true);
+-      return;
+-    }
+-    onSelect(course);
+-  }, [hasAccess, onSelect]);
++    if (course) onSelect(course);
++  }, [onSelect]);
+   const courseSearchReferences = useMemo(
+     () => buildCourseSearchReferences(courses, {
+       onOpenCourse: openCourse,
+@@ -9488,7 +9488,7 @@
+               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+               testID="courses-profile-button"
+             >
+-              <AvatarImage avatarId={user.avatar || "a1"} size={40} style={{ borderRadius: 20 }} />
++              <AvatarImage avatarId={user?.avatar || "a1"} size={40} style={{ borderRadius: 20 }} />
+             </TouchableOpacity>
+           </View>
+         </View>
+@@ -10657,7 +10657,7 @@
+             accessibilityLabel="Change profile avatar"
+           >
+             <View style={s.profileAvatarLg}>
+-              <AvatarImage avatarId={user.avatar || "a1"} size={90} style={{ borderRadius: 0 }} />
++              <AvatarImage avatarId={user?.avatar || "a1"} size={90} style={{ borderRadius: 0 }} />
+             </View>
+             <View style={{ position: "absolute", bottom: 0, right: 0, width: 26, height: 26, borderRadius: 13, backgroundColor: C.primary, borderWidth: 2, borderColor: C.white, alignItems: "center", justifyContent: "center" }}>
+               <Ionicons name="pencil" size={12} color={C.onPrimary} />
+@@ -12124,6 +12124,33 @@
+         <Text style={s.legalOfflineNote}>Available inside the app — no website required.</Text>
+       </ScrollView>
+     </View>
++  );
++}
++
++function GuestAccountScreen({ feature, onSignIn, onBrowse, onBack }) {
++  const labels = { profile: "Your profile", wishlist: "Your saved courses", certificates: "Your certificates",
++    subscription: "Your membership", ai: "Your AI tutor", downloads: "Your downloads" };
++  return (
++    <SafeAreaView style={{ flex: 1, backgroundColor: C.bg }}>
++      <TouchableOpacity onPress={onBack} style={{ padding: 20 }} accessibilityRole="button" accessibilityLabel="Back to browsing">
++        <Ionicons name="arrow-back" size={24} color={C.text} />
++      </TouchableOpacity>
++      <View style={[s.centered, { padding: 28 }]}>
++        <Ionicons name="person-circle-outline" size={64} color={C.primary} />
++        <Text style={{ color: C.text, fontSize: 24, fontWeight: "800", marginTop: 18 }}>{labels[feature] || "Your account"}</Text>
++        <Text style={{ color: C.textSub, textAlign: "center", lineHeight: 22, marginVertical: 18 }}>
++          {feature === "subscription"
++            ? "Paid lessons require a membership. Sign in to manage your membership and restore access across devices. You can browse courses and watch free lessons without an account."
++            : "Sign in to manage your account, sync learning progress and use your membership features. You can browse courses and watch free lessons without an account."}
++        </Text>
++        <TouchableOpacity onPress={onSignIn} style={[s.btn, s.btnFill]} accessibilityRole="button" accessibilityLabel="Sign in or create an account">
++          <Text style={s.btnText}>Sign in / Create account</Text>
++        </TouchableOpacity>
++        <TouchableOpacity onPress={onBrowse} style={[s.btn, s.btnOutline, { marginTop: 14 }]} accessibilityRole="button" accessibilityLabel="Browse courses as guest">
++          <Text style={{ color: C.primary, fontWeight: "700" }}>Browse courses as guest</Text>
++        </TouchableOpacity>
++      </View>
++    </SafeAreaView>
+   );
+ }
+ 
+@@ -12134,6 +12161,7 @@
+   const isTabletLayout = appViewportWidth >= 768;
+   const [isRestoring, setIsRestoring] = useState(true);
+   const [user, setUserState] = useState(null);
++  const [showAuth, setShowAuth] = useState(false);
+   const [pendingAppLink, setPendingAppLink] = useState(null);
+   const [themeMode, setThemeMode] = useState(DEFAULT_THEME_MODE);
+   const [, setThemeVersion] = useState(0);
+@@ -12430,7 +12458,7 @@
+       return true;
+     }
+     if (!ROOT_TAB_ORDER.includes(targetTab)) return false;
+-    if (targetTab === "downloads" && !hasCourseAccess(userRef.current)) {
++    if (targetTab === "downloads" && userRef.current && !hasCourseAccess(userRef.current)) {
+       if (!options.validateOnly) setShowAppUpgrade(true);
+       return false;
+     }
+@@ -12577,6 +12605,8 @@
+   const startDownload = useCallback(async (video, courseId, courseTitle, videoIndex = 0) => {
+     const u = userRef.current;
+     const accountScope = downloadScopeRef.current;
++    if (!u?._id) { setMainScreen("downloads"); return; }
++    if (!hasCourseAccess(u)) { setShowAppUpgrade(true); return; }
+     if (!accountScope?.active()) return;
+     const downloadId = getDownloadId(video, videoIndex, courseId);
+     const downloadKind = getProtectedCourseDownloadKind(video, courseId);
+@@ -12875,7 +12905,7 @@
+         courseAiTarget,
+       };
+     }
+-    if (!user) {
++    if (!user && showAuth) {
+       return {
+         key: `auth:${screen}:${otpSent ? "otp" : "base"}:${resetVisible ? resetStep : "no-reset"}`,
+         authScreen: screen,
+@@ -12939,6 +12969,7 @@
+     resetStep,
+     resetVisible,
+     screen,
++    showAuth,
+     selectedCourse,
+     startIndex,
+     user,
+@@ -12972,7 +13003,8 @@
+     setCertModal(null);
+     setLegalPage(route.legalPage || null);
+ 
+-    if (route.authScreen) {
++    if (route.authScreen && !userRef.current) {
++      setShowAuth(true);
+       setScreen(route.authScreen);
+       if (!route.otpSent) {
+         setOtpNotice("");
+@@ -12985,6 +13017,7 @@
+       return true;
+     }
+ 
++    setShowAuth(false);
+     setCourseAiTarget(route.courseAiTarget || null);
+     setSelectedCourse(route.selectedCourse || null);
+     setStartIndex(route.startIndex ?? null);
+@@ -13038,7 +13071,7 @@
+     }
+ 
+     if (legalPage) { setLegalPage(null); return true; }
+-    if (!userRef.current) {
++    if (!userRef.current && showAuth) {
+       if (resetVisible) { closePasswordReset(); return true; }
+       if (screen === "signup2") { setScreen("signup1"); setSignupError(""); return true; }
+       if (screen === "signup1") {
+@@ -13046,6 +13079,7 @@
+         resetSignup();
+         return true;
+       }
++      setShowAuth(false);
+       return true;
+     }
+ 
+@@ -13090,6 +13124,7 @@
+     screen,
+     selectedCourse,
+     showAppUpgrade,
++    showAuth,
+     showProblemReport,
+     startIndex,
+   ]);
+@@ -13111,7 +13146,7 @@
+ 
+   const openCourse = useCallback(async (course, options = {}) => {
+     const u = userRef.current;
+-    if (!hasCourseAccess(u)) { setShowAppUpgrade(true); return false; }
++
+     const targetCourseId = course?._id || course?.id;
+     if (!targetCourseId) return false;
+     if (options.returnTo === "wishlist") {
+@@ -13125,7 +13160,9 @@
+     const requestId = courseOpenRequestRef.current + 1;
+     courseOpenRequestRef.current = requestId;
+     const courseKey = String(targetCourseId || course?.slug || course?.title || requestId);
+-    const isCurrentRequest = () => courseOpenRequestRef.current === requestId;
++    const ownerKey = `${u?._id || "guest"}:${u?.sessionId || ""}`;
++    const isCurrentRequest = () => courseOpenRequestRef.current === requestId
++      && `${userRef.current?._id || "guest"}:${userRef.current?.sessionId || ""}` === ownerKey;
+     setAiActiveCourseHint(course);
+     const prepareCourse = source => {
+       const sourceVideos = sortLessons(source?.videos || []);
+@@ -13142,7 +13179,7 @@
+     };
+     const requestedStartIndex = nextCourse => {
+       if (Number.isInteger(options.startIndex)) {
+-        return options.startIndex >= 0 && options.startIndex < nextCourse.videos.length
++        return options.startIndex >= 0 && options.startIndex < nextCourse.videos.length && !nextCourse.videos[options.startIndex]?.locked
+           ? options.startIndex
+           : null;
+       }
+@@ -13151,12 +13188,12 @@
+       const index = nextCourse.videos.findIndex((video, videoIndex) => (
+         getVideoKey(video, videoIndex) === requestedVideoId
+       ));
+-      return index >= 0 ? index : null;
++      return index >= 0 && !nextCourse.videos[index]?.locked ? index : null;
+     };
+     const fixtureCourse = DEV_UI_QA_ENABLED
+       ? UI_QA_COURSES.find(item => item._id === targetCourseId)
+       : null;
+-    if (fixtureCourse || course?.__homePlayableVideos || (DEV_UI_QA_ENABLED && Array.isArray(course?.videos) && course.videos.length > 0)) {
++    if (fixtureCourse || (hasCourseAccess(u) && course?.__homePlayableVideos) || (DEV_UI_QA_ENABLED && Array.isArray(course?.videos) && course.videos.length > 0)) {
+       const nextCourse = prepareCourse(fixtureCourse || course);
+       setAiActiveCourseHint(nextCourse);
+       setSelectedCourse(nextCourse);
+@@ -13180,7 +13217,7 @@
+     setMainScreen("courses");
+ 
+     try {
+-      const data = await nativeSession.requestJson(`/api/courses/${encodeURIComponent(targetCourseId)}/videos`);
++      const data = await requestCourseVideos(nativeSession, u, targetCourseId);
+       const nextCourse = prepareCourse({
+         ...course,
+         _id: targetCourseId,
+@@ -13191,8 +13228,8 @@
+       setAiActiveCourseHint(nextCourse);
+       setSelectedCourse(nextCourse);
+       setCourseOpenStatus({ key: courseKey, loading: false, error: "" });
+-      setPreloadedVideos(null);
+-      setIsPreviewOnly(false);
++      setPreloadedVideos(nextCourse.videos.filter(video => !video.locked));
++      setIsPreviewOnly(!u?._id);
+       setInitialTime(options.initialTime || 0);
+       setStartIndex(requestedStartIndex(nextCourse));
+       setMainScreen("courses");
+@@ -13211,7 +13248,7 @@
+   }, [nativeSession]);
+ 
+   useEffect(() => {
+-    if (isRestoring || !user?._id || !user?.sessionId || !pendingAppLink) return;
++    if (isRestoring || !pendingAppLink) return;
+     const target = pendingAppLink;
+     const linkKey = `${target.courseId}:${target.videoId || "course"}`;
+     if (appLinkOpeningRef.current === linkKey) return;
+@@ -13381,7 +13418,7 @@
+ 
+   const toggleWishlist = useCallback(async (courseId) => {
+     const u = userRef.current;
+-    if (!u) return;
++    if (!u) { setMainScreen("wishlist"); return; }
+     // Optimistic update
+     setWishlist(prev => prev.includes(courseId) ? prev.filter(id => id !== courseId) : [...prev, courseId]);
+     try {
+@@ -13481,6 +13518,7 @@
+           setLoginError("Login succeeded, but the server response was incomplete.");
+           return;
+         }
++        setShowAuth(false); setSelectedCourse(null); setStartIndex(null); setMainScreen("home");
+         setUser(authUser);
+         setWishlist(authUser.wishlist || []);
+         clearLoginForm();
+@@ -13699,6 +13737,7 @@
+         }
+         AsyncStorage.removeItem(AI_AVATAR_STORAGE_KEY);
+         setAiRobotId(null);
++        setShowAuth(false); setSelectedCourse(null); setStartIndex(null); setMainScreen("home");
+         setUser(authUser);
+         setWishlist(authUser.wishlist || []);
+         clearLoginForm();
+@@ -13732,6 +13771,7 @@
+     clearLoginForm();
+     resetSignup();
+     setLegalPage(null);
++    setShowAuth(false);
+     setUser(null); setSelectedCourse(null); setStartIndex(null); setCourseAiTarget(null); setMainScreen("home");
+     await cancelledDownloads;
+     await nativeSession.flush().catch(() => {});
+@@ -13869,7 +13909,7 @@
+       </View>
+     </AppSearchReferencesContext.Provider>
+   ), [appSearchReferences, progressSaveStatus, user?._id, user?.sessionId]);
+-  const iosGlobalBackEnabled = Platform.OS === "ios" && Boolean(user) && (canGoBack || fallbackBackAvailable);
++  const iosGlobalBackEnabled = Platform.OS === "ios" && (canGoBack || fallbackBackAvailable || showAuth);
+   const requestAnimatedBack = useCallback(() => {
+     if (Platform.OS === "ios" && globalBackGestureRef.current?.goBack?.()) return true;
+     return handleAppBack();
+@@ -13911,8 +13951,8 @@
+     );
+   }
+ 
+-  // ── Auth screens ────────────────────────────────────────────────────────────
+-  if (!user) {
++  // ── Optional authentication: public browsing is the default. ─────────────────
++  if (!user && showAuth) {
+     if (screen === "signup1") {
+       return (
+   <View style={{ flex: 1, backgroundColor: C.bg }}>
+@@ -14176,6 +14216,10 @@
+               <Text style={[s.authBrandTagline, isTabletLayout && s.authBrandTaglineTablet]}>LEARN · GROW · EARN</Text>
+             </View>
+ 
++            <TouchableOpacity onPress={() => { setShowAuth(false); clearLoginForm(); resetSignup(); }}
++              style={[s.btn, s.btnOutline, { marginBottom: 20 }]} accessibilityRole="button" accessibilityLabel="Continue as Guest">
++              <Text style={{ color: C.primary, fontWeight: "700" }}>Continue as Guest</Text>
++            </TouchableOpacity>
+             <View style={[s.authHeadingBlock, isTabletLayout && s.authHeadingBlockTablet]}>
+               <Text style={[s.authWelcome, isTabletLayout && s.authWelcomeTablet]}>Welcome back</Text>
+               <Text style={[s.authWelcomeSub, isTabletLayout && s.authWelcomeSubTablet]}>Continue your AI learning journey.</Text>
+@@ -14303,7 +14347,11 @@
+     );
+   }
+ 
+-  // ── Logged-in ───────────────────────────────────────────────────────────────
++  if (!user && ["profile", "wishlist", "certificates", "subscription"].includes(mainScreen) && !selectedCourse) {
++    return withGlobalBackGesture(renderGuestAccount());
++  }
++
++  // ── Public browsing and account screens ─────────────────────────────────────
+   const renderWishlistScreen = () => (
+     <WishlistScreen
+       wishlist={wishlist}
+@@ -14353,7 +14401,14 @@
+     const courseScreen = (
+       <VideoListScreen
+         course={selectedCourse}
+-        onSelectVideo={idx => setStartIndex(idx)}
++        onSelectVideo={idx => {
++          const video = selectedCourse.videos?.[idx];
++          if (video?.locked) {
++            if (!user) { setSelectedCourse(null); setMainScreen("subscription"); return; }
++            openSubscriptionDetails(); return;
++          }
++          setStartIndex(idx);
++        }}
+         onBack={requestCourseBack}
+         backLabel={courseReturnRouteRef.current?.mainScreen === "wishlist" ? "Back to Wishlist" : "Back to courses"}
+         downloads={downloads}
+@@ -14389,15 +14444,16 @@
+           <ReelsScreen
+             courseId={selectedCourse._id}
+             course={selectedCourse}
+-            initialIndex={startIndex}
++            initialIndex={selectedCourse.videos?.slice(0, startIndex).filter(video => !video.locked).length || 0}
+             initialTime={initialTime}
+             downloads={downloads}
+             onDownloadVideo={startDownload}
+-            preloadedVideos={preloadedVideos || (DEV_UI_QA_ENABLED ? selectedCourse.videos : null)}
++            preloadedVideos={(preloadedVideos || selectedCourse.videos || []).filter(video => !video.locked)}
+             user={user}
+             session={nativeSession}
+-            onVideoComplete={isPreviewOnly ? undefined : markVideoComplete}
+-            onVideoProgress={isPreviewOnly ? undefined : saveVideoProgress}
++            onRequireSignIn={() => setShowAuth(true)}
++            onVideoComplete={!user || isPreviewOnly ? undefined : markVideoComplete}
++            onVideoProgress={!user || isPreviewOnly ? undefined : saveVideoProgress}
+             onReportProblem={openProblemReport}
+             onBack={requestPlayerBack}
+             useAppBackTransition
+@@ -14481,8 +14537,14 @@
+   if (mainScreen === "wishlist") {
+     return withGlobalBackGesture(renderWishlistScreen());
+   }
++
++  function renderGuestAccount(feature = mainScreen) { return (
++    <GuestAccountScreen feature={feature} onSignIn={() => { resetSignup(); setShowAuth(true); }}
++      onBrowse={() => navigateRootTab("courses")} onBack={requestAnimatedBack} />
++  ); }
+ 
+   function renderRootTab(tab, { isActive = false } = {}) {
++    if (!user && ["ai", "downloads"].includes(tab)) return renderGuestAccount(tab);
+     if (tab === "courses") {
+       return (
+         <CourseListScreen

@@ -1,0 +1,50 @@
+{
+  "source_report": "reports/cartoon-series-cs11-v2/live_5252a9e357834e0aa151e0a7209b1ec6_results.json",
+  "source_report_sha256": "11822041e8c185c5e9b3bcc8a31dad70dddf6f351ef7d2a4a8e55ec9ea442d8b",
+  "run_id": "5252a9e357834e0aa151e0a7209b1ec6",
+  "case_id": "CS-11",
+  "cases_sha256": "346ce72c31c7a3b4f08167e26b85298c529e416e84a904c496d84b5c080405a6",
+  "original_scenario_grade": "FAIL",
+  "turns": [
+    {
+      "query": "Series name: Tara Aur Momo; Character 1: Tara, yellow coat; Character 2: Momo the rabbit; Locations: library. Ye meri original details yaad rakho.",
+      "answer": "Theek hai, maine aapki series ki details note kar li hain:\n\n*   **Series Name:** Tara Aur Momo\n*   **Character 1:** Tara, yellow coat\n*   **Character 2:** Momo the rabbit\n*   **Locations:** library\n\nMain in details ko yaad rakhunga jab hum aage is series ke baare mein baat karenge.",
+      "http_status": 200,
+      "original_grade": "PASS",
+      "original_errors": [],
+      "query_sha256": "09cfd64e74c73cd8895a46d222f63359e88d5271e17b6ca1fa643c85fb58e3f8",
+      "answer_sha256": "e6886db8c93245974e0bcaf48141e0a2c19e94f25a37cffbd27ad077447d5478",
+      "recorded_provider": "fal-openrouter",
+      "recorded_outcome": {
+        "type": "live_model",
+        "liveModelAnswer": true,
+        "providerStatus": "success",
+        "responseIssue": null
+      },
+      "recorded_provider_response_statuses": [
+        200
+      ]
+    },
+    {
+      "query": "Lesson 05 ke start frame ki reference checklist meri series ke hisaab se batao; demo characters use mat karo.",
+      "answer": "Lesson 05 mein start frame banane ke liye, aapko yeh references chahiye honge apni series 'Tara Aur Momo' ke liye:\n\n1.  **Tara ka character sheet:** Ismein Tara, jo yellow coat mein hai, uski alag-alag poses aur expressions honge.\n2.  **Library ki image:** Yeh aapki series ke location, library, ki reference image hogi.\n\nJab aap Nano Banana Pro prompt banayenge, toh aap in dono images ko reference ke taur par upload karenge. Yeh Lesson 05 mein sikhaya gaya hai.",
+      "http_status": 200,
+      "original_grade": "FAIL",
+      "original_errors": [
+        "Unconditional reference sheet required for character not confirmed in scene: Momo"
+      ],
+      "query_sha256": "705fb30b75d86f7b7cf157ee1324727d659b67d471a2de0cea942799f2965d3a",
+      "answer_sha256": "eb7af34d51f77f94066489b301042e5d05cf3771a5f40ea4e4eee56d0a806709",
+      "recorded_provider": "fal-openrouter",
+      "recorded_outcome": {
+        "type": "live_model",
+        "liveModelAnswer": true,
+        "providerStatus": "success",
+        "responseIssue": null
+      },
+      "recorded_provider_response_statuses": [
+        200
+      ]
+    }
+  ]
+}

@@ -1,0 +1,173 @@
+{
+  "zipPath": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/Skillomate_Chatbot_Phase3_Fix_Review.zip",
+  "files": [
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase3_fixes_20261015_121429/phase3_implementation_report.md",
+      "archive": "phase3_implementation_report.md"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase3_fixes_20261015_121429/phase3_targeted_test_results.json",
+      "archive": "phase3_targeted_test_results.json"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase3_fixes_20261015_121429/phase3_regression_results.md",
+      "archive": "phase3_regression_results.md"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase3_fixes_20261015_121429/phase3_remaining_issues.md",
+      "archive": "phase3_remaining_issues.md"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase3_fixes_20261015_121429/README.md",
+      "archive": "README.md"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/output/pdf/skillomate-phase3-fix-comparison-20261015.pdf",
+      "archive": "skillomate-phase3-fix-comparison-20261015.pdf"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase3_fixes_20261015_121429/phase3_changes.patch",
+      "archive": "phase3_changes.patch"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/services/productTutorKnowledge.js",
+      "archive": "source/services/productTutorKnowledge.js"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/services/productTutorResponse.js",
+      "archive": "source/services/productTutorResponse.js"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/services/productTutorTasks.js",
+      "archive": "source/services/productTutorTasks.js"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/services/tutorKnowledge.js",
+      "archive": "source/services/tutorKnowledge.js"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/services/aiTutorService.js",
+      "archive": "source/services/aiTutorService.js"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/routes/ai.js",
+      "archive": "source/routes/ai.js"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/models/AiTutorSession.js",
+      "archive": "source/models/AiTutorSession.js"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/knowledge/ai-product-photoshoot-ads/guidance.json",
+      "archive": "source/knowledge/ai-product-photoshoot-ads/guidance.json"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/scripts/eval/grade_product_photoshoot_ads_results_v3.py",
+      "archive": "source/scripts/eval/grade_product_photoshoot_ads_results_v3.py"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/scripts/eval/README.md",
+      "archive": "source/scripts/eval/README.md"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-quality.test.cjs",
+      "archive": "source/tests/product-tutor-quality.test.cjs"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs",
+      "archive": "source/tests/ai-chat-history.test.cjs"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "archive": "source/tests/product-tutor-phase3.test.cjs"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/test_product_evaluator_v3.py",
+      "archive": "source/tests/test_product_evaluator_v3.py"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase3_fixes_20261015_121429/node_verified_output.xml",
+      "archive": "evidence/node_verified_output.xml"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase3_fixes_20261015_121429/node_verified_stderr.log",
+      "archive": "evidence/node_verified_stderr.log"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase3_fixes_20261015_121429/node_verified_execution.json",
+      "archive": "evidence/node_verified_execution.json"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase3_fixes_20261015_121429/python_verified_output.log",
+      "archive": "evidence/python_verified_output.log"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase3_fixes_20261015_121429/python_verified_stderr.log",
+      "archive": "evidence/python_verified_stderr.log"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase3_fixes_20261015_121429/python_verified_execution.json",
+      "archive": "evidence/python_verified_execution.json"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase3_fixes_20261015_121429/offline_template_replay_results_final.json",
+      "archive": "evidence/offline_template_replay_results_final.json"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase3_fixes_20261015_121429/phase2_saved_response_regrade_v3.json",
+      "archive": "evidence/phase2_saved_response_regrade_v3.json"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase3_fixes_20261015_121429/phase3_manifest_before.json",
+      "archive": "evidence/phase3_manifest_before.json"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase3_fixes_20261015_121429/phase3_validation_manifest.json",
+      "archive": "evidence/phase3_validation_manifest.json"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase3_fixes_20261015_121429/offline_template_replay_final.cjs",
+      "archive": "evidence/offline_template_replay_final.cjs"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase3_fixes_20261015_121429/run_verified_validation.py",
+      "archive": "evidence/run_verified_validation.py"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase3_fixes_20261015_121429/generate_phase3_reports.py",
+      "archive": "evidence/generate_phase3_reports.py"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase3_fixes_20261015_121429/create_comparison_pdf.py",
+      "archive": "evidence/create_comparison_pdf.py"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase3_fixes_20261015_121429/package_phase3_review.cjs",
+      "archive": "evidence/package_phase3_review.cjs"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/knowledge/ai-product-photoshoot-ads/training.txt",
+      "archive": "reference/knowledge/ai-product-photoshoot-ads/training.txt"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/scripts/eval/grade_product_photoshoot_ads_results_v2.py",
+      "archive": "reference/scripts/eval/grade_product_photoshoot_ads_results_v2.py"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/scripts/eval/product_photoshoot_ads_test_cases.json",
+      "archive": "reference/scripts/eval/product_photoshoot_ads_test_cases.json"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/test_product_evaluator.py",
+      "archive": "reference/tests/test_product_evaluator.py"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/helpers/deny-network.cjs",
+      "archive": "reference/tests/helpers/deny-network.cjs"
+    },
+    {
+      "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase3_fixes_20261015_121429/phase3_package_integrity.json",
+      "archive": "phase3_package_integrity.json"
+    }
+  ]
+}

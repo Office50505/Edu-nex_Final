@@ -1,0 +1,63 @@
+{
+  "parent_sha256": "eb73038e68aa684d5e5b47bc7c7fcb50c58ea3e0f1230f128ad660f9e88f606c",
+  "corrected_sha256": "346ce72c31c7a3b4f08167e26b85298c529e416e84a904c496d84b5c080405a6",
+  "before": {
+    "query": "Lesson 05 ke start frame ki reference checklist meri series ke hisaab se batao; demo characters use mat karo.",
+    "required_groups": [
+      [
+        "Tara"
+      ],
+      [
+        "Momo"
+      ],
+      [
+        "library"
+      ],
+      [
+        "sheet",
+        "reference"
+      ]
+    ],
+    "forbidden_any": [
+      "Golu",
+      "Chiku"
+    ]
+  },
+  "after": {
+    "query": "Lesson 05 ke start frame ki reference checklist meri series ke hisaab se batao; demo characters use mat karo.",
+    "required_groups": [
+      [
+        "Tara"
+      ],
+      [
+        "library"
+      ],
+      [
+        "sheet",
+        "reference"
+      ]
+    ],
+    "forbidden_any": [
+      "Golu",
+      "Chiku"
+    ],
+    "scene_references": {
+      "required_characters": [
+        "Tara"
+      ],
+      "unspecified_characters": [
+        "Momo"
+      ],
+      "location": "library"
+    },
+    "grading_notes": [
+      "Require Tara character-sheet/reference guidance and a library image/reference.",
+      "Momo may be omitted, queried, or given conditional reference guidance because scene presence is unspecified.",
+      "Do not require Momo or every series character unconditionally. Sheets are needed for characters appearing in the scene.",
+      "No substitution with Golu or Chiku. Open-ended answers still require operator semantic review."
+    ]
+  },
+  "live_result_modified": false,
+  "live_retest_executed": false,
+  "chatbot_behavior_changed": false
+}

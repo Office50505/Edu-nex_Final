@@ -1,0 +1,377 @@
+{
+  "source": "training.txt Parts B–F; translations preserve the recorded course facts, not current vendor specifications",
+  "records": [
+    {
+      "source_heading": "Product sheet banana",
+      "lesson_number": 2,
+      "search_terms": "product sheet workflow phone photos reference grid प्रोडक्ट शीट फोटो तरीका",
+      "translations": {
+        "english": "Take 5–7 clear phone photos from different angles in daylight, with flash off. In Google Flow choose New project → Image → Nano Banana Pro. Upload all photos as references and run the Product Sheet template. Review, regenerate if needed, and save the best sheet for later shots.",
+        "hindi": "दिन की रोशनी में, फ्लैश बंद करके अलग कोणों से प्रोडक्ट की 5–7 साफ़ तस्वीरें लें। Google Flow में New project → Image → Nano Banana Pro चुनें। सभी तस्वीरें reference में लगाकर Product Sheet प्रॉम्प्ट चलाएँ। परिणाम जाँचें, ज़रूरत हो तो फिर बनाएँ और अच्छी शीट सेव करें।",
+        "hinglish": "Din ki roshni mein flash off karke product ki 5–7 saaf photos alag angles se lo. Google Flow → New project → Image → Nano Banana Pro chuno. Sabhi photos reference mein upload karke Product Sheet prompt chalao. Result check karo, zarurat ho toh dobara banao aur achhi sheet save karo."
+      },
+      "intent_tags": [
+        "product_sheet"
+      ]
+    },
+    {
+      "source_heading": "Product photos",
+      "lesson_number": 2,
+      "search_terms": "studio lifestyle dark premium photo scene festive photography",
+      "translations": {
+        "english": "Use only the product sheet as reference. Start the prompt by keeping the product unchanged, then describe the place, 2–3 objects, lighting and angle. Keep decoration behind and the product in front.",
+        "hindi": "केवल प्रोडक्ट शीट को reference बनाएँ। पहले प्रोडक्ट को वैसा ही रखने की बात लिखें, फिर जगह, 2–3 वस्तुएँ, रोशनी और कोण बताएँ। सजावट पीछे और प्रोडक्ट आगे रखें।",
+        "hinglish": "Sirf product sheet ko reference banao. Pehle product bilkul same rakhne ko bolo, phir jagah, 2–3 objects, roshni aur angle likho. Sajawat peeche aur product aage rakho."
+      },
+      "intent_tags": [
+        "product_photo",
+        "composition"
+      ]
+    },
+    {
+      "source_heading": "Model shots",
+      "lesson_number": 3,
+      "search_terms": "model shots hands fingers character sheet face identity reference ungliyan haath chehra चेहरा हाथ उंगलियाँ",
+      "translations": {
+        "english": "Attach both the character sheet and product sheet. Match the model’s clothes and look to the character sheet, keep the same face, and include “natural hands with five fingers”. Generate 2–3 versions and check the result.",
+        "hindi": "Character sheet और product sheet दोनों reference में लगाएँ। मॉडल के कपड़े और चेहरा character sheet से मिलाएँ। प्रॉम्प्ट में “natural hands with five fingers” लिखें। 2–3 परिणाम बनाकर जाँचें।",
+        "hinglish": "Character sheet aur product sheet dono reference mein lagao. Model ke kapde aur face sheet se match karo. Prompt mein “natural hands with five fingers” likho. 2–3 versions banao aur check karo."
+      },
+      "intent_tags": [
+        "model_shot"
+      ]
+    },
+    {
+      "source_heading": "Colour variants",
+      "lesson_number": 4,
+      "search_terms": "colour color variant pink same shape change rang रंग आकार",
+      "translations": {
+        "english": "Use the product sheet as reference. Change only the requested part’s colour and keep everything else unchanged: shape, layout, details, text, logo, views, background and lighting. Generate a complete new sheet for each colour and use that sheet in later shots.",
+        "hindi": "प्रोडक्ट शीट को reference रखें। केवल बताए गए हिस्से का रंग बदलें; आकार, बनावट, विवरण, टेक्स्ट, लोगो, चारों दृश्य, पृष्ठभूमि और रोशनी समान रखें। हर रंग की पूरी नई शीट बनाएँ और आगे उसी का उपयोग करें।",
+        "hinglish": "Product sheet reference mein rakho. Sirf bataye hue part ka rang badlo; shape, layout, details, text, logo, views, background aur light same rakho. Har rang ki poori nayi sheet banao aur aage usi ko use karo."
+      },
+      "intent_tags": [
+        "colour"
+      ]
+    },
+    {
+      "source_heading": "Ad plan",
+      "lesson_number": 5,
+      "search_terms": "ad planning workflow buyers problems angles hooks script caption price selling details generic विज्ञापन कीमत ग्राहक",
+      "translations": {
+        "english": "Provide real product details, price and where you sell. First ask for three buyer types, their problems and an ad angle for each. Choose one angle, then request 5 hooks, a 15-second script and an Instagram caption. Use only supplied features; add no unsupported claims. Next request 3 Google Flow image prompts and run them with the product sheet. Review and remove false or unproven claims.",
+        "hindi": "असली प्रोडक्ट विवरण, कीमत और बिक्री का माध्यम दें। पहले तीन प्रकार के खरीदार, उनकी समस्याएँ और हर खरीदार के लिए विज्ञापन का कोण पूछें। एक कोण चुनकर 5 hooks, 15-second script और Instagram caption माँगें। केवल दिए हुए फीचर्स रखें। फिर प्रोडक्ट शीट के साथ चलाने के लिए 3 Google Flow image prompts बनवाएँ। झूठे या अप्रमाणित दावे हटाएँ।",
+        "hinglish": "Asli product details, price aur kahan bechte ho batao. Pehle 3 buyer types, unki problems aur har buyer ke liye ad angle poocho. Ek angle chunke 5 hooks, 15-second script aur Instagram caption maango. Sirf diye features use karo, unsupported claims mat jodo. Phir product sheet ke saath chalane ke liye 3 Google Flow image prompts banao. Jhoothe ya unproven claims hatao."
+      },
+      "intent_tags": [
+        "ad_plan"
+      ]
+    },
+    {
+      "source_heading": "Product video",
+      "lesson_number": 6,
+      "search_terms": "product video settings ingredients camera movement push in arc light sweep slow morphing melting pighal blur logo वीडियो मूवमेंट पिघल धुंधला",
+      "translations": {
+        "english": "In Flow choose Video → Ingredients and attach the image. Recorded course settings: 16:9, Omni 1.1 Flash, 720p, 6 sec, x1. Choose one slow movement: push-in, arc or light sweep. Keep the product perfectly still with no morphing or warping. Add music later during editing.",
+        "hindi": "Flow में Video → Ingredients चुनकर तस्वीर लगाएँ। कोर्स की रिकॉर्ड की गई सेटिंग्स: 16:9, Omni 1.1 Flash, 720p, 6 sec, x1। केवल एक धीमा मूवमेंट चुनें: push-in, arc या light sweep। प्रोडक्ट स्थिर रहे, morphing या warping न हो। संगीत बाद में एडिटिंग में जोड़ें।",
+        "hinglish": "Flow mein Video → Ingredients chunke image lagao. Course ki recorded settings: 16:9, Omni 1.1 Flash, 720p, 6 sec, x1. Sirf ek dheema movement chuno: push-in, arc ya light sweep. Product bilkul still rahe, morphing aur warping na ho. Music baad mein editing mein daalo."
+      },
+      "intent_tags": [
+        "video",
+        "motion"
+      ]
+    },
+    {
+      "source_heading": "UGC video",
+      "lesson_number": 7,
+      "search_terms": "ugc video settings references phone selfie 9:16 720p 8 sec vertical natural polished",
+      "translations": {
+        "english": "In Flow choose Video → Ingredients and attach the face, character sheet and product sheet. Recorded settings: 9:16, 720p, 8 sec. The camera itself is the phone: no phone should appear in the frame. Use a normal home room and short dialogue written in Hindi Devanagari, based on the L05 hook. Do not present an AI actor as a real reviewing customer.",
+        "hindi": "Flow में Video → Ingredients चुनें और चेहरा, character sheet व product sheet लगाएँ। कोर्स की सेटिंग्स: 9:16, 720p, 8 sec। कैमरा ही फोन है; फ्रेम में फोन न दिखे। सामान्य घरेलू कमरा रखें। L05 hook से छोटा संवाद देवनागरी हिंदी में लिखें। AI कलाकार को असली ग्राहक की समीक्षा की तरह न दिखाएँ।",
+        "hinglish": "Flow mein Video → Ingredients chuno aur face, character sheet, product sheet lagao. Course settings: 9:16, 720p, 8 sec. Camera hi phone hai; frame mein phone na dikhe. Normal home room rakho. L05 hook se chhota dialogue Hindi Devanagari mein likho. AI actor ko asli customer review mat batao."
+      },
+      "intent_tags": [
+        "ugc"
+      ]
+    },
+    {
+      "source_heading": "Label ke akshar / keys ke letters",
+      "lesson_number": 2,
+      "search_terms": "label keys letters logo text changes changing badal अक्षर लोगो",
+      "translations": {
+        "english": "Use the product sheet reference and start with “keep exactly the same, same text and logo”. Small text is an AI limitation. Generate 2–3 versions and choose the clearest; perfect lettering is not guaranteed.",
+        "hindi": "प्रोडक्ट शीट को reference में लगाएँ और “keep exactly the same, same text and logo” लिखें। छोटा टेक्स्ट AI की सीमा है। 2–3 परिणाम बनाकर सबसे साफ़ चुनें; अक्षरों के हमेशा सही होने की गारंटी नहीं है।",
+        "hinglish": "Product sheet reference mein lagao aur “keep exactly the same, same text and logo” likho. Chhota text AI ki limitation hai. 2–3 versions banao aur sabse saaf chuno; perfect letters ki guarantee nahi hai."
+      },
+      "intent_tags": [
+        "blur"
+      ]
+    },
+    {
+      "source_heading": "Har photo mein product thoda alag",
+      "lesson_number": 2,
+      "search_terms": "inconsistent product different each photo same हर फोटो अलग item changes inconsistent between shots object appearance",
+      "translations": {
+        "english": "First make a product sheet, then use the same sheet as the reference for every new product image.",
+        "hindi": "पहले प्रोडक्ट शीट बनाएँ, फिर हर नई तस्वीर में उसी शीट को reference रखें।",
+        "hinglish": "Pehle product sheet banao, phir har nayi photo mein wahi sheet reference rakho."
+      },
+      "intent_tags": [
+        "product_sheet",
+        "product_consistency"
+      ]
+    },
+    {
+      "source_heading": "Product bahut chhota/bada dikh raha",
+      "lesson_number": null,
+      "search_terms": "scale size too big small chhota bada आकार",
+      "translations": {
+        "english": "Add “realistic real-world scale” to the prompt.",
+        "hindi": "प्रॉम्प्ट में “realistic real-world scale” जोड़ें।",
+        "hinglish": "Prompt mein “realistic real-world scale” daalo."
+      },
+      "intent_tags": [
+        "scale"
+      ]
+    },
+    {
+      "source_heading": "Model ki ungliyan judi / extra",
+      "lesson_number": 3,
+      "search_terms": "extra fingers fused hands ungli ungliyan हाथ उंगलियाँ",
+      "translations": {
+        "english": "Add “natural hands with five fingers” and regenerate. Hands are difficult for AI; inspect the fingers before using the image.",
+        "hindi": "“natural hands with five fingers” लिखकर फिर जनरेट करें। हाथ AI के लिए कठिन हैं; तस्वीर इस्तेमाल करने से पहले उंगलियाँ जाँचें।",
+        "hinglish": "“natural hands with five fingers” likhkar dobara generate karo. Haath AI ke liye mushkil hain; use karne se pehle ungliyan check karo."
+      },
+      "intent_tags": [
+        "model_shot",
+        "hand_anatomy"
+      ]
+    },
+    {
+      "source_heading": "Model ke haath kisi aur ke lag rahe",
+      "lesson_number": 3,
+      "search_terms": "hands clothes outfit mismatch sleeves kapde कपड़े हाथ",
+      "translations": {
+        "english": "Match the clothing and other appearance details in the prompt to the character sheet.",
+        "hindi": "प्रॉम्प्ट के कपड़े और रूप-रंग character sheet से मिलाएँ।",
+        "hinglish": "Prompt ke kapde aur look character sheet se match karo."
+      },
+      "intent_tags": [
+        "model_shot"
+      ]
+    },
+    {
+      "source_heading": "Model ka chehra badal gaya",
+      "lesson_number": 3,
+      "search_terms": "face identity changes consistency chehra चेहरा",
+      "translations": {
+        "english": "Attach the character sheet and write “keep her face exactly the same as the character sheet”.",
+        "hindi": "Character sheet reference में लगाएँ और “keep her face exactly the same as the character sheet” लिखें।",
+        "hinglish": "Character sheet reference mein lagao aur “keep her face exactly the same as the character sheet” likho."
+      },
+      "intent_tags": [
+        "model_shot",
+        "face_consistency"
+      ]
+    },
+    {
+      "source_heading": "Rang badla toh shape bhi badal gaya",
+      "lesson_number": 4,
+      "search_terms": "shape changed colour color variant same rang रंग आकार",
+      "translations": {
+        "english": "Use “Only change the colour… keep everything else exactly the same”. Preserve the same shape and details as the reference sheet.",
+        "hindi": "“Only change the colour… keep everything else exactly the same” लिखें। Reference sheet का आकार और विवरण समान रखें।",
+        "hinglish": "“Only change the colour… keep everything else exactly the same” likho. Reference sheet ki shape aur details same rakho."
+      },
+      "intent_tags": [
+        "colour",
+        "colour_shape"
+      ]
+    },
+    {
+      "source_heading": "Brand ka exact colour nahi aa raha",
+      "lesson_number": 4,
+      "search_terms": "brand exact shade colour color matching rang रंग",
+      "translations": {
+        "english": "An exact shade is not always achievable. Generate 2–3 versions and choose the closest colour.",
+        "hindi": "बिल्कुल वही रंग हमेशा नहीं मिलता। 2–3 परिणाम बनाकर सबसे नज़दीकी रंग चुनें।",
+        "hinglish": "Exact shade hamesha nahi milta. 2–3 versions banao aur sabse paas wala rang chuno."
+      },
+      "intent_tags": [
+        "colour",
+        "colour_shade"
+      ]
+    },
+    {
+      "source_heading": "chat G.P.T ka ad bahut generic",
+      "lesson_number": 5,
+      "search_terms": "generic ad vague product brief inputs price selling details सामान्य विज्ञापन",
+      "translations": {
+        "english": "Give real product details, price and where you sell. Ask for buyer types and ad angles first, rather than starting with a generic ad.",
+        "hindi": "असली प्रोडक्ट विवरण, कीमत और बिक्री का माध्यम दें। पहले खरीदारों के प्रकार और विज्ञापन के कोण पूछें।",
+        "hinglish": "Asli product details, price aur kahan bechte ho do. Pehle buyer types aur ad angles poocho; seedha generic ad se shuru mat karo."
+      },
+      "intent_tags": [
+        "ad_plan"
+      ]
+    },
+    {
+      "source_heading": "chat G.P.T ne aisa feature likha jo",
+      "lesson_number": 5,
+      "search_terms": "invented unsupported feature benefit false claim product does not have fake claims फीचर दावा",
+      "translations": {
+        "english": "Remove the unsupported feature. Tell the ad writer to use only the features you supplied and not invent anything new.",
+        "hindi": "जो फीचर प्रोडक्ट में नहीं है उसे हटाएँ। केवल दिए हुए फीचर्स इस्तेमाल करने को कहें; कोई नया दावा न गढ़ें।",
+        "hinglish": "Jo feature product mein nahi hai use hatao. Sirf diye hue features use karne ko bolo; naya claim mat banao."
+      },
+      "intent_tags": [
+        "unsupported_feature"
+      ]
+    },
+    {
+      "source_heading": "Video mein product pighal/morph",
+      "lesson_number": 6,
+      "search_terms": "melting morphing warping video pighal pighalna पिघल आकार",
+      "translations": {
+        "english": "Choose only one slow movement. Keep the product “stays perfectly still, no morphing”, and preserve the template’s “no warping” constraint.",
+        "hindi": "केवल एक धीमा मूवमेंट चुनें। प्रोडक्ट के लिए “stays perfectly still, no morphing” लिखें और प्रॉम्प्ट का “no warping” निर्देश रखें।",
+        "hinglish": "Sirf ek dheema movement chuno. Product ke liye “stays perfectly still, no morphing” likho aur template ka “no warping” instruction rakho."
+      },
+      "intent_tags": [
+        "motion"
+      ]
+    },
+    {
+      "source_heading": "Video mein letters blur",
+      "lesson_number": 6,
+      "search_terms": "logo letters text blur blurred video slow limitation dhundhla धुंधला लोगो",
+      "translations": {
+        "english": "Small text can blur during movement: this is an AI limitation. Use one slow movement, generate 2–3 versions and choose the clearest. A perfect result is not guaranteed.",
+        "hindi": "मूवमेंट में छोटा टेक्स्ट धुंधला हो सकता है; यह AI की सीमा है। केवल एक धीमा मूवमेंट रखें, 2–3 परिणाम बनाकर सबसे साफ़ चुनें। सही परिणाम की गारंटी नहीं है।",
+        "hinglish": "Movement mein chhota text blur ho sakta hai; yeh AI ki limitation hai. Sirf ek dheema movement rakho, 2–3 versions banao aur sabse saaf chuno. Perfect result ki guarantee nahi hai."
+      },
+      "intent_tags": [
+        "blur"
+      ]
+    },
+    {
+      "source_heading": "UGC video mein phone dikh raha",
+      "lesson_number": 7,
+      "search_terms": "phone visible in frame second camera ugc selfie फोन दिख handset smartphone appearing on screen camera clarification mobile device screen camera framing मोबाइल कैमरा फ्रेम",
+      "translations": {
+        "english": "Add the course FAQ instruction: “The camera itself is her phone. NO phone visible anywhere in the frame.”",
+        "hindi": "कोर्स के FAQ का यह निर्देश जोड़ें: “The camera itself is her phone. NO phone visible anywhere in the frame.”",
+        "hinglish": "Course FAQ ka yeh instruction daalo: “The camera itself is her phone. NO phone visible anywhere in the frame.”"
+      },
+      "intent_tags": [
+        "phone_visibility"
+      ]
+    },
+    {
+      "source_heading": "UGC bahut polished/ad jaisa",
+      "lesson_number": 7,
+      "search_terms": "ugc polished commercial natural home room studio handheld बनावटी",
+      "translations": {
+        "english": "Use “normal home room, handheld look, not a studio, not a polished ad”.",
+        "hindi": "“normal home room, handheld look, not a studio, not a polished ad” निर्देश इस्तेमाल करें।",
+        "hinglish": "“normal home room, handheld look, not a studio, not a polished ad” instruction use karo."
+      },
+      "intent_tags": [
+        "natural_ugc"
+      ]
+    },
+    {
+      "source_heading": "Vertical clip landscape mein side",
+      "lesson_number": null,
+      "search_terms": "vertical landscape sides blur ratio aspect 9:16 16:9",
+      "translations": {
+        "english": "For reels, keep the project 9:16. If you need landscape, choose 16:9 in Flow and generate the clip again.",
+        "hindi": "Reels के लिए project 9:16 रखें। Landscape चाहिए तो Flow में 16:9 चुनकर क्लिप फिर बनाएँ।",
+        "hinglish": "Reels ke liye project 9:16 rakho. Landscape chahiye toh Flow mein 16:9 chunke clip dobara banao."
+      },
+      "intent_tags": [
+        "aspect_ratio"
+      ]
+    },
+    {
+      "source_heading": "Kya AI model ko customer review",
+      "lesson_number": 7,
+      "search_terms": "fake review testimonial ai actor real customer honest disclosure नकली समीक्षा असली ग्राहक",
+      "translations": {
+        "english": "Do not present an AI actor as a real reviewing customer. Use an honest product demonstration or UGC-style showcase without claiming genuine customer experience.",
+        "hindi": "AI कलाकार को असली ग्राहक की समीक्षा की तरह न दिखाएँ। सच्चे ग्राहक-अनुभव का दावा किए बिना ईमानदार प्रोडक्ट प्रदर्शन या UGC-style वीडियो बनाएँ।",
+        "hinglish": "AI actor ko asli customer review mat batao. Genuine customer experience ka daava kiye bina honest product demo ya UGC-style showcase banao."
+      },
+      "intent_tags": [
+        "testimonial"
+      ]
+    },
+    {
+      "source_heading": "Final ad kaise edit karein?",
+      "lesson_number": 8,
+      "search_terms": "final ad workflow assembly editing capcut order end card price finale एडिटिंग अंतिम",
+      "translations": {
+        "english": "CapCut editing is not taught as a full tutorial in this course. The basic final-ad order is UGC hook → product videos → UGC → end card with the real price and how to order. Add text and price during editing, not with AI image generation.",
+        "hindi": "इस कोर्स में CapCut editing का पूरा ट्यूटोरियल नहीं है। अंतिम विज्ञापन का सामान्य क्रम है: UGC hook → product videos → UGC → end card, जिसमें असली कीमत और ऑर्डर करने का तरीका हो। टेक्स्ट और कीमत एडिटिंग में जोड़ें, AI से नहीं।",
+        "hinglish": "Is course mein CapCut editing ka full tutorial nahi hai. Basic final ad order: UGC hook → product videos → UGC → end card, jisme asli price aur order ka tareeka ho. Text aur price editing mein daalo, AI se nahi."
+      },
+      "intent_tags": [
+        "final_assembly"
+      ]
+    },
+    {
+      "source_heading": "Prompts kahan milenge?",
+      "lesson_number": 8,
+      "search_terms": "prompts available location notes section where कहाँ नोट्स",
+      "translations": {
+        "english": "The course prompts are available in the notes section.",
+        "hindi": "कोर्स के प्रॉम्प्ट notes section में मिलेंगे।",
+        "hinglish": "Course ke prompts notes section mein milenge."
+      },
+      "intent_tags": [
+        "prompt_location"
+      ]
+    },
+    {
+      "source_heading": "Course overview and prerequisites",
+      "lesson_number": 1,
+      "intent_tags": [
+        "overview",
+        "prerequisites"
+      ],
+      "search_terms": "overview course eight 8 lessons prerequisites need before starting phone laptop product tools Google Flow ChatGPT CapCut क्या चाहिए शुरू",
+      "translations": {
+        "english": "AI Product Photoshoot & Ads has 8 lessons: 01 Course Intro; 02 Phone Photo Se Studio Photo (phone photos, Product Sheet, white studio/lifestyle/dark premium); 03 Model Ke Saath Product (character and product references, model shots and hands); 04 Festive Shoot + Colour Variants (Diwali, wedding scenes and a sheet for each colour); 05 ChatGPT Se Ad Plan (buyers, problems, angles, hooks, script, caption and Flow prompts); 06 Photo Se Product Video (one movement with Ingredients); 07 UGC-Style Video (honest phone-style AI-presenter videos); 08 Finale (complete workflow, common mistakes, honesty and final project). You learn to create product photos, product videos and honest ads for your own products or clients. You need a phone, laptop and a product. Tools: Google Flow, ChatGPT and CapCut; a full CapCut editing tutorial is not taught. Course prompts are in lesson notes.",
+        "hindi": "AI Product Photoshoot & Ads में 8 पाठ हैं: 01 कोर्स परिचय; 02 फोन फोटो से स्टूडियो फोटो और प्रोडक्ट शीट; 03 मॉडल के साथ प्रोडक्ट, रेफरेंस और हाथों की गलतियाँ; 04 दिवाली, शादी के दृश्य और हर रंग की नई शीट; 05 ChatGPT से खरीदार, समस्या, विज्ञापन कोण, हुक, स्क्रिप्ट, कैप्शन और Flow prompts; 06 फोटो से प्रोडक्ट वीडियो, Ingredients में एक मूवमेंट; 07 ईमानदार फोन-स्टाइल UGC वीडियो; 08 पूरा वर्कफ़्लो, गलतियाँ, ईमानदारी और अंतिम प्रोजेक्ट। इससे अपने या ग्राहकों के प्रोडक्ट की तस्वीरें, वीडियो और ईमानदार विज्ञापन बनाना सीखते हैं। फोन, लैपटॉप और प्रोडक्ट चाहिए। टूल: Google Flow, ChatGPT और CapCut; पूरा CapCut एडिटिंग ट्यूटोरियल नहीं सिखाया जाता। प्रॉम्प्ट पाठ के नोट्स में हैं।",
+        "hinglish": "AI Product Photoshoot & Ads mein 8 lessons hain: 01 Course Intro; 02 phone photos se Product Sheet aur studio/lifestyle/dark premium photos; 03 model ke saath product, character reference aur hands; 04 Diwali, wedding scenes aur har colour ki nayi sheet; 05 ChatGPT se buyers, problems, angles, hooks, script, caption aur Flow prompts; 06 Ingredients se ek movement wala product video; 07 honest phone-style UGC video; 08 poora workflow, mistakes, honesty aur final project. Apne ya clients ke liye product photos, videos aur honest ads banana seekhte ho. Phone, laptop aur product chahiye. Tools Google Flow, ChatGPT aur CapCut hain; full CapCut editing tutorial nahi sikhaya jata. Prompts lesson notes mein hain."
+      }
+    },
+    {
+      "source_heading": "L04 Diwali",
+      "lesson_number": 4,
+      "search_terms": "Diwali festive diyas marigold sharp hero foreground दिवाली त्योहार",
+      "intent_tags": [
+        "festive"
+      ],
+      "translations": {
+        "english": "For Diwali, use the product sheet and keep the product unchanged. Place it on a wooden table with lit clay diyas and orange marigolds behind and beside it, warm fairy lights in the background, and warm golden light. Keep the product sharp and clearly the hero in the foreground at realistic real-world scale.",
+        "hindi": "दिवाली के लिए प्रोडक्ट शीट लगाएँ और प्रोडक्ट समान रखें। लकड़ी की मेज़ पर जलते मिट्टी के दीये और नारंगी गेंदे के फूल पीछे और पास रखें; बैकग्राउंड में नरम फेयरी लाइट और सुनहरी गर्म रोशनी रखें। प्रोडक्ट आगे स्पष्ट, शार्प और मुख्य विषय रहे; उसका आकार वास्तविक रहे।",
+        "hinglish": "Diwali ke liye product sheet lagao aur product same rakho. Wooden table par jalte clay diyas aur orange marigolds peeche aur paas rakho; background mein warm fairy lights aur golden light rakho. Product foreground mein sharp aur hero rahe, real-world scale same rakho."
+      }
+    },
+    {
+      "source_heading": "L04 Wedding Gift",
+      "lesson_number": 4,
+      "search_terms": "wedding gift box silk gold ribbon rose petals sharp foreground शादी उपहार",
+      "intent_tags": [
+        "festive"
+      ],
+      "translations": {
+        "english": "For wedding gift photos, use the product sheet and keep the product unchanged. Place it on soft silk cloth beside an open premium gift box with gold ribbon and a few rose petals, using soft warm light. Keep the product sharp in the foreground at realistic real-world scale.",
+        "hindi": "शादी के उपहार की तस्वीर के लिए प्रोडक्ट शीट लगाएँ और प्रोडक्ट समान रखें। मुलायम सिल्क कपड़े पर खुले गिफ्ट बॉक्स, सुनहरे रिबन और कुछ गुलाब की पंखुड़ियों के पास रखें; नरम गर्म रोशनी रखें। प्रोडक्ट आगे स्पष्ट और शार्प रहे; उसका आकार वास्तविक रहे।",
+        "hinglish": "Wedding gift photo ke liye product sheet lagao aur product same rakho. Soft silk cloth par open gift box, gold ribbon aur rose petals ke paas rakho; soft warm light rakho. Product foreground mein sharp rahe aur real-world scale same rakho."
+      }
+    }
+  ]
+}

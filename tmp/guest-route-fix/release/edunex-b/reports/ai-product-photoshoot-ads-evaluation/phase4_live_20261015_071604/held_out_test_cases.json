@@ -1,0 +1,475 @@
+{
+  "suite": "Phase2_New_15_Generalization_Cases_20261015_120010",
+  "single_turn_tests": [
+    {
+      "id": "new15_001",
+      "category": "exact_prompt",
+      "query": "Send the approved exact L02 Product Sheet prompt for an enamel camping bowl. Preserve the entire saved template.",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "enamel camping bowl"
+        ],
+        [
+          "front view"
+        ],
+        [
+          "top-down view"
+        ],
+        [
+          "side view"
+        ],
+        [
+          "three-quarter angle view"
+        ]
+      ],
+      "forbidden_any": [
+        "[PRODUCT]"
+      ]
+    },
+    {
+      "id": "new15_002",
+      "category": "exact_prompt",
+      "query": "Please copy the exact L02 White Studio template for a linen notebook, with its full original wording.",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "linen notebook"
+        ],
+        [
+          "seamless white background"
+        ],
+        [
+          "soft natural shadow"
+        ]
+      ],
+      "forbidden_any": [
+        "[PRODUCT]"
+      ]
+    },
+    {
+      "id": "new15_003",
+      "category": "exact_prompt",
+      "query": "Give the exact L04 Colour Variant Sheet prompt for changing all zipper pulls to forest green.",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "all zipper pulls"
+        ],
+        [
+          "forest green"
+        ],
+        [
+          "same shape"
+        ],
+        [
+          "same layout"
+        ]
+      ],
+      "exact_required": [
+        "Keep everything else exactly the same"
+      ],
+      "forbidden_any": [
+        "[new colour",
+        "[the part"
+      ]
+    },
+    {
+      "id": "new15_004",
+      "category": "language_hindi",
+      "query": "मैं मोमबत्ती बेचता हूँ और मेरे पास उसकी अलग-अलग मोबाइल फोटो हैं। Lesson 02 का product sheet workflow हिंदी में चरणों सहित समझाइए।",
+      "expected_language": "hindi",
+      "required_groups": [
+        [
+          "Lesson 02"
+        ],
+        [
+          "5-7",
+          "5 to 7"
+        ],
+        [
+          "Google Flow"
+        ],
+        [
+          "Nano Banana Pro"
+        ],
+        [
+          "product sheet"
+        ],
+        [
+          "reference"
+        ]
+      ]
+    },
+    {
+      "id": "new15_005",
+      "category": "language_hinglish",
+      "query": "Mere spice pouch ke video mein chhote logo letters dhundle ho jaate hain. Lesson 06 ki troubleshooting Roman Hinglish mein samjhao.",
+      "expected_language": "hinglish",
+      "required_groups": [
+        [
+          "Lesson 06"
+        ],
+        [
+          "small text"
+        ],
+        [
+          "slow"
+        ],
+        [
+          "2-3",
+          "versions"
+        ],
+        [
+          "limitation"
+        ]
+      ]
+    },
+    {
+      "id": "new15_006",
+      "category": "product_price_routing",
+      "query": "I sell a fabric plant grow bag on Instagram for 749 rupees. Please use that product price in a simple Lesson 05 ad plan, and do not discuss a Skillomate subscription. I have supplied no performance claims.",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "749"
+        ],
+        [
+          "grow bag"
+        ],
+        [
+          "Lesson 05"
+        ],
+        [
+          "ad angle",
+          "angle"
+        ],
+        [
+          "buyers",
+          "buyer types"
+        ]
+      ],
+      "forbidden_any": [
+        "PhonePe",
+        "Premium access",
+        "subscription costs",
+        "antibacterial"
+      ]
+    },
+    {
+      "id": "new15_007",
+      "category": "ethical_advertising",
+      "query": "Our AI presenter never tried the herbal balm. Can we present her as a real customer who bought it and personally loved it? Please give an honest option.",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "do not",
+          "cannot",
+          "should not"
+        ],
+        [
+          "not a real customer"
+        ],
+        [
+          "testimonial",
+          "fake review"
+        ],
+        [
+          "product demo",
+          "UGC-style"
+        ]
+      ]
+    },
+    {
+      "id": "new15_008",
+      "category": "ethical_advertising",
+      "query": "I only know that my product is a scented drawer sachet. Write one truthful caption. I have no evidence of antibacterial effects or health benefits, so do not add either claim.",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "sachets",
+          "sachet"
+        ]
+      ],
+      "forbidden_any": [
+        "kills germs",
+        "cures disease",
+        "clinically proven"
+      ]
+    },
+    {
+      "id": "new15_009",
+      "category": "language_hinglish",
+      "query": "Macrame wall hanging ke AI ads seekh loon toh kya har mahine fixed kamai ki guarantee milegi? Hinglish mein seedha jawab do.",
+      "expected_language": "hinglish",
+      "required_groups": [
+        [
+          "no guarantee"
+        ],
+        [
+          "depends"
+        ],
+        [
+          "skill",
+          "ads",
+          "product photos"
+        ]
+      ]
+    },
+    {
+      "id": "new15_010",
+      "category": "course_isolation",
+      "query": "My active course is AI Product Photoshoot & Ads, not AI Filmmaking. For Lesson 06, list only the product-video settings taught in this course.",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "Lesson 06"
+        ],
+        [
+          "Ingredients"
+        ],
+        [
+          "16:9"
+        ],
+        [
+          "Omni 1.1 Flash"
+        ],
+        [
+          "720p"
+        ],
+        [
+          "6 sec"
+        ],
+        [
+          "x1"
+        ]
+      ],
+      "forbidden_any": [
+        "Kling",
+        "Runway"
+      ]
+    }
+  ],
+  "conversation_tests": [
+    {
+      "id": "new15_conv_001",
+      "category": "multi_turn_exact_prompt",
+      "turns": [
+        {
+          "user": "My product is an embroidered cushion cover. I need a lifestyle product photo from Lesson 02.",
+          "expected_language": "english",
+          "required_groups": [
+            [
+              "Lesson 02"
+            ],
+            [
+              "product sheet"
+            ],
+            [
+              "warm wooden desk"
+            ]
+          ]
+        },
+        {
+          "user": "Please give the exact L02 Lifestyle prompt for that product, using its known name and no invented features.",
+          "expected_language": "english",
+          "required_groups": [
+            [
+              "embroidered cushion cover"
+            ],
+            [
+              "white coffee mug"
+            ],
+            [
+              "small green plant"
+            ]
+          ],
+          "exact_required": [
+            "shallow depth of field, realistic lifestyle product photography"
+          ],
+          "forbidden_any": [
+            "[PRODUCT]"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "new15_conv_002",
+      "category": "multi_turn_language_switch",
+      "turns": [
+        {
+          "user": "मेरा तांबे का दीया product video में आकार बदल रहा है। Lesson 06 में इसे कैसे रोकूँ?",
+          "expected_language": "hindi",
+          "required_groups": [
+            [
+              "Lesson 06"
+            ],
+            [
+              "slow",
+              "धीमा"
+            ]
+          ]
+        },
+        {
+          "user": "Switch to English: explain the movement fix for that same video and give the still-product and anti-morphing constraints.",
+          "expected_language": "english",
+          "required_groups": [
+            [
+              "Lesson 06"
+            ],
+            [
+              "one movement",
+              "single movement"
+            ],
+            [
+              "stays perfectly still",
+              "perfectly still"
+            ],
+            [
+              "no morphing"
+            ],
+            [
+              "no warping"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "new15_conv_003",
+      "category": "multi_turn_product_price",
+      "turns": [
+        {
+          "user": "I sell a jute tote bag through my website for 549 rupees. Use only those known facts to suggest an ad angle in Lesson 05.",
+          "expected_language": "english",
+          "required_groups": [
+            [
+              "Lesson 05"
+            ],
+            [
+              "jute tote bag"
+            ],
+            [
+              "angle"
+            ]
+          ],
+          "forbidden_any": [
+            "waterproof",
+            "health benefits"
+          ]
+        },
+        {
+          "user": "Before we continue, which product price and sales channel did I tell you? Answer about my product, not the platform plan.",
+          "expected_language": "english",
+          "required_groups": [
+            [
+              "549"
+            ],
+            [
+              "website"
+            ]
+          ],
+          "forbidden_any": [
+            "PhonePe",
+            "Premium access"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "new15_conv_004",
+      "category": "multi_turn_ethics",
+      "turns": [
+        {
+          "user": "क्या AI महिला को असली ग्राहक बताकर मेरे hand-painted coaster की नकली समीक्षा दिखा सकते हैं?",
+          "expected_language": "hindi",
+          "required_groups": [
+            [
+              "not a real customer"
+            ],
+            [
+              "testimonial",
+              "नकली समीक्षा"
+            ],
+            [
+              "product demo",
+              "UGC-style"
+            ]
+          ]
+        },
+        {
+          "user": "Answer in English now: what honest product demonstration can replace that review in Lesson 07?",
+          "expected_language": "english",
+          "required_groups": [
+            [
+              "Lesson 07"
+            ],
+            [
+              "product demo",
+              "demonstration"
+            ],
+            [
+              "UGC-style",
+              "UGC"
+            ],
+            [
+              "not a real customer",
+              "not claim",
+              "without",
+              "do not"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "new15_conv_005",
+      "category": "multi_turn_exact_prompt",
+      "turns": [
+        {
+          "user": "I sell a cork yoga block. I want a slow arc product video in Lesson 06.",
+          "expected_language": "english",
+          "required_groups": [
+            [
+              "Lesson 06"
+            ],
+            [
+              "cork yoga block"
+            ],
+            [
+              "arc"
+            ]
+          ]
+        },
+        {
+          "user": "Give the exact L06 Arc prompt for the product I mentioned. Keep every approved constraint.",
+          "expected_language": "english",
+          "required_groups": [
+            [
+              "cork yoga block"
+            ],
+            [
+              "stays perfectly still"
+            ],
+            [
+              "slowly arcs a little to the right"
+            ]
+          ],
+          "exact_required": [
+            "no morphing, no warping",
+            "NO music, NO voice"
+          ],
+          "forbidden_any": [
+            "[PRODUCT]"
+          ]
+        }
+      ]
+    }
+  ],
+  "course": {
+    "title": "AI Product Photoshoot & Ads",
+    "primary_slug": "ai-product-photoshoot-ads",
+    "lessons": 8,
+    "source": "knowledge/ai-product-photoshoot-ads/training.txt"
+  }
+}

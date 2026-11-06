@@ -1,0 +1,76 @@
+{
+  "alias_resolution": "PASS",
+  "aliases": [
+    "ai-local-business-ads",
+    "ai-local-buisness-ads"
+  ],
+  "canonical_knowledge_identifier": "ai-local-business-ads",
+  "actual_course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+  "local_database_isolation": "PASS",
+  "database": "skillomate_mvp_eval_lba_real_20261022",
+  "endpoint": "mongodb://127.0.0.1:27017",
+  "course_metadata_registration": "PASS",
+  "verified_real_lessons": 10,
+  "dummy_video_ids_used_for_target_course": false,
+  "authorization": "PASS",
+  "course_specific_unit_tests": {
+    "PASS": 43,
+    "FAIL": 0
+  },
+  "focused_http_checks": {
+    "PASS": 5,
+    "FAIL": 0,
+    "course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+    "results": [
+      {
+        "label": "canonical-alias",
+        "status": 200,
+        "PASS": true
+      },
+      {
+        "label": "published-alias",
+        "status": 200,
+        "PASS": true
+      },
+      {
+        "label": "unauthenticated",
+        "status": 401,
+        "PASS": true
+      },
+      {
+        "label": "invalid-session",
+        "status": 401,
+        "PASS": true
+      },
+      {
+        "label": "other-course-entitlement",
+        "status": 200,
+        "PASS": true
+      }
+    ]
+  },
+  "fifteen_question_dry_run": {
+    "question_count": 15,
+    "question_results": {
+      "UNTESTED": 11,
+      "PASS": 4
+    },
+    "scenarios": {
+      "PASS": 4,
+      "FAIL": 0,
+      "UNTESTED": 9,
+      "accuracy_among_executed_pct": 100.0,
+      "critical_security_failures": 0,
+      "average_response_ms": 143.17,
+      "provider_invocations": 0,
+      "blocked_provider_attempts": 24
+    }
+  },
+  "live_evaluator_readiness": "PASS; explicit provider approval still required",
+  "live_command": "python3 -B chatbot_eval.py --cases scripts/eval/local-business-ads-fast15-cases.json --report reports/local-business-ads-final-local --mode live",
+  "provider_requests_sent": 0,
+  "production_writes": false,
+  "deployment": false,
+  "commit": false,
+  "push": false
+}

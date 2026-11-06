@@ -1,0 +1,23 @@
+UNTESTED LBA-01 lesson_specific
+UNTESTED LBA-04 lesson_specific
+UNTESTED LBA-06 lesson_specific
+PASS     LBA-08 approved_template
+PASS     LBA-10 approved_template
+PASS     LBA-11 approved_template
+UNTESTED LBA-14 multilingual
+UNTESTED LBA-17 multilingual
+UNTESTED LBA-18 multi_turn
+UNTESTED LBA-21 multi_turn
+UNTESTED LBA-26 troubleshooting_ethics
+UNTESTED LBA-27 troubleshooting_ethics
+PASS     LBA-29 authorization_isolation
+{
+  "PASS": 4,
+  "FAIL": 0,
+  "UNTESTED": 9,
+  "accuracy_among_executed_pct": 100.0,
+  "critical_security_failures": 0,
+  "average_response_ms": 143.98,
+  "provider_invocations": 0,
+  "blocked_provider_attempts": 24
+}

@@ -1,0 +1,401 @@
+{
+  "description": "Read-only extracts of earlier saved in-app responses. These are not the missing consolidated ten-scenario transcript.",
+  "cases": [
+    {
+      "source": "tmp/chai-junction-memory-test/pipeline_traces.jsonl",
+      "sourceSHA256": "c1eab3a4d33c049d74171dfeb468ece2a000e46654fea6f5e8b3dffca789f03c",
+      "time": "2026-10-25T10:58:33.226Z",
+      "request": {
+        "message": "Meri shop ka naam Chai Junction hai, Vijay Nagar Indore mein hai. Hum chai, Maggi aur sandwiches bechte hain. Abhi koi discount nahi chal raha. Mujhe ek simple Instagram poster ka prompt do, English mein. Real shop photo use karna hai, aur koi fake offer ya price add mat karna.",
+        "activeCourseId": "6ad9fe8ed0076b8d5e3b4f6d",
+        "history": []
+      },
+      "response": {
+        "answer": "Okay, I can help you with a prompt for a simple Instagram poster for your shop, Chai Junction, in Vijay Nagar, Indore. You want to use a real shop photo and not include any fake offers or prices.\n\nHere is a prompt you can use:\n\n**Prompt for a simple Instagram poster:**\n\n\"Use this photo of our shop front as the main image. Turn it into a clean, modern Instagram poster for our shop. Keep the shop, the building and the \"Chai Junction\" signboard exactly the same — do not change the shop itself.\nWrite ONLY this text, spelled exactly like this:\n- Top, big bold: \"Chai Junction\"\n- Below it: \"Vijay Nagar, Indore\"\n- Bottom: \"Chai, Maggi, Sandwiches\"\nWarm colours, easy-to-read bold fonts, clean layout with the shop clearly visible. Do not add any other words, discounts, percentages, logos or claims.\"\n\nThis prompt is designed to create a poster that highlights your shop and its offerings without inventing any discounts or prices, as you requested. This aligns with the principles taught in the AI Local Business Ads course, especially in Lesson 05, which focuses on creating posters with exact text and no fake offers.",
+        "reply": "Okay, I can help you with a prompt for a simple Instagram poster for your shop, Chai Junction, in Vijay Nagar, Indore. You want to use a real shop photo and not include any fake offers or prices.\n\nHere is a prompt you can use:\n\n**Prompt for a simple Instagram poster:**\n\n\"Use this photo of our shop front as the main image. Turn it into a clean, modern Instagram poster for our shop. Keep the shop, the building and the \"Chai Junction\" signboard exactly the same — do not change the shop itself.\nWrite ONLY this text, spelled exactly like this:\n- Top, big bold: \"Chai Junction\"\n- Below it: \"Vijay Nagar, Indore\"\n- Bottom: \"Chai, Maggi, Sandwiches\"\nWarm colours, easy-to-read bold fonts, clean layout with the shop clearly visible. Do not add any other words, discounts, percentages, logos or claims.\"\n\nThis prompt is designed to create a poster that highlights your shop and its offerings without inventing any discounts or prices, as you requested. This aligns with the principles taught in the AI Local Business Ads course, especially in Lesson 05, which focuses on creating posters with exact text and no fake offers.",
+        "provider": "fal-openrouter",
+        "sources": [],
+        "messageId": "a5ffa75a-57cf-4409-853c-a65f3c9677c1",
+        "notice": null,
+        "outcome": {
+          "type": "live_model",
+          "liveModelAnswer": true,
+          "providerStatus": "success",
+          "responseIssue": null
+        },
+        "knowledge": "course-materials",
+        "debug": {
+          "conversation_id": "lba-memory-50c5d4bb-fb0b-4fd7-9536-fc50d104a063",
+          "request_active_course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+          "resolved_active_course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+          "current_topic": "",
+          "current_intent": "",
+          "rewritten_retrieval_query": "Meri shop ka naam Chai Junction hai, Vijay Nagar Indore mein hai. Hum chai, Maggi aur sandwiches bechte hain. Abhi koi discount nahi chal raha. Mujhe ek simple Instagram poster ka prompt do, English mein. Real shop photo use karna hai, aur koi fake offer ya price add mat karna.",
+          "retrieved_chunk_ids": [
+            "ai-local-business-ads:overview:013",
+            "ai-local-business-ads:example-answers:015",
+            "ai-local-buisness-ads:lesson-overview:Offer and Festival Posters:0",
+            "ai-local-business-ads:lesson-summary:007",
+            "ai-local-business-ads:course-rules:012",
+            "ai-local-business-ads:lesson-summary:001"
+          ],
+          "retrieved_chunk_hashes": [
+            "c8b29308009ccbb0c8d88e0dfaf11aa462858ed72128e2957862d864cb532a92",
+            "44c67106750a1ee8d4083c9e4e0690327a7daa302c9a58e0bd05a7aae969d7b0",
+            "",
+            "4bb5a122c7f0ee5e376df865f6fcc5ddd47c486fd2c7407f4a44c45d4cc71346",
+            "22451952b12f2353aeb8c774eba9054100c1f11511f756d9adb07c86bf3fda2d",
+            "7905eec3af53db0e15640e135159c2f40eef9c0256e38bec98d165f3e5ebab42"
+          ],
+          "retrieved_source_hashes": [
+            "8add7ed8a46602116e471dca839296be6ed7eaca7306502f874d1c695f9e358e",
+            "6e06f7ec4425616ccaf215ae95f629a1d75d1798c3c22b1b6c25178607082395"
+          ],
+          "retrieved_translation_hashes": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "retrieved_course_ids": [
+            "6ad9fe8ed0076b8d5e3b4f6d"
+          ],
+          "retrieved_course_names": [
+            "AI Local Buisness ADS"
+          ],
+          "scores_ranks": [
+            {
+              "rank": 1,
+              "score": "15.1882",
+              "course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+              "section": "Course overview and demo business facts"
+            },
+            {
+              "rank": 2,
+              "score": "11.8345",
+              "course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+              "section": "Reviewed tutor example answers"
+            },
+            {
+              "rank": 3,
+              "score": "8.7373",
+              "course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+              "section": "Offer and Festival Posters"
+            },
+            {
+              "rank": 4,
+              "score": "8.7250",
+              "course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+              "section": "Lesson 07 — Hindi Voiceover Wali Reel"
+            },
+            {
+              "rank": 5,
+              "score": "8.1966",
+              "course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+              "section": "Tutor instructions and honest advertising"
+            },
+            {
+              "rank": 6,
+              "score": "7.8554",
+              "course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+              "section": "Lesson 01 — Course Intro"
+            }
+          ],
+          "selected_exact_prompt_template_id": "",
+          "provider_model_path": "fal-openrouter",
+          "response_selection": null,
+          "history_restored": false,
+          "provider": {
+            "status": "success",
+            "attempts": [
+              {
+                "attempt": 1,
+                "status": "success",
+                "httpStatus": 200,
+                "durationMs": 2785
+              }
+            ],
+            "durationMs": 2785,
+            "finishReason": "stop",
+            "usage": {
+              "prompt_tokens": 6082,
+              "completion_tokens": 258
+            }
+          },
+          "validation_repair": null
+        }
+      }
+    },
+    {
+      "source": "tmp/chai-junction-memory-test/pipeline_traces.jsonl",
+      "sourceSHA256": "c1eab3a4d33c049d74171dfeb468ece2a000e46654fea6f5e8b3dffca789f03c",
+      "time": "2026-10-25T10:58:35.340Z",
+      "request": {
+        "message": "Actually meri shop ka naam Chai Junction nahi, Chai Corner hai. Location Vijay Nagar, Indore hi hai. Ab mujhe ek short Instagram caption do Hinglish mein. Koi discount mention mat karna.",
+        "activeCourseId": "6ad9fe8ed0076b8d5e3b4f6d",
+        "history": [
+          {
+            "role": "user",
+            "content": "Meri shop ka naam Chai Junction hai, Vijay Nagar Indore mein hai. Hum chai, Maggi aur sandwiches bechte hain. Abhi koi discount nahi chal raha. Mujhe ek simple Instagram poster ka prompt do, English mein. Real shop photo use karna hai, aur koi fake offer ya price add mat karna."
+          },
+          {
+            "role": "assistant",
+            "content": "Okay, I can help you with a prompt for a simple Instagram poster for your shop, Chai Junction, in Vijay Nagar, Indore. You want to use a real shop photo and not include any fake offers or prices.\n\nHere is a prompt you can use:\n\n**Prompt for a simple Instagram poster:**\n\n\"Use this photo of our shop front as the main image. Turn it into a clean, modern Instagram poster for our shop. Keep the shop, the building and the \"Chai Junction\" signboard exactly the same — do not change the shop itself.\nWrite ONLY this text, spelled exactly like this:\n- Top, big bold: \"Chai Junction\"\n- Below it: \"Vijay Nagar, Indore\"\n- Bottom: \"Chai, Maggi, Sandwiches\"\nWarm colours, easy-to-read bold fonts, clean layout with the shop clearly visible. Do not add any other words, discounts, percentages, logos or claims.\"\n\nThis prompt is designed to create a poster that highlights your shop and its offerings without inventing any discounts or prices, as you requested. This aligns with the principles taught in the AI Local Business Ads course, especially in Lesson 05, which focuses on creating posters with exact text and no fake offers."
+          }
+        ]
+      },
+      "response": {
+        "answer": "Theek hai, aapki shop ka naam Chai Corner hai, Vijay Nagar, Indore mein. Aapko ek short Instagram caption chahiye Hinglish mein, aur koi discount mention nahi karna hai.\n\nYahan ek simple caption hai jo aap use kar sakte ho:\n\n\"Chai Corner par aao, Vijay Nagar, Indore mein! ☕ Maggi aur sandwiches ka maza lo. Perfect spot for your chai cravings! #ChaiCorner #VijayNagar #IndoreFood #ChaiLover #MaggiTime\"\n\nYeh caption aapki shop ka naam aur location batata hai, aur aapke main products ko highlight karta hai, bina kisi discount ke. Ismein relevant hashtags bhi hain jo aapki shop ko local audience tak pahunchane mein help karenge. Yeh Lesson 08 ke guidelines ko follow karta hai, jahan short aur friendly captions banane ki baat ki gayi hai.",
+        "reply": "Theek hai, aapki shop ka naam Chai Corner hai, Vijay Nagar, Indore mein. Aapko ek short Instagram caption chahiye Hinglish mein, aur koi discount mention nahi karna hai.\n\nYahan ek simple caption hai jo aap use kar sakte ho:\n\n\"Chai Corner par aao, Vijay Nagar, Indore mein! ☕ Maggi aur sandwiches ka maza lo. Perfect spot for your chai cravings! #ChaiCorner #VijayNagar #IndoreFood #ChaiLover #MaggiTime\"\n\nYeh caption aapki shop ka naam aur location batata hai, aur aapke main products ko highlight karta hai, bina kisi discount ke. Ismein relevant hashtags bhi hain jo aapki shop ko local audience tak pahunchane mein help karenge. Yeh Lesson 08 ke guidelines ko follow karta hai, jahan short aur friendly captions banane ki baat ki gayi hai.",
+        "provider": "fal-openrouter",
+        "sources": [],
+        "messageId": "b916c6b3-7e66-4f56-ba54-550b13ca1b5d",
+        "notice": null,
+        "outcome": {
+          "type": "live_model",
+          "liveModelAnswer": true,
+          "providerStatus": "success",
+          "responseIssue": null
+        },
+        "knowledge": "course-materials",
+        "debug": {
+          "conversation_id": "lba-memory-50c5d4bb-fb0b-4fd7-9536-fc50d104a063",
+          "request_active_course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+          "resolved_active_course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+          "current_topic": "",
+          "current_intent": "",
+          "rewritten_retrieval_query": "Actually meri shop ka naam Chai Junction nahi, Chai Corner hai. Location Vijay Nagar, Indore hi hai. Ab mujhe ek short Instagram caption do Hinglish mein. Koi discount mention mat karna.",
+          "retrieved_chunk_ids": [
+            "ai-local-business-ads:overview:013",
+            "ai-local-business-ads:exact-template:051",
+            "ai-local-business-ads:lesson-summary:001",
+            "ai-local-buisness-ads:lesson-overview:Where and When to Post:0",
+            "ai-local-business-ads:example-answers:015",
+            "ai-local-business-ads:lesson-summary:007"
+          ],
+          "retrieved_chunk_hashes": [
+            "c8b29308009ccbb0c8d88e0dfaf11aa462858ed72128e2957862d864cb532a92",
+            "c88b228528fe64c0efdb78a0da2e3cda34c3da52e33a490c7367537f058e271f",
+            "7905eec3af53db0e15640e135159c2f40eef9c0256e38bec98d165f3e5ebab42",
+            "",
+            "44c67106750a1ee8d4083c9e4e0690327a7daa302c9a58e0bd05a7aae969d7b0",
+            "4bb5a122c7f0ee5e376df865f6fcc5ddd47c486fd2c7407f4a44c45d4cc71346"
+          ],
+          "retrieved_source_hashes": [
+            "8add7ed8a46602116e471dca839296be6ed7eaca7306502f874d1c695f9e358e",
+            "0f65dffce29aeeb6ba0f9046c499540adf31bfc87093ff77fdfadf8198212e58",
+            "6e06f7ec4425616ccaf215ae95f629a1d75d1798c3c22b1b6c25178607082395"
+          ],
+          "retrieved_translation_hashes": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "retrieved_course_ids": [
+            "6ad9fe8ed0076b8d5e3b4f6d"
+          ],
+          "retrieved_course_names": [
+            "AI Local Buisness ADS"
+          ],
+          "scores_ranks": [
+            {
+              "rank": 1,
+              "score": "8.2111",
+              "course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+              "section": "Course overview and demo business facts"
+            },
+            {
+              "rank": 2,
+              "score": "6.2165",
+              "course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+              "section": "Lesson 08 — Instagram caption + hashtags"
+            },
+            {
+              "rank": 3,
+              "score": "6.0223",
+              "course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+              "section": "Lesson 01 — Course Intro"
+            },
+            {
+              "rank": 4,
+              "score": "5.9525",
+              "course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+              "section": "Where and When to Post"
+            },
+            {
+              "rank": 5,
+              "score": "5.9416",
+              "course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+              "section": "Reviewed tutor example answers"
+            },
+            {
+              "rank": 6,
+              "score": "5.2657",
+              "course_id": "6ad9fe8ed0076b8d5e3b4f6d",
+              "section": "Lesson 07 — Hindi Voiceover Wali Reel"
+            }
+          ],
+          "selected_exact_prompt_template_id": "",
+          "provider_model_path": "fal-openrouter",
+          "response_selection": null,
+          "history_restored": false,
+          "provider": {
+            "status": "success",
+            "attempts": [
+              {
+                "attempt": 1,
+                "status": "success",
+                "httpStatus": 200,
+                "durationMs": 2034
+              }
+            ],
+            "durationMs": 2034,
+            "finishReason": "stop",
+            "usage": {
+              "prompt_tokens": 6059,
+              "completion_tokens": 183
+            }
+          },
+          "validation_repair": null
+        }
+      }
+    },
+    {
+      "source": "tmp/chai-corner-in-app-acceptance/pipeline_traces.jsonl",
+      "sourceSHA256": "c4a07c597fb73badd9abde94d7083fa9603c5548815cf3ebe095cc2d2b6282da",
+      "time": "2026-10-25T11:38:41.363Z",
+      "request": {
+        "message": "Meri shop Chai Junction hai, Vijay Nagar Indore mein. Hum chai, Maggi aur sandwiches bechte hain. Real shop photo se Instagram poster ka English prompt banao. Koi fake price ya discount mat add karna.",
+        "activeCourseId": "6ad9fe8ed0076b8d5e3b4f6d",
+        "history": [
+          {
+            "role": "assistant",
+            "content": "Ask anything from your indexed courses. I can search across all course lessons."
+          }
+        ],
+        "conversationId": "nai-1792927883651-qstfp5d"
+      },
+      "response": {
+        "answer": "Sure, aapki shop 'Chai Junction' ke liye Instagram poster ka English prompt yahan hai. Yeh prompt aapki real shop photo use karega aur koi fake price ya discount add nahi karega, jaisa aapne kaha.\n\n**Tyohaar greeting poster**\n\n```\nUse this photo of our shop front as the main image. Make a warm [festival] greeting poster. Keep the shop, the building and the \"Chai Junction\" signboard exactly the same — do not change the shop itself.\nAdd festive feeling only as a decorative design around the photo: a soft glowing frame of [diyas / lights / festival elements] along the edges, gentle golden sparkles. Do not place decorations on the real shop.\nWrite ONLY this text, spelled exactly like this:\n- Top: \"[Happy Diwali]\"\n- Bottom: \"Warm wishes from Chai Junction\"\nElegant, easy-to-read fonts. No offers, no prices, no other words.\n```\n\nAap [festival] aur [diyas / lights / festival elements] ko apne hisaab se change kar sakte hain. Jaise, agar Diwali hai toh [Happy Diwali] aur [diyas] use kar sakte hain.\n\nYeh prompt Lesson 05 mein cover kiya gaya hai.",
+        "reply": "Sure, aapki shop 'Chai Junction' ke liye Instagram poster ka English prompt yahan hai. Yeh prompt aapki real shop photo use karega aur koi fake price ya discount add nahi karega, jaisa aapne kaha.\n\n**Tyohaar greeting poster**\n\n```\nUse this photo of our shop front as the main image. Make a warm [festival] greeting poster. Keep the shop, the building and the \"Chai Junction\" signboard exactly the same — do not change the shop itself.\nAdd festive feeling only as a decorative design around the photo: a soft glowing frame of [diyas / lights / festival elements] along the edges, gentle golden sparkles. Do not place decorations on the real shop.\nWrite ONLY this text, spelled exactly like this:\n- Top: \"[Happy Diwali]\"\n- Bottom: \"Warm wishes from Chai Junction\"\nElegant, easy-to-read fonts. No offers, no prices, no other words.\n```\n\nAap [festival] aur [diyas / lights / festival elements] ko apne hisaab se change kar sakte hain. Jaise, agar Diwali hai toh [Happy Diwali] aur [diyas] use kar sakte hain.\n\nYeh prompt Lesson 05 mein cover kiya gaya hai.",
+        "provider": "fal-openrouter",
+        "sources": [],
+        "messageId": "6b73d97c-7fdd-463b-83f1-22e0bf026e22",
+        "notice": null,
+        "outcome": {
+          "type": "live_model",
+          "liveModelAnswer": true,
+          "providerStatus": "success",
+          "responseIssue": null
+        },
+        "knowledge": "course-materials"
+      }
+    },
+    {
+      "source": "tmp/chai-corner-in-app-acceptance/pipeline_traces.jsonl",
+      "sourceSHA256": "c4a07c597fb73badd9abde94d7083fa9603c5548815cf3ebe095cc2d2b6282da",
+      "time": "2026-10-25T11:39:29.484Z",
+      "request": {
+        "message": "Actually shop ka naam Chai Corner hai. Ab usi shop ke liye short Hinglish Instagram caption do. Koi discount mention mat karna.",
+        "activeCourseId": "6ad9fe8ed0076b8d5e3b4f6d",
+        "history": [
+          {
+            "role": "assistant",
+            "content": "Ask anything from your indexed courses. I can search across all course lessons."
+          },
+          {
+            "role": "user",
+            "content": "Meri shop Chai Junction hai, Vijay Nagar Indore mein. Hum chai, Maggi aur sandwiches bechte hain. Real shop photo se Instagram poster ka English prompt banao. Koi fake price ya discount mat add karna."
+          },
+          {
+            "role": "assistant",
+            "content": "Sure, aapki shop 'Chai Junction' ke liye Instagram poster ka English prompt yahan hai. Yeh prompt aapki real shop photo use karega aur koi fake price ya discount add nahi karega, jaisa aapne kaha.\n\n**Tyohaar greeting poster**\n\n```\nUse this photo of our shop front as the main image. Make a warm [festival] greeting poster. Keep the shop, the building and the \"Chai Junction\" signboard exactly the same — do not change the shop itself.\nAdd festive feeling only as a decorative design around the photo: a soft glowing frame of [diyas / lights / festival elements] along the edges, gentle golden sparkles. Do not place decorations on the real shop.\nWrite ONLY this text, spelled exactly like this:\n- Top: \"[Happy Diwali]\"\n- Bottom: \"Warm wishes from Chai Junction\"\nElegant, easy-to-read fonts. No offers, no prices, no other words.\n```\n\nAap [festival] aur [diyas / lights / festival elements] ko apne hisaab se change kar sakte hain. Jaise, agar Diwali hai toh [Happy Diwali] aur [diyas] use kar sakte hain.\n\nYeh prompt Lesson 05 mein cover kiya gaya hai."
+          }
+        ],
+        "conversationId": "nai-1792927883651-qstfp5d"
+      },
+      "response": {
+        "answer": "Okay, aapki shop ka naam 'Chai Corner' hai, theek hai.\n\nYahan aapki shop 'Chai Corner' ke liye ek short Hinglish Instagram caption hai, bina kisi discount mention kiye:\n\n```\nApni shaam ko behtar banayein Chai Corner par! ☕\nVijay Nagar, Indore mein aapka favourite spot, jahan milti hai garma-garam chai, tasty Maggi aur fresh sandwiches.\nAaiye aur relax kijiye!\n#ChaiCorner #VijayNagar #IndoreFood #ChaiLover #MaggiTime #SandwichLove #Indore\n```\n\nYeh caption Lesson 08 mein diye gaye guidelines ke hisaab se hai.",
+        "reply": "Okay, aapki shop ka naam 'Chai Corner' hai, theek hai.\n\nYahan aapki shop 'Chai Corner' ke liye ek short Hinglish Instagram caption hai, bina kisi discount mention kiye:\n\n```\nApni shaam ko behtar banayein Chai Corner par! ☕\nVijay Nagar, Indore mein aapka favourite spot, jahan milti hai garma-garam chai, tasty Maggi aur fresh sandwiches.\nAaiye aur relax kijiye!\n#ChaiCorner #VijayNagar #IndoreFood #ChaiLover #MaggiTime #SandwichLove #Indore\n```\n\nYeh caption Lesson 08 mein diye gaye guidelines ke hisaab se hai.",
+        "provider": "fal-openrouter",
+        "sources": [],
+        "messageId": "33b8a6d1-eacd-4090-8850-478e8387dcc9",
+        "notice": null,
+        "outcome": {
+          "type": "live_model",
+          "liveModelAnswer": true,
+          "providerStatus": "success",
+          "responseIssue": null
+        },
+        "knowledge": "course-materials"
+      }
+    },
+    {
+      "source": "tmp/chai-junction-relevance-live/pipeline_traces.jsonl",
+      "sourceSHA256": "feb489754cebd8d1eb6957f83f4fc7b322f613b5305ebd4b24179350ccdd6ec1",
+      "time": "2026-10-25T11:59:21.656Z",
+      "request": {
+        "message": "Create a general Instagram poster prompt in English for Chai Junction in Vijay Nagar, Indore. We sell chai, Maggi and sandwiches. Use the real shop photo and preserve the actual shop identity and signboard. Include the supplied products. No festival themes, discounts, offers, prices or unsupported promotional claims. Return only the ready-to-use English poster prompt.",
+        "activeCourseId": "6ad9fe8ed0076b8d5e3b4f6d",
+        "history": [
+          {
+            "role": "assistant",
+            "content": "Ask anything from your indexed courses. I can search across all course lessons."
+          }
+        ],
+        "conversationId": "nai-1792929329693-ddv62zf"
+      },
+      "response": {
+        "answer": "Here is a general Instagram poster prompt for Chai Junction:\n\n\"Create an Instagram poster for Chai Junction in Vijay Nagar, Indore. Use the provided real shop photo, ensuring the shop's identity and signboard are preserved. The poster should highlight that we serve chai, Maggi, and sandwiches. The tone should be general and inviting, without any festival themes, discounts, offers, prices, or unsupported promotional claims.\"",
+        "reply": "Here is a general Instagram poster prompt for Chai Junction:\n\n\"Create an Instagram poster for Chai Junction in Vijay Nagar, Indore. Use the provided real shop photo, ensuring the shop's identity and signboard are preserved. The poster should highlight that we serve chai, Maggi, and sandwiches. The tone should be general and inviting, without any festival themes, discounts, offers, prices, or unsupported promotional claims.\"",
+        "provider": "fal-openrouter",
+        "sources": [],
+        "messageId": "515bfe95-2250-49eb-a506-57668e88162f",
+        "notice": null,
+        "outcome": {
+          "type": "live_model",
+          "liveModelAnswer": true,
+          "providerStatus": "success",
+          "responseIssue": null
+        },
+        "knowledge": "course-materials"
+      }
+    },
+    {
+      "source": "tmp/burger-customization-live/pipeline_traces.jsonl",
+      "sourceSHA256": "7ad5f8888c5fbdcacf8af6255bfd7906e5008326c4afeeb787f184554a03a163",
+      "time": "2026-10-25T12:25:10.542Z",
+      "request": {
+        "message": "Maine apne restaurant ke burger ki real photo Google Flow mein upload ki. AI lighting toh improve kar raha hai, lekin burger mein extra cheese aur lettuce add kar deta hai, bun ka shape bhi change ho jata hai. Mujhe sirf photo ki lighting, shadows aur sharpness improve karni hai. Burger bilkul original jaisa rehna chahiye. Kya karu? Ek customized prompt bhi do.",
+        "activeCourseId": "6ad9fe8ed0076b8d5e3b4f6d",
+        "history": [
+          {
+            "role": "assistant",
+            "content": "Ask anything from your indexed courses. I can search across all course lessons."
+          }
+        ],
+        "conversationId": "nai-1792930708332-k0fla4i"
+      },
+      "response": {
+        "answer": "Aapki problem common hai, AI kabhi-kabhi original photo mein cheezein add kar deta hai ya badal deta hai. Iska main reason hai ki AI ko clear instruction nahi milti ki kya nahi badalna hai.\n\nAapko yeh karna chahiye:\n\n1.  **Clear Instructions Do:** Prompt mein saaf-saaf likho ki kya-kya same rehna chahiye. Jaise, \"do not add extra cheese or lettuce,\" \"bun shape should remain original.\"\n2.  **Focus on Improvements:** Sirf woh cheezein mention karo jo aapko improve karni hain, jaise \"improve lighting, shadows, and sharpness.\"\n3.  **Re-shoot Prompt Use Karo:** Lesson 04 mein bataya gaya hai ki purani photo ko sirf reference banao aur AI ko bolo ki dish ko naye sire se \"shoot\" kare, par cheezein wahi rakhe jo original hain.\n\nYahan ek customized prompt hai jo aap try kar sakte ho:\n\n\"A professional food photograph of a burger from [Your Restaurant Name]. Improve lighting, shadows, and sharpness. The burger should look exactly like the original photo. Do NOT add extra cheese, lettuce, or any other ingredients. The bun shape must remain original. No changes to the burger's composition or toppings. Focus only on enhancing the visual quality of the existing burger.\"\n\nYeh prompt aapko Google Flow mein use karna hai. Agar phir bhi thoda farak lage, toh 1-2 baar aur generate karke sahi wala chuno.",
+        "reply": "Aapki problem common hai, AI kabhi-kabhi original photo mein cheezein add kar deta hai ya badal deta hai. Iska main reason hai ki AI ko clear instruction nahi milti ki kya nahi badalna hai.\n\nAapko yeh karna chahiye:\n\n1.  **Clear Instructions Do:** Prompt mein saaf-saaf likho ki kya-kya same rehna chahiye. Jaise, \"do not add extra cheese or lettuce,\" \"bun shape should remain original.\"\n2.  **Focus on Improvements:** Sirf woh cheezein mention karo jo aapko improve karni hain, jaise \"improve lighting, shadows, and sharpness.\"\n3.  **Re-shoot Prompt Use Karo:** Lesson 04 mein bataya gaya hai ki purani photo ko sirf reference banao aur AI ko bolo ki dish ko naye sire se \"shoot\" kare, par cheezein wahi rakhe jo original hain.\n\nYahan ek customized prompt hai jo aap try kar sakte ho:\n\n\"A professional food photograph of a burger from [Your Restaurant Name]. Improve lighting, shadows, and sharpness. The burger should look exactly like the original photo. Do NOT add extra cheese, lettuce, or any other ingredients. The bun shape must remain original. No changes to the burger's composition or toppings. Focus only on enhancing the visual quality of the existing burger.\"\n\nYeh prompt aapko Google Flow mein use karna hai. Agar phir bhi thoda farak lage, toh 1-2 baar aur generate karke sahi wala chuno.",
+        "provider": "fal-openrouter",
+        "sources": [],
+        "messageId": "6f9ef381-ed3f-45fa-b0ef-0f9b39b55c84",
+        "notice": null,
+        "outcome": {
+          "type": "live_model",
+          "liveModelAnswer": true,
+          "providerStatus": "success",
+          "responseIssue": null
+        },
+        "knowledge": "course-materials"
+      }
+    }
+  ]
+}

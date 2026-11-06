@@ -1,0 +1,132 @@
+{
+  "generatedAt": "2026-10-15T07:07:07.516256+00:00",
+  "sources": [
+    {
+      "path": "services/productTutorKnowledge.js",
+      "absolute_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/services/productTutorKnowledge.js",
+      "status": "modified",
+      "before_sha256": "e4589ecb505060fdea0a0753d4d9c6e1224e2f3f0adb3bc22f312fba974ef2ce",
+      "after_sha256": "64f228a08b34299f94277521a57d805bd689266e7de008bbedf823909c2f1f35"
+    },
+    {
+      "path": "services/productTutorResponse.js",
+      "absolute_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/services/productTutorResponse.js",
+      "status": "modified",
+      "before_sha256": "2b16320a32de9737a0bf3c304ae5c3ff97bb51afae854682deebca43081b747e",
+      "after_sha256": "8cd21492240d6af58c6736b35dc6180b3a4380f959a5dda06ada8ac739450bde"
+    },
+    {
+      "path": "services/productTutorTasks.js",
+      "absolute_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/services/productTutorTasks.js",
+      "status": "new",
+      "before_sha256": null,
+      "after_sha256": "bcc5b5dbd1fa6dec5b716ecf85ff77ccf87f15f76a05a248b4fef9969f0e7b08"
+    },
+    {
+      "path": "services/tutorKnowledge.js",
+      "absolute_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/services/tutorKnowledge.js",
+      "status": "modified",
+      "before_sha256": "71232c0e11e85888864dde6561b9f127df8532dc1f5349cdfd3b595456ae366e",
+      "after_sha256": "a411d73f309491d16c1ac49f1728d521a7118357325b3cd8c7d0c3abb3e7af1f"
+    },
+    {
+      "path": "services/aiTutorService.js",
+      "absolute_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/services/aiTutorService.js",
+      "status": "modified",
+      "before_sha256": "e55c92aef91242f9b27d06e857b26ee011ab47cc970936c16c2df590002c3c1f",
+      "after_sha256": "5f3bb1819b40dda96d836e8f7be23cace9f24a74dfd23a463b3304a112a4e20d"
+    },
+    {
+      "path": "routes/ai.js",
+      "absolute_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/routes/ai.js",
+      "status": "modified",
+      "before_sha256": "9172c933b870e3ab79e53e8d6d12afec467c499ad507f406da71e02553a5dfb7",
+      "after_sha256": "9aaad4e17231eff87b0fd63d8ab94227f48a7fb813b3f8ebe18760d705273c9d"
+    },
+    {
+      "path": "models/AiTutorSession.js",
+      "absolute_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/models/AiTutorSession.js",
+      "status": "modified",
+      "before_sha256": "cb5d4bed0f195c7226a5a9bd4a03623fe8857f2e589ff756179edd275d002bc1",
+      "after_sha256": "627ff1c8ab2930e9f740c82104a303c87bb24a627a89f738921eba38444bbefe"
+    },
+    {
+      "path": "knowledge/ai-product-photoshoot-ads/guidance.json",
+      "absolute_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/knowledge/ai-product-photoshoot-ads/guidance.json",
+      "status": "modified",
+      "before_sha256": "6af591ed710acf8437c7198d8da45a2cd2e4e0373c0f0f083435344db232b6fa",
+      "after_sha256": "9bc8c1a83461bb38b4fabf3fe9866d828836601400e1428df1ce95dbfe1ca4f1"
+    },
+    {
+      "path": "scripts/eval/grade_product_photoshoot_ads_results_v3.py",
+      "absolute_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/scripts/eval/grade_product_photoshoot_ads_results_v3.py",
+      "status": "new",
+      "before_sha256": null,
+      "after_sha256": "0585242679ac4edce267c033556cc108d0e18f79d285cd2a745bfe4552cda409"
+    },
+    {
+      "path": "scripts/eval/README.md",
+      "absolute_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/scripts/eval/README.md",
+      "status": "modified",
+      "before_sha256": "dab91c564eb9d57525df75305899c6715c544ee0d6a30c64a7bd6cef387075d4",
+      "after_sha256": "4dadf3de8739185fe315a00d80ccc1df581e818636ae4238c20ba3c58442d1a0"
+    },
+    {
+      "path": "tests/product-tutor-quality.test.cjs",
+      "absolute_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-quality.test.cjs",
+      "status": "modified",
+      "before_sha256": "6d7acde801a75c8fe01b243dc20aebced35f25db25aa5b0a5ebc97cdba94b213",
+      "after_sha256": "55b388805edec37d8aefb06db656396d14eeb0872d12688db052dace94a8832f"
+    },
+    {
+      "path": "tests/ai-chat-history.test.cjs",
+      "absolute_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs",
+      "status": "modified",
+      "before_sha256": "c4799c323f2a15f98b1f0b3daec71724fee829fab2e7733047f42927e700f5c4",
+      "after_sha256": "d741170a5e55468ca55f108a07fa70edbd1ab31b274d70475c732ee60b6ac4d8"
+    },
+    {
+      "path": "tests/product-tutor-phase3.test.cjs",
+      "absolute_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "new",
+      "before_sha256": null,
+      "after_sha256": "9802722a948bfd13e591d300777d730a60cc7c4efaf5f49accb1cd37fba4232f"
+    },
+    {
+      "path": "tests/test_product_evaluator_v3.py",
+      "absolute_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/test_product_evaluator_v3.py",
+      "status": "new",
+      "before_sha256": null,
+      "after_sha256": "c9a9f4f094876c07278ed9811189e6c2b26bd5c6210f58212612c92d054a3657"
+    }
+  ],
+  "historical_files_verified_unchanged": 91,
+  "historical_changes": [],
+  "raw_course_source_unchanged": true,
+  "original_v2_grader_unchanged": true,
+  "original_55_case_pack_unchanged": true,
+  "phase2_zip_unchanged": true,
+  "runtime_contains_evaluation_case_ids": false,
+  "external_provider_requests": 0,
+  "deployed": false,
+  "committed": false,
+  "pushed": false,
+  "node": {
+    "passed": 153,
+    "failed": 0,
+    "skipped": 0,
+    "total": 153
+  },
+  "python": {
+    "passed": 43,
+    "failed": 0,
+    "skipped": 0,
+    "total": 43
+  },
+  "local_template_replay": {
+    "passed": 25,
+    "total": 25,
+    "critical_cases_passed": 3
+  },
+  "new_live_accuracy": null
+}

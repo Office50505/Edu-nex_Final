@@ -12,6 +12,8 @@ import {
 } from "./services/externalLinks";
 import { buildSkillomateVideoUrl, parseSkillomateAppLink } from "./services/appLinks";
 import { hasActivePremiumEntitlement } from "./services/subscriptions";
+import { subscriptionPresentation } from "./services/subscriptionPresentation";
+import { parseAiMarkdown } from "./services/aiMarkdown";
 import { useAppleSubscriptions } from "./services/useAppleSubscriptions";
 import { useGooglePlaySubscriptions } from "./services/useGooglePlaySubscriptions";
 
@@ -51,7 +53,7 @@ import {
   View,
 } from "react-native";
 import { WebView } from "react-native-webview";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useEventListener } from "expo";
 import * as ScreenCapture from "expo-screen-capture";
 import Constants from "expo-constants";
@@ -61,6 +63,10 @@ import * as FileSystem from "expo-file-system/legacy";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
 import { createLocalHlsProgressiveFile, DOWNLOADS_STORAGE_KEY, downloadDir, downloadManifestPath, downloadPath, prepareTemporaryDownloads, safeDownloadId, validateHlsDownloadBundle } from "./downloadStorage";
+import { createAccountDownloadScope } from "./services/accountDownloads";
+import { createProgressSaveQueue, PROGRESS_SAVE_ERROR } from "./services/progressSaveQueue";
+import { normalizeIndianMobileInput } from "./services/indianMobile";
+import { downloadPresentation } from "./services/downloadPresentation";
 import { useVideoPlayer, VideoView } from "expo-video";
 import {
   HOME_AI_FOUNDATIONS_CONTENT,
@@ -368,48 +374,21 @@ function useHorizontalSwipeBoundaryProps() {
   }), [swipeBoundary]);
 }
 
-function cleanAiMarkdownText(text) {
-  return String(text || "")
-    .replace(/\\([*_`#>\-])/g, "$1")
-    .replace(/`([^`\n]+)`/g, "$1")
-    .replace(/\[(.*?)\]\((.*?)\)/g, "$1")
-    .replace(/^\s{0,3}#{1,6}\s+/gm, "")
-    .replace(/^\s{0,3}>\s?/gm, "");
-}
-
-function renderInlineMarkdown(text, baseStyle, keyPrefix) {
-  const parts = cleanAiMarkdownText(text).split(/(\*\*.+?\*\*|\*[^*\n]+\*)/g).filter(part => part !== "");
-  return parts.map((part, index) => {
-    const strong = part.startsWith("**") && part.endsWith("**");
-    const emphasis = !strong && part.startsWith("*") && part.endsWith("*");
-    const content = (strong ? part.slice(2, -2) : emphasis ? part.slice(1, -1) : part)
-      .replace(/\*\*/g, "")
-      .replace(/(^|[^\w])_([^_\n]+)_/g, "$1$2");
-    return (
-      <Text
-        key={`${keyPrefix}-part-${index}`}
-        style={strong ? [baseStyle, s.aiMarkdownStrong] : emphasis ? [baseStyle, s.aiMarkdownEmphasis] : baseStyle}
-      >
-        {content}
-      </Text>
-    );
-  });
-}
-
 function AiMarkdownText({ content, style }) {
-  const lines = cleanAiMarkdownText(content)
-    .replace(/\r\n/g, "\n")
-    .split("\n");
+  const lines = parseAiMarkdown(content);
 
   return (
     <Text style={style}>
-      {lines.map((rawLine, index) => {
-        const bullet = rawLine.match(/^\s*[-*•]\s+(.*)$/);
-        const numbered = rawLine.match(/^\s*(\d+)\.\s+(.*)$/);
-        const line = bullet ? `• ${bullet[1]}` : numbered ? `${numbered[1]}. ${numbered[2]}` : rawLine;
+      {lines.map((line, index) => {
         return (
           <React.Fragment key={`line-${index}`}>
-            {renderInlineMarkdown(line, style, `line-${index}`)}
+            {line.runs.map((run, runIndex) => (
+              <Text key={`line-${index}-part-${runIndex}`} style={[
+                run.bold && s.aiMarkdownStrong,
+                run.italic && s.aiMarkdownEmphasis,
+                run.code && s.aiMarkdownCode,
+              ]}>{run.text}</Text>
+            ))}
             {index < lines.length - 1 ? "\n" : null}
           </React.Fragment>
         );
@@ -504,8 +483,13 @@ async function pickProfileImage() {
   return { uri: manipulated.uri, mimeType: "image/jpeg" };
 }
 
-const DOWNLOADS_DIR = FileSystem.cacheDirectory ? `${FileSystem.cacheDirectory}skillomate_dl/` : null;
 const hasCourseAccess = user => DEV_UI_QA_ENABLED || hasActivePremiumEntitlement(user);
+async function requestCourseVideos(session, user, courseId) {
+  const path = `/api/${hasCourseAccess(user) && user?._id ? "" : "public/"}courses/${encodeURIComponent(courseId)}/videos`;
+  return hasCourseAccess(user) && user?._id
+    ? session.requestJson(path)
+    : fetchApiJson(path, null);
+}
 const AI_FEATURE_ENABLED = true;
 
 const SPEEDS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
@@ -843,7 +827,7 @@ const TERMS_CONTENT = {
     {
       title: "Course Access",
       icon: "play-circle-outline",
-      body: "Public course catalogues and previews may be available, while protected lessons require sign-in and a qualifying trial or subscription.",
+      body: "Browse published courses and watch free lessons without signing in. Paid lessons require a qualifying purchase. Sign in to manage your membership and sync account features.",
     },
     {
       title: "Trials And Subscriptions",
@@ -951,7 +935,14 @@ async function readJsonResponse(res) {
   const raw = await res.text();
   if (!raw) return {};
   try { return JSON.parse(raw); }
-  catch { return { error: raw }; }
+  catch {
+    // Proxies and unavailable routes may return HTML; never render that body in the app.
+    const message = res.status === 404
+      ? "This content is temporarily unavailable. Please try again later."
+      : "The service is temporarily unavailable. Please try again shortly.";
+    if (res.ok) throw new Error("The server returned an unexpected response. Please try again.");
+    return { error: message };
+  }
 }
 
 const wait = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
@@ -2108,13 +2099,14 @@ function getBunnyLibraryId(video) {
   return "";
 }
 
-function getDownloadId(video, index = 0) {
+function getDownloadId(video, index = 0, courseId = "") {
   if (video?.downloadId) return safeDownloadId(video.downloadId);
   const bunnyGuid = getBunnyGuid(video);
   if (bunnyGuid) return safeDownloadId(bunnyGuid);
   const stableId = video?._id || video?.id || video?.videoId || video?.cloudfrontVideoId || index;
   const hlsLikeUrl = String(video?.hlsUrl || video?.playlistUrl || video?.streamUrl || video?.videoUrl || "").trim();
-  if (video?.provider === "aws_cloudfront" || video?.sourceType === "aws_cloudfront" || /\.m3u8(?:[?#]|$)/i.test(hlsLikeUrl)) {
+  if (video?.provider === "aws_cloudfront" || video?.sourceType === "aws_cloudfront" || /\.m3u8(?:[?#]|$)/i.test(hlsLikeUrl)
+    || getProtectedCourseDownloadKind(video, courseId) === "hls") {
     return safeDownloadId(`cloud_${stableId}`);
   }
   const directUrl = String(video?.videoUrl || video?.streamUrl || "").trim();
@@ -2135,6 +2127,38 @@ function getDownloadKind(video) {
 
 function getProtectedCourseDownloadKind(video, courseId) {
   return getDownloadKind(video) || (courseId && (video?._id || video?.id || video?.videoId) ? "hls" : "");
+}
+
+function LessonDownloadButton({ video, index, courseId, courseTitle, download, onDownload, variant = "row" }) {
+  const busy = download?.status === "downloading";
+  const saved = download?.status === "done";
+  const failed = download?.status === "error";
+  const available = typeof onDownload === "function"
+    && Boolean(getDownloadId(video, index, courseId) && getProtectedCourseDownloadKind(video, courseId));
+  const title = video?.title || `Lesson ${index + 1}`;
+  const label = saved ? "Saved" : busy ? downloadPresentation(download).shortLabel : failed ? "Retry" : available ? "Download" : "Unavailable";
+  const rail = variant === "rail";
+  const disabled = !available || busy || saved;
+  return (
+    <TouchableOpacity
+      style={rail ? s.webPlayerRailBtn : [s.videoDownloadButton, saved && s.videoDownloadButtonDone, busy && s.videoDownloadButtonBusy]}
+      onPress={event => {
+        event?.stopPropagation?.();
+        if (!disabled) onDownload(video, courseId, courseTitle || "", index);
+      }}
+      disabled={disabled}
+      accessibilityRole="button"
+      accessibilityLabel={saved ? `${title} is downloaded` : busy ? `${title}. ${downloadPresentation(download).label}` : `${label} ${title}`}
+      accessibilityState={{ disabled, busy }}
+      accessibilityLiveRegion="polite"
+      hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+    >
+      {busy ? <ActivityIndicator size="small" color={rail ? "#fff" : C.primary} /> : (
+        <Ionicons name={saved ? "checkmark-circle" : failed ? "refresh" : "download-outline"} size={rail ? 21 : 19} color={rail ? "#fff" : saved ? C.success : C.primary} />
+      )}
+      <Text style={rail ? s.webPlayerRailText : s.videoDownloadButtonText}>{label}</Text>
+    </TouchableOpacity>
+  );
 }
 
 const PLAYBACK_ACCESS_TIMEOUT_MS = 30000;
@@ -2169,12 +2193,13 @@ async function fetchPlaybackLease({ courseId, video, user, signal, timeoutMs = P
   }
   const requestTimer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const url = `${API_BASE}/api/courses/${courseId}/videos/${video._id}/playback-access`;
-    const body = JSON.stringify({ userId: user?._id, sessionId: user?.sessionId });
+    const publicPath = video.publicPlayback ? "/public" : "";
+    const url = `${API_BASE}/api${publicPath}/courses/${courseId}/videos/${video._id}/playback-access`;
+    const body = JSON.stringify(video.publicPlayback ? {} : { userId: user?._id, sessionId: user?.sessionId });
     let response = await fetch(url, {
       method: "POST",
       signal: controller.signal,
-      headers: authHeadersForUser(user, { "Content-Type": "application/json" }),
+      headers: authHeadersForUser(video.publicPlayback ? null : user, { "Content-Type": "application/json" }),
       body,
     });
     if ((response.status === 401 || response.status === 403) && (user?.accessToken || user?.token)) {
@@ -2261,14 +2286,14 @@ function rewriteHlsAttributeUris(line, playlistUrl, registerResource) {
   });
 }
 
-async function readRemoteText(url) {
-  const response = await fetch(url, { redirect: "follow" });
+async function readRemoteText(url, signal) {
+  const response = await fetch(url, { redirect: "follow", signal });
   if (!response.ok) throw new Error(`Download source returned ${response.status}`);
   return response.text();
 }
 
-async function selectHlsMediaPlaylist(masterUrl) {
-  const masterText = await readRemoteText(masterUrl);
+async function selectHlsMediaPlaylist(masterUrl, signal) {
+  const masterText = await readRemoteText(masterUrl, signal);
   const variants = parseHlsVariantTracks(masterText, masterUrl);
   if (!variants.length) return { url: masterUrl, text: masterText };
   const preferred =
@@ -2276,17 +2301,18 @@ async function selectHlsMediaPlaylist(masterUrl) {
     findVideoTrackForQuality(variants, "480p") ||
     variants[0];
   const mediaUrl = preferred?.url || masterUrl;
-  return { url: mediaUrl, text: await readRemoteText(mediaUrl) };
+  return { url: mediaUrl, text: await readRemoteText(mediaUrl, signal) };
 }
 
-async function downloadHlsToAppCache({ hlsUrl, targetDir, manifestPath, onProgress }) {
+async function downloadHlsToAppCache({ hlsUrl, targetDir, manifestPath, onProgress, scope }) {
+  const FileSystem = scope.fs;
   const cleanTargetDir = String(targetDir || "").replace(/\/+$/, "");
   const parentDir = cleanTargetDir.slice(0, cleanTargetDir.lastIndexOf("/") + 1);
   const tempDir = `${parentDir}${cleanTargetDir.slice(cleanTargetDir.lastIndexOf("/") + 1)}_partial_${Date.now()}/`;
   const tempManifestPath = `${tempDir}index.m3u8`;
   await FileSystem.deleteAsync(tempDir, { idempotent: true }).catch(() => {});
   await FileSystem.makeDirectoryAsync(tempDir, { intermediates: true });
-  const { url: mediaPlaylistUrl, text } = await selectHlsMediaPlaylist(hlsUrl);
+  const { url: mediaPlaylistUrl, text } = await selectHlsMediaPlaylist(hlsUrl, scope.signal);
   const resourceMap = new Map();
   const resourceUrls = [];
   const registerResource = (absoluteUrl, fallbackExtension = "ts") => {
@@ -2334,7 +2360,12 @@ function getResumeInfo(course, progressByCourse = {}) {
   const videos = Array.isArray(course?.videos) ? course.videos : [];
   const completed = new Set((progress?.completedVideoIds || []).map(String));
   const videoProgress = progress?.videoProgress || {};
-  for (let i = 0; i < videos.length; i++) {
+  const lastIndex = videos.findIndex((video, index) => getVideoKey(video, index) === String(progress?.lastWatchedVideoId || ""));
+  // Resume a partially watched selected lesson even if earlier lessons remain
+  // unfinished. After completion, advance from that lesson before wrapping.
+  const startIndex = lastIndex >= 0 ? lastIndex : 0;
+  for (let offset = 0; offset < videos.length; offset++) {
+    const i = (startIndex + offset) % videos.length;
     const key = getVideoKey(videos[i], i);
     if (!completed.has(key)) {
       const vp = videoProgress[key];
@@ -3000,9 +3031,8 @@ function PasswordResetModal({
               label="Registered mobile number"
               placeholder="Enter 10-digit number"
               value={mobile}
-              onChangeText={value => onMobileChange(value.replace(/[^0-9]/g, ""))}
+              onChangeText={value => onMobileChange(normalizeIndianMobileInput(value))}
               keyboardType="phone-pad"
-              maxLength={10}
               autoComplete="tel"
               accessibilityLabel="Registered mobile number"
             />
@@ -3189,6 +3219,12 @@ function UpgradeModal({
   onOpenTerms,
   onOpenPrivacy,
 }) {
+  const [refreshingAccess, setRefreshingAccess] = useState(false);
+  const [refreshMessage, setRefreshMessage] = useState("");
+  const accessRefreshInFlight = useRef(false);
+  useEffect(() => {
+    if (visible) setRefreshMessage("");
+  }, [visible]);
   const FEATURES = [
     "Certificate of Completion",
     "Ad-free learning experience",
@@ -3197,7 +3233,7 @@ function UpgradeModal({
   ];
   const isIOS = Platform.OS === "ios";
   const storeName = appleSubscription?.isMock ? "Test payment" : isIOS ? "App Store" : "Google Play";
-  const purchaseBusy = Boolean(appleSubscription?.working);
+  const purchaseBusy = Boolean(appleSubscription?.working) || refreshingAccess;
   const purchaseReady = appleSubscription?.purchaseReady ?? Boolean(
     appleSubscription?.product && appleSubscription?.entitlement?.appAccountToken
   );
@@ -3207,6 +3243,30 @@ function UpgradeModal({
     onClose?.();
     onOpenSubscription?.();
   };
+
+  async function refreshAccess() {
+    if (accessRefreshInFlight.current || appleSubscription?.working) return;
+    if (typeof appleSubscription?.refreshAccess !== "function") {
+      openSubscriptionDetails();
+      return;
+    }
+    accessRefreshInFlight.current = true;
+    setRefreshingAccess(true);
+    setRefreshMessage("");
+    try {
+      const entitlement = await appleSubscription.refreshAccess();
+      if (subscriptionPresentation(entitlement).active) {
+        onClose?.();
+      } else {
+        setRefreshMessage("No active membership found for this account. If you already paid, restore your purchases or sign in with the account you used to subscribe.");
+      }
+    } catch (_) {
+      setRefreshMessage("Could not refresh access. Check your connection and try again.");
+    } finally {
+      accessRefreshInFlight.current = false;
+      setRefreshingAccess(false);
+    }
+  }
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
@@ -3325,6 +3385,26 @@ function UpgradeModal({
                   <Ionicons name="refresh" size={17} color={C.primary} />
                   <Text style={s.upgradeRestoreBtnText}>{appleSubscription?.isMock ? "Test Restore" : "Restore Purchases"}</Text>
                 </TouchableOpacity>
+
+                <Text style={[s.iosMembershipText, { marginTop: 12, textAlign: "center" }]}>
+                  Already subscribed? Restore a store purchase, or refresh access for an existing Skillomate membership.
+                </Text>
+                <TouchableOpacity
+                  onPress={refreshAccess}
+                  disabled={purchaseBusy}
+                  style={[s.upgradeRestoreBtn, purchaseBusy && { opacity: 0.55 }]}
+                  accessibilityRole="button"
+                  accessibilityLabel="Refresh membership access"
+                  accessibilityState={{ disabled: purchaseBusy, busy: refreshingAccess }}
+                >
+                  {refreshingAccess ? <ActivityIndicator color={C.primary} /> : <Ionicons name="refresh" size={17} color={C.primary} />}
+                  <Text style={s.upgradeRestoreBtnText}>{refreshingAccess ? "Checking Access…" : "Refresh Access"}</Text>
+                </TouchableOpacity>
+                {!!refreshMessage && (
+                  <Text style={[s.iosMembershipText, { marginTop: 10, textAlign: "center" }]} accessibilityLiveRegion="polite">
+                    {refreshMessage}
+                  </Text>
+                )}
 
                 <View style={s.upgradeLegalRow}>
                   <TouchableOpacity onPress={onOpenTerms} accessibilityRole="link" accessibilityLabel="Read subscription Terms of Use">
@@ -6438,7 +6518,26 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
 }
 
 // ── ReelsScreen ───────────────────────────────────────────────────────────────
-function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onReportProblem, user, session, onVideoComplete, onVideoProgress, downloads, onDownloadVideo, preloadedVideos, useAppBackTransition = false }) {
+function ProgressSaveNotice({ count, retrying, onRetry }) {
+  if (!count) return null;
+  return (
+    <SafeAreaView edges={["top", "left", "right"]} style={{ backgroundColor: "#422d13" }}>
+      <View style={{ paddingHorizontal: 16, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 12 }}>
+        <View style={{ flex: 1 }} accessibilityLiveRegion="polite">
+          <Text style={{ color: "#fff", fontWeight: "700", fontSize: 14 }}>Progress not saved{count > 1 ? ` for ${count} lessons` : ""}</Text>
+          <Text style={{ color: "#fff", fontSize: 12, marginTop: 3 }}>{PROGRESS_SAVE_ERROR}</Text>
+        </View>
+        <TouchableOpacity onPress={onRetry} disabled={retrying} accessibilityRole="button"
+          accessibilityLabel="Retry saving lesson progress" accessibilityState={{ disabled: retrying, busy: retrying }}
+          style={{ minHeight: 44, minWidth: 60, justifyContent: "center", alignItems: "center" }}>
+          {retrying ? <ActivityIndicator color="#fff" /> : <Text style={{ color: "#fff", fontWeight: "700" }}>Retry</Text>}
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
+}
+
+function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onReportProblem, user, session, onVideoComplete, onVideoProgress, downloads, onDownloadVideo, preloadedVideos, onRequireSignIn, useAppBackTransition = false }) {
   const { width: viewportWidth } = useWindowDimensions();
   const [videos, setVideos] = useState(preloadedVideos || []);
   const [loading, setLoading] = useState(!preloadedVideos);
@@ -6472,12 +6571,15 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
   const courseAiKey = chatKey(user?._id, user?.sessionId, courseId, activeVideo?._id || activeVideo?.id || activeIndex);
   const courseAiEntry = readChat(courseAiKey, [
     { role: "assistant", content: AI_FEATURE_ENABLED
-      ? "Ask me to explain this video, summarize key points, or help with doubts from the lesson."
+      ? "Ask about this lesson, get a summary or practise with a quiz. You can ask in English, Hindi or Hinglish."
       : "AI is paused for now." },
     ...(DEV_UI_QA_ENABLED ? UI_QA_AI_MESSAGES : []),
   ]);
   const courseAiMessages = courseAiEntry.messages;
   const courseAiLoading = courseAiEntry.pending;
+  const retryCourseAiQuestion = courseAiMessages[courseAiMessages.length - 1]?.failed
+    ? [...courseAiMessages].reverse().find(message => message.role === "user")?.content
+    : null;
   function updateCourseAi(messages, pending = courseAiEntry.pending) {
     updateChat(courseAiKey, courseAiEntry, messages, pending);
     if (courseAiMounted.current) refreshCourseAi(value => value + 1);
@@ -6748,6 +6850,23 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
     Keyboard.dismiss();
     setShowCourseAi(false);
   }, []);
+  function openLecturePicker() {
+    closeCourseAi();
+    setShowNotes(false);
+    setShowDescription(false);
+    setPlayerSettingsOpen(false);
+    setLecturePage(Math.floor(activeIndex / lecturePageSize));
+    setShowLectures(true);
+  }
+
+  function openLectureNotes() {
+    closeCourseAi();
+    setShowLectures(false);
+    setShowDescription(false);
+    setPlayerSettingsOpen(false);
+    setShowNotes(true);
+  }
+
   useEffect(() => {
     if (Platform.OS !== "android") return undefined;
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
@@ -6839,12 +6958,12 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
   }, []);
 
   useEffect(() => {
-    if (!user?._id || !user?.sessionId) { setError("Subscription required."); setLoading(false); return; }
+    if (preloadedVideos) { setLoading(false); return; }
     let cancelled = false;
-    session.requestJson(`/api/courses/${courseId}/videos`)
+    requestCourseVideos(session, user, courseId)
       .then(d => {
         if (cancelled) return;
-        const freshVideos = Array.isArray(d.videos) ? d.videos : [];
+        const freshVideos = Array.isArray(d?.videos) ? d.videos.filter(video => !video.locked) : [];
         setVideos(previous => {
           if (!preloadedVideos) return freshVideos;
           return mergeVideoListWithDetails(previous, freshVideos);
@@ -6978,7 +7097,7 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
           const itemSummary = itemDescription === "No description available." ? "" : itemDescription;
           const itemLessonLabel = videos.length ? `Lecture ${Math.min(videos.length, index + 1)}/${videos.length}` : "Lecture";
           const cellChromePointerEvents = isCurrent && !playerChromeHidden ? "box-none" : "none";
-          const itemDownload = downloads?.[getDownloadId(item, index)];
+          const itemDownload = downloads?.[getDownloadId(item, index, courseId)];
           const itemLocalPath = itemDownload?.status === "done" ? (itemDownload.playbackPath || itemDownload.path) : null;
           const itemIsOffline = !!itemLocalPath;
           return (
@@ -7045,7 +7164,7 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
                     </TouchableOpacity>
                     <View style={{ flex: 1 }} />
                     <TouchableOpacity
-                      onPress={() => setShowNotes(true)}
+                      onPress={openLectureNotes}
                       style={s.webPlayerTopBtn}
                       hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                       accessibilityRole="button"
@@ -7071,11 +7190,11 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
                   pointerEvents={cellChromePointerEvents}
                   importantForAccessibility={isCurrent && !playerChromeHidden ? "auto" : "no-hide-descendants"}
                 >
-                  <TouchableOpacity onPress={() => setShowCourseAi(true)} style={s.webPlayerRailBtn} accessibilityRole="button" accessibilityLabel="Ask Course AI">
+                  <TouchableOpacity onPress={() => user?._id ? setShowCourseAi(true) : onRequireSignIn?.()} style={s.webPlayerRailBtn} accessibilityRole="button" accessibilityLabel="Ask Course AI">
                     <Ionicons name="sparkles" size={20} color="#fff" />
                     <Text style={s.webPlayerRailText}>AI chat</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity onPress={() => setShowLectures(true)} style={s.webPlayerRailBtn} accessibilityRole="button" accessibilityLabel="Open course lectures">
+                  <TouchableOpacity onPress={openLecturePicker} style={s.webPlayerRailBtn} accessibilityRole="button" accessibilityLabel="Open course lectures">
                     <Ionicons name="layers-outline" size={21} color="#fff" />
                     <Text style={s.webPlayerRailText}>Lectures</Text>
                   </TouchableOpacity>
@@ -7083,15 +7202,8 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
                     <Ionicons name="share-social-outline" size={21} color="#fff" />
                     <Text style={s.webPlayerRailText}>Share</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => onDownloadVideo?.(item, courseId, course?.title || "", index)}
-                    style={s.webPlayerRailBtn}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Download ${itemTitle || itemLessonLabel}`}
-                  >
-                    <Ionicons name="download-outline" size={21} color="#fff" />
-                    <Text style={s.webPlayerRailText}>Download</Text>
-                  </TouchableOpacity>
+                  <LessonDownloadButton video={item} index={index} courseId={courseId} courseTitle={course?.title}
+                    download={itemDownload} onDownload={onDownloadVideo} variant="rail" />
                 </Animated.View>
               )}
               {isNearActive && !playerSettingsOpen && renderWebPlayerChrome && (
@@ -7340,7 +7452,9 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
                 <View key={i} style={[s.courseAiMessage, msg.role === "user" && s.courseAiMessageUser]}>
                   {msg.role !== "user" && <View style={s.courseAiAvatar}><Ionicons name="sparkles" size={15} color={C.onPrimary} /></View>}
                   <View style={[s.courseAiBubble, msg.role === "user" && s.courseAiBubbleUser]}>
-                    <AiMarkdownText content={msg.content} style={[s.courseAiBubbleText, msg.role === "user" && s.courseAiBubbleTextUser]} />
+                    {msg.role === "user"
+                      ? <Text style={[s.courseAiBubbleText, s.courseAiBubbleTextUser]}>{msg.content}</Text>
+                      : <AiMarkdownText content={msg.content} style={s.courseAiBubbleText} />}
                   </View>
                 </View>
               ))}
@@ -7349,6 +7463,16 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
                   <View style={s.courseAiAvatar}><Ionicons name="sparkles" size={15} color={C.onPrimary} /></View>
                   <View style={s.courseAiBubble}><ActivityIndicator color={C.primary} size="small" /></View>
                 </View>
+              )}
+              {!courseAiLoading && retryCourseAiQuestion && (
+                <TouchableOpacity
+                  style={s.courseAiPrompt}
+                  onPress={() => sendCourseAiMessage(retryCourseAiQuestion)}
+                  accessibilityRole="button"
+                  accessibilityLabel="Retry lesson question"
+                >
+                  <Text style={s.courseAiPromptText}>Try again</Text>
+                </TouchableOpacity>
               )}
               {!courseAiLoading && !courseAiMessages.some(message => message.role === "user") && ["Summarize this video", "Explain this topic simply", "Give me practice questions"].map(p => (
                 <TouchableOpacity key={p} style={s.courseAiPrompt} onPress={() => sendCourseAiMessage(p)} accessibilityRole="button" accessibilityLabel={`Ask Course AI: ${p}`}>
@@ -7441,6 +7565,7 @@ function VideoListScreen({
   course,
   onSelectVideo,
   onBack,
+  backLabel = "Back to courses",
   downloads,
   onDownloadVideo,
   loadingLessons = false,
@@ -7481,7 +7606,7 @@ function VideoListScreen({
           <TouchableOpacity onPress={onBack} style={s.iconBtn}
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             accessibilityRole="button"
-            accessibilityLabel="Back to courses"
+            accessibilityLabel={backLabel}
           >
             <Ionicons name="arrow-back" size={22} color={C.text} />
           </TouchableOpacity>
@@ -7548,18 +7673,11 @@ function VideoListScreen({
           ListHeaderComponent={courseDescription ? <ExpandableCourseDescription description={courseDescription} /> : null}
           renderItem={({ item, index }) => {
             const durationLabel = getVideoDurationLabel(item);
-            const downloadId = getDownloadId(item, index);
+            const downloadId = getDownloadId(item, index, course?._id || course?.id);
             const thumbnailUrl = getHomeLessonThumbnailUrl(item, course);
             const dl = downloadId ? downloads?.[downloadId] : null;
             const isDownloading = dl?.status === "downloading";
-            const isDownloaded = dl?.status === "done";
-            const canDownload = typeof onDownloadVideo === "function";
             const downloadProgress = Math.max(0, Math.min(100, Math.round((dl?.progress || 0) * 100)));
-            const downloadAccessibility = isDownloaded
-              ? `${item.title || `Video ${index + 1}`} is downloaded`
-              : isDownloading
-                ? `Downloading ${item.title || `Video ${index + 1}`}, ${downloadProgress} percent`
-                : `Download ${item.title || `Video ${index + 1}`}`;
             return (
               <MotionPressable
                 style={s.videoRow}
@@ -7568,8 +7686,8 @@ function VideoListScreen({
                 pressOpacity={0.92}
                 android_ripple={{ color: C.isDark ? "rgba(231,188,104,0.1)" : "rgba(197,139,42,0.1)", borderless: false }}
                 accessibilityRole="button"
-                accessibilityLabel={`Play lesson ${index + 1}: ${item.title || `Video ${index + 1}`}${durationLabel ? `, ${durationLabel}` : ""}`}
-                accessibilityHint="Opens the lesson player"
+                accessibilityLabel={`${item.locked ? "Premium lesson" : item.isFree ? "Play free lesson" : "Play lesson"} ${index + 1}: ${item.title || `Video ${index + 1}`}${durationLabel ? `, ${durationLabel}` : ""}`}
+                accessibilityHint={item.locked ? "Opens membership options" : "Opens the lesson player"}
               >
                 <View style={s.videoThumbSmall}>
                   {thumbnailUrl ? (
@@ -7585,7 +7703,7 @@ function VideoListScreen({
                     </View>
                   )}
                   <View style={s.videoThumbPlay}>
-                    <Ionicons name="play" size={10} color="#fff" />
+                    <Ionicons name={item.locked ? "lock-closed" : "play"} size={10} color="#fff" />
                   </View>
                   {!!durationLabel && (
                     <View style={s.videoDurationBadge}>
@@ -7600,39 +7718,15 @@ function VideoListScreen({
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={s.videoRowTitle} numberOfLines={2}>{item.title || `Video ${index + 1}`}</Text>
+                  <Text style={{ color: C.textSub, fontSize: 12, marginTop: 4 }}>{item.locked ? "Premium lesson" : item.isFree ? "Free · No sign-in required" : "Included with your membership"}</Text>
                   {isDownloading && (
                     <View style={s.dlProgressBar}>
                       <View style={[s.dlProgressFill, { width: `${downloadProgress}%` }]} />
                     </View>
                   )}
                 </View>
-                <TouchableOpacity
-                  style={[
-                    s.videoDownloadButton,
-                    isDownloaded && s.videoDownloadButtonDone,
-                    isDownloading && s.videoDownloadButtonBusy,
-                  ]}
-                  onPress={event => {
-                    event?.stopPropagation?.();
-                    if (!canDownload || isDownloading || isDownloaded) return;
-                    onDownloadVideo(item, course?._id, course?.title || "", index);
-                  }}
-                  disabled={!canDownload || isDownloading || isDownloaded}
-                  accessibilityRole="button"
-                  accessibilityLabel={downloadAccessibility}
-                  accessibilityState={{ disabled: !canDownload || isDownloading || isDownloaded, busy: isDownloading }}
-                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                >
-                  {isDownloading ? (
-                    <ActivityIndicator size="small" color={C.primary} />
-                  ) : (
-                    <Ionicons
-                      name={isDownloaded ? "checkmark-circle" : "download-outline"}
-                      size={19}
-                      color={isDownloaded ? C.success : C.primary}
-                    />
-                  )}
-                </TouchableOpacity>
+                <LessonDownloadButton video={item} index={index} courseId={course?._id || course?.id}
+                  courseTitle={course?.title} download={dl} onDownload={onDownloadVideo} />
                 <Ionicons name="chevron-forward" size={16} color={C.textMuted} />
               </MotionPressable>
             );
@@ -8401,7 +8495,7 @@ function LegacyHomeScreenDraft({ session, user, onGoToCourses, onGoToAI, onGoToD
                 accessibilityRole="button"
                 accessibilityLabel="Open profile"
               >
-                <AvatarImage avatarId={user.avatar || "a1"} size={38} style={{ borderRadius: 0 }} />
+                <AvatarImage avatarId={user?.avatar || "a1"} size={38} style={{ borderRadius: 0 }} />
               </TouchableOpacity>
             </View>
           </View>
@@ -8773,7 +8867,6 @@ function HomeScreen({
           if (!cancelled) {
             const enrichedById = new Map(enrichedCourses.map(course => [String(course._id), course]));
             const nextCourses = candidates.map(course => enrichedById.get(String(course._id)) || course);
-            homeCatalogCourses = nextCourses;
             setCatalogCourses(nextCourses);
           }
         }
@@ -8887,7 +8980,9 @@ function HomeScreen({
       const itemSavedProgress = courseProgress?.[item._id] || {};
       const itemCompletedIds = new Set((itemSavedProgress.completedVideoIds || []).map(String));
       const itemCompletedCount = itemLessons.reduce((count, lesson, index) => count + (itemCompletedIds.has(getVideoKey(lesson, index)) ? 1 : 0), 0);
-      const itemHasProgress = Object.values(itemSavedProgress.videoProgress || {}).some(value => Number(value?.watchedSeconds || 0) > 0);
+      const itemHasProgress = Boolean(itemSavedProgress.lastWatchedVideoId)
+        || Object.values(itemSavedProgress.videoProgress || {}).some(value =>
+          Number(value?.watchedSeconds || 0) > 0 || Number(value?.resumePosition || 0) > 0);
       const itemProgressPercent = getCourseProgressPercent({ ...item, videos: itemLessons }, courseProgress);
       const itemResume = getResumeInfo({ ...item, videos: itemLessons }, courseProgress);
       const itemLessonCount = itemLessons.length || Number(item.lessonCount || item.videoCount || 0);
@@ -8898,8 +8993,8 @@ function HomeScreen({
         resume: itemResume,
         resumeLesson: itemLessons[itemResume.index] || itemLessons[0] || null,
         progressPercent: itemProgressPercent,
-        isStarted: itemCompletedCount > 0 || itemHasProgress,
-        isComplete: itemLessons.length > 0 && (itemProgressPercent >= 100 || itemCompletedCount === itemLessons.length),
+        isStarted: itemCompletedIds.size > 0 || itemHasProgress || itemProgressPercent > 0,
+        isComplete: itemProgressPercent >= 100 || (itemLessons.length > 0 && itemCompletedCount === itemLessons.length),
       };
     }),
     [courseProgress, homeCourses]
@@ -8909,8 +9004,8 @@ function HomeScreen({
       const leftActive = left.isStarted && !left.isComplete ? 1 : 0;
       const rightActive = right.isStarted && !right.isComplete ? 1 : 0;
       if (leftActive !== rightActive) return rightActive - leftActive;
-      const leftTime = new Date(courseProgress?.[left.course._id]?.updatedAt || 0).getTime();
-      const rightTime = new Date(courseProgress?.[right.course._id]?.updatedAt || 0).getTime();
+      const leftTime = new Date(courseProgress?.[left.course._id]?.updatedAt || 0).getTime() || 0;
+      const rightTime = new Date(courseProgress?.[right.course._id]?.updatedAt || 0).getTime() || 0;
       if (leftTime !== rightTime) return rightTime - leftTime;
       return right.lessonCount - left.lessonCount;
     }).slice(0, 4),
@@ -8962,10 +9057,6 @@ function HomeScreen({
     () => buildCourseSearchReferences(homeCourses, {
       onOpenCourse: targetCourse => {
         if (!targetCourse) return;
-        if (!hasAccess) {
-          setShowUpgrade(true);
-          return;
-        }
         onSelectCourse(targetCourse);
       },
       onHome: () => {},
@@ -8973,56 +9064,44 @@ function HomeScreen({
       onAI: onGoToAI,
       onDownloads: onGoToDownloads,
     }),
-    [hasAccess, homeCourses, onGoToAI, onGoToCourses, onGoToDownloads, onSelectCourse]
+    [homeCourses, onGoToAI, onGoToCourses, onGoToDownloads, onSelectCourse]
   );
 
   const lessonCardWidth = isTablet
     ? Math.min(216, Math.max(176, width * 0.2))
     : Math.min(174, Math.max(144, width * 0.42));
 
-  const requireAccess = useCallback(action => {
-    if (!hasAccess) {
-      setShowUpgrade(true);
-      return;
-    }
-    action();
-  }, [hasAccess]);
-
   const openLesson = useCallback((lesson, targetCourse = course) => {
     if (!targetCourse || !lesson) return;
-    requireAccess(() => {
-      const targetLessons = sortLessons(targetCourse.videos || []);
-      const index = targetLessons.findIndex(item => getVideoKey(item) === getVideoKey(lesson));
-      if (index < 0) return;
-      const key = getVideoKey(lesson, index);
-      const targetProgress = courseProgress?.[targetCourse._id] || {};
-      const seconds = Math.floor(targetProgress.videoProgress?.[key]?.resumePosition ?? targetProgress.videoProgress?.[key]?.watchedSeconds ?? 0);
-      onResumeCourse(targetCourse, index, seconds);
-    });
-  }, [course, courseProgress, onResumeCourse, requireAccess]);
+    const targetLessons = sortLessons(targetCourse.videos || []);
+    const index = targetLessons.findIndex(item => getVideoKey(item) === getVideoKey(lesson));
+    if (index < 0) return;
+    const key = getVideoKey(lesson, index);
+    const targetProgress = courseProgress?.[targetCourse._id] || {};
+    const seconds = Math.floor(targetProgress.videoProgress?.[key]?.resumePosition ?? targetProgress.videoProgress?.[key]?.watchedSeconds ?? 0);
+    onResumeCourse(targetCourse, index, seconds);
+  }, [course, courseProgress, onResumeCourse]);
 
   const openCollection = useCallback((title, collection, targetCourse = course) => {
     if (!targetCourse || !collection?.length) return;
-    requireAccess(() => {
-      onOpenLessonCollection(targetCourse, {
-        title,
-        videoIds: collection.map((lesson, index) => getVideoKey(lesson, index)),
-      });
+    onOpenLessonCollection(targetCourse, {
+      title,
+      videoIds: collection.map((lesson, index) => getVideoKey(lesson, index)),
     });
-  }, [course, onOpenLessonCollection, requireAccess]);
+  }, [course, onOpenLessonCollection]);
 
   const continueCourse = useCallback((targetSummary = null) => {
     const targetCourse = targetSummary?.course || course;
     const targetLessons = targetSummary?.lessons || lessons;
     if (!targetCourse) return;
     if (!targetLessons.length) {
-      requireAccess(() => onSelectCourse(targetCourse));
+      onSelectCourse(targetCourse);
       return;
     }
     const targetComplete = typeof targetSummary?.isComplete === "boolean" ? targetSummary.isComplete : isComplete;
     const targetResume = targetSummary?.resume || resume;
-    requireAccess(() => onResumeCourse(targetCourse, targetComplete ? 0 : targetResume.index, targetComplete ? 0 : targetResume.seconds));
-  }, [course, isComplete, lessons, onResumeCourse, onSelectCourse, requireAccess, resume]);
+    onResumeCourse(targetCourse, targetComplete ? 0 : targetResume.index, targetComplete ? 0 : targetResume.seconds);
+  }, [course, isComplete, lessons, onResumeCourse, onSelectCourse, resume]);
 
   return (
     <View style={homeStyles.root}>
@@ -9049,7 +9128,7 @@ function HomeScreen({
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                 testID="home-profile-button"
               >
-                <AvatarImage avatarId={user.avatar || "a1"} size={40} style={{ borderRadius: 20 }} />
+                <AvatarImage avatarId={user?.avatar || "a1"} size={40} style={{ borderRadius: 20 }} />
               </TouchableOpacity>
             </View>
           </View>
@@ -9074,6 +9153,14 @@ function HomeScreen({
           />
         }
       >
+        {!user && (
+          <View style={{ marginHorizontal: 14, marginBottom: 16, padding: 16, borderRadius: 12, backgroundColor: HOME_PALETTE.surface }}>
+            <Text style={{ color: HOME_PALETTE.text, fontWeight: "800", fontSize: 16 }}>Learn without an account</Text>
+            <Text style={{ color: HOME_PALETTE.textSecondary, lineHeight: 20, marginTop: 6 }}>
+              Browse any course and watch its free lessons. Sign in whenever you want to save your learning across devices.
+            </Text>
+          </View>
+        )}
         {loading && !course ? (
           <View style={homeStyles.stateCard}>
             <ActivityIndicator color={HOME_PALETTE.gold} />
@@ -9242,6 +9329,7 @@ function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, 
   const [loading, setLoading] = useState(() => !Array.isArray(courseListCache));
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
+  const courseRequestRef = useRef(null);
   const [query, setQuery] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
   const searchInputRef = useRef(null);
@@ -9253,6 +9341,9 @@ function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, 
   }, [markNotificationsViewed]);
 
   const loadCourses = useCallback(async (options = {}) => {
+    courseRequestRef.current?.abort();
+    const controller = new AbortController();
+    courseRequestRef.current = controller;
     const isRefresh = Boolean(options.refresh);
     if (isRefresh) setRefreshing(true);
     else {
@@ -9261,29 +9352,42 @@ function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, 
     }
     setError(null);
     try {
-      const response = await fetch(`${API_BASE}/api/courses`);
-      const data = await response.json();
-      if (data.error) throw new Error(data.error);
+      // Keep the deadline active through reading the response body, not just
+      // receiving headers. Abort superseded requests so late data cannot win.
+      const data = await fetchApiJson("/api/courses", null, controller.signal);
+      if (courseRequestRef.current !== controller) return;
+      if (!Array.isArray(data)) throw new Error("Invalid course response");
       const nextCourses = DEV_UI_QA_ENABLED && (!Array.isArray(data) || data.length === 0)
         ? UI_QA_COURSES
         : data;
       courseListCache = nextCourses;
       setCourses(nextCourses);
     } catch (e) {
+      if (courseRequestRef.current !== controller || controller.signal.aborted) return;
       if (DEV_UI_QA_ENABLED) {
         courseListCache = UI_QA_COURSES;
         setCourses(UI_QA_COURSES);
         return;
       }
-      if (!Array.isArray(courseListCache)) setError(e.message);
+      setError(e?.name === "AbortError"
+        ? "Courses took too long to load. Please try again."
+        : "Courses could not be loaded. Check your connection and try again.");
     } finally {
-      setLoading(false);
-      setRefreshing(false);
+      if (courseRequestRef.current === controller) {
+        courseRequestRef.current = null;
+        setLoading(false);
+        setRefreshing(false);
+      }
     }
   }, []);
 
   useEffect(() => {
     loadCourses();
+    return () => {
+      const request = courseRequestRef.current;
+      courseRequestRef.current = null;
+      request?.abort();
+    };
   }, [loadCourses]);
 
   useEffect(() => {
@@ -9326,13 +9430,8 @@ function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, 
   const courseListFrameWidth = isTablet ? Math.min(920, Math.max(320, width - 96)) : Math.max(288, width - 32);
   const courseThumbHeight = Math.round(courseListFrameWidth * 9 / 16);
   const openCourse = useCallback(course => {
-    if (!course) return;
-    if (!hasAccess) {
-      setShowUpgrade(true);
-      return;
-    }
-    onSelect(course);
-  }, [hasAccess, onSelect]);
+    if (course) onSelect(course);
+  }, [onSelect]);
   const courseSearchReferences = useMemo(
     () => buildCourseSearchReferences(courses, {
       onOpenCourse: openCourse,
@@ -9351,7 +9450,7 @@ function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, 
     </View>
   );
 
-  if (error) return (
+  if (error && courses.length === 0) return (
     <View style={{ flex: 1, backgroundColor: C.white }}>
       <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.white} />
       <View style={[s.centered, { paddingHorizontal: 24 }]}>
@@ -9359,7 +9458,7 @@ function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, 
           <Ionicons name="cloud-offline-outline" size={30} color={C.primary} />
         </View>
         <Text style={{ color: C.text, fontSize: 17, fontWeight: "800", textAlign: "center", marginBottom: 6 }}>Courses unavailable</Text>
-        <Text style={{ color: C.textSub, fontSize: 14, lineHeight: 20, textAlign: "center" }}>Failed to load: {error}</Text>
+        <Text style={{ color: C.textSub, fontSize: 14, lineHeight: 20, textAlign: "center" }} accessibilityRole="alert">{error}</Text>
         <TouchableOpacity style={[s.btn, s.btnFill, { marginTop: 18, minWidth: 140 }]} onPress={loadCourses} accessibilityRole="button" accessibilityLabel="Retry loading courses">
           <Text style={s.btnText}>Retry</Text>
         </TouchableOpacity>
@@ -9390,7 +9489,7 @@ function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, 
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               testID="courses-profile-button"
             >
-              <AvatarImage avatarId={user.avatar || "a1"} size={40} style={{ borderRadius: 20 }} />
+              <AvatarImage avatarId={user?.avatar || "a1"} size={40} style={{ borderRadius: 20 }} />
             </TouchableOpacity>
           </View>
         </View>
@@ -9445,6 +9544,20 @@ function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, 
         removeClippedSubviews={keepPreviewMounted ? false : ANDROID_CLIPPED_SUBVIEWS}
         keyboardShouldPersistTaps="handled"
         scrollEventThrottle={16}
+        ListHeaderComponent={error ? (
+          <View style={[s.courseDescriptionCard, { marginBottom: 16 }]} accessibilityRole="alert">
+            <Text style={s.courseDescriptionTitle}>Could not refresh courses</Text>
+            <Text style={s.courseDescriptionText}>{error} Previously loaded courses are shown below.</Text>
+            <TouchableOpacity
+              onPress={refreshCourses}
+              style={[s.btn, s.btnFill, { marginTop: 12 }]}
+              accessibilityRole="button"
+              accessibilityLabel="Retry refreshing courses"
+            >
+              <Text style={s.btnText}>Retry</Text>
+            </TouchableOpacity>
+          </View>
+        ) : null}
         renderItem={({ item }) => {
           const declaredCount = Number(item.lessonCount ?? item.videoCount);
           const lessonCount = Number.isFinite(declaredCount)
@@ -9573,21 +9686,32 @@ function WishlistScreen({ wishlist, onToggleWishlist, onSelect, onBack, user, on
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [wishlistError, setWishlistError] = useState("");
+  const [wishlistAttempt, setWishlistAttempt] = useState(0);
 
   useEffect(() => {
-    if (wishlist.length === 0) { setLoading(false); return; }
-    fetch(`${API_BASE}/api/courses`)
-      .then(r => r.json())
+    const controller = new AbortController();
+    let cancelled = false;
+    setWishlistError("");
+    if (wishlist.length === 0) { setCourses([]); setLoading(false); return; }
+    setLoading(true);
+    fetchApiJson("/api/courses", null, controller.signal)
       .then(d => {
-        if (d.error) throw new Error(d.error);
+        if (cancelled) return;
+        if (!Array.isArray(d)) throw new Error("Invalid course response");
         const next = d.filter(c => wishlist.includes(c._id));
         setCourses(next.length || !DEV_UI_QA_ENABLED ? next : UI_QA_COURSES.filter(c => wishlist.includes(c._id)));
       })
-      .catch(() => {
+      .catch(error => {
+        if (cancelled) return;
         if (DEV_UI_QA_ENABLED) setCourses(UI_QA_COURSES.filter(c => wishlist.includes(c._id)));
+        else setWishlistError(error?.name === "AbortError"
+          ? "Your saved courses took too long to load. Please try again."
+          : "Your saved courses could not be loaded. Check your connection and try again.");
       })
-      .finally(() => setLoading(false));
-  }, [wishlist.join("|")]);
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; controller.abort(); };
+  }, [wishlist.join("|"), wishlistAttempt, user?._id, user?.sessionId]);
   const removeFromWishlist = useCallback((courseId) => {
     setCourses(prev => prev.filter(course => course._id !== courseId));
     onToggleWishlist?.(courseId);
@@ -9611,11 +9735,17 @@ function WishlistScreen({ wishlist, onToggleWishlist, onSelect, onBack, user, on
 
       {loading ? (
         <View style={[s.centered, isTablet && s.tabletContentFrame]}><ActivityIndicator size="large" color={C.primary} /></View>
+      ) : wishlistError ? (
+        <View style={[s.centered, isTablet && s.tabletContentFrame]}>
+          <Text accessibilityLiveRegion="polite" style={{ color: C.textSub, fontSize: 15, textAlign: "center", marginHorizontal: 24, marginBottom: 16 }}>{wishlistError}</Text>
+          <PrimaryBtn title="Retry" onPress={() => setWishlistAttempt(value => value + 1)}
+            style={{ minWidth: 120 }} />
+        </View>
       ) : courses.length === 0 ? (
         <View style={[s.centered, isTablet && s.tabletContentFrame]}>
           <Ionicons name="heart-outline" size={52} color={C.textMuted} />
-          <Text style={{ color: C.textSub, fontSize: 16, fontWeight: "600", marginTop: 14 }}>No saved courses</Text>
-          <Text style={{ color: C.textMuted, fontSize: 13, marginTop: 6 }}>Tap ♡ on any course to save it here</Text>
+          <Text style={{ color: C.textSub, fontSize: 16, fontWeight: "600", marginTop: 14 }}>{wishlist.length ? "Saved courses are unavailable" : "No saved courses"}</Text>
+          <Text style={{ color: C.textMuted, fontSize: 13, marginTop: 6 }}>{wishlist.length ? "These courses may no longer be available." : "Tap ♡ on any course to save it here"}</Text>
         </View>
       ) : (
         <FlatList
@@ -9923,7 +10053,7 @@ function InfoPageScreen({ page, onBack }) {
   );
 }
 
-function SubscriptionDetailsScreen({ user, onBack, session, appleSubscription, onOpenTerms, onOpenPrivacy }) {
+function SubscriptionDetailsScreen({ user, onBack, session, appleSubscription, onOpenTerms, onOpenPrivacy, onSubscriptionLoaded }) {
   const { width } = useWindowDimensions();
   const isTablet = width >= 768;
   const [loading, setLoading] = useState(true);
@@ -9934,17 +10064,20 @@ function SubscriptionDetailsScreen({ user, onBack, session, appleSubscription, o
     setLoading(true);
     setError(null);
     session.requestJson(`/api/user/${user._id}/subscription`)
-      .then(data => { setSubData(data); setLoading(false); })
+      .then(data => {
+        setSubData(data);
+        onSubscriptionLoaded?.(data, user._id, user.sessionId);
+        setLoading(false);
+      })
       .catch(() => { setError("Failed to load subscription details."); setLoading(false); });
-  }, [session, user._id]);
+  }, [session, user._id, user.sessionId, onSubscriptionLoaded]);
 
   useEffect(() => {
     loadSubscription();
   }, [loadSubscription, appleSubscription.entitlement?.entitlementState, appleSubscription.entitlement?.expiresAt]);
 
-  const isActive = subData
-    ? subData.entitlementActive === true
-    : hasActivePremiumEntitlement(user);
+  const currentPlan = subscriptionPresentation(subData || user);
+  const isActive = currentPlan.active;
   const isIOS = Platform.OS === "ios";
   const storeName = appleSubscription?.isMock ? "Test payment" : isIOS ? "App Store" : "Google Play";
   const entitlementSource = subData?.entitlementSource || user?.entitlementSource || "none";
@@ -10021,10 +10154,10 @@ function SubscriptionDetailsScreen({ user, onBack, session, appleSubscription, o
                 <Ionicons name={isActive ? "shield-checkmark" : "shield-outline"} size={24} color={isActive ? C.primary : C.textMuted} />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 18, fontWeight: "800", color: C.text }}>{planLabel(subData?.subscriptionStatus)}</Text>
+                <Text style={{ fontSize: 18, fontWeight: "800", color: C.text }}>{currentPlan.planLabel}</Text>
                 <View style={[s.subBadge, { alignSelf: "flex-start", marginTop: 4, backgroundColor: isActive ? C.primaryLight : C.lightGray }]}>
                   <Text style={{ color: isActive ? C.primary : C.textMuted, fontWeight: "600", fontSize: 11 }}>
-                    {isActive ? "ACTIVE" : "INACTIVE"}
+                    {currentPlan.badgeLabel}
                   </Text>
                 </View>
               </View>
@@ -10037,16 +10170,16 @@ function SubscriptionDetailsScreen({ user, onBack, session, appleSubscription, o
                 <Ionicons name="calendar-outline" size={16} color={C.primary} />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={s.profileInfoLabel}>Valid Until</Text>
+                <Text style={s.profileInfoLabel}>{currentPlan.expiryLabel}</Text>
                 <Text style={s.profileInfoValue}>
-                  {subData?.subscriptionExpiry ? formatDate(subData.subscriptionExpiry) : (isActive ? "Lifetime / Manual" : "—")}
+                  {currentPlan.expiresAt ? formatDate(currentPlan.expiresAt) : currentPlan.missingExpiryLabel}
                 </Text>
                 {isActive ? <Text style={s.profileInfoLabel}>Billed through {sourceLabel}</Text> : null}
               </View>
             </View>
 
-            {isActive && Boolean(subData?.subscriptionExpiry) && (() => {
-              const daysLeft = Math.ceil((new Date(subData.subscriptionExpiry) - new Date()) / (1000 * 60 * 60 * 24));
+            {currentPlan.daysRemaining > 0 && (() => {
+              const daysLeft = currentPlan.daysRemaining;
               return daysLeft > 0 ? (
                 <View style={[s.profileInfoRow, { marginTop: 4 }]}>
                   <View style={s.profileInfoIcon}>
@@ -10382,9 +10515,27 @@ function DeleteAccountModal({ visible, user, onClose, onDeleteAccount }) {
 }
 
 function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, onGoToCourses, onGoToAI, onGoToDownloads, wishlistCount, onGoToWishlist, onGoToCertificates, certificatesCount, onAvatarChange, onProfileChange, aiRobotId, onGoToSubscription, onOpenLegal, themeMode = "dark", resolvedThemeMode = "dark", onThemeChange, refreshing = false, onRefresh, searchReferences = null }) {
+  const [learningStats, setLearningStats] = useState(null);
+  const [learningStatsError, setLearningStatsError] = useState(false);
+  useEffect(() => {
+    if (refreshing) return;
+    let cancelled = false;
+    setLearningStats(null);
+    setLearningStatsError(false);
+    session.requestJson(`/api/user/${encodeURIComponent(user._id)}/learning-stats`)
+      .then(data => {
+        if (!Number.isInteger(data?.daysLearning) || data.daysLearning < 0
+          || !Number.isInteger(data?.coursesDone) || data.coursesDone < 0) throw new Error("Invalid learning statistics");
+        if (!cancelled) setLearningStats(data);
+      })
+      .catch(() => { if (!cancelled) setLearningStatsError(true); });
+    return () => { cancelled = true; };
+  }, [session, user._id, user.sessionId, refreshing]);
+  const statisticValue = key => learningStats ? String(learningStats[key]) : learningStatsError ? "N/A" : "Loading…";
   const { width, height: windowHeight } = useWindowDimensions();
   const isTablet = width >= 768;
-  const isActive = hasActivePremiumEntitlement(user);
+  const currentPlan = subscriptionPresentation(user);
+  const isActive = currentPlan.active;
   const memberSince = user?._id
     ? new Date(parseInt(user._id.substring(0, 8), 16) * 1000).toLocaleDateString("en-IN", { month: "short", year: "numeric" })
     : null;
@@ -10507,7 +10658,7 @@ function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, o
             accessibilityLabel="Change profile avatar"
           >
             <View style={s.profileAvatarLg}>
-              <AvatarImage avatarId={user.avatar || "a1"} size={90} style={{ borderRadius: 0 }} />
+              <AvatarImage avatarId={user?.avatar || "a1"} size={90} style={{ borderRadius: 0 }} />
             </View>
             <View style={{ position: "absolute", bottom: 0, right: 0, width: 26, height: 26, borderRadius: 13, backgroundColor: C.primary, borderWidth: 2, borderColor: C.white, alignItems: "center", justifyContent: "center" }}>
               <Ionicons name="pencil" size={12} color={C.onPrimary} />
@@ -10641,7 +10792,7 @@ function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, o
           {!!user.email && <Text style={{ color: C.textSub, fontSize: 13, marginTop: 2 }}>{user.email}</Text>}
           <View style={[s.subBadge, { backgroundColor: isActive ? C.primaryLight : C.lightGray }]}>
             <Text style={{ color: isActive ? C.primary : C.textMuted, fontWeight: "600", fontSize: 12 }}>
-              {user.subscriptionStatus}
+              {currentPlan.planLabel}
             </Text>
           </View>
         </View>
@@ -10652,19 +10803,25 @@ function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, o
           borderWidth: 1, borderColor: C.border, marginBottom: 16, overflow: "hidden",
         }}>
           {[
-            { label: "Days Learning", value: "—" },
+            { label: "Days Learning", value: statisticValue("daysLearning") },
             { label: "Certificates", value: String(certificatesCount || 0) },
-            { label: "Courses Done", value: "—" },
+            { label: "Courses Done", value: statisticValue("coursesDone") },
           ].map((stat, i, arr) => (
             <View key={i} style={{
               flex: 1, alignItems: "center", paddingVertical: 16,
               borderRightWidth: i < arr.length - 1 ? 1 : 0, borderRightColor: C.border,
             }}>
-              <Text style={{ color: C.primary, fontWeight: "900", fontSize: 22 }}>{stat.value}</Text>
+              <Text style={{ color: C.primary, fontWeight: "900", fontSize: stat.value === "Loading…" ? 12 : 22 }}>{stat.value}</Text>
               <Text style={{ color: C.textMuted, fontSize: 10, fontWeight: "600", marginTop: 3, textAlign: "center" }}>{stat.label}</Text>
             </View>
           ))}
         </View>
+
+        <Text style={{ color: C.textMuted, fontSize: 11, textAlign: "center", marginBottom: 16 }} accessibilityLiveRegion="polite">
+          {learningStatsError
+            ? "Learning stats could not be loaded. Pull down to retry."
+            : "Learning days count recorded lesson activity by UTC date; older activity may be incomplete."}
+        </Text>
 
         {/* Account Info */}
         <View style={s.profileInfoCard}>
@@ -10687,7 +10844,7 @@ function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, o
             { icon: "person-circle-outline", label: "Gender", value: displayGender },
             { icon: "hourglass-outline", label: "Age", value: displayAge },
             memberSince && { icon: "calendar-outline", label: "Member Since", value: memberSince },
-            { icon: "shield-checkmark-outline", label: "Plan", value: user.subscriptionStatus === "none" ? "Free" : user.subscriptionStatus },
+            { icon: "shield-checkmark-outline", label: "Plan", value: currentPlan.planLabel },
           ].filter(Boolean).map((row, i, arr) => (
             <View key={i} style={[s.profileInfoRow, i < arr.length - 1 && s.profileInfoRowBorder]}>
               <View style={s.profileInfoIcon}>
@@ -11064,6 +11221,46 @@ function TypingDots({ color = C.primary }) {
   );
 }
 
+const AI_REPORT_REASONS = [
+  ["Incorrect", "incorrect"],
+  ["Harmful or unsafe", "harmful_or_unsafe"],
+  ["Inappropriate", "inappropriate"],
+  ["Privacy concern", "privacy_concern"],
+  ["Other", "other"],
+];
+
+function AiReportReasonModal({ visible, busy, error, onClose, onSubmit }) {
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={() => { if (!busy) onClose(); }}>
+      <SafeAreaView edges={["top", "bottom", "left", "right"]}
+        style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.65)", justifyContent: "center", alignItems: "center", padding: 20 }}>
+        <View accessibilityViewIsModal style={{ backgroundColor: C.cardBg, borderRadius: 20, padding: 20, width: "100%", maxWidth: 440, maxHeight: "90%" }}>
+          <Text accessibilityRole="header" style={{ color: C.text, fontSize: 20, fontWeight: "800" }}>Report response</Text>
+          <Text style={{ color: C.textSub, fontSize: 14, marginTop: 8, marginBottom: 12 }}>Why are you reporting this response?</Text>
+          <ScrollView style={{ flexShrink: 1 }} contentContainerStyle={{ gap: 6 }}>
+            {AI_REPORT_REASONS.map(([label, reason]) => (
+              <TouchableOpacity key={reason} onPress={() => onSubmit(reason)} disabled={busy}
+                accessibilityRole="button" accessibilityLabel={`Report AI response: ${label}`}
+                accessibilityState={{ disabled: busy }}
+                style={{ minHeight: 48, paddingVertical: 14, paddingHorizontal: 12, borderRadius: 10, backgroundColor: C.bg, opacity: busy ? 0.55 : 1 }}>
+                <Text style={{ color: C.text, fontSize: 15, fontWeight: "600" }}>{label}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+          {!!error && <Text accessibilityLiveRegion="polite" style={{ color: C.danger, marginTop: 12 }}>{error}</Text>}
+          {busy && <View accessibilityLiveRegion="polite" style={{ flexDirection: "row", alignItems: "center", gap: 8, marginTop: 12 }}>
+            <ActivityIndicator color={C.primary} /><Text style={{ color: C.textSub }}>Sending report…</Text>
+          </View>}
+          <TouchableOpacity onPress={onClose} disabled={busy} accessibilityRole="button" accessibilityLabel="Cancel AI response report"
+            accessibilityState={{ disabled: busy }} style={{ minHeight: 48, justifyContent: "center", alignItems: "center", marginTop: 8 }}>
+            <Text style={{ color: C.primary, fontWeight: "700", fontSize: 15, opacity: busy ? 0.55 : 1 }}>Cancel</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    </Modal>
+  );
+}
+
 function AiAssistantScreen({
   mode = "master",
   fixedCourse = null,
@@ -11079,10 +11276,28 @@ function AiAssistantScreen({
   isRootTabActive = true,
 }) {
   const { width } = useWindowDimensions();
+  const safeAreaInsets = useSafeAreaInsets();
+  // Read live insets for notches and edge-to-edge Android layouts. This header
+  // owns its top padding; SafeAreaView below handles only the side insets.
+  const headerTopPadding = Math.max(
+    safeAreaInsets.top,
+    Platform.OS === "android" ? StatusBar.currentHeight || 0 : 0,
+  ) + 8;
   const isTablet = width >= 768;
   const aiMounted = useRef(false);
   useEffect(() => { aiMounted.current = true; return () => { aiMounted.current = false; }; }, []);
   const aiInFlight = useRef(false);
+  const [reportMessage, setReportMessage] = useState(null);
+  const [reportBusy, setReportBusy] = useState(false);
+  const [reportError, setReportError] = useState("");
+  const reportInFlight = useRef(false);
+  const reportGeneration = useRef(0);
+  useEffect(() => {
+    setReportMessage(null); setReportBusy(false); setReportError("");
+    reportInFlight.current = false;
+    reportGeneration.current += 1;
+    return () => { reportGeneration.current += 1; reportInFlight.current = false; };
+  }, [user?._id, user?.sessionId]);
   const isCourseMode = mode === "course";
   const [courseId, setCourseId] = useState(null);
   const [courseName, setCourseName] = useState(isCourseMode ? fixedCourse?.title || "Course AI" : "Master AI");
@@ -11091,13 +11306,15 @@ function AiAssistantScreen({
     {
       role: "assistant",
       content: isCourseMode
-        ? `Ask doubts from ${fixedCourse?.title || "this course"}. I will answer only from this course's indexed lessons.`
-        : "Ask anything from your indexed courses. I can search across all course lessons.",
+        ? `Ask about ${fixedCourse?.title || "this course"}. I will use the available lesson material to answer.`
+        : "Ask about your courses. I can search the available lesson material.",
     },
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("checking");
+  const [availabilityError, setAvailabilityError] = useState("");
+  const [availabilityAttempt, setAvailabilityAttempt] = useState(0);
   const [robotId, setRobotId] = useState(DEFAULT_AI_ROBOT_ID);
   const [showRobotPicker, setShowRobotPicker] = useState(false);
   const [assistantName, setAssistantName] = useState(DEFAULT_AI_NAME);
@@ -11121,8 +11338,8 @@ function AiAssistantScreen({
   const introMessages = useCallback((content = null) => [{
     role: "assistant",
     content: content || (isCourseMode
-      ? `Ask doubts from ${fixedCourse?.title || "this course"}. I will answer only from this course's indexed lessons.`
-      : "Ask anything from your indexed courses. I can search across all course lessons."),
+      ? `Ask about ${fixedCourse?.title || "this course"}. I will use the available lesson material to answer.`
+      : "Ask about your courses. I can search the available lesson material."),
     createdAt: Date.now(),
   }], [fixedCourse?.title, isCourseMode]);
 
@@ -11249,6 +11466,7 @@ function AiAssistantScreen({
       return;
     }
 
+    setAvailabilityError("");
     if (!AI_FEATURE_ENABLED) {
       setStatus("offline");
       setCourseScopeReady(false);
@@ -11262,23 +11480,18 @@ function AiAssistantScreen({
     }
 
     let cancelled = false;
+    const controller = new AbortController();
+    setStatus("checking");
     if (isCourseMode) { setCourseId(null); setCourseScopeReady(false); }
     Promise.all([
-      fetch(`${API_BASE}/api/health/db`).then(async res => {
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Could not check Nex AI");
-        return data;
-      }),
-      fetch(`${API_BASE}/api/courses`).then(async res => {
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Could not load Nex AI courses");
-        return data;
-      }),
+      fetchApiJson("/api/health/db", null, controller.signal),
+      fetchApiJson("/api/courses", null, controller.signal),
     ])
       .then(([health, data]) => {
         if (cancelled) return;
-        setStatus(health.ok ? "online" : "offline");
-        const nextCourses = Array.isArray(data) ? data : [];
+        if (health?.ok !== true || !Array.isArray(data)) throw new Error("AI availability could not be verified");
+        setStatus("online");
+        const nextCourses = data;
         if (isCourseMode) {
           const matchedCourse = findIndexedAiCourse(fixedCourse, nextCourses);
           if (matchedCourse) {
@@ -11287,19 +11500,26 @@ function AiAssistantScreen({
           } else {
             setCourseId(null);
             setCourseName(fixedCourse?.title || "Course AI");
+            setAvailabilityError("This course’s lesson material is not ready for AI yet. Please try again later.");
+            setStatus("offline");
           }
           setCourseScopeReady(Boolean(matchedCourse));
         }
       })
-      .catch(() => {
+      .catch(error => {
         if (cancelled) return;
+        // Stop the other request if one half of the availability check fails.
+        controller.abort();
         setStatus("offline");
+        setAvailabilityError(error?.name === "AbortError"
+          ? "The AI availability check took too long. Please try again."
+          : "Could not check AI availability. Check your connection and try again.");
         if (isCourseMode) {
           setCourseScopeReady(false);
         }
       });
-    return () => { cancelled = true; };
-  }, [fixedCourse?._id, fixedCourse?.id, fixedCourse?.slug, isCourseMode, isRootTabActive, user?._id, user?.sessionId]);
+    return () => { cancelled = true; controller.abort(); };
+  }, [fixedCourse?._id, fixedCourse?.id, fixedCourse?.slug, isCourseMode, isRootTabActive, user?._id, user?.sessionId, availabilityAttempt]);
 
   const scrollAiToEnd = useCallback((animated = true) => {
     requestAnimationFrame(() => listRef.current?.scrollToEnd?.({ animated }));
@@ -11331,35 +11551,35 @@ function AiAssistantScreen({
   }
 
   function reportAiResponse(message) {
+    if (reportInFlight.current) return;
     if (!message?.id) {
-      Alert.alert("Report unavailable", "This older response does not have a report identifier.");
+      Alert.alert("Report unavailable", "This older response cannot be reported. Please report a newer response.");
       return;
     }
-    const reasons = [
-      ["Incorrect", "incorrect"],
-      ["Harmful or unsafe", "harmful_or_unsafe"],
-      ["Inappropriate", "inappropriate"],
-      ["Privacy concern", "privacy_concern"],
-      ["Other", "other"],
-    ];
-    Alert.alert("Report response", "Why are you reporting this response?", [
-      ...reasons.map(([label, reason]) => ({
-        text: label,
-        onPress: async () => {
-          try {
-            const result = await session.requestJson("/api/ai/reports", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ messageId: message.id, reason, response: message.content }),
-            });
-            Alert.alert("Report received", result.message || "Thanks. We will review this response.");
-          } catch (_) {
-            Alert.alert("Report not sent", "Check your connection and try again.");
-          }
-        },
-      })),
-      { text: "Cancel", style: "cancel" },
-    ]);
+    setReportError("");
+    setReportMessage({ id: message.id, content: message.content });
+  }
+
+  async function submitAiReport(reason) {
+    if (!reportMessage?.id || reportInFlight.current || !AI_REPORT_REASONS.some(([, value]) => value === reason)) return;
+    reportInFlight.current = true;
+    const generation = ++reportGeneration.current;
+    setReportBusy(true); setReportError("");
+    const current = () => aiMounted.current && generation === reportGeneration.current;
+    try {
+      const result = await session.requestJson("/api/ai/reports", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messageId: reportMessage.id, reason, response: reportMessage.content }),
+      });
+      if (!current()) return;
+      setReportMessage(null);
+      Alert.alert("Report received", result.message || "Thanks. We will review this response.");
+    } catch (_) {
+      if (current()) setReportError("Report not sent. Check your connection and choose a reason to retry.");
+    } finally {
+      if (current()) { reportInFlight.current = false; setReportBusy(false); }
+    }
   }
 
   async function sendAiMessage(value = input) {
@@ -11376,7 +11596,7 @@ function AiAssistantScreen({
       const targetSessionId = activeConversationId || createAiConversationSession(introMessages()).id;
       appendAiConversationMessage(targetSessionId, {
         role: "assistant", failed: true,
-        content: "I cannot answer for this course yet because it is not indexed in the AI knowledge base.",
+        content: "This course’s lesson material is not ready for AI yet. Please try again later.",
       });
       return;
     }
@@ -11418,10 +11638,10 @@ function AiAssistantScreen({
   }
 
   const hasConversation = messages.some(message => message.role === "user") || loading;
-  const assistantStatusText = status !== "online"
+  const assistantStatusText = status === "checking" ? "Checking availability…" : status !== "online"
     ? "Unavailable"
     : isCourseMode
-      ? courseScopeReady ? "Scoped to this course" : "Course not indexed"
+      ? courseScopeReady ? "Using this course’s lessons" : "Lesson material not ready"
       : "Active now";
   const visibleConversations = conversations.filter(session => session.messages?.some(message => message.role === "user"));
   const aiTheme = C.isDark
@@ -11472,7 +11692,7 @@ function AiAssistantScreen({
   return (
     <View style={[s.aiScreen, { backgroundColor: aiTheme.screen }]}>
       <StatusBar barStyle={aiTheme.statusBar} backgroundColor={aiTheme.top} />
-      <SafeAreaView edges={["top", "left", "right"]} style={[s.aiTopSafe, { backgroundColor: aiTheme.top, borderBottomColor: aiTheme.topBorder }]}>
+      <SafeAreaView edges={["left", "right"]} style={[s.aiTopSafe, { paddingTop: headerTopPadding, backgroundColor: aiTheme.top, borderBottomColor: aiTheme.topBorder }]}>
         <View style={[s.aiTopHeader, isTablet && s.tabletContentFrame]}>
           <SkillomateLogo size="xs" mode={C.isDark ? "dark" : "light"} onPress={onGoToHome} />
           <View style={s.aiTopHeaderSpacer} />
@@ -11522,6 +11742,17 @@ function AiAssistantScreen({
         </View>
       </SafeAreaView>
 
+      {!!availabilityError && (
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 16, paddingVertical: 8, backgroundColor: aiTheme.composerBg }}>
+          <Text accessibilityLiveRegion="polite" style={{ color: aiTheme.text, fontSize: 13, flex: 1 }}>{availabilityError}</Text>
+          <TouchableOpacity onPress={() => setAvailabilityAttempt(value => value + 1)}
+            accessibilityRole="button" accessibilityLabel="Retry AI availability check"
+            style={{ minHeight: 44, minWidth: 60, alignItems: "center", justifyContent: "center" }}>
+            <Text style={{ color: C.primary, fontWeight: "700" }}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={0}
@@ -11553,7 +11784,9 @@ function AiAssistantScreen({
                 <View style={[s.aiMessageRow, isUser && s.aiMessageRowUser]}>
                   {!isUser && <RobotAvatar robotId={robotId} size={46} replying={!loading && index === messages.length - 1 && messages.length > 1} />}
                   <View style={[s.aiBubble, isUser && s.aiBubbleUser]}>
-                    <AiMarkdownText content={item.content} style={[s.aiBubbleText, isUser && s.aiBubbleTextUser]} />
+                    {isUser
+                      ? <Text style={[s.aiBubbleText, s.aiBubbleTextUser]}>{item.content}</Text>
+                      : <AiMarkdownText content={item.content} style={s.aiBubbleText} />}
                     {!isUser && item.id ? (
                       <TouchableOpacity
                         onPress={() => reportAiResponse(item)}
@@ -11593,6 +11826,7 @@ function AiAssistantScreen({
             <RobotAvatar robotId={robotId} size={108} />
             <Text style={[s.aiWelcomeTitle, { color: aiTheme.title }]}>What can I help you learn?</Text>
             <Text style={[s.aiWelcomeSubtitle, { color: aiTheme.secondary }]}>Ask about your course, a project problem, or practise with a quiz.</Text>
+            <Text style={[s.aiWelcomeSubtitle, { color: aiTheme.secondary, marginTop: 8 }]}>You can ask in English, Hindi or Hinglish. To change the reply language, include it in your question.</Text>
             <View style={s.aiWelcomePrompts}>
               {AI_SUGGESTIONS.map(prompt => (
                 <TouchableOpacity
@@ -11645,6 +11879,14 @@ function AiAssistantScreen({
           aiRobotId={robotId}
         />
       )}
+
+      <AiReportReasonModal
+        visible={isRootTabActive && !!reportMessage}
+        busy={reportBusy}
+        error={reportError}
+        onSubmit={submitAiReport}
+        onClose={() => { if (!reportInFlight.current) { setReportMessage(null); setReportError(""); } }}
+      />
 
       <Modal
         visible={historyOpen}
@@ -11886,6 +12128,33 @@ function LegalContentScreen({ page = "privacy", onBack }) {
   );
 }
 
+function GuestAccountScreen({ feature, onSignIn, onBrowse, onBack }) {
+  const labels = { profile: "Your profile", wishlist: "Your saved courses", certificates: "Your certificates",
+    subscription: "Your membership", ai: "Your AI tutor", downloads: "Your downloads" };
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: C.bg }}>
+      <TouchableOpacity onPress={onBack} style={{ padding: 20 }} accessibilityRole="button" accessibilityLabel="Back to browsing">
+        <Ionicons name="arrow-back" size={24} color={C.text} />
+      </TouchableOpacity>
+      <View style={[s.centered, { padding: 28 }]}>
+        <Ionicons name="person-circle-outline" size={64} color={C.primary} />
+        <Text style={{ color: C.text, fontSize: 24, fontWeight: "800", marginTop: 18 }}>{labels[feature] || "Your account"}</Text>
+        <Text style={{ color: C.textSub, textAlign: "center", lineHeight: 22, marginVertical: 18 }}>
+          {feature === "subscription"
+            ? "Paid lessons require a membership. Sign in to manage your membership and restore access across devices. You can browse courses and watch free lessons without an account."
+            : "Sign in to manage your account, sync learning progress and use your membership features. You can browse courses and watch free lessons without an account."}
+        </Text>
+        <TouchableOpacity onPress={onSignIn} style={[s.btn, s.btnFill]} accessibilityRole="button" accessibilityLabel="Sign in or create an account">
+          <Text style={s.btnText}>Sign in / Create account</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={onBrowse} style={[s.btn, s.btnOutline, { marginTop: 14 }]} accessibilityRole="button" accessibilityLabel="Browse courses as guest">
+          <Text style={{ color: C.primary, fontWeight: "700" }}>Browse courses as guest</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
+}
+
 // ── App ───────────────────────────────────────────────────────────────────────
 export default function App() {
   const systemScheme = useColorScheme();
@@ -11893,6 +12162,7 @@ export default function App() {
   const isTabletLayout = appViewportWidth >= 768;
   const [isRestoring, setIsRestoring] = useState(true);
   const [user, setUserState] = useState(null);
+  const [showAuth, setShowAuth] = useState(false);
   const [pendingAppLink, setPendingAppLink] = useState(null);
   const [themeMode, setThemeMode] = useState(DEFAULT_THEME_MODE);
   const [, setThemeVersion] = useState(0);
@@ -11953,7 +12223,11 @@ export default function App() {
     user,
     onEntitlementChanged: onStoreEntitlementChanged,
   });
-  const storeSubscription = Platform.OS === "android" ? googlePlaySubscription : appleSubscription;
+  const storeSubscription = {
+    ...(Platform.OS === "android" ? googlePlaySubscription : appleSubscription),
+    // Refresh all billing providers so web/manual memberships are included too.
+    refreshAccess: refreshAccountEntitlement,
+  };
   const [mainScreen, setMainScreen] = useState("home");
   const [legalPage, setLegalPage] = useState(null);
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -11968,6 +12242,8 @@ export default function App() {
   const [downloads, setDownloads] = useState({});
   const downloadsRef = useRef({});
   const downloadStorageReady = useRef(null);
+  const downloadScopeRef = useRef(null);
+  const downloadJobsRef = useRef(new Map());
   const [downloadsRefreshing, setDownloadsRefreshing] = useState(false);
   const [aiRobotId, setAiRobotId] = useState(null);
   const [showAppUpgrade, setShowAppUpgrade] = useState(false);
@@ -11977,11 +12253,26 @@ export default function App() {
   const [courseAiTarget, setCourseAiTarget] = useState(null);
   const [wishlist, setWishlist] = useState([]);
   const [courseProgress, setCourseProgress] = useState({});
+  const progressSaveQueueRef = useRef(null);
+  const [progressSaveStatus, setProgressSaveStatus] = useState(null);
+  useEffect(() => {
+    const ownerId = user?._id;
+    const ownerSessionId = user?.sessionId;
+    setProgressSaveStatus(null);
+    if (!ownerId || !ownerSessionId) { progressSaveQueueRef.current = null; return; }
+    const queue = createProgressSaveQueue({
+      isCurrent: () => userRef.current?._id === ownerId && userRef.current?.sessionId === ownerSessionId,
+      onChange: status => setProgressSaveStatus({ ...status, ownerId, ownerSessionId }),
+    });
+    progressSaveQueueRef.current = queue;
+    return () => { queue.dispose(); };
+  }, [user?._id, user?.sessionId]);
   const [navSearchCourses, setNavSearchCourses] = useState(() => homeCatalogCourses || []);
   const [certificates, setCertificates] = useState([]);
   const [certModal, setCertModal] = useState(null);
   const [profileRefreshing, setProfileRefreshing] = useState(false);
   const routeHistoryRef = useRef([]);
+  const courseReturnRouteRef = useRef(null);
   const currentRouteRef = useRef(null);
   const restoringRouteRef = useRef(false);
   const globalBackGestureRef = useRef(null);
@@ -12011,6 +12302,7 @@ export default function App() {
   }, []);
   useEffect(() => {
     if (user) return;
+    courseReturnRouteRef.current = null;
     routeHistoryRef.current = [];
     currentRouteRef.current = null;
     restoringRouteRef.current = false;
@@ -12127,6 +12419,21 @@ export default function App() {
   const [otpSent, setOtpSent] = useState(false);
   const [signupToken, setSignupToken] = useState("");
   const [otpLoading, setOtpLoading] = useState(false);
+  const otpRequestInFlight = useRef(false);
+  const otpRequestGeneration = useRef(0);
+  const invalidateOtpRequest = useCallback(() => {
+    otpRequestGeneration.current += 1;
+    otpRequestInFlight.current = false;
+    setOtpLoading(false);
+  }, []);
+  useEffect(() => {
+    invalidateOtpRequest();
+    return () => {
+      otpRequestGeneration.current += 1;
+      otpRequestInFlight.current = false;
+    };
+  }, [screen, mobile, user?._id, user?.sessionId, invalidateOtpRequest]);
+  const [otpNotice, setOtpNotice] = useState("");
   const [signupFullName, setSignupFullName] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
   const [signupGender, setSignupGender] = useState("");
@@ -12138,6 +12445,8 @@ export default function App() {
   const navigateRootTab = useCallback((targetTab, options = {}) => {
     if (targetTab === "profile") {
       if (options.validateOnly) return true;
+      courseReturnRouteRef.current = null;
+      courseOpenRequestRef.current += 1;
       setShowAppUpgrade(false);
       setSelectedCourse(null);
       setCourseOpenStatus({ key: "", loading: false, error: "" });
@@ -12150,11 +12459,13 @@ export default function App() {
       return true;
     }
     if (!ROOT_TAB_ORDER.includes(targetTab)) return false;
-    if (targetTab === "downloads" && !hasCourseAccess(userRef.current)) {
+    if (targetTab === "downloads" && userRef.current && !hasCourseAccess(userRef.current)) {
       if (!options.validateOnly) setShowAppUpgrade(true);
       return false;
     }
     if (options.validateOnly) return true;
+    courseReturnRouteRef.current = null;
+    courseOpenRequestRef.current += 1;
 
     setShowAppUpgrade(false);
     setSelectedCourse(null);
@@ -12247,37 +12558,58 @@ export default function App() {
 
 
 
-  // Migrate old document downloads and discard entries evicted from temporary storage.
+  // Ownerless legacy records cannot safely be assigned to the next signed-in user.
   useEffect(() => {
-    let mounted = true;
-    const ready = prepareTemporaryDownloads(FileSystem, AsyncStorage);
+    downloadScopeRef.current?.cancel();
+    downloadsRef.current = {};
+    setDownloads({});
+    setDownloadsRefreshing(false);
+    const accountId = user?._id;
+    const sessionId = user?.sessionId;
+    const scope = createAccountDownloadScope({ user, fs: FileSystem, storage: AsyncStorage,
+      isCurrent: () => userRef.current?._id === accountId && userRef.current?.sessionId === sessionId });
+    downloadScopeRef.current = scope;
+    if (!scope) { downloadStorageReady.current = null; return; }
+    const ready = prepareTemporaryDownloads(scope.fs, scope.storage);
     downloadStorageReady.current = ready;
     ready.then(verified => {
-      if (!mounted) return;
+      if (!scope.active()) return;
       downloadsRef.current = verified;
       setDownloads(DEV_UI_QA_ENABLED ? { ...UI_QA_DOWNLOADS, ...verified } : verified);
     }).catch(() => {
-      if (mounted && DEV_UI_QA_ENABLED) setDownloads(UI_QA_DOWNLOADS);
+      if (scope.active() && DEV_UI_QA_ENABLED) setDownloads(UI_QA_DOWNLOADS);
     });
-    return () => { mounted = false; };
-  }, []);
+    return () => { scope.cancel(); };
+  }, [user?._id, user?.sessionId]);
 
   const refreshDownloads = useCallback(async () => {
+    const scope = downloadScopeRef.current;
+    if (!scope?.active()) return;
     setDownloadsRefreshing(true);
     try {
-      const verified = await prepareTemporaryDownloads(FileSystem, AsyncStorage);
-      downloadsRef.current = verified;
-      setDownloads(DEV_UI_QA_ENABLED ? { ...UI_QA_DOWNLOADS, ...verified } : verified);
+      const verified = await prepareTemporaryDownloads(scope.fs, scope.storage);
+      if (!scope.active()) return;
+      setDownloads(previous => {
+        if (!scope.active()) return previous;
+        const pending = Object.fromEntries(Object.entries(previous).filter(([, item]) => item.status !== "done"));
+        const next = { ...(DEV_UI_QA_ENABLED ? UI_QA_DOWNLOADS : {}), ...verified, ...pending };
+        downloadsRef.current = next;
+        return next;
+      });
     } catch {
-      if (DEV_UI_QA_ENABLED) setDownloads(previous => ({ ...UI_QA_DOWNLOADS, ...(previous || {}) }));
+      if (scope.active() && DEV_UI_QA_ENABLED) setDownloads(previous => ({ ...UI_QA_DOWNLOADS, ...(previous || {}) }));
     } finally {
-      setDownloadsRefreshing(false);
+      if (scope.active()) setDownloadsRefreshing(false);
     }
   }, []);
 
   const startDownload = useCallback(async (video, courseId, courseTitle, videoIndex = 0) => {
     const u = userRef.current;
-    const downloadId = getDownloadId(video, videoIndex);
+    const accountScope = downloadScopeRef.current;
+    if (!u?._id) { setMainScreen("downloads"); return; }
+    if (!hasCourseAccess(u)) { setShowAppUpgrade(true); return; }
+    if (!accountScope?.active()) return;
+    const downloadId = getDownloadId(video, videoIndex, courseId);
     const downloadKind = getProtectedCourseDownloadKind(video, courseId);
     const guid = getBunnyGuid(video);
     const libraryId = getBunnyLibraryId(video);
@@ -12291,130 +12623,169 @@ export default function App() {
       Alert.alert("Download unavailable", "This lesson is not available for offline download.");
       return;
     }
-    let filePath;
-    let targetDir;
-    try {
-      await downloadStorageReady.current;
-      targetDir = downloadDir(FileSystem, downloadId);
-      filePath = downloadKind === "hls" && !protectedCloudfront ? downloadManifestPath(FileSystem, downloadId) : downloadPath(FileSystem, downloadId);
-      await FileSystem.makeDirectoryAsync(targetDir, { intermediates: true });
-    } catch {
-      Alert.alert("Download unavailable", "Temporary storage could not be prepared. Restart the app and try again.");
-      return;
-    }
-    const current = downloadsRef.current[downloadId];
-    if (current?.status === "downloading") return;
-    if (current?.status === "done" && !(protectedCloudfront && current.kind === "hls") && (await FileSystem.getInfoAsync(filePath)).exists) return;
-    let meta = {
-      id: downloadId,
-      kind: downloadKind === "hls" && !protectedCloudfront ? "hls" : "mp4",
-      title: video.title || "Video",
-      courseId: courseId || "",
-      courseTitle: courseTitle || "",
-      bunnyGuid: guid,
-      bunnyLibraryId: libraryId,
-      videoId: String(video._id || guid || downloadId),
-      provider: video.provider || video.sourceType || "",
-      videoUrl: video.videoUrl || video.streamUrl || "",
-      thumbnailUrl: getHomeLessonThumbnailUrl(video, { _id: courseId, title: courseTitle }),
-    };
-
-    setDownloads(prev => ({ ...prev, [downloadId]: { status: "downloading", progress: 0, path: filePath, ...meta } }));
-    try {
-      let hlsValidation = null;
-      if (protectedCloudfront) {
-        const protectedVideoId = video?._id || video?.id || video?.videoId;
-        if (!courseId || !protectedVideoId) throw new Error("Download authorization unavailable.");
-        meta = { ...meta, kind: "mp4", offlineFormatVersion: 5 };
-        setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], ...meta } }));
-        await FileSystem.deleteAsync(downloadManifestPath(FileSystem, downloadId), { idempotent: true }).catch(() => {});
-        await FileSystem.deleteAsync(filePath, { idempotent: true }).catch(() => {});
-        try {
-          const grant = await requestPreparedCloudfrontDownload({ session: nativeSession, courseId, videoId: protectedVideoId });
-          const url = /^https?:\/\//i.test(grant.downloadUrl) ? grant.downloadUrl : `${API_BASE}${grant.downloadUrl}`;
-          const dl = FileSystem.createDownloadResumable(url, filePath, {}, ({ totalBytesWritten, totalBytesExpectedToWrite }) => {
-            const pct = totalBytesExpectedToWrite > 0 ? totalBytesWritten / totalBytesExpectedToWrite : 0;
-            setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], progress: pct } }));
-          });
-          const result = await dl.downloadAsync();
-          if (result?.status !== 200) throw Object.assign(new Error("Download failed"), { status: result?.status });
-        } catch (error) {
-          if (Platform.OS !== "ios" || !canFallbackToCloudFrontHlsDownload(error)) throw error;
-          filePath = downloadManifestPath(FileSystem, downloadId);
-          meta = { ...meta, kind: "hls", offlineFormatVersion: 4 };
-          setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], path: filePath, progress: 0, ...meta } }));
-          await FileSystem.deleteAsync(downloadPath(FileSystem, downloadId), { idempotent: true }).catch(() => {});
-          const lease = await fetchPlaybackLease({ courseId, video: { ...video, _id: protectedVideoId }, user: u });
-          hlsValidation = await downloadHlsToAppCache({
-            hlsUrl: lease.hlsUrl,
-            targetDir,
-            manifestPath: filePath,
-            onProgress: pct => setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], progress: pct } })),
-          });
-        }
-      } else if (downloadKind === "bunny") {
-        const grant = await nativeSession.requestJson(`/api/videos/${encodeURIComponent(guid)}/download-grant`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ courseId }),
-        });
-        if (!grant?.downloadUrl) throw new Error("The download authorization response was invalid.");
-        const url = `${API_BASE}${grant.downloadUrl}`;
-        const dl = FileSystem.createDownloadResumable(url, filePath, {}, ({ totalBytesWritten, totalBytesExpectedToWrite }) => {
-          const pct = totalBytesExpectedToWrite > 0 ? totalBytesWritten / totalBytesExpectedToWrite : 0;
-          setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], progress: pct } }));
-        });
-        const result = await dl.downloadAsync();
-        if (result?.status !== 200) throw Object.assign(new Error("Download failed"), { status: result?.status });
-      } else if (downloadKind === "direct") {
-        const rawUrl = String(video.videoUrl || video.streamUrl || "").trim();
-        const url = /^https?:\/\//i.test(rawUrl) ? rawUrl : `${API_BASE}${rawUrl.startsWith("/") ? "" : "/"}${rawUrl}`;
-        const dl = FileSystem.createDownloadResumable(url, filePath, {}, ({ totalBytesWritten, totalBytesExpectedToWrite }) => {
-          const pct = totalBytesExpectedToWrite > 0 ? totalBytesWritten / totalBytesExpectedToWrite : 0;
-          setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], progress: pct } }));
-        });
-        const result = await dl.downloadAsync();
-        if (result?.status !== 200) throw Object.assign(new Error("Download failed"), { status: result?.status });
-      } else if (downloadKind === "hls") {
-        const hlsUrl = nativeVideoUrl;
-        if (!hlsUrl) throw new Error("Playback download URL unavailable.");
-        hlsValidation = await downloadHlsToAppCache({
-          hlsUrl,
-          targetDir,
-          manifestPath: filePath,
-          onProgress: pct => setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], progress: pct } })),
-        });
-      } else {
-        throw new Error("Unsupported download source.");
-      }
-      const stat = await FileSystem.getInfoAsync(filePath).catch(() => ({}));
-      if (meta.kind === "hls") {
-        hlsValidation = hlsValidation || await validateHlsDownloadBundle(FileSystem, filePath);
-      }
-      if (protectedCloudfront && meta.kind === "mp4" && (!stat.exists || Number(stat.size || 0) < 1024 * 1024)) {
-        await FileSystem.deleteAsync(filePath, { idempotent: true }).catch(() => {});
-        throw new Error("Incomplete video download.");
-      }
-      const info = { status: "done", path: filePath, playbackPath: hlsValidation?.playbackPath || "", progress: 1, size: hlsValidation?.totalBytes || stat.size || 0, downloadedAt: new Date().toISOString(), ...meta };
-      // Save from state — avoids race condition when multiple downloads finish simultaneously
-      setDownloads(prev => {
-        const next = { ...prev, [downloadId]: info };
-        const toSave = Object.fromEntries(Object.entries(next).filter(([, v]) => v.status === "done"));
-        AsyncStorage.setItem(DOWNLOADS_STORAGE_KEY, JSON.stringify(toSave)).catch(() => {});
+    const jobKey = `${accountScope.root}:${downloadId}`;
+    if (downloadJobsRef.current.has(jobKey)) return;
+    const scope = accountScope.fork();
+    const FileSystem = scope.fs;
+    const AsyncStorage = scope.storage;
+    const session = scope.session(nativeSession);
+    let finish;
+    const job = { accountScope, scope, finished: new Promise(resolve => { finish = resolve; }) };
+    downloadJobsRef.current.set(jobKey, job);
+    const updateDownloads = updater => {
+      if (scope.active()) setDownloads(previous => {
+        if (!scope.active()) return previous;
+        const next = updater(previous);
+        downloadsRef.current = next;
         return next;
       });
-    } catch (e) {
-      console.warn("[download] failed", {
-        downloadId,
-        courseId,
-        videoId: meta.videoId,
-        kind: meta.kind,
-        status: e?.status,
-        message: e?.message || String(e),
-      });
-      const errorMessage = getDownloadFailureMessage(e, e?.status);
-      setDownloads(prev => ({ ...prev, [downloadId]: { status: "error", progress: 0, errorMessage, ...meta } }));
-      Alert.alert("Download failed", errorMessage);
+    };
+    let completed = false;
+    try {
+      let filePath;
+      let targetDir;
+      try {
+        await downloadStorageReady.current;
+        targetDir = downloadDir(FileSystem, downloadId);
+        filePath = downloadKind === "hls" && !protectedCloudfront ? downloadManifestPath(FileSystem, downloadId) : downloadPath(FileSystem, downloadId);
+        await FileSystem.makeDirectoryAsync(targetDir, { intermediates: true });
+      } catch {
+        if (!scope.active()) return;
+        Alert.alert("Download unavailable", "Temporary storage could not be prepared. Restart the app and try again.");
+        return;
+      }
+      const current = downloadsRef.current[downloadId];
+      if (current?.status === "downloading") { completed = true; return; }
+      if (current?.status === "done" && !(protectedCloudfront && current.kind === "hls") && (await FileSystem.getInfoAsync(filePath).catch(() => ({}))).exists) { completed = true; return; }
+      if (!scope.active()) return;
+      let meta = {
+        id: downloadId,
+        kind: downloadKind === "hls" && !protectedCloudfront ? "hls" : "mp4",
+        title: video.title || "Video",
+        courseId: courseId || "",
+        courseTitle: courseTitle || "",
+        bunnyGuid: guid,
+        bunnyLibraryId: libraryId,
+        videoId: String(video._id || video.id || video.videoId || guid || downloadId),
+        provider: video.provider || video.sourceType || "",
+        videoUrl: video.videoUrl || video.streamUrl || "",
+        thumbnailUrl: getHomeLessonThumbnailUrl(video, { _id: courseId, title: courseTitle }),
+      };
+
+      updateDownloads(prev => ({ ...prev, [downloadId]: { status: "downloading", phase: "preparing", progressKnown: false, progress: 0, path: filePath, ...meta } }));
+      try {
+        let hlsValidation = null;
+        if (protectedCloudfront) {
+          const protectedVideoId = video?._id || video?.id || video?.videoId;
+          if (!courseId || !protectedVideoId) throw new Error("Download authorization unavailable.");
+          meta = { ...meta, kind: "mp4", offlineFormatVersion: 5 };
+          updateDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], ...meta } }));
+          await FileSystem.deleteAsync(downloadManifestPath(FileSystem, downloadId), { idempotent: true }).catch(() => {});
+          await FileSystem.deleteAsync(filePath, { idempotent: true }).catch(() => {});
+          try {
+            const grant = await requestPreparedCloudfrontDownload({ session, courseId, videoId: protectedVideoId });
+            const url = /^https?:\/\//i.test(grant.downloadUrl) ? grant.downloadUrl : `${API_BASE}${grant.downloadUrl}`;
+            const dl = FileSystem.createDownloadResumable(url, filePath, {}, ({ totalBytesWritten, totalBytesExpectedToWrite }) => {
+              const pct = totalBytesExpectedToWrite > 0 ? totalBytesWritten / totalBytesExpectedToWrite : 0;
+              updateDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], phase: "transferring", progressKnown: totalBytesExpectedToWrite > 0, bytesWritten: totalBytesWritten, totalBytes: Math.max(0, totalBytesExpectedToWrite || 0), progress: pct } }));
+            });
+            updateDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], phase: "transferring", progressKnown: false } }));
+            const result = await dl.downloadAsync();
+            if (result?.status !== 200) throw Object.assign(new Error("Download failed"), { status: result?.status });
+          } catch (error) {
+            if (Platform.OS !== "ios" || !canFallbackToCloudFrontHlsDownload(error)) throw error;
+            filePath = downloadManifestPath(FileSystem, downloadId);
+            meta = { ...meta, kind: "hls", offlineFormatVersion: 4 };
+            updateDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], path: filePath, progress: 0, ...meta } }));
+            await FileSystem.deleteAsync(downloadPath(FileSystem, downloadId), { idempotent: true }).catch(() => {});
+            const lease = await fetchPlaybackLease({ courseId, video: { ...video, _id: protectedVideoId }, user: u, signal: scope.signal });
+            hlsValidation = await downloadHlsToAppCache({
+              scope,
+              hlsUrl: lease.hlsUrl,
+              targetDir,
+              manifestPath: filePath,
+              onProgress: pct => updateDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], phase: "transferring", progressKnown: true, progress: pct } })),
+            });
+          }
+        } else if (downloadKind === "bunny") {
+          const grant = await session.requestJson(`/api/videos/${encodeURIComponent(guid)}/download-grant`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ courseId }),
+          });
+          if (!grant?.downloadUrl) throw new Error("The download authorization response was invalid.");
+          const url = `${API_BASE}${grant.downloadUrl}`;
+          const dl = FileSystem.createDownloadResumable(url, filePath, {}, ({ totalBytesWritten, totalBytesExpectedToWrite }) => {
+            const pct = totalBytesExpectedToWrite > 0 ? totalBytesWritten / totalBytesExpectedToWrite : 0;
+            updateDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], phase: "transferring", progressKnown: totalBytesExpectedToWrite > 0, bytesWritten: totalBytesWritten, totalBytes: Math.max(0, totalBytesExpectedToWrite || 0), progress: pct } }));
+          });
+          updateDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], phase: "transferring", progressKnown: false } }));
+          const result = await dl.downloadAsync();
+          if (result?.status !== 200) throw Object.assign(new Error("Download failed"), { status: result?.status });
+        } else if (downloadKind === "direct") {
+          const rawUrl = String(video.videoUrl || video.streamUrl || "").trim();
+          const url = /^https?:\/\//i.test(rawUrl) ? rawUrl : `${API_BASE}${rawUrl.startsWith("/") ? "" : "/"}${rawUrl}`;
+          const dl = FileSystem.createDownloadResumable(url, filePath, {}, ({ totalBytesWritten, totalBytesExpectedToWrite }) => {
+            const pct = totalBytesExpectedToWrite > 0 ? totalBytesWritten / totalBytesExpectedToWrite : 0;
+            updateDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], phase: "transferring", progressKnown: totalBytesExpectedToWrite > 0, bytesWritten: totalBytesWritten, totalBytes: Math.max(0, totalBytesExpectedToWrite || 0), progress: pct } }));
+          });
+          updateDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], phase: "transferring", progressKnown: false } }));
+          const result = await dl.downloadAsync();
+          if (result?.status !== 200) throw Object.assign(new Error("Download failed"), { status: result?.status });
+        } else if (downloadKind === "hls") {
+          const hlsUrl = nativeVideoUrl;
+          if (!hlsUrl) throw new Error("Playback download URL unavailable.");
+          hlsValidation = await downloadHlsToAppCache({
+            scope,
+            hlsUrl,
+            targetDir,
+            manifestPath: filePath,
+            onProgress: pct => updateDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], phase: "transferring", progressKnown: true, progress: pct } })),
+          });
+        } else {
+          throw new Error("Unsupported download source.");
+        }
+        updateDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], phase: "finalizing" } }));
+        const stat = await FileSystem.getInfoAsync(filePath).catch(() => ({}));
+        if (meta.kind === "hls") {
+          hlsValidation = hlsValidation || await validateHlsDownloadBundle(FileSystem, filePath);
+        }
+        if (meta.kind !== "hls" && (!stat.exists || Number(stat.size || 0) <= 0)) {
+          throw new Error("Incomplete video download.");
+        }
+        if (protectedCloudfront && meta.kind === "mp4" && (!stat.exists || Number(stat.size || 0) < 1024 * 1024)) {
+          await FileSystem.deleteAsync(filePath, { idempotent: true }).catch(() => {});
+          throw new Error("Incomplete video download.");
+        }
+        const info = { status: "done", path: filePath, playbackPath: hlsValidation?.playbackPath || "", progress: 1, size: hlsValidation?.totalBytes || stat.size || 0, downloadedAt: new Date().toISOString(), ...meta };
+        scope.check();
+        completed = true;
+        // Save from state — avoids race condition when multiple downloads finish simultaneously
+        updateDownloads(prev => {
+          const next = { ...prev, [downloadId]: info };
+          const toSave = Object.fromEntries(Object.entries(next).filter(([, v]) => v.status === "done"));
+          AsyncStorage.setItem(DOWNLOADS_STORAGE_KEY, JSON.stringify(toSave)).catch(() => {});
+          return next;
+        });
+      } catch (e) {
+        if (!scope.active()) return;
+        console.warn("[download] failed", {
+          downloadId,
+          courseId,
+          videoId: meta.videoId,
+          kind: meta.kind,
+          status: e?.status,
+          message: e?.message || String(e),
+        });
+        const errorMessage = getDownloadFailureMessage(e, e?.status);
+        updateDownloads(prev => ({ ...prev, [downloadId]: { status: "error", progress: 0, errorMessage, ...meta } }));
+        Alert.alert("Download failed", errorMessage);
+      }
+    } finally {
+      if (!completed) await scope.cleanup();
+      scope.release();
+      if (downloadJobsRef.current.get(jobKey) === job) downloadJobsRef.current.delete(jobKey);
+      finish();
     }
   }, [nativeSession]);
 
@@ -12431,12 +12802,29 @@ export default function App() {
   }, [startDownload]);
 
   const deleteDownload = useCallback(async (downloadId) => {
-    await FileSystem.deleteAsync(downloadDir(FileSystem, downloadId), { idempotent: true }).catch(() => {});
+    const scope = downloadScopeRef.current;
+    if (!scope?.active()) return;
+    const job = downloadJobsRef.current.get(`${scope.root}:${downloadId}`);
+    if (job?.accountScope === scope) {
+      setDownloads(previous => {
+        if (!scope.active() || !previous[downloadId]) return previous;
+        const next = { ...previous, [downloadId]: { ...previous[downloadId], phase: "cancelling" } };
+        downloadsRef.current = next;
+        return next;
+      });
+      await job.scope.cancel();
+      await job.finished;
+    }
+    if (!scope.active()) return;
+    if (!job) await scope.fs.deleteAsync(downloadDir(scope.fs, downloadId), { idempotent: true }).catch(() => {});
+    if (!scope.active()) return;
     setDownloads(prev => {
+      if (!scope.active()) return prev;
       const next = { ...prev };
       delete next[downloadId];
+      downloadsRef.current = next;
       const toSave = Object.fromEntries(Object.entries(next).filter(([, v]) => v.status === "done"));
-      AsyncStorage.setItem(DOWNLOADS_STORAGE_KEY, JSON.stringify(toSave)).catch(() => {});
+      scope.storage.setItem(DOWNLOADS_STORAGE_KEY, JSON.stringify(toSave)).catch(() => {});
       return next;
     });
   }, []);
@@ -12518,7 +12906,7 @@ export default function App() {
         courseAiTarget,
       };
     }
-    if (!user) {
+    if (!user && showAuth) {
       return {
         key: `auth:${screen}:${otpSent ? "otp" : "base"}:${resetVisible ? resetStep : "no-reset"}`,
         authScreen: screen,
@@ -12582,6 +12970,7 @@ export default function App() {
     resetStep,
     resetVisible,
     screen,
+    showAuth,
     selectedCourse,
     startIndex,
     user,
@@ -12607,15 +12996,19 @@ export default function App() {
 
   const restoreRoute = useCallback((route) => {
     if (!route) return false;
+    invalidateOtpRequest();
+    courseOpenRequestRef.current += 1;
     restoringRouteRef.current = true;
     setShowProblemReport(false);
     setShowAppUpgrade(false);
     setCertModal(null);
     setLegalPage(route.legalPage || null);
 
-    if (route.authScreen) {
+    if (route.authScreen && !userRef.current) {
+      setShowAuth(true);
       setScreen(route.authScreen);
       if (!route.otpSent) {
+        setOtpNotice("");
         setOtpSent(false);
         setOtp("");
         setSignupToken("");
@@ -12625,6 +13018,7 @@ export default function App() {
       return true;
     }
 
+    setShowAuth(false);
     setCourseAiTarget(route.courseAiTarget || null);
     setSelectedCourse(route.selectedCourse || null);
     setStartIndex(route.startIndex ?? null);
@@ -12633,7 +13027,7 @@ export default function App() {
     setIsPreviewOnly(Boolean(route.isPreviewOnly));
     setMainScreen(route.mainScreen || "home");
     return true;
-  }, []);
+  }, [invalidateOtpRequest]);
 
   const resetToHomeFromBack = useCallback(() => {
     setShowAppUpgrade(false);
@@ -12654,9 +13048,21 @@ export default function App() {
   }, [loadCourseProgress]);
 
   const handleAppBack = useCallback(() => {
+    invalidateOtpRequest();
     if (showProblemReport) { setShowProblemReport(false); return true; }
     if (certModal) { setCertModal(null); return true; }
     if (showAppUpgrade) { setShowAppUpgrade(false); return true; }
+
+    if (mainScreen === "courses" && selectedCourse && startIndex === null && courseReturnRouteRef.current) {
+      const destination = courseReturnRouteRef.current;
+      courseReturnRouteRef.current = null;
+      const destinationIndex = routeHistoryRef.current.map(route => route.key).lastIndexOf(destination.key);
+      if (destinationIndex >= 0) routeHistoryRef.current = routeHistoryRef.current.slice(0, destinationIndex);
+      setCanGoBack(routeHistoryRef.current.length > 0);
+      setCourseOpenStatus({ key: "", loading: false, error: "" });
+      loadCourseProgress();
+      return restoreRoute(destination);
+    }
 
     const previousRoute = routeHistoryRef.current[routeHistoryRef.current.length - 1];
     if (previousRoute) {
@@ -12666,14 +13072,15 @@ export default function App() {
     }
 
     if (legalPage) { setLegalPage(null); return true; }
-    if (!userRef.current) {
+    if (!userRef.current && showAuth) {
       if (resetVisible) { closePasswordReset(); return true; }
       if (screen === "signup2") { setScreen("signup1"); setSignupError(""); return true; }
       if (screen === "signup1") {
-        if (otpSent) { setOtpSent(false); setOtp(""); setSignupToken(""); setSignupError(""); return true; }
+        if (otpSent) { setOtpSent(false); setOtp(""); setOtpNotice(""); setSignupToken(""); setSignupError(""); return true; }
         resetSignup();
         return true;
       }
+      setShowAuth(false);
       return true;
     }
 
@@ -12705,6 +13112,7 @@ export default function App() {
     return true;
   }, [
     backToLessons,
+    invalidateOtpRequest,
     certModal,
     courseAiTarget,
     legalPage,
@@ -12717,6 +13125,7 @@ export default function App() {
     screen,
     selectedCourse,
     showAppUpgrade,
+    showAuth,
     showProblemReport,
     startIndex,
   ]);
@@ -12738,13 +13147,22 @@ export default function App() {
 
   const openCourse = useCallback(async (course, options = {}) => {
     const u = userRef.current;
-    if (!hasCourseAccess(u)) { setShowAppUpgrade(true); return false; }
     const targetCourseId = course?._id || course?.id;
     if (!targetCourseId) return false;
+    if (options.returnTo === "wishlist") {
+      courseReturnRouteRef.current = {
+        key: "main:wishlist", mainScreen: "wishlist", selectedCourse: null,
+        startIndex: null, initialTime: 0, preloadedVideos: null, isPreviewOnly: false,
+      };
+    } else if (!currentRouteRef.current?.selectedCourse) {
+      courseReturnRouteRef.current = null;
+    }
     const requestId = courseOpenRequestRef.current + 1;
     courseOpenRequestRef.current = requestId;
     const courseKey = String(targetCourseId || course?.slug || course?.title || requestId);
-    const isCurrentRequest = () => courseOpenRequestRef.current === requestId;
+    const ownerKey = `${u?._id || "guest"}:${u?.sessionId || ""}`;
+    const isCurrentRequest = () => courseOpenRequestRef.current === requestId
+      && `${userRef.current?._id || "guest"}:${userRef.current?.sessionId || ""}` === ownerKey;
     setAiActiveCourseHint(course);
     const prepareCourse = source => {
       const sourceVideos = sortLessons(source?.videos || []);
@@ -12761,7 +13179,7 @@ export default function App() {
     };
     const requestedStartIndex = nextCourse => {
       if (Number.isInteger(options.startIndex)) {
-        return options.startIndex >= 0 && options.startIndex < nextCourse.videos.length
+        return options.startIndex >= 0 && options.startIndex < nextCourse.videos.length && !nextCourse.videos[options.startIndex]?.locked
           ? options.startIndex
           : null;
       }
@@ -12770,12 +13188,12 @@ export default function App() {
       const index = nextCourse.videos.findIndex((video, videoIndex) => (
         getVideoKey(video, videoIndex) === requestedVideoId
       ));
-      return index >= 0 ? index : null;
+      return index >= 0 && !nextCourse.videos[index]?.locked ? index : null;
     };
     const fixtureCourse = DEV_UI_QA_ENABLED
       ? UI_QA_COURSES.find(item => item._id === targetCourseId)
       : null;
-    if (fixtureCourse || course?.__homePlayableVideos || (DEV_UI_QA_ENABLED && Array.isArray(course?.videos) && course.videos.length > 0)) {
+    if (fixtureCourse || (hasCourseAccess(u) && course?.__homePlayableVideos) || (DEV_UI_QA_ENABLED && Array.isArray(course?.videos) && course.videos.length > 0)) {
       const nextCourse = prepareCourse(fixtureCourse || course);
       setAiActiveCourseHint(nextCourse);
       setSelectedCourse(nextCourse);
@@ -12799,7 +13217,7 @@ export default function App() {
     setMainScreen("courses");
 
     try {
-      const data = await nativeSession.requestJson(`/api/courses/${encodeURIComponent(targetCourseId)}/videos`);
+      const data = await requestCourseVideos(nativeSession, u, targetCourseId);
       const nextCourse = prepareCourse({
         ...course,
         _id: targetCourseId,
@@ -12810,8 +13228,8 @@ export default function App() {
       setAiActiveCourseHint(nextCourse);
       setSelectedCourse(nextCourse);
       setCourseOpenStatus({ key: courseKey, loading: false, error: "" });
-      setPreloadedVideos(null);
-      setIsPreviewOnly(false);
+      setPreloadedVideos(nextCourse.videos.filter(video => !video.locked));
+      setIsPreviewOnly(!hasCourseAccess(u));
       setInitialTime(options.initialTime || 0);
       setStartIndex(requestedStartIndex(nextCourse));
       setMainScreen("courses");
@@ -12830,7 +13248,7 @@ export default function App() {
   }, [nativeSession]);
 
   useEffect(() => {
-    if (isRestoring || !user?._id || !user?.sessionId || !pendingAppLink) return;
+    if (isRestoring || !pendingAppLink) return;
     const target = pendingAppLink;
     const linkKey = `${target.courseId}:${target.videoId || "course"}`;
     if (appLinkOpeningRef.current === linkKey) return;
@@ -12940,6 +13358,8 @@ export default function App() {
   const saveVideoProgress = useCallback(async (courseId, videoId, currentTime, duration) => {
     const u = userRef.current;
     if (!u?._id || !u?.sessionId || !courseId || !videoId || !duration) return;
+    const queue = progressSaveQueueRef.current;
+    if (!queue) return;
     const body = {
       courseId,
       videoId: String(videoId),
@@ -12952,7 +13372,10 @@ export default function App() {
       } else if (data.eligibility) {
         setCourseProgress(prev => ({
           ...prev,
-          [courseId]: progressFromLearningStatus(data.eligibility, prev[courseId]),
+          [courseId]: {
+            ...progressFromLearningStatus(data.eligibility, prev[courseId]),
+            lastWatchedVideoId: String(videoId),
+          },
         }));
       }
       if (data.certificate) {
@@ -12963,32 +13386,39 @@ export default function App() {
         });
       }
     };
-    try {
-      let data;
-      try {
-        data = await nativeSession.requestJson(`/api/learning/${encodeURIComponent(courseId)}/progress`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        });
-      } catch (error) {
-        if (error?.status !== 404) throw error;
-        data = await nativeSession.requestJson("/api/user/progress/update-video", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        });
-      }
-      applyProgressResult(data);
-      return data;
-    } catch (_) {
-      return { error: "Offline: progress is not verified. Reconnect and replay unrecorded sections." };
-    }
+    return queue.save({
+      key: JSON.stringify([String(courseId), String(videoId)]), payload: body, onSuccess: applyProgressResult,
+      request: async payload => {
+        const assertOwner = () => {
+          if (userRef.current?._id !== u._id || userRef.current?.sessionId !== u.sessionId) {
+            throw new Error("Session changed.");
+          }
+        };
+        assertOwner();
+        let data;
+        try {
+          data = await nativeSession.requestJson(`/api/learning/${encodeURIComponent(courseId)}/progress`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+        } catch (error) {
+          if (error?.status !== 404) throw error;
+          assertOwner();
+          data = await nativeSession.requestJson("/api/user/progress/update-video", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+        }
+        return data;
+      },
+    });
   }, [nativeSession]);
 
   const toggleWishlist = useCallback(async (courseId) => {
     const u = userRef.current;
-    if (!u) return;
+    if (!u) { setMainScreen("wishlist"); return; }
     // Optimistic update
     setWishlist(prev => prev.includes(courseId) ? prev.filter(id => id !== courseId) : [...prev, courseId]);
     try {
@@ -13063,7 +13493,7 @@ export default function App() {
     if (!email.trim() || !password.trim()) { setLoginError("Please enter your mobile number and password."); return; }
     setLoginLoading(true); setLoginError("");
     try {
-      const identifier = email.replace(/\D/g, "");
+      const identifier = normalizeIndianMobileInput(email);
       if (identifier.length !== 10) {
         setLoginError("Enter the 10-digit mobile number registered to your account.");
         return;
@@ -13074,11 +13504,9 @@ export default function App() {
       });
       if (!res.ok) {
         if (data?.code === "MOBILE_NOT_REGISTERED" || data?.code === "ACCOUNT_NOT_FOUND") {
-          const digits = identifier.replace(/\D/g, "");
-          const localMobile = digits.startsWith("91") && digits.length === 12 ? digits.slice(2) : digits;
           setLoginError("Account does not exist.");
           setSignupError("Account does not exist. Create your account to continue.");
-          setMobile(localMobile.length === 10 ? localMobile : "");
+          setMobile(identifier);
           setScreen("signup1");
           return;
         }
@@ -13090,6 +13518,7 @@ export default function App() {
           setLoginError("Login succeeded, but the server response was incomplete.");
           return;
         }
+        setShowAuth(false); setSelectedCourse(null); setStartIndex(null); setMainScreen("home");
         setUser(authUser);
         setWishlist(authUser.wishlist || []);
         clearLoginForm();
@@ -13115,10 +13544,7 @@ export default function App() {
   }
 
   function openPasswordReset() {
-    const loginDigits = email.replace(/\D/g, "");
-    const localMobile = loginDigits.startsWith("91") && loginDigits.length === 12
-      ? loginDigits.slice(2)
-      : loginDigits;
+    const localMobile = normalizeIndianMobileInput(email);
     setResetMobile(localMobile.length === 10 ? localMobile : "");
     setResetStep("request");
     setResetError("");
@@ -13126,7 +13552,7 @@ export default function App() {
   }
 
   async function requestPasswordReset() {
-    const mobileNumber = resetMobile.replace(/\D/g, "");
+    const mobileNumber = normalizeIndianMobileInput(resetMobile);
     if (mobileNumber.length !== 10) {
       setResetError("Enter the 10-digit mobile number registered to your account.");
       return;
@@ -13149,6 +13575,11 @@ export default function App() {
   }
 
   async function confirmPasswordReset() {
+    const mobileNumber = normalizeIndianMobileInput(resetMobile);
+    if (mobileNumber.length !== 10) {
+      setResetError("Enter the 10-digit mobile number registered to your account.");
+      return;
+    }
     if (!/^\d{6}$/.test(resetOtp.trim())) {
       setResetError("Enter the 6-digit reset code.");
       return;
@@ -13165,7 +13596,7 @@ export default function App() {
     setResetError("");
     try {
       const { res, data } = await postApiJson("/api/auth/password-reset/confirm", {
-        mobileNumber: resetMobile.replace(/\D/g, ""),
+        mobileNumber,
         otp: resetOtp.trim(),
         newPassword: resetNewPassword,
       });
@@ -13183,38 +13614,57 @@ export default function App() {
     }
   }
 
-  async function sendOtp() {
-    if (!mobile.trim() || mobile.trim().length !== 10) { setSignupError("Enter a valid 10-digit mobile number."); return; }
-    setOtpLoading(true); setSignupError("");
+  async function sendOtp({ resend = false } = {}) {
+    if (otpRequestInFlight.current || userRef.current) return;
+    const mobileNumber = normalizeIndianMobileInput(mobile);
+    if (mobileNumber.length !== 10) { setSignupError("Enter a valid 10-digit mobile number."); return; }
+    otpRequestInFlight.current = true;
+    const generation = ++otpRequestGeneration.current;
+    const isCurrent = () => generation === otpRequestGeneration.current && !userRef.current;
+    setOtpLoading(true); setSignupError(""); setOtpNotice("");
+    const confirmSent = () => {
+      setOtpSent(true);
+      setOtp("");
+      setSignupToken("");
+      setOtpNotice(resend ? "OTP resent to your mobile number. Enter the code to continue." : "OTP sent to your mobile number. Enter the code to continue.");
+    };
     if (DEV_UI_QA_ENABLED) {
       setTimeout(() => {
-        setOtpSent(true);
-        setSignupToken("");
+        if (!isCurrent()) return;
+        confirmSent();
+        otpRequestInFlight.current = false;
         setOtpLoading(false);
       }, 180);
       return;
     }
     try {
-      const mobileNumber = mobile.trim();
       const { res, data } = await postApiJson(
-        ["/api/auth/send-otp", "/api/auth/sendOtp", "/api/auth/request-otp", "/api/auth/requestOtp"],
+        [...(resend ? ["/api/auth/resend-mobile-otp"] : []), "/api/auth/send-otp", "/api/auth/sendOtp", "/api/auth/request-otp", "/api/auth/requestOtp"],
         { mobileNumber, mobile: mobileNumber, phone: mobileNumber }
       );
+      if (!isCurrent()) return;
       if (!res) {
-        setSignupError("OTP endpoint is not available on this server.");
+        setSignupError("We could not send your OTP. Please try again later.");
         return;
       }
       if (!res.ok) setSignupError(data.error || "Failed to send OTP.");
-      else { setOtpSent(true); setSignupToken(""); }
-    } catch { setSignupError("Cannot connect to server. Try again."); }
-    finally { setOtpLoading(false); }
+      else confirmSent();
+    } catch { if (isCurrent()) setSignupError("Cannot connect to server. Try again."); }
+    finally { if (isCurrent()) { otpRequestInFlight.current = false; setOtpLoading(false); } }
   }
 
   async function verifyOtp() {
+    if (otpRequestInFlight.current || userRef.current) return;
+    const mobileNumber = normalizeIndianMobileInput(mobile);
+    if (mobileNumber.length !== 10) { setSignupError("Enter a valid 10-digit mobile number."); return; }
     if (!otp.trim() || otp.trim().length !== 6) { setSignupError("Enter the 6-digit OTP."); return; }
-    setOtpLoading(true); setSignupError("");
+    otpRequestInFlight.current = true;
+    const generation = ++otpRequestGeneration.current;
+    const isCurrent = () => generation === otpRequestGeneration.current && !userRef.current;
+    setOtpLoading(true); setSignupError(""); setOtpNotice("");
     if (DEV_UI_QA_ENABLED) {
       setTimeout(() => {
+        if (!isCurrent()) return;
         if (otp.trim() === "000000") {
           setSignupToken("ui-qa-signup-token");
           setScreen("signup2");
@@ -13222,44 +13672,45 @@ export default function App() {
         } else {
           setSignupError("Invalid OTP for UI QA. Use 000000 to continue in development mode.");
         }
+        otpRequestInFlight.current = false;
         setOtpLoading(false);
       }, 180);
       return;
     }
     try {
-      const mobileNumber = mobile.trim();
       const code = otp.trim();
       const { res, data } = await postApiJson(
         ["/api/auth/verify-otp", "/api/auth/verifyOtp", "/api/auth/verify-mobile", "/api/auth/verifyMobile"],
         { mobileNumber, mobile: mobileNumber, phone: mobileNumber, otp: code, code }
       );
+      if (!isCurrent()) return;
       if (!res) {
-        setSignupError("OTP verification endpoint is not available on this server.");
+        setSignupError("We could not verify your OTP. Please try again later.");
         return;
       }
       if (!res.ok) setSignupError(data.error || "OTP verification failed.");
       else {
         if (!data.signupToken) {
-          setSignupError("Phone verified, but the signup token was missing. Request a new code.");
+          setSignupError("We could not finish verifying your phone number. Please request a new OTP.");
           return;
         }
         setSignupToken(data.signupToken);
         setScreen("signup2");
         setSignupError("");
       }
-    } catch { setSignupError("Cannot connect to server. Try again."); }
-    finally { setOtpLoading(false); }
+    } catch { if (isCurrent()) setSignupError("Cannot connect to server. Try again."); }
+    finally { if (isCurrent()) { otpRequestInFlight.current = false; setOtpLoading(false); } }
   }
 
   async function register() {
+    const mobileNumber = normalizeIndianMobileInput(mobile);
     if (!signupFullName.trim()) { setSignupError("Full name is required."); return; }
-    if (mobile.trim().length !== 10) { setSignupError("Enter a valid 10-digit mobile number."); return; }
+    if (mobileNumber.length !== 10) { setSignupError("Enter a valid 10-digit mobile number."); return; }
     if (!signupPassword.trim() || signupPassword.length < 8) { setSignupError("Password must be at least 8 characters."); return; }
     if (!signupAge || Number(signupAge) < 13 || Number(signupAge) > 80) { setSignupError("Select your age. Skillomate is for learners aged 13 and older."); return; }
     if (!signupToken && !DEV_UI_QA_ENABLED) { setSignupError("Please verify your mobile number again."); setScreen("signup1"); return; }
     setSignupLoading(true); setSignupError("");
     try {
-      const mobileNumber = mobile.trim();
       const fullName = signupFullName.trim();
       const { res, data } = await postApiJson(["/api/auth/register", "/api/auth/signup"], {
         fullName,
@@ -13274,7 +13725,7 @@ export default function App() {
         signupToken,
       });
       if (!res) {
-        setSignupError("Registration endpoint is not available on this server.");
+        setSignupError("We could not create your account. Please try again later.");
         return;
       }
       if (!res.ok) setSignupError(data.error || "Registration failed.");
@@ -13286,6 +13737,7 @@ export default function App() {
         }
         AsyncStorage.removeItem(AI_AVATAR_STORAGE_KEY);
         setAiRobotId(null);
+        setShowAuth(false); setSelectedCourse(null); setStartIndex(null); setMainScreen("home");
         setUser(authUser);
         setWishlist(authUser.wishlist || []);
         clearLoginForm();
@@ -13302,11 +13754,16 @@ export default function App() {
   }
 
   function resetSignup() {
+    invalidateOtpRequest();
+    setOtpNotice("");
     setScreen("login"); setMobile(""); setOtp(""); setOtpSent(false); setSignupToken("");
     setSignupFullName(""); setSignupPassword(""); setSignupGender(""); setSignupAge(""); setSignupAvatar("a1"); setSignupError("");
   }
 
   async function handleLogout() {
+    const cancelledDownloads = downloadScopeRef.current?.cancel();
+    downloadsRef.current = {};
+    setDownloads({});
     AsyncStorage.removeItem(AI_AVATAR_STORAGE_KEY).catch(() => {});
     setAiRobotId(null);
     setWishlist([]);
@@ -13314,7 +13771,9 @@ export default function App() {
     clearLoginForm();
     resetSignup();
     setLegalPage(null);
+    setShowAuth(false);
     setUser(null); setSelectedCourse(null); setStartIndex(null); setCourseAiTarget(null); setMainScreen("home");
+    await cancelledDownloads;
     await nativeSession.flush().catch(() => {});
   }
 
@@ -13334,8 +13793,10 @@ export default function App() {
         }),
       });
 
-      if (DOWNLOADS_DIR) await FileSystem.deleteAsync(DOWNLOADS_DIR, { idempotent: true }).catch(() => {});
-      await AsyncStorage.multiRemove([AI_AVATAR_STORAGE_KEY, DOWNLOADS_STORAGE_KEY]);
+      const scope = downloadScopeRef.current;
+      await scope?.cancel();
+      if (scope?.root) await FileSystem.deleteAsync(scope.root, { idempotent: true }).catch(() => {});
+      await AsyncStorage.multiRemove([AI_AVATAR_STORAGE_KEY, ...(scope ? [scope.storageKey(DOWNLOADS_STORAGE_KEY)] : [])]);
 
       setDownloads({});
       setAiRobotId(null);
@@ -13438,10 +13899,17 @@ export default function App() {
   ]), [navigateRootTab, openProblemReport, openSubscriptionDetails]);
   const withAppSearch = useCallback(content => (
     <AppSearchReferencesContext.Provider value={appSearchReferences}>
-      {content}
+      <View style={{ flex: 1 }}>
+        <ProgressSaveNotice
+          count={progressSaveStatus?.ownerId === user?._id && progressSaveStatus?.ownerSessionId === user?.sessionId ? progressSaveStatus?.count : 0}
+          retrying={progressSaveStatus?.retrying || false}
+          onRetry={() => progressSaveQueueRef.current?.retry()}
+        />
+        <View style={{ flex: 1 }}>{content}</View>
+      </View>
     </AppSearchReferencesContext.Provider>
-  ), [appSearchReferences]);
-  const iosGlobalBackEnabled = Platform.OS === "ios" && Boolean(user) && (canGoBack || fallbackBackAvailable);
+  ), [appSearchReferences, progressSaveStatus, user?._id, user?.sessionId]);
+  const iosGlobalBackEnabled = Platform.OS === "ios" && (canGoBack || fallbackBackAvailable || showAuth);
   const requestAnimatedBack = useCallback(() => {
     if (Platform.OS === "ios" && globalBackGestureRef.current?.goBack?.()) return true;
     return handleAppBack();
@@ -13483,8 +13951,8 @@ export default function App() {
     );
   }
 
-  // ── Auth screens ────────────────────────────────────────────────────────────
-  if (!user) {
+  // ── Optional authentication: public browsing is the default. ─────────────────
+  if (!user && showAuth) {
     if (screen === "signup1") {
       return (
   <View style={{ flex: 1, backgroundColor: C.bg }}>
@@ -13517,8 +13985,8 @@ export default function App() {
         <FieldInput
           label="Phone Number"
           placeholder="Enter 10-digit number"
-          value={mobile} onChangeText={t => setMobile(t.replace(/[^0-9]/g, ""))}
-          keyboardType="phone-pad" editable={!otpSent} maxLength={10}
+          value={mobile} onChangeText={t => setMobile(normalizeIndianMobileInput(t))}
+          keyboardType="phone-pad" editable={!otpSent && !otpLoading}
         />
 
         {otpSent && (
@@ -13534,16 +14002,19 @@ export default function App() {
                 accessibilityLabel="Mobile verification code"
               />
               <TouchableOpacity style={s.otpResendBtn}
-                onPress={() => { setOtpSent(false); setOtp(""); setSignupError(""); }}
+                onPress={() => sendOtp({ resend: true })}
+                disabled={otpLoading}
                 accessibilityRole="button"
+                accessibilityState={{ disabled: otpLoading, busy: otpLoading }}
                 accessibilityLabel="Resend mobile verification code">
-                <Text style={s.otpResendText}>Resend</Text>
+                {otpLoading ? <ActivityIndicator color={C.primary} /> : <Text style={s.otpResendText}>Resend</Text>}
               </TouchableOpacity>
             </View>
           </>
         )}
 
-        {!!signupError && <Text style={s.errorText}>{signupError}</Text>}
+        {!!otpNotice && <Text accessibilityLiveRegion="polite" style={{ color: C.primary, fontSize: 13, marginBottom: 12 }}>{otpNotice}</Text>}
+        {!!signupError && <Text accessibilityLiveRegion="polite" style={s.errorText}>{signupError}</Text>}
         {!otpSent
           ? <PrimaryBtn title="Send OTP" onPress={sendOtp} loading={otpLoading} />
           : <PrimaryBtn title="Verify Phone" onPress={verifyOtp} loading={otpLoading} />
@@ -13745,6 +14216,10 @@ export default function App() {
               <Text style={[s.authBrandTagline, isTabletLayout && s.authBrandTaglineTablet]}>LEARN · GROW · EARN</Text>
             </View>
 
+            <TouchableOpacity onPress={() => { setShowAuth(false); clearLoginForm(); resetSignup(); }}
+              style={[s.btn, s.btnOutline, { marginBottom: 20 }]} accessibilityRole="button" accessibilityLabel="Continue as Guest">
+              <Text style={{ color: C.primary, fontWeight: "700" }}>Continue as Guest</Text>
+            </TouchableOpacity>
             <View style={[s.authHeadingBlock, isTabletLayout && s.authHeadingBlockTablet]}>
               <Text style={[s.authWelcome, isTabletLayout && s.authWelcomeTablet]}>Welcome back</Text>
               <Text style={[s.authWelcomeSub, isTabletLayout && s.authWelcomeSubTablet]}>Continue your AI learning journey.</Text>
@@ -13755,13 +14230,12 @@ export default function App() {
                 label="Mobile number"
                 placeholder="Enter your mobile number"
                 value={email}
-                onChangeText={text => setEmail(text.replace(/[^0-9]/g, ""))}
+                onChangeText={text => setEmail(normalizeIndianMobileInput(text))}
                 autoCapitalize="none"
                 autoCorrect={false}
                 autoComplete="tel"
                 textContentType="telephoneNumber"
                 keyboardType="phone-pad"
-                maxLength={10}
                 returnKeyType="next"
                 blurOnSubmit={false}
                 onSubmitEditing={() => passwordInputRef.current?.focus()}
@@ -13873,7 +14347,25 @@ export default function App() {
     );
   }
 
-  // ── Logged-in ───────────────────────────────────────────────────────────────
+  if (!user && ["profile", "wishlist", "certificates", "subscription"].includes(mainScreen) && !selectedCourse) {
+    return withGlobalBackGesture(renderGuestAccount());
+  }
+
+  // ── Public browsing and account screens ─────────────────────────────────────
+  const renderWishlistScreen = () => (
+    <WishlistScreen
+      wishlist={wishlist}
+      onToggleWishlist={toggleWishlist}
+      onSelect={course => openCourse(course, { returnTo: "wishlist" })}
+      onBack={requestAnimatedBack}
+      user={user}
+      onGoToSubscription={openSubscriptionDetails}
+      appleSubscription={storeSubscription}
+      onOpenTerms={openSubscriptionTerms}
+      onOpenPrivacy={openSubscriptionPrivacy}
+    />
+  );
+
   if (courseAiTarget) {
     return withGlobalBackGesture(
       <AiAssistantScreen
@@ -13909,8 +14401,16 @@ export default function App() {
     const courseScreen = (
       <VideoListScreen
         course={selectedCourse}
-        onSelectVideo={idx => setStartIndex(idx)}
+        onSelectVideo={idx => {
+          const video = selectedCourse.videos?.[idx];
+          if (video?.locked) {
+            if (!user) { setSelectedCourse(null); setMainScreen("subscription"); return; }
+            openSubscriptionDetails(); return;
+          }
+          setStartIndex(idx);
+        }}
         onBack={requestCourseBack}
+        backLabel={courseReturnRouteRef.current?.mainScreen === "wishlist" ? "Back to Wishlist" : "Back to courses"}
         downloads={downloads}
         onDownloadVideo={startDownload}
         loadingLessons={courseOpenStatus.loading}
@@ -13924,7 +14424,7 @@ export default function App() {
         aiRobotId={aiRobotId}
       />
     );
-    const rootScreen = (
+    const rootScreen = courseReturnRouteRef.current?.mainScreen === "wishlist" ? renderWishlistScreen() : (
       <SwipeableRootTabs
         activeTab={previewTab}
         onNavigate={navigateRootTab}
@@ -13944,15 +14444,16 @@ export default function App() {
           <ReelsScreen
             courseId={selectedCourse._id}
             course={selectedCourse}
-            initialIndex={startIndex}
+            initialIndex={selectedCourse.videos?.slice(0, startIndex).filter(video => !video.locked).length || 0}
             initialTime={initialTime}
             downloads={downloads}
             onDownloadVideo={startDownload}
-            preloadedVideos={preloadedVideos || (DEV_UI_QA_ENABLED ? selectedCourse.videos : null)}
+            preloadedVideos={(preloadedVideos || selectedCourse.videos || []).filter(video => !video.locked)}
             user={user}
             session={nativeSession}
-            onVideoComplete={isPreviewOnly ? undefined : markVideoComplete}
-            onVideoProgress={isPreviewOnly ? undefined : saveVideoProgress}
+            onRequireSignIn={() => setShowAuth(true)}
+            onVideoComplete={!user || isPreviewOnly ? undefined : markVideoComplete}
+            onVideoProgress={!user || isPreviewOnly ? undefined : saveVideoProgress}
             onReportProblem={openProblemReport}
             onBack={requestPlayerBack}
             useAppBackTransition
@@ -13997,6 +14498,7 @@ export default function App() {
       <SubscriptionDetailsScreen
         user={user}
         session={nativeSession}
+        onSubscriptionLoaded={mergeAccountEntitlement}
         appleSubscription={storeSubscription}
         onBack={requestAnimatedBack}
         onOpenTerms={() => setLegalPage("terms")}
@@ -14033,22 +14535,16 @@ export default function App() {
   }
 
   if (mainScreen === "wishlist") {
-    return withGlobalBackGesture(
-      <WishlistScreen
-        wishlist={wishlist}
-        onToggleWishlist={toggleWishlist}
-        onSelect={c => openCourse(c)}
-        onBack={requestAnimatedBack}
-        user={user}
-        onGoToSubscription={openSubscriptionDetails}
-        appleSubscription={storeSubscription}
-        onOpenTerms={openSubscriptionTerms}
-        onOpenPrivacy={openSubscriptionPrivacy}
-      />
-    );
+    return withGlobalBackGesture(renderWishlistScreen());
   }
 
+  function renderGuestAccount(feature = mainScreen) { return (
+    <GuestAccountScreen feature={feature} onSignIn={() => { resetSignup(); setShowAuth(true); }}
+      onBrowse={() => navigateRootTab("courses")} onBack={requestAnimatedBack} />
+  ); }
+
   function renderRootTab(tab, { isActive = false } = {}) {
+    if (!user && ["ai", "downloads"].includes(tab)) return renderGuestAccount(tab);
     if (tab === "courses") {
       return (
         <CourseListScreen
@@ -14088,6 +14584,10 @@ export default function App() {
           </View>
         </SafeAreaView>
 
+        <Text style={{ color: C.textSub, fontSize: 12, paddingHorizontal: 16, paddingVertical: 8 }}>
+          Downloads use your current connection, including mobile data. Use Wi-Fi to save data.
+        </Text>
+
         {downloadItems.length === 0 ? (
           <ScrollView
             contentContainerStyle={[s.centered, { flexGrow: 1 }, isTabletLayout && s.tabletListContent]}
@@ -14106,8 +14606,16 @@ export default function App() {
             </View>
             <Text style={{ fontSize: 20, fontWeight: "800", color: C.text, marginBottom: 8 }}>No Downloads Yet</Text>
             <Text style={{ fontSize: 14, color: C.textSub, textAlign: "center", paddingHorizontal: 40 }}>
-              Tap the download icon on any video to save it for offline viewing.
+              Open a course and tap Download beside a lesson, or use Download in the player.
             </Text>
+            <TouchableOpacity
+              onPress={() => navigateRootTab("courses")}
+              style={[s.btn, s.btnFill, { marginTop: 20 }]}
+              accessibilityRole="button"
+              accessibilityLabel="Browse courses to download lessons"
+            >
+              <Text style={s.btnText}>Browse Courses</Text>
+            </TouchableOpacity>
           </ScrollView>
         ) : (
           <FlatList
@@ -14132,7 +14640,8 @@ export default function App() {
               const isDone = item.status === "done";
               const isDownloading = item.status === "downloading";
               const isError = item.status === "error";
-              const progressPercent = Math.round((item.progress || 0) * 100);
+              const presentation = downloadPresentation(item, formatDownloadSize);
+              const progressPercent = presentation.percent || 0;
               const statusColor = isError ? C.danger : isDone ? C.success : C.primary;
               const DownloadContent = isDone ? TouchableOpacity : View;
 
@@ -14167,7 +14676,7 @@ export default function App() {
                         isDone
                           ? `${item.title}. Ready offline. Tap to play.`
                           : isDownloading
-                            ? `${item.title}. Downloading ${progressPercent} percent.`
+                            ? `${item.title}. ${presentation.label} ${presentation.detail}`
                             : `${item.title}. Download failed. ${item.errorMessage || "Check your connection and course access, then retry."}`
                       }
                       accessibilityState={{ disabled: !isDone, busy: isDownloading }}
@@ -14212,34 +14721,34 @@ export default function App() {
                               color={statusColor}
                             />
                             <Text style={{ color: statusColor, fontSize: 11, fontWeight: "700" }}>
-                              {isError ? "Download failed" : isDownloading ? `Downloading ${progressPercent}%` : "Ready offline"}
+                              {presentation.label}
                             </Text>
                           </View>
-                          {isDownloading && (
+                          {isDownloading && presentation.phase === "transferring" && presentation.percent !== null && (
                             <View style={[s.dlProgressBar, { flex: 1, minWidth: 36, marginTop: 0 }]}>
                               <View style={[s.dlProgressFill, { width: `${progressPercent}%` }]} />
                             </View>
                           )}
-                          {isDone && item.size > 0 && (
-                            <Text style={{ color: C.textMuted, fontSize: 11 }}>
-                              {formatDownloadSize(item.size)}
-                            </Text>
-                          )}
                         </View>
+                        {!!presentation.detail && <Text style={{ color: C.textSub, fontSize: 11, marginTop: 5 }}>{presentation.detail}</Text>}
                       </View>
                     </DownloadContent>
                     <TouchableOpacity
-                      style={s.dlDeleteButton}
+                      style={[s.dlDeleteButton, isDownloading && { width: 64, minHeight: 48 }]}
+                      disabled={presentation.phase === "cancelling" && isDownloading}
                       onPress={() => {
+                        if (isDownloading) { deleteDownload(item.id || item.bunnyGuid); return; }
                         Alert.alert("Remove Download", `Remove "${item.title}" from downloads?`, [
                           { text: "Cancel", style: "cancel" },
                           { text: "Remove", style: "destructive", onPress: () => deleteDownload(item.id || item.bunnyGuid) },
                         ]);
                       }}
                       accessibilityRole="button"
-                      accessibilityLabel={`Remove ${item.title} from downloads`}
+                      accessibilityLabel={isDownloading ? `Cancel download ${item.title}` : `Remove ${item.title} from downloads`}
+                      accessibilityState={{ disabled: presentation.phase === "cancelling" && isDownloading }}
                     >
-                      <Ionicons name="trash-outline" size={20} color={C.textMuted} />
+                      {isDownloading ? <Text style={{ color: C.primary, fontWeight: "700", fontSize: 12 }}>Cancel</Text>
+                        : <Ionicons name="trash-outline" size={20} color={C.textMuted} />}
                     </TouchableOpacity>
                   </View>
 
@@ -16304,8 +16813,11 @@ courseListCard: {
   courseResourceTitle: { flex: 1, ...TYPE.bodyMedium, color: C.text },
   videoRowTitle: { flex: 1, ...TYPE.bodyMedium, color: C.text },
   videoDownloadButton: {
-    width: MIN_TOUCH_TARGET,
-    height: MIN_TOUCH_TARGET,
+    minWidth: 76,
+    minHeight: MIN_TOUCH_TARGET,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    gap: 3,
     borderRadius: MIN_TOUCH_TARGET / 2,
     alignItems: "center",
     justifyContent: "center",
@@ -16313,6 +16825,7 @@ courseListCard: {
     borderWidth: 1,
     borderColor: C.accentSoft,
   },
+  videoDownloadButtonText: { color: C.primary, fontSize: 10, fontWeight: "700", textAlign: "center" },
   videoDownloadButtonBusy: {
     opacity: 0.78,
   },
@@ -16673,7 +17186,6 @@ courseListCard: {
     backgroundColor: "#050505",
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: "rgba(255,255,255,0.12)",
-    paddingTop: Platform.OS === "android" ? Math.max(ANDROID_STATUS_BAR_INSET + 18, 42) : 0,
   },
   aiTopHeader: {
     minHeight: 58,
@@ -16927,6 +17439,7 @@ courseListCard: {
   aiBubbleTextUser: { color: C.onPrimary, fontWeight: "600" },
   aiMarkdownStrong: { fontWeight: "900" },
   aiMarkdownEmphasis: { fontStyle: "italic" },
+  aiMarkdownCode: { fontFamily: Platform.OS === "ios" ? "Menlo" : "monospace" },
   aiWelcomeScroll: {
     flex: 1,
     minHeight: 0,

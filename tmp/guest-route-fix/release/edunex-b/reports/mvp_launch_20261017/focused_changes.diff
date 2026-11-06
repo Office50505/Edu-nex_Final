@@ -1,0 +1,116 @@
+--- before/services/productTutorResponse.js
++++ after/services/productTutorResponse.js
+@@ -89,9 +89,22 @@
+   if(record && context.topic==='overview')return record.translations[language];
+   const requestedLesson = knowledge.requestContext?.lessonNumber || productRequestContext(message,history,knowledge.productContext).lessonNumber;
+   const lesson = record?.lessonNumbers?.includes(requestedLesson) ? requestedLesson : record?.lessonNumber;
+-  if(record && context.topic==='product_consistency' && context.procedural){
++  if(record && context.topic==='product_sheet' && /\b(?:purpose|role)\b|उद्देश्य|भूमिका/i.test(message)){
++    const purpose={
++      english:'A Product Sheet puts front, top, side and three-quarter views of the same product in one reference image. Reuse it for each new photo or video to keep the product identity consistent.',
++      hindi:'Product Sheet में एक ही प्रोडक्ट के सामने, ऊपर, साइड और three-quarter views एक reference image में होते हैं। हर नई फोटो या वीडियो में वही शीट लगाएँ ताकि प्रोडक्ट का आकार और पहचान समान रहें।',
++      hinglish:'Product Sheet mein same product ke front, top, side aur three-quarter views ek reference image mein hote hain. Har nayi photo ya video mein wahi sheet lagao taaki product ki identity same rahe.',
++    }[language];
++    return `Lesson 02\n\n${purpose}\n\n${record.translations[language]}`;
++  }
++  if(record && context.topic==='product_consistency' && (context.procedural || context.troubleshooting)){
+     const workflow=(knowledge.records||[]).find(r=>r.contentType==='workflow'&&r.intentTags?.includes('product_sheet')&&r.translations?.[language]);
+-    if(workflow)return `Lesson 02\n\n${workflow.translations[language]}\n\n${record.translations[language]}`;
++    const check = {
++      english:'Compare the result with the product sheet: check the same shape, colour, details, text and logo. If any of these change, regenerate and check again before using the image.',
++      hindi:'परिणाम को product sheet से मिलाएँ: आकार, रंग, विवरण, टेक्स्ट और लोगो वही होने चाहिए। इनमें बदलाव हो तो दोबारा बनाएँ और इस्तेमाल करने से पहले फिर जाँचें।',
++      hinglish:'Result ko product sheet se compare karo: shape, colour, details, text aur logo same hone chahiye. Kuch badle toh dobara generate karo aur image use karne se pehle phir check karo.',
++    }[language];
++    if(workflow)return `Lesson 02\n\n${workflow.translations[language]}\n\n${record.translations[language]}\n\n${check}`;
+   }
+   if(record && context.topic==='natural_ugc'){
+     const asset=(knowledge.records||[]).find(r=>r.lessonNumber===7&&r.contentType==='exact-template'&&r.content.includes('natural window light'));
+--- before/services/productTutorKnowledge.js
++++ after/services/productTutorKnowledge.js
+@@ -352,6 +352,7 @@
+   else if (/\b(?:ugc|handheld)\b|\b(?:polished|commercial|studio)\s+(?:looking\s+|style\s+)?(?:ad|video|clip|footage)\b|\b(?:ad|video|clip|footage)\s+(?:(?:looks?|feels?|is|seems?|too|very|so|a|like)\s+){1,5}(?:polished|commercial|studio)\b|यूजीसी/i.test(text)) {topic=/\b(?:polished|commercial|natural|studio)\b/i.test(text)?'natural_ugc':'ugc';inferredLesson=7;}
+   else if (/\b(?:aspect ratio|landscape|portrait)\b.{0,100}(?:Reels|edges|किनार|खींच)|(?:Reels|किनार).{0,100}landscape/i.test(text)){topic='aspect_ratio';inferredLesson=6;}
+   else if (/\b(?:blur\w*|lettering|small text)\b|धुंध|अक्षर|dhundle/i.test(text)) {topic='blur';inferredLesson=/\bvideo\b|वीडियो/i.test(text+' '+prior)?6:2;}
++  else if (explicitLesson!==6 && !/\b(?:video|clips?|motion)\b|वीडियो/i.test(text) && /\b(?:photos?|images?|shots?)\b|फोटो|तस्वीर/i.test(text) && /(?:shape|आकार).{0,60}(?:chang|badal|बदल)|(?:chang|badal|बदल).{0,60}(?:shape|आकार)/i.test(text)) {topic='product_consistency';inferredLesson=2;}
+   else if (/\b(?:morph\w*|warp\w*|melt\w*|pighal\w*|movements?|motion)\b|मूवमेंट|आकार बदल/i.test(text)) {topic='motion';inferredLesson=6;}
+   else if (signals.colourAction) {topic='colour';inferredLesson=4;}
+   else if (/(?:face|chehra|चेहरा).{0,60}(?:chang|same|consistent|badal|बदल|समान)|(?:same|consistent).{0,20}face/i.test(text)) {topic='face_consistency';inferredLesson=3;}
+--- before/chatbot_eval.py
++++ after/chatbot_eval.py
+@@ -1,9 +1,9 @@
+ #!/usr/bin/env python3
+ """Small terminal runner for the real isolated local API. No model mocks or API keys."""
+-import argparse, collections, datetime, hashlib, json, pathlib, re, statistics, time, urllib.request, urllib.error, uuid
++import os, argparse, collections, datetime, hashlib, json, pathlib, re, statistics, time, urllib.request, urllib.error, uuid
+ 
+ ROOT = pathlib.Path(__file__).resolve().parent
+-REPORT = ROOT / 'reports/mvp_launch_20261016_1227'
++REPORT = pathlib.Path(os.environ.get('SKILLOMATE_EVAL_REPORT', str(ROOT / 'reports/mvp_launch_20261017'))).resolve()
+ 
+ def read_events():
+     p = REPORT / 'pipeline_traces.jsonl'
+@@ -31,6 +31,8 @@
+                 protected=chunk.get('kind') in ['course-material','lesson-notes'] or chunk.get('contentType') in ['exact-template','faq','workflow','lesson-summary']
+                 if protected and chunk.get('courseId') not in authorized:
+                     critical.append('Unauthorized owner in retrieval output')
++    if critical:
++        return 'FAIL', ['Confirmed security violation in pipeline trace'], critical
+     if expected.get('expected_http_status'):
+         if status != expected['expected_http_status']: errors.append(f'HTTP {status}, expected {expected["expected_http_status"]}')
+     elif status != 200:
+@@ -39,9 +41,12 @@
+         blocked=any(x['type']=='provider_blocked' for x in events)
+         if blocked or response.get('provider')=='built-in-course-guide' or response.get('outcome',{}).get('type')=='provider_fallback':
+             return 'UNTESTED',['Provider inference blocked/unavailable; fallback is not a live success'],critical
++        if response.get('outcome',{}).get('liveModelAnswer') and not any(e['type']=='provider_response' and e.get('status')==200 for e in events):
++            return 'UNTESTED',['No successful real-provider response recorded for claimed live answer'],critical
+         if not answer: errors.append('Empty answer')
+         if 'expected_body' in expected and body(answer)!=expected['expected_body']: errors.append('Complete approved body mismatch')
+         for group in expected.get('required_groups',[]):
++            group = [group] if isinstance(group, str) else group
+             if not any(word.casefold() in answer.casefold() for word in group): errors.append('Missing concept group: '+repr(group))
+         for word in expected.get('forbidden_any',[]):
+             if word.casefold() in answer.casefold(): errors.append('Obsolete/forbidden fact: '+word)
+--- before/scripts/eval/mvp-local-backend.cjs
++++ after/scripts/eval/mvp-local-backend.cjs
+@@ -4,7 +4,8 @@
+ const crypto = require('node:crypto');
+ const { AsyncLocalStorage } = require('node:async_hooks');
+ const root = path.resolve(__dirname, '../..');
+-const report = path.join(root, 'reports/mvp_launch_20261016_1227');
++const report = path.resolve(process.env.SKILLOMATE_EVAL_REPORT || path.join(root, 'reports/mvp_launch_20261017'));
++fs.mkdirSync(report, { recursive: true });
+ const dotenv = require('dotenv');
+ const configured = Object.assign({}, ...['.env', '.env.local'].filter(p => fs.existsSync(path.join(root,p))).map(p => dotenv.parse(fs.readFileSync(path.join(root,p)))));
+ const providerUrl = configured.FAL_OPENROUTER_URL || 'https://fal.run/openrouter/router/openai/v1/chat/completions';
+@@ -15,7 +16,7 @@
+ const runtimeDir = fs.mkdtempSync('/private/tmp/skillomate-mvp-');
+ fs.chmodSync(runtimeDir, 0o700);
+ const runtimePath = path.join(runtimeDir, 'runtime.json');
+-const dbName = `skillomate_mvp_eval_20261016_${Date.now()}`;
++const dbName = `skillomate_mvp_eval_20261017_${Date.now()}`;
+ const mongoUri = `mongodb://127.0.0.1:27017/${dbName}`;
+ Object.assign(process.env, { NODE_ENV:'development', HOST:'127.0.0.1', PORT:'3127', MONGODB_URI:mongoUri,
+   JWT_SECRET:crypto.randomBytes(48).toString('hex'), DISABLE_BACKGROUND_JOBS:'true', SERVE_FRONTEND:'false',
+@@ -23,9 +24,10 @@
+ // Configuration is supplied above; production dotenv files must not override local isolation.
+ dotenv.config = () => ({ parsed:{} });
+ const als = new AsyncLocalStorage();
+-let providerCalls = 0;
++const tracePath = path.join(report, 'pipeline_traces.jsonl');
++let providerCalls = fs.existsSync(tracePath) ? fs.readFileSync(tracePath, 'utf8').split('\n').filter(Boolean).map(line => JSON.parse(line)).filter(e => e.type === 'provider_invoked').length : 0;
+ function event(type,data={}) { fs.appendFileSync(path.join(report,'pipeline_traces.jsonl'),JSON.stringify({time:new Date().toISOString(),run:als.getStore()?.run||'',case:als.getStore()?.case||'',turn:als.getStore()?.turn||'',type,...data})+'\n'); }
+-function approval() { try {const p=JSON.parse(fs.readFileSync(path.join(report,'provider_approval.json'))); const hash=crypto.createHash('sha256').update(fs.readFileSync(path.join(root,'test_cases.json'))).digest('hex'); return p.approved===true && p.model===model && p.cases_sha256===hash && p.max_calls<=60 ? p : null;} catch{return null;} }
++function approval() { try {const p=JSON.parse(fs.readFileSync(path.join(report,'provider_approval.json'))); const hash=crypto.createHash('sha256').update(fs.readFileSync(path.join(root,'test_cases.json'))).digest('hex'); return p.approved===true && p.model===model && p.cases_sha256===hash && Number.isInteger(p.max_calls) && p.max_calls>0 && p.max_calls<=60 && Date.parse(p.expires_at)>Date.now() ? p : null;} catch{return null;} }
+ function allowed(host) {return ['127.0.0.1','::1','localhost'].includes(String(host)) || host==='fal.run'&&Boolean(approval());}
+ const net = require('node:net');
+ const originalConnect = net.Socket.prototype.connect;
+@@ -77,7 +79,7 @@
+   const users={};
+   // Separate users for each case avoid both state coupling and artificial rate-limit changes.
+   const cases=JSON.parse(fs.readFileSync(path.join(root,'test_cases.json'))).cases;
+-  for(const c of cases){const sessionId=crypto.randomUUID();const entitled=c.identity!=='inactive'&&c.identity!=='other_only';const granted=c.identity==='other_only'?other._id:course._id;const user=await User.create({fullName:`Synthetic ${c.id}`,email:`${c.id.toLowerCase()}@mvp.invalid`,isOnTrial:false,subscriptionStatus:'none',activeSessionId:sessionId,courseEntitlements:entitled||c.identity==='other_only'?[{course:granted,accessType:'permanent'}]:[]});users[c.id]={id:String(user._id),token:require('jsonwebtoken').sign({userId:String(user._id),sessionId},process.env.JWT_SECRET,{expiresIn:'2h'}),authorized_course_ids:entitled?[String(course._id)]:c.identity==='other_only'?[String(other._id)]:[]};}
++  for(const c of cases){const sessionId=crypto.randomUUID();const entitled=c.identity!=='inactive'&&c.identity!=='other_only';const granted=c.identity==='other_only'?other._id:course._id;const user=await User.create({fullName:`Synthetic ${c.id}`,email:`${c.id.toLowerCase()}@mvp.invalid`,isOnTrial:false,subscriptionStatus:'none',activeSessionId:sessionId,purchasedCourses:c.identity==='inactive'?[course._id]:[],courseEntitlements:c.identity==='inactive'?[{course:course._id,accessType:'yearly',expiresAt:new Date(Date.now()-86400000)}]:entitled||c.identity==='other_only'?[{course:granted,accessType:'permanent'}]:[]});users[c.id]={id:String(user._id),token:require('jsonwebtoken').sign({userId:String(user._id),sessionId},process.env.JWT_SECRET,{expiresIn:'2h'}),authorized_course_ids:entitled?[String(course._id)]:c.identity==='other_only'?[String(other._id)]:[]};}
+   const runtime={pid:process.pid,base_url:'http://127.0.0.1:3127',db_name:dbName,course_id:String(course._id),other_course_id:String(other._id),unknown_course_id:String(new mongoose.Types.ObjectId()),users,model,provider_url:providerUrl,provider_key_present:Boolean(providerKey)};
+   fs.writeFileSync(runtimePath,JSON.stringify(runtime),{mode:0o600});
+   fs.writeFileSync(path.join(report,'runtime_location.txt'),runtimePath+'\n');

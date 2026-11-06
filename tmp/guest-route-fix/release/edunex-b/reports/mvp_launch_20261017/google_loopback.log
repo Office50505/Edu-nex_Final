@@ -1,0 +1,18 @@
+✔ server exposes authenticated Google config under /api exactly once with the confirmed defaults (28.496834ms)
+✔ environment overrides control purchase configuration even when a stored purchase has an older product (5.651792ms)
+✔ config, status and verification reject unauthenticated and revoked sessions before billing work (12.837ms)
+✔ verification uses the authenticated owner and token, ignoring client-claimed product/package/status (2.711041ms)
+✔ verification rejects missing, malformed and oversized tokens and malformed JSON (5.02475ms)
+Google Play IAP operation failed (GOOGLE_PLAY_API_UNAVAILABLE)
+✔ verification errors preserve safe client codes and hide provider internals (4.067042ms)
+✔ verification rate limit applies before another verification call (6.320583ms)
+✔ status returns authenticated entitlement state without caching (1.768625ms)
+✔ notifications require Pub/Sub authentication and the correct package before processing (3.996875ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 199.36225

@@ -1,0 +1,117 @@
+{
+  "generated_at": "2026-10-15T11:33:12+05:30",
+  "task_scope": "local implementation, offline tests and historical regrade only",
+  "changed_implementation_files": [
+    {
+      "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/services/productTutorKnowledge.js",
+      "status": "new",
+      "sha256": "e4589ecb505060fdea0a0753d4d9c6e1224e2f3f0adb3bc22f312fba974ef2ce"
+    },
+    {
+      "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/knowledge/ai-product-photoshoot-ads/guidance.json",
+      "status": "new",
+      "sha256": "6af591ed710acf8437c7198d8da45a2cd2e4e0373c0f0f083435344db232b6fa"
+    },
+    {
+      "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/services/tutorKnowledge.js",
+      "status": "modified",
+      "sha256": "71232c0e11e85888864dde6561b9f127df8532dc1f5349cdfd3b595456ae366e"
+    },
+    {
+      "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/services/productTutorResponse.js",
+      "status": "new",
+      "sha256": "2b16320a32de9737a0bf3c304ae5c3ff97bb51afae854682deebca43081b747e"
+    },
+    {
+      "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/services/tutorProvider.js",
+      "status": "new",
+      "sha256": "501ed3b619515e2d8eda3a36e2acd80b99b28697de7dd9ddf5b6b5682121d064"
+    },
+    {
+      "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/services/aiTutorService.js",
+      "status": "modified",
+      "sha256": "e55c92aef91242f9b27d06e857b26ee011ab47cc970936c16c2df590002c3c1f"
+    },
+    {
+      "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/routes/ai.js",
+      "status": "modified",
+      "sha256": "9172c933b870e3ab79e53e8d6d12afec467c499ad507f406da71e02553a5dfb7"
+    },
+    {
+      "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/scripts/eval/grade_product_photoshoot_ads_results_v2.py",
+      "status": "new",
+      "sha256": "d838e7bcc63df8cfca13642f0e8d387a8ad89e9ca6b8be169d0427498e86a3a5"
+    },
+    {
+      "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/scripts/eval/README.md",
+      "status": "new",
+      "sha256": "dab91c564eb9d57525df75305899c6715c544ee0d6a30c64a7bd6cef387075d4"
+    },
+    {
+      "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-quality.test.cjs",
+      "status": "new",
+      "sha256": "6d7acde801a75c8fe01b243dc20aebced35f25db25aa5b0a5ebc97cdba94b213"
+    },
+    {
+      "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/test_product_evaluator.py",
+      "status": "new",
+      "sha256": "ba40f2e9ef459f3aebdd70a551711d59f6fbbf1908686413aa8ba4eef0de1563"
+    },
+    {
+      "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs",
+      "status": "modified",
+      "sha256": "c4799c323f2a15f98b1f0b3daec71724fee829fab2e7733047f42927e700f5c4"
+    },
+    {
+      "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/helpers/deny-network.cjs",
+      "status": "new",
+      "sha256": "67607ea4825b2e220a964da4ce06f2c13ba8ae43df88c00f1f915b3d7bfe0443"
+    }
+  ],
+  "validation": {
+    "node_passed": 117,
+    "node_failed": 0,
+    "python_passed": 25,
+    "python_failed": 0,
+    "provider_requests": 0,
+    "historical_results_preserved": true,
+    "deployed": false,
+    "committed": false,
+    "pushed": false
+  },
+  "historical_input_hashes": {
+    "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/provider_connectivity_report.md": "8882aeaeb3499cbc1022b215d8d4dd65d5cac74512465eb72860d1313094671d",
+    "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/live_evaluation_summary.md": "3db1de68373fff794327993bfe194750b4276703ccbb76a204f2c081de07a86e",
+    "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/recommended_fixes.md": "6f7c5139513aca5ee1b2a494bd9bae182ddc780a9394ab44689f81df87f12697",
+    "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/live_retry2_raw_results.json": "f36fc771a7f02b57337aae52af158bfd23df4c5b621fca1ca4b9a1b6e513d756",
+    "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/live_retry_raw_results.json": "a3c43ce0e7a1a0ec09566c0efcad90c2375aadf7d818cd70d81ba1418aafc81c",
+    "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/live_raw_results.json": "344e3786740f29676c602681d09d0861a4d41a4709e2b6e838adead8d77aa066",
+    "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/live_merged_graded_results.json": "fb538a9a55c13904896be15b32190d342525255b741e2f841db063c765d07c1e",
+    "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/live_merged_raw_results.json": "6afc2802bedab6ba583c098481541e0e1f988ec654b5bff34bfd131c10166a02",
+    "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/failure_analysis_detailed.md": "008ddcd0510c8b7b627d35dd276ee4f13822a9246cb38503e61ca4da4bf302de",
+    "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/course_routing_report.md": "be54425e88d76ddf10b4a3b8aa5439924e475316310f2a45f34f2e1e05af585e",
+    "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/regression_evidence.md": "ff43a44c3551896ca422f12dc5108160132efa933d098ee13603e99212e8cea2",
+    "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/failure_categories.json": "4704c091ec37c425845facd488066814c363401c9e52bf7cca87b4130c72f246",
+    "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/failed_test_analysis.md": "e3d2378f13a217bb06e5eaf2f5848787cbbafbfeb991b72adde882d93ee631f9",
+    "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/live_evaluation_summary_data.json": "2b248c14b37a307fcd99df66548f7dee589e177e2fc483e9df22b99b1022b088",
+    "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/live_graded_results.json": "fb50b776200aa50bdd7acfe20715dd39ad8c54da18ec869827b9359e939f83c1",
+    "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/scripts/eval/product_photoshoot_ads_test_cases.json": "4b8f22be87e1c754eccda7f5e766acf96a906f359d5fd8254a58b1e0c24b3691",
+    "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/scripts/eval/grade_product_photoshoot_ads_results.py": "798114fa88a892773821b34b7545c7b838dbf5cf048f9479a222b3a292613b7d",
+    "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/knowledge/ai-product-photoshoot-ads/training.txt": "96471b6991c3724f9b8315fc7b3d1bb73b409eb0272517432cbfdd98882127df"
+  },
+  "comparison_pdf": {
+    "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/output/pdf/skillomate-ai-tutor-quality-comparison-2026-10-15.pdf",
+    "sha256": "360b9b9091113a06fcd0d19e162c57314a28208c7c93246f5fded702f7224c67",
+    "pages": 2,
+    "visual_review": "Both rendered pages inspected; no clipping or overlap. PyMuPDF used because reportlab/Poppler unavailable."
+  },
+  "artifact_hashes": {
+    "corrected_evaluation_results.json": "a67c6462d620860d14b847f78827adb0842bd22f20ad067b988d72e3ad8bf01a",
+    "corrected_evaluation_summary.md": "8af0ff5e6f2f3da41d2e27f5ff35ede59cee64ec410d54eea0fef4c2d646c0cc",
+    "node_test_output.log": "bbd11e26a2bd702f97712ad50e27c8a8cfa5d2d72651b8e3c0fefb57b2e13560",
+    "remaining_issues.md": "58190b75bbd3b1de8006ccf8ca71f03a5fbb9c1575b15679ef564fa03a561b4e",
+    "implementation_changes.md": "3a1690de22d6d455f74e628eb066b723fdea8736a506252103bad820aaba8521",
+    "evaluator_test_output.log": "0a80ecae64df6364509f5d68899e252d4b0d1fdfbfc68f087fe8f8ebef2ed07e",
+    "regression_results.md": "b7c488325430698bae040d1479e7e0825343b8028d5664601650ad568886b097"
+  }
+}

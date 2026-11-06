@@ -40,6 +40,7 @@ function backend(options = {}) {
       }
       if (name === './productTutorState') return require('../services/productTutorState');
       if (name === './tutorProvider') return require('../services/tutorProvider');
+      if (name === './selectedLessonSummary') return require('../services/selectedLessonSummary');
       if (name.endsWith('/tutorAvailability')) return require('../services/tutorAvailability');
       if (name === './productTutorResponse') return require('../services/productTutorResponse');
       if (name.endsWith('/subscriptionAccess')) return require('../services/subscriptionAccess');

@@ -99,8 +99,8 @@ test('unknown owner and ambiguous course cannot enable a pack',()=>{
   }
 });
 
-test('provider language is Hinglish by default, with explicit English/Hindi/Marathi overrides',async()=>{
-  for(const [message,language] of [['Explain Lesson 01','hinglish'],['Explain Lesson 01 in English','english'],['Lesson 01 Hindi mein batao','hindi'],['Explain Lesson 01 in Marathi','marathi']]){
+test('provider matches English questions, with explicit English/Hindi/Marathi overrides',async()=>{
+  for(const [message,language] of [['Explain Lesson 01','english'],['Explain Lesson 01 in English','english'],['Lesson 01 Hindi mein batao','hindi'],['Explain Lesson 01 in Marathi','marathi']]){
     const api=newApi();await api.chat({courseId:local._id,message});assert.ok(api.calls.length);
     assert.ok(api.calls[0].messages.at(-1).content.includes(`Response language for this answer: ${language}`));
     assert.ok(api.calls[0].messages[0].content.includes(`Application language override for this turn: ${language}`));

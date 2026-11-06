@@ -1,0 +1,114 @@
+{
+  "createdAt": "2026-10-15T10:30:02.357735+00:00",
+  "sourceSha256": "bb92cccff13c82dba01cd97b6da69fbb9eb9bc4e4866285b4ae1c5d58fefd629",
+  "historicalFileUnchanged": true,
+  "changes": [
+    {
+      "id": "phase10_unseen_012",
+      "turn": 1,
+      "field": "camera requirement",
+      "reason": "Use literal approved FAQ source with her phone, not wrong author paraphrase the phone; complete sentence remains mandatory."
+    },
+    {
+      "id": "phase10_unseen_013",
+      "turn": 1,
+      "field": "camera requirement",
+      "reason": "Use literal approved FAQ source with her phone, not wrong author paraphrase the phone; complete sentence remains mandatory."
+    },
+    {
+      "id": "phase10_unseen_019",
+      "turn": 1,
+      "field": "corrective step",
+      "reason": "The source FAQ says generate 2–3 versions and choose closest, not a mandatory repeated sheet mention."
+    },
+    {
+      "id": "phase10_unseen_030",
+      "turn": 1,
+      "field": "required_groups",
+      "before": [
+        [
+          "Lesson 06",
+          "L06"
+        ],
+        [
+          "Lesson 07",
+          "L07"
+        ],
+        [
+          "Veo"
+        ],
+        [
+          "8"
+        ],
+        [
+          "9:16",
+          "9 : 16"
+        ]
+      ],
+      "after": [
+        [
+          "Lesson 06",
+          "L06"
+        ],
+        [
+          "Lesson 07",
+          "L07"
+        ],
+        [
+          "Omni 1.1 Flash"
+        ],
+        [
+          "8"
+        ],
+        [
+          "9:16",
+          "9 : 16"
+        ]
+      ],
+      "reason": "Approved Part D L06 records Omni 1.1 Flash / 6 sec. L07 retains 8 sec and 9:16."
+    },
+    {
+      "id": "phase10_unseen_042",
+      "turn": 1,
+      "field": "camera requirement",
+      "reason": "Use literal approved FAQ source with her phone, not wrong author paraphrase the phone; complete sentence remains mandatory."
+    },
+    {
+      "id": "phase10_unseen_042",
+      "turn": 2,
+      "field": "contextual reference",
+      "reason": "The same-lesson followup needs correct L07 context, not repetition of the numeral; explicit wrong references still fail."
+    },
+    {
+      "id": "phase10_unseen_048",
+      "turn": 1,
+      "field": "required_groups",
+      "before": [
+        [
+          "Lesson 06",
+          "L06"
+        ],
+        [
+          "Veo"
+        ],
+        [
+          "8"
+        ]
+      ],
+      "after": [
+        [
+          "Lesson 06",
+          "L06"
+        ],
+        [
+          "Omni 1.1 Flash"
+        ],
+        [
+          "6"
+        ]
+      ],
+      "reason": "Approved Part D L06 records Omni 1.1 Flash / 6 sec. L07 retains 8 sec and 9:16."
+    }
+  ],
+  "independentTemplateSlots": "35 reviewer-declared frozen known-slot expectations are attached to the corresponding turns. No runtime entity parser is used to construct these expectations."
+}

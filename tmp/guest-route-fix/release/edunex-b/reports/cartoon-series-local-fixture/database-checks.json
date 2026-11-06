@@ -1,0 +1,8 @@
+{
+  "standalone_local_mongodb": true,
+  "eight_lesson_mapping": true,
+  "two_turn_facts_persisted": true,
+  "production_registry_disabled": true,
+  "provider_key_present": true,
+  "model": "google/gemini-2.5-flash"
+}

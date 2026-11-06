@@ -32,13 +32,16 @@ export function createNativeSession({ baseUrl, storage, onChange, onExpired = ()
   }
   async function json(path, options, timeoutMs) {
     const controller = new AbortController();
+    const abort = () => controller.abort();
+    if (options.signal?.aborted) controller.abort();
+    options.signal?.addEventListener('abort', abort, { once: true });
     const timer = setTimeout(() => controller.abort(), timeoutMs);
     try {
       const response = await fetcher(`${baseUrl}${path}`, { ...options, signal: controller.signal });
       // Authentication failures are authoritative even when a proxy returns a non-JSON body.
       const data = response.status === 401 ? null : await response.json();
       return { response, data };
-    } finally { clearTimeout(timer); }
+    } finally { clearTimeout(timer); options.signal?.removeEventListener('abort', abort); }
   }
   async function refresh(version, rejectedToken) {
     assertCurrent(version);

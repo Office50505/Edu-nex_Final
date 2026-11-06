@@ -1,0 +1,343 @@
+{
+  "suite": "Phase5_five_root_cause_local_replays",
+  "rubric_version": "product-tutor-v4.0",
+  "evaluation_scope": "end_to_end",
+  "method": "offline bounded multilingual concept/negation rubric plus complete-template comparison; no LLM judging or new provider calls",
+  "limitations": [
+    "Finite semantic rules require human adjudication for unfamiliar paraphrases; they do not establish unrestricted language understanding.",
+    "Provider-labelled application answers are saved evidence, not raw upstream response envelopes.",
+    "Regrading historical text does not measure the behavior of the newly changed tutor."
+  ],
+  "summary": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "inconclusive": 0,
+    "provider_fallback": 0,
+    "provider_fallback_cases": 0,
+    "live_provider_turns": 0,
+    "local_quality_turns": 7,
+    "score_all_cases_pct": 100.0,
+    "score_executed_cases_pct": 100.0,
+    "dimension_turn_counts": {
+      "correctness": {
+        "passed": 7
+      },
+      "language": {
+        "passed": 7
+      },
+      "lesson_references": {
+        "passed": 7
+      },
+      "safety": {
+        "passed": 7
+      },
+      "prompt_accuracy": {
+        "passed": 7
+      },
+      "task_completion": {
+        "passed": 7
+      },
+      "context_retention": {}
+    }
+  },
+  "results": [
+    {
+      "id": "ppads_018",
+      "category": "lesson_4",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "How does Lesson 04 handle Diwali and wedding product photos?",
+          "answer": "Lesson 04\n\nFor wedding gift photos, use the product sheet and keep the product unchanged. Place it on soft silk cloth beside an open premium gift box with gold ribbon and a few rose petals, using soft warm light. Keep the product sharp in the foreground at realistic real-world scale.\n\nFor Diwali, use the product sheet and keep the product unchanged. Place it on a wooden table with lit clay diyas and orange marigolds behind and beside it, warm fairy lights in the background, and warm golden light. Keep the product sharp and clearly the hero in the foreground at realistic real-world scale.",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": null,
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "ppads_022",
+      "category": "troubleshooting",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "When I change colour, the product shape also changes. What is the course fix?",
+          "answer": "Lesson 04\n\nUse “Only change the colour… keep everything else exactly the same”. Preserve the same shape and details as the reference sheet.",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": null,
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "phase4_new_007",
+      "category": "troubleshooting",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "A handset keeps appearing on screen in my Lesson 07 UGC clip. What exact camera clarification from the course should I add to remove that handset?",
+          "answer": "Lesson 07\n\nAdd the course FAQ instruction: “The camera itself is her phone. NO phone visible anywhere in the frame.”",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": null,
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "ppads_conv_007",
+      "category": "multi_turn_course_isolation",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "Is this the AI Filmmaking course?",
+          "answer": "Lesson 01\n\nNo, this is not the AI Filmmaking course. This is the **AI Product Photoshoot & Ads** course.\n\nThis course teaches you how to create AI product photos, product videos, and honest UGC-style ads for your products or for clients.",
+          "status": "passed",
+          "provider_outcome": "validated_local_replacement",
+          "live_model_answer": false,
+          "template_label": null,
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        },
+        {
+          "query": "Then tell me the product video settings.",
+          "answer": "Lesson 06\n\nIn Flow choose Video → Ingredients and attach the image. Recorded course settings: 16:9, Omni 1.1 Flash, 720p, 6 sec, x1. Choose one slow movement: push-in, arc or light sweep. Keep the product perfectly still with no morphing or warping. Add music later during editing.",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": null,
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "phase4_new_002",
+      "category": "multi_turn_exact_prompt",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "In Lesson 04 I want to change the colour of the handle to cobalt blue, while preserving everything else. Explain the colour-variant workflow.",
+          "answer": "Lesson 04\n\nUse the product sheet as reference. Change only the requested part’s colour and keep everything else unchanged: shape, layout, details, text, logo, views, background and lighting. Generate a complete new sheet for each colour and use that sheet in later shots.",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": null,
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        },
+        {
+          "query": "Copy the exact L04 Colour Variant Sheet prompt, changing the handle to cobalt blue and leaving all other details untouched.",
+          "answer": "L04 Colour Variant Sheet\n\n```text\nUse the uploaded product sheet as the reference. Only change the colour of the handle to cobalt blue. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.\n```",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": "L04 Colour Variant Sheet",
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    }
+  ],
+  "provenance": {
+    "tests": {
+      "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase5_fixes_20261015_075435/offline_root_cause_test_definitions.json",
+      "sha256": "e62b05e4f3a606eb843a30d59ded4e16972df504304333a0a454162c6661c7df"
+    },
+    "raw_results": {
+      "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase5_fixes_20261015_075435/offline_root_cause_responses.json",
+      "sha256": "0d351f9fdee4e6a66205003bc25e85dc38b07c88bfce7ed1422fc38963b0a0c6"
+    },
+    "knowledge": {
+      "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/knowledge/ai-product-photoshoot-ads/training.txt",
+      "sha256": "96471b6991c3724f9b8315fc7b3d1bb73b409eb0272517432cbfdd98882127df"
+    },
+    "evaluator": {
+      "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/scripts/eval/grade_product_photoshoot_ads_results_v4.py",
+      "sha256": "d87133ca60b570d55fc836e566d3e63b45dec9fe38a58db36b2a30c2d00c8634"
+    }
+  }
+}

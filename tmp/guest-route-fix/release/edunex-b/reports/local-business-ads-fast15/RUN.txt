@@ -1,0 +1,11 @@
+Working directory: /Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b
+
+Start isolated synthetic runtime:
+SKILLOMATE_EVAL_COURSE_PACK=ai-local-business-ads SKILLOMATE_EVAL_CASES=scripts/eval/local-business-ads-fast15-cases.json SKILLOMATE_EVAL_REPORT=reports/local-business-ads-fast15 node scripts/eval/mvp-local-backend.cjs
+
+Live evaluation, ONLY after explicit approval enables the existing provider gate:
+python3 -B chatbot_eval.py --cases scripts/eval/local-business-ads-fast15-cases.json --report reports/local-business-ads-fast15 --mode live
+
+This suite has exactly 15 student questions in 13 scenarios, including two genuine two-turn business-memory scenarios.
+No provider_approval.json has been created. When explicitly authorized, the operator must bind approval to model google/gemini-2.5-flash, the SHA-256 in test_cases_frozen.sha256, max_calls=24 and a short UTC expires_at. Restart the isolated runtime if its synthetic tokens have expired.
+The synthetic course ID is not a real backend course registration.

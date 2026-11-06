@@ -37,6 +37,13 @@ function packLanguage(message, previous, defaultLanguage = 'hinglish') {
   const deliverableLanguage = text.match(/\b(english|hindi|marathi|tamil|telugu|bengali|gujarati|punjabi|kannada|malayalam|urdu|spanish|french|german|arabic)\s+(?:(?:instagram|short|simple)\s+)?(?:prompt|caption|poster|script|story|rhyme|poem|reference checklist|checklist)\b/);
   if (deliverableLanguage) return deliverableLanguage[1];
   if (/[\u0900-\u097f]/.test(message)) return 'hindi';
+  if (/\b(?:mera|meri|mere|kya|kaise|kaunsi|kaunsa|kaunse|mein|hai|hain|batao|samjhao|chahiye|nahi|nahin|agar|aur|iska|uska|yeh|karu|karo|sakta|mujhe|bhai|banao|likho|ke liye)\b/i.test(text)) return 'hinglish';
+  if (/\b(?:course|lesson|video|app|photo|image|prompt|settings)\s+me\b/i.test(text)) return 'hinglish';
+  if (/\b(?:prompt|template|line|rules?|fix|answer)\s+do\b/i.test(text)
+    && !/\b(?:what|how|why)\s+(?:does|do|did|can|could|will|would|should)\b|^\s*(?:can|could|will|would|should|does|do|did)\b/i.test(text)) return 'hinglish';
+  if (/^(?:again|continue|same again|do that|repeat|next|shorter)[.!?\s]*$/i.test(text) && previous) return previous;
+  // A pack's source language must not turn a new English question into Hinglish.
+  if (/[a-z]/i.test(text)) return 'english';
   return previous || defaultLanguage;
 }
 

@@ -1,0 +1,5 @@
+{
+  "host_type": "remote",
+  "scope": "read_only_configured_backend_catalog",
+  "matches": []
+}

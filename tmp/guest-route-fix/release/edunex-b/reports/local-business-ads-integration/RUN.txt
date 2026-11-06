@@ -1,0 +1,34 @@
+AI Local Business Ads — local terminal workflow
+
+Working directory: Untitled/edunex-b
+
+Start the isolated synthetic server (a fresh local MongoDB database, port 3127):
+SKILLOMATE_EVAL_COURSE_PACK=ai-local-business-ads SKILLOMATE_EVAL_CASES=scripts/eval/local-business-ads-cases.json SKILLOMATE_EVAL_REPORT=reports/local-business-ads-integration node scripts/eval/mvp-local-backend.cjs
+
+Offline terminal evaluation (no paid inference):
+python3 -B chatbot_eval.py --cases scripts/eval/local-business-ads-cases.json --report reports/local-business-ads-integration --mode offline
+
+Live terminal evaluation, ONLY AFTER EXPLICIT USER APPROVAL:
+python3 -B chatbot_eval.py --cases scripts/eval/local-business-ads-cases.json --report reports/local-business-ads-integration --mode live
+
+No provider_approval.json has been created. Both launcher and runner refuse paid
+inference until that gate is explicitly authorized. After approval, the operator
+must create provider_approval.json in this report directory, binding approved=true,
+model=google/gemini-2.5-flash, cases_sha256 from test_cases_frozen.sha256,
+max_calls=54, and a short UTC expires_at. Do not create it as part of preparation.
+The launcher reads it dynamically. Synthetic access tokens expire after two hours;
+restart the isolated launcher if the runtime has stopped or tokens have expired.
+Use --only LBA-01 LBA-02 ... for a smaller explicitly approved live subset.
+
+No genuine AI Local Business Ads course record was found in the configured catalog.
+The runtime course ID is synthetic and MUST NOT be used as a production course ID.
+Registering or publishing a real course remains a separate authorized action.
+
+Reusable onboarding: add a dedicated directory and index.json with slugs, source
+hashes, application policy and structured lesson/template/FAQ records; list the
+index in knowledge/course-packs.json. Each slug must correspond to a verified
+published course. No edits to other course source documents are needed.
+
+Scenario PASS for security measures actual auth/retrieval/payload behavior, not
+live answer quality. Blocked inference and fallbacks are UNTESTED. Local unit-test
+transports that throw after capturing payloads are never scored as live answers.

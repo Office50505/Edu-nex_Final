@@ -1,0 +1,153 @@
+
+
+SKILLOMATECourse Notes
+AI Cartoon Series (Golu & Chiku)  ·  Page 1
+AI Cartoon Series — Golu & Chiku
+Course Notes
+Poore course ke notes — har lesson mein kya seekha, steps, galtiyan aur aaj ka
+kaam. Running example: Golu & Chiku, Episode 1 "Chiku Aur Gayab Laddoo" aur
+rhyme "Chiku Ki Chhalaang".
+Course ka poora raasta
+Characters (sheets) → duniya (locations) → kahani (scene table) → pehla scene (start frame +
+Frames mode) → poora episode awaaz ke saath → rhyme video + troubleshooting → edit,
+thumbnail, publish → series plan.
+Tools: chat G.P.T (characters, prompts, kahani, production sheets, title), Google Flow
+(Nano Banana Pro images, Video — Frames aur Ingredients), CapCut (jodna, title card,
+music, export).
+Course ka golden rule: pehle lock, phir animate — character sheet, Master Style line aur
+location image har baar.
+Lesson 01 — Course Intro
+•Cold open: presenter khud cartoon ban jaati hai, right se bahar bhaagti hai, aur asli roop
+mein left se wapas aati hai.
+•Course kya hai: AI se apni khud ki cartoon series — bachchon ki kahaniyan aur rhymes.
+•Kiske liye: parents, teachers, aur jo bachchon ka YouTube channel shuru karna chahte
+hain.
+•Kya chahiye: drawing ya animation aana zaroori nahi — sirf laptop, Google Flow aur chat
+G.P.T.
+•Poore course mein ek series saath banegi: Golu & Chiku — end mein apna pehla episode.
+Aaj ka kaam
+Socho tumhari series kis umar ke bachchon ke liye hogi — 3, 5 ya 8 saal?
+Lesson 02 — Golu Ka Janam (Character Sheets)
+•chat G.P.T se dono characters design karwaye: Golu "The Little Explorer" (yellow t-shirt,
+blue shorts, red sandals, catchphrase "Arre waah! Ye kya hai?") aur Chiku "The Tiny
+Troublemaker" (catchphrase "Chik-chik! Pakdo mujhe!"). Har rang ka exact hex code bhi
+mila.
+•Usi chat se sheet ke prompts likhwaye — copy, Nano Banana Pro mein paste: 4 views
+(front, three-quarter, side, back) + 4 expressions.
+•chat G.P.T ne ek Master Style line di — yahi line har image aur video prompt mein jaati
+hai.
+•Test: dono sheets reference mein daal ke seedha video banaya — Golu aur Chiku dono
+same rahe.
+
+SKILLOMATECourse Notes
+AI Cartoon Series (Golu & Chiku)  ·  Page 2
+•chat G.P.T ka note: sirf text prompt se character same nahi rehta — sheets save rakho.
+Galti + fix
+Bina sheet ke "A cute Indian boy named Golu..." likha — bilkul alag 2D bachcha aaya, shirt pe
+naam tak likh diya. Fix: hamesha sheet/location reference + Master Style line.
+Aaj ka kaam
+Apne character ki sheet banao.
+Lesson 03 — Golu Ki Duniya (Locations)
+•chat G.P.T se 3 locations ke prompts: ghar (living room), mohalla (gali), school (classroom).
+Har prompt Master Style line se shuru.
+•Locations khaali rakho — koi character nahi. Yahi tumhare "sets" hain.
+•Test: Golu ki sheet + Chiku ki sheet + ghar ki image, teeno reference mein — video mein
+sofa, deewar, Golu sab same.
+•chat G.P.T ki tip: har scene mein us jagah ki image reference mein daalo, warna
+khidki-darwaza badal jaata hai.
+Galti + fix
+"Golu's house in India." bina style line aur reference ke — cartoon nahi, asli purani gali ki
+photo aa gayi. Fix: hamesha sheet/location reference + Master Style line.
+Aaj ka kaam
+Apne character ki teen jagahein banao.
+Lesson 04 — Kahani Likho
+•Usi chat mein pehla episode: "Chiku Aur Gayab Laddoo" — ek laddoo gayab, Golu ko
+lagta hai Chiku ne khaaya, sach kuch aur nikalta hai.
+•Kahani ko 8-8 sec ke 8 scenes mein toda: location, characters, ek action, chhota dialogue,
+camera.
+•chat G.P.T ne saare scenes ghar mein rakhe — kam locations = animation aasan aur
+consistent.
+•Kid check: laddoo galti se plate se gir ke roll hota hai, Golu daantta nahi pyaar se poochhta
+hai, Chiku furniture ke peeche nahi bhaagta, moral: "Bina jaane kisi ko dosh mat do."
+•Baareek baat: gira hua laddoo koi nahi khaata — bachche yahi dekh ke seekhte hain.
+Galti + fix
+Nayi chat mein sirf "Bachon ke liye ek kahani likho" — Golu-Chiku gayab, koi random
+khargosh aa gaya. Fix: hamesha sheet/location reference + Master Style line.
+Aaj ka kaam
+Apne character ki pehli kahani ke scenes banao.
+
+SKILLOMATECourse Notes
+AI Cartoon Series (Golu & Chiku)  ·  Page 3
+Lesson 05 — Pehla Scene Chala
+•Pehle start frame: chat G.P.T se Nano Banana prompt (Golu sheet + ghar image) — scene
+ka bilkul pehla moment.
+•Phir usi image ko chat G.P.T mein upload karke Scene 1 ka video prompt: ek action, abhi
+koi dialogue nahi.
+•Flow → Video → Frames mode → start frame + prompt → 8 sec. Golu move karta hai,
+kamra same rehta hai.
+•Scene 2 bhi same tareeke se.
+•Pro tip: start frame ka style zara bhi alag dikhe toh trash karo aur dobara generate — video
+usi frame se banta hai.
+Aaj ka kaam
+Apni story ke pehle do scenes banao.
+Lesson 06 — Poora Episode, Awaaz Ke Saath
+•Ek hi message mein: voice bible (Golu, Chiku, narrator — har ek ki ek fixed English voice
+line) + 8 scenes ki production sheet.
+•Har scene: start frame prompt ya "Use last frame of Scene X", aur video prompt —
+dialogue, voice line, TIMING, "only [character] speaks".
+•Pro trick: jo scene pichhle se continue hota hai, uska start frame pichhle video ka last
+frame.
+•1–2 scenes on camera, baaki off camera — phir aathon scenes jod ke 64 sec ka poora
+episode.
+•Scene 8 mein narrator moral bolta hai.
+Aaj ka kaam
+Apni story ke saare scenes voices ke saath banao aur poora episode chalao.
+Lesson 07 — Rhyme Video + Troubleshooting
+•Original rhyme "Chiku Ki Chhalaang" — 4 verse, har verse 2 lines, 8 sec mein gaane
+laayak, mohalla mein.
+•Production sheet: 4 clips; Clip 2–4 ka start frame pichhli clip ka last frame — poori rhyme
+ek flow mein.
+•Golu saare verse gaata hai, Chiku act karta hai. Har clip mein tune thodi badal sakti hai —
+music baad mein CapCut mein.
+•Troubleshooting table: problem, kyun hoti hai, aur prompt mein kaunsi line daalni hai.
+•Golden rule: characters lock karo, jagah lock karo, aur sirf utna animate karo jitna scene
+mein chahiye.
+Aaj ka kaam
+Apni original rhyme banao aur troubleshooting table save karo.
+
+SKILLOMATECourse Notes
+AI Cartoon Series (Golu & Chiku)  ·  Page 4
+Lesson 08 — Edit, Thumbnail, Publish + Final
+Project
+•CapCut: 8 clips order mein, title card ("Golu & Chiku — Episode 1"), library se halka kids
+music dialogue ke neeche, check karke 1080p export.
+•Thumbnail: chat G.P.T ka prompt + 3 references (dono sheets + episode ka ek frame) →
+"Laddoo kahan gaya?"
+•Title, description, 10 tags — bina clickbait, bina jhoothe claims.
+•Upload settings: Audience → "Yes, it's made for kids"; pehle Unlisted rakh ke check, phir
+Public.
+•Series plan: agle 10 episodes (title, story, moral) same characters aur locations mein + har
+hafte ek episode ka schedule. Tip: publish se pehle 2 episodes ready rakho.
+Aaj ka kaam
+Final project: apna pehla complete episode banao aur upload karo.
+Master Style line (is course wali)
+Style: Soft, colourful, high-quality 3D animated kids' cartoon, rounded character shapes,
+smooth clay-like textures, warm gentle lighting, expressive oversized eyes, friendly
+Indian children's animation aesthetic, clean polished rendering, consistent character
+proportions.
+Settings cheat-sheet
+KaamTool / ModeSettings
+Characters, kahani,
+prompts
+chat G.P.TEk hi chat — sab yaad rehta hai
+Character / location sheetFlow · Image · Nano Banana Pro16:9, Master Style line
+Start frameFlow · Image · Nano Banana ProSheet + location reference, 16:9
+Scene videoFlow · Video · FramesStart frame, 16:9, 8 sec, 720p
+Video bina start frame
+(test)
+Flow · Video · IngredientsSheets reference mein, 16:9, 8 sec
+ContinuityFlow · video ka last frameSave frame → agle scene ka start frame
+EditCapCutOrder, title card, music, captions, 1080p
+export
+Note: tools ke menu, model naam aur options update hote rehte hain — screen pe jo naam dikhe wahi use
+karo.

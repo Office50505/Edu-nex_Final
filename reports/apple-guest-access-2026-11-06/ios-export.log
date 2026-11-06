@@ -1,0 +1,62 @@
+Starting Metro Bundler
+
+| (node:6136) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+iOS Bundled 4236ms index.js (789 modules)
+
+› Assets (47):
+assets/ai-avatars/nex-thinking.png (233KB)
+assets/ai-avatars/nex.png (276KB)
+assets/ai-avatars/r1.jpg (17KB)
+assets/ai-avatars/r2.jpg (19KB)
+assets/ai-avatars/r3.jpg (17KB)
+assets/ai-avatars/r4.jpg (18KB)
+assets/ai-avatars/r5.jpg (19KB)
+assets/ai-avatars/r6.jpg (18KB)
+assets/ai-avatars/r7.jpg (22KB)
+assets/ai-avatars/r8.jpg (16KB)
+assets/ai-avatars/r9.jpg (18KB)
+assets/avatars/a1.jpeg (20KB)
+assets/avatars/a10.jpeg (16KB)
+assets/avatars/a11.jpeg (15KB)
+assets/avatars/a12.jpeg (17KB)
+assets/avatars/a13.jpeg (16KB)
+assets/avatars/a14.jpeg (14KB)
+assets/avatars/a15.jpeg (17KB)
+assets/avatars/a2.jpeg (14KB)
+assets/avatars/a3.jpeg (20KB)
+assets/avatars/a4.jpeg (17KB)
+assets/avatars/a5.jpeg (16KB)
+assets/avatars/a6.jpeg (19KB)
+assets/avatars/a7.jpeg (18KB)
+assets/avatars/a8.jpeg (18KB)
+assets/avatars/a9.jpeg (15KB)
+assets/skillomate-logo-dark.png (328KB)
+assets/skillomate-logo.png (436KB)
+node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/AntDesign.ttf (130KB)
+node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Entypo.ttf (66KB)
+node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/EvilIcons.ttf (13KB)
+node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Feather.ttf (56KB)
+node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome.ttf (166KB)
+node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf (134KB)
+node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf (34KB)
+node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf (203KB)
+node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome6_Brands.ttf (209KB)
+node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome6_Regular.ttf (68KB)
+node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome6_Solid.ttf (424KB)
+node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Fontisto.ttf (314KB)
+node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Foundation.ttf (57KB)
+node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf (390KB)
+node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf (1.3MB)
+node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialIcons.ttf (357KB)
+node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Octicons.ttf (69KB)
+node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/SimpleLineIcons.ttf (54KB)
+node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Zocial.ttf (26KB)
+
+› ios bundles (1):
+_expo/static/js/ios/index-8c9e5585d18235f856534feb31300cce.hbc (2.8MB)
+
+› Files (1):
+metadata.json (3.1KB)
+
+Exported: ../tmp/apple-guest-access/ios-export

@@ -1,0 +1,21 @@
+--- before/services/productTutorState.js
++++ after/services/productTutorState.js
+@@ -101,6 +101,7 @@
+   operations.push({type,...values,negated,span:[m.index,m.index+m[0].length]});
+  };
+  const replacements=[
++  /\b(?:switch|change)\s+to\s+(?!(?:a|an|the)\s+(?:(?:new|next|previous|different)\s+)?(?:product|item|object|lesson|course|topic|English|Hindi|Hinglish|explanation|language|prompt|template|caption|script|workflow|account)\b)((?:a|an|the)\s+[^;.!?।\n]+|["“‘][^"”’]+["”’])/giu,
+   /\b(?:replace|switch|change)\s+(?:it|the product)(?:\s+completely)?\s*:\s*["“‘]([^"”’]+)["”’]/giu,
+   /\b(?:new|naya|nayi)\s+(?:product|item)\s+["“‘]([^"”’]+)["”’](?=\s*[:;,]|\s+hai)/giu,
+   /\b(?:replace|switch|change)\s+(?:(?:the|my|our)\s+(?:product|item|object)|it)(?:\s+completely)?\s+(?:with|to)\s+([^;.!?।\n]+)/giu,
+--- before/services/productTutorIntent.js
++++ after/services/productTutorIntent.js
+@@ -21,7 +21,7 @@
+  const final=/\b(?:final|finale)\b|अंतिम|फाइनल/i.test(text);
+  const wholeJourney=final&&workflow&&/\b(?:from|through|pehle|photos?|sheet)\b|शुरू|फोटो/i.test(text);
+  const lessons=[...new Set([...text.matchAll(/\b(?:Lesson\s*|L)0?([1-8])\b/gi)].map(m=>Number(m[1])))];
+- const comparison=/\b(?:compare|contrast|versus|difference|distinguish|farq)\b|फर्क|फ़र्क|तुलना/i.test(text) || /\b(?:white|plain|simple)\b.*\bya\b.*\b(?:desk|scene)\b/i.test(text);
++ const comparison=/\b(?:compare|contrast|versus|difference|distinguish|farq)\b|\b(?:serve|have|play)\b.{0,30}\bdifferent\s+(?:jobs?|roles?|purposes?|functions?)\b|फर्क|फ़र्क|तुलना/i.test(text) || /\b(?:white|plain|simple)\b.*\bya\b.*\b(?:desk|scene)\b/i.test(text);
+  const decision=/\b(?:choose|select|prefer|which|kyun|pehle kya)\b|कौन|चुनूँ|पहली/i.test(text);
+  const reasoning=/\b(?:trade[- ]off|reason(?:ing)?|why|kyun|justify)\b|कारण|क्यों|वजह/i.test(text) || comparison;
+  const tasks=[...(workflow?['workflow']:[]),...(location?['prompt_location']:[]),...(comparison?['comparison']:[]),...(decision?['decision']:[]),...(reasoning?['rationale']:[])];

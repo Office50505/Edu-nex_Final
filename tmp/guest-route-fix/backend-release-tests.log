@@ -1,0 +1,41 @@
+✔ admin summary excludes embedded artwork and retains lesson counts (2.237958ms)
+✔ editor requests retain their existing full-document query (0.700917ms)
+✔ four lessons stay under 8 KB despite multi-megabyte embedded artwork (0.799166ms)
+✔ projection excludes image blobs from the MongoDB response (0.083084ms)
+✔ uploaded URLs win and shared fallback retains provider metadata (0.088333ms)
+✔ artwork endpoint only queries published courses and caches image responses (0.843041ms)
+✔ missing course/artwork and invalid IDs fail cleanly (0.827583ms)
+✔ embedded course upload takes precedence over an older URL (0.080375ms)
+✔ protected playlists retain each lessons saved notes across video providers (0.103333ms)
+✔ legacy published courses offer their first ordered lesson without an account (0.608458ms)
+✔ free courses and explicit free lessons remain public; draft and foreign lessons never do (0.115333ms)
+✔ public lesson lists disclose neither paid media nor paid notes and prompts (0.309ms)
+✔ anonymous public playback issues a scoped grant; private playback still requires auth (0.929708ms)
+✔ anonymous requests cannot grant paid, foreign, missing or unpublished lessons (0.39575ms)
+✔ public HLS rechecks publication, preview policy, lesson ownership and source before fetching (0.442875ms)
+✔ the public catalogue route has no authentication middleware and strips paid lesson sources (0.394209ms)
+✔ public course database projections avoid embedded artwork (0.06925ms)
+✔ cancelled or expired records preserve an already-paid trial window (1.057583ms)
+✔ cancelled subscriptions preserve a paid billing period (0.079959ms)
+✔ expired paid windows do not grant access (0.107292ms)
+✔ active Google Play periods grant access and revoked store state cannot use stale user status (0.639709ms)
+✔ an independent legacy billing period remains valid alongside an inactive store record (0.065833ms)
+✔ Google course access honors grace, cancellation, payment failures and expiry independently of stale user status (0.088833ms)
+✔ Google course access rejects cached product/package mismatches just like the status API (0.074333ms)
+✔ an expired legacy record cannot revive its own stale User mirror (0.049916ms)
+✔ independent Apple and Google periods survive expiry of another provider (0.0795ms)
+✔ combined access preserves Razorpay grace without borrowing it for Google (0.133333ms)
+✔ URL-only import derives readable titles and sorts numbers without changing URL bytes (2.047292ms)
+✔ mixed numbered titles and URL-only imports preserve explicit titles and reject duplicates (0.44175ms)
+✔ HLS metadata sums fractional segment durations and does not count target duration (2.0955ms)
+✔ master playlist resolves nested variant using scoped grants (0.693041ms)
+✔ live, invalid durations and recursion fail with actionable messages (0.174667ms)
+✔ Bunny metadata uses configured library credentials and returns duration only (0.248209ms)
+ℹ tests 33
+ℹ suites 0
+ℹ pass 33
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 139.703542

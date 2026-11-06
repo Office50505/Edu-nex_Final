@@ -1,0 +1,126 @@
+{
+  "createdAt": "2026-10-15T10:38:10.614216+00:00",
+  "files": [
+    {
+      "path": "services/productTutorKnowledge.js",
+      "changeType": "modified",
+      "beforeSha256": "b05b65cd697423bf5e4a200a9b76849b4b84e581daa357a25594e707aadd7f33",
+      "afterSha256": "64e56d5f05e1c68019725f1d4bb93e9a6474e90f3a016a60fc6dcff69a91a8b8",
+      "modifiedAtUtc": "2026-10-15T10:35:29.948945+00:00"
+    },
+    {
+      "path": "services/productTutorTasks.js",
+      "changeType": "modified",
+      "beforeSha256": "357b45d9011077413d52d67e1960c63bcb8c5fb3c0e6432c19662f3539720453",
+      "afterSha256": "bc7c081634d80dcea4fe5b9d96b071feacb969294631773c17face6496573d75",
+      "modifiedAtUtc": "2026-10-15T10:36:05.934612+00:00"
+    },
+    {
+      "path": "services/productTutorIntent.js",
+      "changeType": "modified",
+      "beforeSha256": "838e3e9c1a57a87b93558b339d95fb81911d72301d4daa6f0707c95e1147e6be",
+      "afterSha256": "faa16ef72dc5a196db6cc4c066ad071fc1249afb623b20df6e68199d3d21ed7d",
+      "modifiedAtUtc": "2026-10-15T10:35:29.949866+00:00"
+    },
+    {
+      "path": "services/productTutorResponse.js",
+      "changeType": "modified",
+      "beforeSha256": "f47d58e1a9e5dac5b2b58b974fdb9f69b374527ede458612bdccaa840700c441",
+      "afterSha256": "b39dbdac1e29e8e993b26365b19275468b836cd9289a0ae77a9caa51c478f0d8",
+      "modifiedAtUtc": "2026-10-15T10:31:59.320916+00:00"
+    },
+    {
+      "path": "services/tutorKnowledge.js",
+      "changeType": "modified",
+      "beforeSha256": "b8de0f8d1f15240334835f7fb1fb3b1c377e21b7a20a9d2e6b572d9dcb89025e",
+      "afterSha256": "a394cd13bb2ab3adc9936307a021dc002825e886f77c8e003cf4ee22e0959f2c",
+      "modifiedAtUtc": "2026-10-15T10:25:57.600769+00:00"
+    },
+    {
+      "path": "services/aiTutorService.js",
+      "changeType": "modified",
+      "beforeSha256": "97816797edfe6ce356b32e9baaa939dc209dba83dfb036350cd1ace2e72c02f3",
+      "afterSha256": "fccbe1b9b160f2e7d092814b4499b5967f9ecaa54226b91738493954c5a459a5",
+      "modifiedAtUtc": "2026-10-15T10:31:59.321694+00:00"
+    },
+    {
+      "path": "models/AiTutorSession.js",
+      "changeType": "modified",
+      "beforeSha256": "5a7dae016f52985e0eff67bf16ce4562becb1083376586832e5b255ab2940bcc",
+      "afterSha256": "29a73980a06f69d74ddd720f6148cc652d4b8f354cda6b72ab3f8d35c5febced",
+      "modifiedAtUtc": "2026-10-15T10:35:29.950155+00:00"
+    },
+    {
+      "path": "routes/ai.js",
+      "changeType": "modified",
+      "beforeSha256": "4926c88b3180c9a3d39c8d07a3a3ea4f89f744d1de1f2fbdf74c9e03c267958d",
+      "afterSha256": "d72d8bc900e629b80176ef5b9f6474019980741000039ebf329d50c04f29d00d",
+      "modifiedAtUtc": "2026-10-15T10:31:59.321938+00:00"
+    },
+    {
+      "path": "tests/ai-chat-history.test.cjs",
+      "changeType": "modified",
+      "beforeSha256": "bc94b25a0f180d971922d213618d182d66d2e8549657fe5099f8bd03082eadbe",
+      "afterSha256": "384dbac91d865ca6f3a7849faa0639590f6b73bde91ae9c9dd764a0bfad86814",
+      "modifiedAtUtc": "2026-10-15T10:27:07.835317+00:00"
+    },
+    {
+      "path": "services/productTutorState.js",
+      "changeType": "added",
+      "beforeSha256": null,
+      "afterSha256": "ab1eca1d42059257c346ea00f9e76428f51d99cae0ad2c4c20b2dc8a59b32703",
+      "modifiedAtUtc": "2026-10-15T10:27:29.479367+00:00"
+    },
+    {
+      "path": "services/productTutorGrounding.js",
+      "changeType": "added",
+      "beforeSha256": null,
+      "afterSha256": "ad24c1a6ab80d7abf87d20329af0bf631e51d4dbf1c5fcdff7128afc9765656b",
+      "modifiedAtUtc": "2026-10-15T10:34:12.766015+00:00"
+    },
+    {
+      "path": "tests/product-tutor-phase11.test.cjs",
+      "changeType": "added",
+      "beforeSha256": null,
+      "afterSha256": "1f688c358d148c3aea3d0d5e83e4771afff8edef4b716a10ad1eb73d04d9afcf",
+      "modifiedAtUtc": "2026-10-15T10:36:05.934859+00:00"
+    },
+    {
+      "path": "tests/ai-tutor-fixture.cjs",
+      "changeType": "added",
+      "beforeSha256": null,
+      "afterSha256": "6478cd87f39509d65632ab1b6cf40b3d93e20424451ef7f0572df1dd1be300c3",
+      "modifiedAtUtc": "2026-10-15T10:31:59.322227+00:00"
+    },
+    {
+      "path": "tests/test_product_evaluator_v7.py",
+      "changeType": "added",
+      "beforeSha256": null,
+      "afterSha256": "22fc4ef9f9e5d70386900a8d120f1a40b8b2a356c8c39ec8b2c76107dd250aed",
+      "modifiedAtUtc": "2026-10-15T10:35:29.970334+00:00"
+    },
+    {
+      "path": "scripts/eval/grade_product_photoshoot_ads_results_v7.py",
+      "changeType": "added",
+      "beforeSha256": null,
+      "afterSha256": "c805afc0c82307d5a4cd8bb29024ab7d82ee8d85e92ba086126fc82edbb87986",
+      "modifiedAtUtc": "2026-10-15T10:35:29.950411+00:00"
+    },
+    {
+      "path": "scripts/eval/product_photoshoot_ads_phase10_cases_v7.json",
+      "changeType": "added",
+      "beforeSha256": null,
+      "afterSha256": "9c099e4d582e2bf8f333e956739ef15f27af4e9121bc96a31a142f6b46f0a84a",
+      "modifiedAtUtc": "2026-10-15T10:30:02.357667+00:00"
+    },
+    {
+      "path": "scripts/eval/README_v7.md",
+      "changeType": "added",
+      "beforeSha256": null,
+      "afterSha256": "007d50d04a75ba1a399d3549ac96c745841dfad9a8a68adc93f10360474be2e4",
+      "modifiedAtUtc": "2026-10-15T10:34:49.263829+00:00"
+    }
+  ],
+  "diffBase": "Actual Phase 10 working-tree snapshots, not git HEAD (which predates earlier phases).",
+  "unrelatedExistingWorkingTreeChangesPreserved": true
+}

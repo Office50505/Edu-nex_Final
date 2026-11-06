@@ -130,7 +130,7 @@ async function recordPlayback({ user,courseId,videoId,currentTime,duration,sessi
   }
   const video=ctx.videos[index];
   const _id=rules.identity(user._id,courseId,ctx.version,video.id);
-  let saved=false, previousCoverage=0, nextCoverage=0;
+  let saved=false, previousCoverage=0, nextCoverage=0, learningActivity=false;
   for(let attempt=0;attempt<4;attempt++) {
     let old=await Learning.findById(_id).lean();
     if(!old) {
@@ -138,20 +138,32 @@ async function recordPlayback({ user,courseId,videoId,currentTime,duration,sessi
       catch(e) { if(e.code!==11000) throw e; }
       old=await Learning.findById(_id).lean();
     }
-    const next=rules.heartbeat(old,{position:Number(currentTime),duration:video.duration,now:Date.now(),sessionId:String(sessionId || 'legacy')});
+    const sample={position:Number(currentTime),duration:video.duration,now:Date.now(),sessionId:String(sessionId || 'legacy')};
+    const next=rules.heartbeat(old,sample);
     const result=await Learning.updateOne({_id,revision:old.revision},{$set:next,$inc:{revision:1}});
-    if(result.modifiedCount) {saved=true;previousCoverage=rules.covered(old.intervals,video.duration);nextCoverage=rules.covered(next.intervals,video.duration);break;}
+    if(result.modifiedCount) {
+      saved=true;previousCoverage=rules.covered(old.intervals,video.duration);nextCoverage=rules.covered(next.intervals,video.duration);
+      // Apply the same playback checks with an empty coverage set to recognize
+      // valid rewatching too, without awarding duplicate course coverage.
+      learningActivity=rules.heartbeat({...old,intervals:[]},sample).intervals.length>0;
+      break;
+    }
   }
   if(!saved) throw fail('Progress changed concurrently. Retry the next update.',409);
   const status=await state(user,ctx);
   const progress=await sync(user,ctx,status,video.id);
   const events=[];
+  if(learningActivity)events.push('learning_day');
   if(previousCoverage<10 && nextCoverage>=10)events.push('video_start');
   if(previousCoverage/video.duration<0.9 && nextCoverage/video.duration>=0.9)events.push('video_complete');
   if(status.totalLessons>0 && status.completedLessons===status.totalLessons)events.push('course_complete');
+  const eventTime=new Date();
+  const activityDate=eventTime.toISOString().slice(0,10);
   for(const event of events) {
-    const eventId=new mongoose.Types.ObjectId(rules.identity(event,user._id,courseId,ctx.version,event==='course_complete'?'course':video.id).slice(0,24));
-    await AnalyticsEvent.updateOne({_id:eventId},{$setOnInsert:{event,userId:String(user._id),courseId:String(courseId),courseTitle:ctx.course.title,videoId:video.id,watchedSeconds:nextCoverage,durationSeconds:video.duration,date:new Date().toISOString().slice(0,10),createdAt:new Date()}},{upsert:true}).catch(()=>{});
+    const eventId=new mongoose.Types.ObjectId((event==='learning_day'
+      ? rules.identity(event,user._id,activityDate)
+      : rules.identity(event,user._id,courseId,ctx.version,event==='course_complete'?'course':video.id)).slice(0,24));
+    await AnalyticsEvent.updateOne({_id:eventId},{$setOnInsert:{event,userId:String(user._id),courseId:String(courseId),courseTitle:ctx.course.title,videoId:video.id,watchedSeconds:nextCoverage,durationSeconds:video.duration,date:activityDate,createdAt:eventTime}},{upsert:true}).catch(()=>{});
   }
   return {courseId:String(courseId),progress,eligibility:status,certificate:await issue(user,ctx,status)};
 }

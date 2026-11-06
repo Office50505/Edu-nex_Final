@@ -1,0 +1,30 @@
+{
+  "correction": "CS-11 second-turn scene-aware reference grading",
+  "case_file": "scripts/eval/cartoon-series-fast15-cases-v2.json",
+  "case_sha256": "346ce72c31c7a3b4f08167e26b85298c529e416e84a904c496d84b5c080405a6",
+  "parent_sha256": "eb73038e68aa684d5e5b47bc7c7fcb50c58ea3e0f1230f128ad660f9e88f606c",
+  "requirements": [
+    "Tara sheet/reference guidance",
+    "library image/reference guidance",
+    "Momo may be omitted or mentioned conditionally when presence is unspecified",
+    "Do not require Momo unconditionally",
+    "No Golu or Chiku substitution"
+  ],
+  "regression_tests": {
+    "scene_grading_passed": 18,
+    "existing_grader_compatibility_passed": 8,
+    "failed": 0,
+    "v2_fixture_readiness_passed": 1,
+    "total_passed": 27
+  },
+  "all_original_case_and_report_hashes_preserved": true,
+  "original_knowledge_files_unchanged": true,
+  "chatbot_response_behavior_changed": false,
+  "grading_change_scope": "Opt-in scene_references criterion; original cases retain original scoring.",
+  "runtime_change_scope": "Cartoon-only launcher report allowlist includes the separate v2 report directory.",
+  "limited_live_retest_ready": "Local criteria/tests ready; requires v2 fixture backend and fresh hash-bound provider approval.",
+  "limited_live_command": "python3 -B chatbot_eval.py --cases scripts/eval/cartoon-series-fast15-cases-v2.json --report reports/cartoon-series-cs11-v2 --mode live --only CS-11",
+  "provider_calls_made": 0,
+  "live_retest_executed": false,
+  "approval_created": false
+}

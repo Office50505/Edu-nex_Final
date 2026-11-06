@@ -1,0 +1,300 @@
+TAP version 13
+# Subtest: admin summary excludes embedded artwork and retains lesson counts
+ok 1 - admin summary excludes embedded artwork and retains lesson counts
+  ---
+  duration_ms: 2.272334
+  ...
+# Subtest: editor requests retain their existing full-document query
+ok 2 - editor requests retain their existing full-document query
+  ---
+  duration_ms: 0.574042
+  ...
+# Subtest: raw URL preservation and backend validation
+ok 3 - raw URL preservation and backend validation
+  ---
+  duration_ms: 1.139208
+  ...
+# Subtest: offline conversion uses an executable bundled ffmpeg binary with an environment override
+ok 4 - offline conversion uses an executable bundled ffmpeg binary with an environment override
+  ---
+  duration_ms: 0.266792
+  ...
+# Subtest: mixed course create, serialized reopen, edit, reorder and publish retain references and IDs
+ok 5 - mixed course create, serialized reopen, edit, reorder and publish retain references and IDs
+  ---
+  duration_ms: 13.115458
+  ...
+# Subtest: legacy Bunny provider and embed inferred
+ok 6 - legacy Bunny provider and embed inferred
+  ---
+  duration_ms: 0.100833
+  ...
+# Subtest: signature verifies exact resource and query; missing keys fail closed
+ok 7 - signature verifies exact resource and query; missing keys fail closed
+  ---
+  duration_ms: 2.311625
+  ...
+# Subtest: nested playlists, keys, initialization files and segments covered
+ok 8 - nested playlists, keys, initialization files and segments covered
+  ---
+  duration_ms: 2.894792
+  ...
+# Subtest: download playlists proxy media resources through Node for FFmpeg
+ok 9 - download playlists proxy media resources through Node for FFmpeg
+  ---
+  duration_ms: 7.950166
+  ...
+# Subtest: fetch bounded and errors actionable
+ok 10 - fetch bounded and errors actionable
+  ---
+  duration_ms: 4.35475
+  ...
+# Subtest: bulk import ordering, mixed providers, exact URLs and duplicate errors
+ok 11 - bulk import ordering, mixed providers, exact URLs and duplicate errors
+  ---
+  duration_ms: 1.723
+  ...
+# Subtest: reordering retains completion version and per-lesson coverage and resume
+ok 12 - reordering retains completion version and per-lesson coverage and resume
+  ---
+  duration_ms: 0.506833
+  ...
+# Subtest: playback endpoint preserves admin protection, subscription checks and course ownership
+ok 13 - playback endpoint preserves admin protection, subscription checks and course ownership
+  ---
+  duration_ms: 1.004208
+  ...
+# Subtest: playlist requests recheck session, entitlement and published lesson before fetching media metadata
+ok 14 - playlist requests recheck session, entitlement and published lesson before fetching media metadata
+  ---
+  duration_ms: 0.820042
+  ...
+# Subtest: four lessons stay under 8 KB despite multi-megabyte embedded artwork
+ok 15 - four lessons stay under 8 KB despite multi-megabyte embedded artwork
+  ---
+  duration_ms: 1.060083
+  ...
+# Subtest: projection excludes image blobs from the MongoDB response
+ok 16 - projection excludes image blobs from the MongoDB response
+  ---
+  duration_ms: 0.128667
+  ...
+# Subtest: uploaded URLs win and shared fallback retains provider metadata
+ok 17 - uploaded URLs win and shared fallback retains provider metadata
+  ---
+  duration_ms: 0.091667
+  ...
+# Subtest: artwork endpoint only queries published courses and caches image responses
+ok 18 - artwork endpoint only queries published courses and caches image responses
+  ---
+  duration_ms: 1.130666
+  ...
+# Subtest: missing course/artwork and invalid IDs fail cleanly
+ok 19 - missing course/artwork and invalid IDs fail cleanly
+  ---
+  duration_ms: 0.417291
+  ...
+# Subtest: embedded course upload takes precedence over an older URL
+ok 20 - embedded course upload takes precedence over an older URL
+  ---
+  duration_ms: 0.061042
+  ...
+# Subtest: protected playlists retain each lessons saved notes across video providers
+ok 21 - protected playlists retain each lessons saved notes across video providers
+  ---
+  duration_ms: 0.139375
+  ...
+# Subtest: download grants are random, hashed at rest, short-lived and one-time
+ok 22 - download grants are random, hashed at rest, short-lived and one-time
+  ---
+  duration_ms: 1.571459
+  ...
+# Subtest: download grant validation rejects malformed identifiers and tokens
+ok 23 - download grant validation rejects malformed identifiers and tokens
+  ---
+  duration_ms: 0.188667
+  ...
+# Subtest: cancelling one caller aborts its network request while preserving other requests and login
+ok 24 - cancelling one caller aborts its network request while preserving other requests and login
+  ---
+  duration_ms: 5.442542
+  ...
+# Subtest: caller cancellation also aborts a stalled response body
+ok 25 - caller cancellation also aborts a stalled response body
+  ---
+  duration_ms: 1.333042
+  ...
+# Subtest: expired tutor token refreshes, rotates both tokens and retries exactly once with identical history
+ok 26 - expired tutor token refreshes, rotates both tokens and retries exactly once with identical history
+  ---
+  duration_ms: 1.562542
+  ...
+# Subtest: concurrent 401 responses share one refresh; profile updates preserve rotated credentials
+ok 27 - concurrent 401 responses share one refresh; profile updates preserve rotated credentials
+  ---
+  duration_ms: 3.301625
+  ...
+# Subtest: a successful token rotation triggers one backend entitlement synchronization callback
+ok 28 - a successful token rotation triggers one backend entitlement synchronization callback
+  ---
+  duration_ms: 0.383625
+  ...
+# Subtest: temporary refresh errors preserve login and never retry the AI request
+ok 29 - temporary refresh errors preserve login and never retry the AI request
+  ---
+  duration_ms: 0.855833
+  ...
+# Subtest: revocation, missing refresh token and a second 401 end the session without loops
+ok 30 - revocation, missing refresh token and a second 401 end the session without loops
+  ---
+  duration_ms: 1.696375
+  ...
+# Subtest: logout or account switch during refresh cannot restore or clear another session
+ok 31 - logout or account switch during refresh cannot restore or clear another session
+  ---
+  duration_ms: 2.879875
+  ...
+# Subtest: late tutor response after logout is discarded; 403 does not refresh or log out
+ok 32 - late tutor response after logout is discarded; 403 does not refresh or log out
+  ---
+  duration_ms: 0.982833
+  ...
+# Subtest: refresh timeout preserves session; response body timeout is bounded too
+ok 33 - refresh timeout preserves session; response body timeout is bounded too
+  ---
+  duration_ms: 15.91925
+  ...
+# Subtest: rotated credentials remain in memory on storage failure without silently claiming persistence
+ok 34 - rotated credentials remain in memory on storage failure without silently claiming persistence
+  ---
+  duration_ms: 0.381458
+  ...
+# Subtest: legacy published courses offer their first ordered lesson without an account
+ok 35 - legacy published courses offer their first ordered lesson without an account
+  ---
+  duration_ms: 1.595916
+  ...
+# Subtest: free courses and explicit free lessons remain public; draft and foreign lessons never do
+ok 36 - free courses and explicit free lessons remain public; draft and foreign lessons never do
+  ---
+  duration_ms: 0.214
+  ...
+# Subtest: public lesson lists disclose neither paid media nor paid notes and prompts
+ok 37 - public lesson lists disclose neither paid media nor paid notes and prompts
+  ---
+  duration_ms: 0.467834
+  ...
+# Subtest: anonymous public playback issues a scoped grant; private playback still requires auth
+ok 38 - anonymous public playback issues a scoped grant; private playback still requires auth
+  ---
+  duration_ms: 1.247333
+  ...
+# Subtest: anonymous requests cannot grant paid, foreign, missing or unpublished lessons
+ok 39 - anonymous requests cannot grant paid, foreign, missing or unpublished lessons
+  ---
+  duration_ms: 0.439375
+  ...
+# Subtest: public HLS rechecks publication, preview policy, lesson ownership and source before fetching
+ok 40 - public HLS rechecks publication, preview policy, lesson ownership and source before fetching
+  ---
+  duration_ms: 0.483042
+  ...
+# Subtest: the public catalogue route has no authentication middleware and strips paid lesson sources
+ok 41 - the public catalogue route has no authentication middleware and strips paid lesson sources
+  ---
+  duration_ms: 0.4405
+  ...
+# Subtest: public course database projections avoid embedded artwork
+ok 42 - public course database projections avoid embedded artwork
+  ---
+  duration_ms: 0.113625
+  ...
+# Subtest: cancelled or expired records preserve an already-paid trial window
+ok 43 - cancelled or expired records preserve an already-paid trial window
+  ---
+  duration_ms: 1.023875
+  ...
+# Subtest: cancelled subscriptions preserve a paid billing period
+ok 44 - cancelled subscriptions preserve a paid billing period
+  ---
+  duration_ms: 0.128833
+  ...
+# Subtest: expired paid windows do not grant access
+ok 45 - expired paid windows do not grant access
+  ---
+  duration_ms: 0.178834
+  ...
+# Subtest: active Google Play periods grant access and revoked store state cannot use stale user status
+ok 46 - active Google Play periods grant access and revoked store state cannot use stale user status
+  ---
+  duration_ms: 0.285375
+  ...
+# Subtest: an independent legacy billing period remains valid alongside an inactive store record
+ok 47 - an independent legacy billing period remains valid alongside an inactive store record
+  ---
+  duration_ms: 0.109291
+  ...
+# Subtest: Google course access honors grace, cancellation, payment failures and expiry independently of stale user status
+ok 48 - Google course access honors grace, cancellation, payment failures and expiry independently of stale user status
+  ---
+  duration_ms: 0.165
+  ...
+# Subtest: Google course access rejects cached product/package mismatches just like the status API
+ok 49 - Google course access rejects cached product/package mismatches just like the status API
+  ---
+  duration_ms: 0.128708
+  ...
+# Subtest: an expired legacy record cannot revive its own stale User mirror
+ok 50 - an expired legacy record cannot revive its own stale User mirror
+  ---
+  duration_ms: 0.110209
+  ...
+# Subtest: independent Apple and Google periods survive expiry of another provider
+ok 51 - independent Apple and Google periods survive expiry of another provider
+  ---
+  duration_ms: 0.710167
+  ...
+# Subtest: combined access preserves Razorpay grace without borrowing it for Google
+ok 52 - combined access preserves Razorpay grace without borrowing it for Google
+  ---
+  duration_ms: 0.188334
+  ...
+# Subtest: URL-only import derives readable titles and sorts numbers without changing URL bytes
+ok 53 - URL-only import derives readable titles and sorts numbers without changing URL bytes
+  ---
+  duration_ms: 2.887792
+  ...
+# Subtest: mixed numbered titles and URL-only imports preserve explicit titles and reject duplicates
+ok 54 - mixed numbered titles and URL-only imports preserve explicit titles and reject duplicates
+  ---
+  duration_ms: 0.452625
+  ...
+# Subtest: HLS metadata sums fractional segment durations and does not count target duration
+ok 55 - HLS metadata sums fractional segment durations and does not count target duration
+  ---
+  duration_ms: 3.671708
+  ...
+# Subtest: master playlist resolves nested variant using scoped grants
+ok 56 - master playlist resolves nested variant using scoped grants
+  ---
+  duration_ms: 0.732125
+  ...
+# Subtest: live, invalid durations and recursion fail with actionable messages
+ok 57 - live, invalid durations and recursion fail with actionable messages
+  ---
+  duration_ms: 0.372125
+  ...
+# Subtest: Bunny metadata uses configured library credentials and returns duration only
+ok 58 - Bunny metadata uses configured library credentials and returns duration only
+  ---
+  duration_ms: 0.865541
+  ...
+1..58
+# tests 58
+# suites 0
+# pass 58
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 400.107041

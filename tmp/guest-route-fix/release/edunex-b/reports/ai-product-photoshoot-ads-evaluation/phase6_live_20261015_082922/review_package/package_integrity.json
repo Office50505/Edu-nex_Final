@@ -1,0 +1,239 @@
+{
+  "createdAt": "2026-10-15T08:40:30.200Z",
+  "configuredSecretValueScan": "passed; configured secret values absent",
+  "environmentOrCredentialFilesIncluded": false,
+  "historicalFilesVerifiedUnchanged": 354,
+  "phase5SourceFilesMatchedValidatedHashes": true,
+  "recordedApplicationAndEvaluatorHashesUnchanged": true,
+  "scoredExternalProviderRequests": 5,
+  "preflightExternalProviderRequests": 1,
+  "applicationCodeModified": false,
+  "evaluatorCriteriaChanged": false,
+  "files": [
+    {
+      "archive": "phase6_live_results.json",
+      "bytes": 1359842,
+      "sha256": "08756b8690d4489b533f3f454e366a34f95e85afc635be8e75f71d7ebc5b4e25"
+    },
+    {
+      "archive": "phase6_live_summary.md",
+      "bytes": 6957,
+      "sha256": "cde9738f9e10778be1b924ae9827ad1e8f46b1060a2fe21a532fe0c12d2cd981"
+    },
+    {
+      "archive": "phase6_failure_analysis.md",
+      "bytes": 25177,
+      "sha256": "2e539fd4b5085743a55ae9a6b7009e035b6795698e7b50121621733f7c99ac4a"
+    },
+    {
+      "archive": "phase6_regression_results.md",
+      "bytes": 1778,
+      "sha256": "e690ebfcc487b98799905dfc6f4242faceec962c7fd60e0610393f4465fac3cb"
+    },
+    {
+      "archive": "phase6_manual_review_samples.md",
+      "bytes": 69645,
+      "sha256": "436d7a5ddd631ae9736156ac4df96ee02ff12843d72893b668ead26ab46e8847"
+    },
+    {
+      "archive": "phase6_readiness_assessment.md",
+      "bytes": 3311,
+      "sha256": "b881f896ee30d93df634d4df76c82b017159da0f0418544552e8b5313e7c4a8a"
+    },
+    {
+      "archive": "evaluation_configuration.json",
+      "bytes": 8289,
+      "sha256": "0de21fadad7c4556e43d453f4b9c12e2f7f5b493d4417ffe8d48ea142ba16f34"
+    },
+    {
+      "archive": "README.md",
+      "bytes": 2986,
+      "sha256": "7627f2a138aa252649ca9139a92d212ba8f98753b005b76b24447dcab18519b8"
+    },
+    {
+      "archive": "evidence/application_raw_results.json",
+      "bytes": 1140472,
+      "sha256": "ae4314eb6b1ba860581eb43609167ad258033bfe9678f5e18ed9e158ea370362"
+    },
+    {
+      "archive": "evidence/all_test_cases_frozen.json",
+      "bytes": 78683,
+      "sha256": "9b4fe62b3fcabc4cd651e1aca2abefc5672c0965f284187510928c3a4d1c501a"
+    },
+    {
+      "archive": "evidence/baseline80_test_cases_frozen.json",
+      "bytes": 59759,
+      "sha256": "5e2c3d54b91e8bb5eb8f184df8b81baf90a21387427c411dd0d124c8bc395b40"
+    },
+    {
+      "archive": "evidence/new20_test_cases_frozen.json",
+      "bytes": 19051,
+      "sha256": "1e3cf4fba6e350c80787a667b4d8d2c580b6b38892c9da63309d809468f701c0"
+    },
+    {
+      "archive": "evidence/new20_independent_template_expectations_frozen.json",
+      "bytes": 1199,
+      "sha256": "f83d5851a33ca753d0f3469f7869e02c3b5dc2d5fbf27e2b953994f4382628e7"
+    },
+    {
+      "archive": "evidence/original_test_cases.json",
+      "bytes": 38354,
+      "sha256": "afaf5a007ffa987581a89ace23602c9cc328d7b79060df0361a134eda252dfc0"
+    },
+    {
+      "archive": "evidence/held_out_test_cases.json",
+      "bytes": 11935,
+      "sha256": "b269ba1bac38f6faabaf60580d233547de0a950037fb14d8fb937717531c33f6"
+    },
+    {
+      "archive": "evidence/held_out_definitions_frozen.json",
+      "bytes": 11740,
+      "sha256": "6113d76a32841ddcc1a39afe8f540696e731397d95c0d69b06b1b1857875cc2e"
+    },
+    {
+      "archive": "evidence/unseen_definitions_frozen.json",
+      "bytes": 9901,
+      "sha256": "058fac590a7223029b6fcdf3bdd8bb7e439a0f10b606a931fe2ec39a8ec31184"
+    },
+    {
+      "archive": "evidence/evaluation_policy_frozen.json",
+      "bytes": 1434,
+      "sha256": "361c17c02636fc134a5112ab237bf03578c1760aacf8953d4bdc1e714dfce220"
+    },
+    {
+      "archive": "evidence/preflight_source_verification.json",
+      "bytes": 369,
+      "sha256": "45fb41c6ea7a1ba2f979c63319bf76cb0c4f8e3db9a31a9c9670370adc57c46a"
+    },
+    {
+      "archive": "evidence/connectivity_probe.json",
+      "bytes": 28599,
+      "sha256": "2b960f08708fc770b9db57f6d041c8686c086ab38bc5dd561999ba543ef4798a"
+    },
+    {
+      "archive": "evidence/historical_hashes_before.json",
+      "bytes": 65522,
+      "sha256": "dcfff94725a0a9cf8e6bc3c948b3ec6ff438e5fd14ae2a1a6bdc20b67a2f3c0d"
+    },
+    {
+      "archive": "evidence/course_asset_manifest.json",
+      "bytes": 35327,
+      "sha256": "00865e2ef981ee2e456a935b73e1952b8d06e2d20155c6a879eb4c3a74d72375"
+    },
+    {
+      "archive": "evidence/independent_template_audit.json",
+      "bytes": 183191,
+      "sha256": "a04018e39c122554a8275e469e1d8276d2122a4abbbed84357aa95affd08bf0b"
+    },
+    {
+      "archive": "evidence/independent_exact_instruction_review.json",
+      "bytes": 2311,
+      "sha256": "43f6db763120abd068331dd57521edf12cb07b105cfff8daa46ac6b708f0395d"
+    },
+    {
+      "archive": "evidence/independent_critical_safety_review.json",
+      "bytes": 14384,
+      "sha256": "6c3bd116bd58d76749c8e59a269a3a42b4d417659c05ada03f9fb690f8e0d114"
+    },
+    {
+      "archive": "evidence/v4_integrated_grades.json",
+      "bytes": 203118,
+      "sha256": "db4513b825fd55eb7bd771e6406d7c2adf6078bd43dfb808e0b13e4f40e10907"
+    },
+    {
+      "archive": "evidence/v4_model_only_grades.json",
+      "bytes": 109445,
+      "sha256": "19554ec2e02f3bfa02f7523489f1a831dff2612986fef9ae1694a990acbb6d44"
+    },
+    {
+      "archive": "evidence/node_verified_output.xml",
+      "bytes": 45770,
+      "sha256": "1c11c75851794ad92f49f7e5f2aa77e88ad407c5aead120ef874f60885e78f0f"
+    },
+    {
+      "archive": "evidence/node_verified_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "archive": "evidence/node_verified_execution.json",
+      "bytes": 36267,
+      "sha256": "502eccf658e7f5cfde7f6e6d67716e9d9e31819a89684677eee39ecc31db5232"
+    },
+    {
+      "archive": "evidence/python_verified_output.log",
+      "bytes": 13571,
+      "sha256": "90d0f8ff7a32b9e0a8b0477a7d2b1f64418f132d80be625a8fc09349c053ba8f"
+    },
+    {
+      "archive": "evidence/python_verified_stderr.log",
+      "bytes": 13571,
+      "sha256": "90d0f8ff7a32b9e0a8b0477a7d2b1f64418f132d80be625a8fc09349c053ba8f"
+    },
+    {
+      "archive": "evidence/python_verified_execution.json",
+      "bytes": 18919,
+      "sha256": "cd2c38cd401e88a9923cef923711385aa760a36b301b30c5aba3c2e3da2ff180"
+    },
+    {
+      "archive": "evidence/evaluation_runner.cjs",
+      "bytes": 16256,
+      "sha256": "be8e4cb0947f5f8112870ceafe0c3f474786af4ba00d101bd123b57e9af5e7d7"
+    },
+    {
+      "archive": "evidence/run_verified_validation.py",
+      "bytes": 2813,
+      "sha256": "81aa6a2a2de7ca567763efe40dfddbc54791cd0dafd470ae6385ad7c4070b3e0"
+    },
+    {
+      "archive": "evidence/build_phase6_reports.py",
+      "bytes": 37493,
+      "sha256": "ba53e0a19072ad5a6a403ac53d19aa75bc4fcf4fafbe29e766ef4964622c1482"
+    },
+    {
+      "archive": "evidence/package_phase6_review.cjs",
+      "bytes": 7115,
+      "sha256": "8d5c8ee26c4cfe643dbbca66a92864a2c65e38ae9ecf68b0117b88fecaefce42"
+    },
+    {
+      "archive": "reference/scripts/eval/grade_product_photoshoot_ads_results_v4.py",
+      "bytes": 33732,
+      "sha256": "d87133ca60b570d55fc836e566d3e63b45dec9fe38a58db36b2a30c2d00c8634"
+    },
+    {
+      "archive": "reference/knowledge/ai-product-photoshoot-ads/training.txt",
+      "bytes": 21621,
+      "sha256": "96471b6991c3724f9b8315fc7b3d1bb73b409eb0272517432cbfdd98882127df"
+    },
+    {
+      "archive": "reference/knowledge/ai-product-photoshoot-ads/guidance.json",
+      "bytes": 30334,
+      "sha256": "fa613e7b54779a8223831da458b14efabb4c8dddf80a817ec2da9f2b7e8c4843"
+    },
+    {
+      "archive": "reference/tests/helpers/deny-network.cjs",
+      "bytes": 563,
+      "sha256": "67607ea4825b2e220a964da4ce06f2c13ba8ae43df88c00f1f915b3d7bfe0443"
+    },
+    {
+      "archive": "reference/historical_phase4_v3_grades.json",
+      "bytes": 156473,
+      "sha256": "573da380e8bfbdc7262736b8a7a21c350f4d0f0d58a48867164e98eced8a24ee"
+    },
+    {
+      "archive": "reference/historical_phase4_independent_template_expectations.json",
+      "bytes": 42775,
+      "sha256": "c2298fc7f15dc3109ae3c8a483f9f454854e190eae62dca12f4f6bbf2b73c3b9"
+    },
+    {
+      "archive": "reference/historical_phase4_saved_response_v4_grades.json",
+      "bytes": 156709,
+      "sha256": "333652d296757d33747731aa49fc74cd8bbf2c49278c0a95dcd7cce70cd32cc4"
+    },
+    {
+      "archive": "reference/phase5_validated_implementation_manifest.json",
+      "bytes": 4577,
+      "sha256": "ae9fa8e37d30357a555e79f610475940ff683502ae4a12c267a2ee2e9650e590"
+    }
+  ]
+}

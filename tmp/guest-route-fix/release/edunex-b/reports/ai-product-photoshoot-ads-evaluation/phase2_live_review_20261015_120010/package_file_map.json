@@ -1,0 +1,154 @@
+{
+  "dir": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase2_live_review_20261015_120010",
+  "zipPath": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/Skillomate_Chatbot_Phase2_Live_Review.zip",
+  "files": [
+    {
+      "source": "fresh_live_results.json",
+      "archive": "fresh_live_results.json"
+    },
+    {
+      "source": "fresh_live_summary.md",
+      "archive": "fresh_live_summary.md"
+    },
+    {
+      "source": "fresh_failure_analysis.md",
+      "archive": "fresh_failure_analysis.md"
+    },
+    {
+      "source": "fresh_regression_results.md",
+      "archive": "fresh_regression_results.md"
+    },
+    {
+      "source": "held_out_test_results.json",
+      "archive": "held_out_test_results.json"
+    },
+    {
+      "source": "evaluation_readiness.md",
+      "archive": "evaluation_readiness.md"
+    },
+    {
+      "source": "README.md",
+      "archive": "README.md"
+    },
+    {
+      "source": "original_test_cases.json",
+      "archive": "evidence/original_test_cases.json"
+    },
+    {
+      "source": "held_out_test_cases.json",
+      "archive": "evidence/held_out_test_cases.json"
+    },
+    {
+      "source": "held_out_definitions_frozen.json",
+      "archive": "evidence/held_out_definitions_frozen.json"
+    },
+    {
+      "source": "application_raw_results.json",
+      "archive": "evidence/application_raw_results.json"
+    },
+    {
+      "source": "original_end_to_end_grades.json",
+      "archive": "evidence/original_end_to_end_grades.json"
+    },
+    {
+      "source": "held_out_end_to_end_grades.json",
+      "archive": "evidence/held_out_end_to_end_grades.json"
+    },
+    {
+      "source": "original_live_model_grades.json",
+      "archive": "evidence/original_live_model_grades.json"
+    },
+    {
+      "source": "held_out_live_model_grades.json",
+      "archive": "evidence/held_out_live_model_grades.json"
+    },
+    {
+      "source": "corrected_historical_baseline.json",
+      "archive": "evidence/corrected_historical_baseline.json"
+    },
+    {
+      "source": "execution_manifest.json",
+      "archive": "evidence/execution_manifest.json"
+    },
+    {
+      "source": "preflight_assets.json",
+      "archive": "evidence/preflight_assets.json"
+    },
+    {
+      "source": "evaluation_policy_frozen.json",
+      "archive": "evidence/evaluation_policy_frozen.json"
+    },
+    {
+      "source": "connectivity_probe.json",
+      "archive": "evidence/connectivity_probe.json"
+    },
+    {
+      "source": "controlled_fallback_results_authorized.json",
+      "archive": "evidence/controlled_fallback_results_authorized.json"
+    },
+    {
+      "source": "controlled_fallback_results.json",
+      "archive": "evidence/controlled_fallback_results.json"
+    },
+    {
+      "source": "sandbox_http_diagnostic.json",
+      "archive": "evidence/sandbox_http_diagnostic.json"
+    },
+    {
+      "source": "node_test_output.log",
+      "archive": "evidence/node_test_output.log"
+    },
+    {
+      "source": "evaluator_test_output.log",
+      "archive": "evidence/evaluator_test_output.log"
+    },
+    {
+      "source": "node_execution.json",
+      "archive": "evidence/node_execution.json"
+    },
+    {
+      "source": "evaluator_execution.json",
+      "archive": "evidence/evaluator_execution.json"
+    },
+    {
+      "source": "preservation_verification.json",
+      "archive": "evidence/preservation_verification.json"
+    },
+    {
+      "source": "independent_template_audit.json",
+      "archive": "evidence/independent_template_audit.json"
+    },
+    {
+      "source": "independent_template_audit.py",
+      "archive": "evidence/independent_template_audit.py"
+    },
+    {
+      "source": "v2_evaluator_snapshot.py",
+      "archive": "evidence/v2_evaluator_snapshot.py"
+    },
+    {
+      "source": "evaluation_runner.cjs",
+      "archive": "evidence/evaluation_runner.cjs"
+    },
+    {
+      "source": "fallback_drill_runner.cjs",
+      "archive": "evidence/fallback_drill_runner.cjs"
+    },
+    {
+      "source": "grade_and_run_regressions.py",
+      "archive": "evidence/grade_and_run_regressions.py"
+    },
+    {
+      "source": "report_generation_and_review.py",
+      "archive": "evidence/report_generation_and_review.py"
+    },
+    {
+      "source": "package_review.cjs",
+      "archive": "evidence/package_review.cjs"
+    },
+    {
+      "source": "artifact_integrity.json",
+      "archive": "artifact_integrity.json"
+    }
+  ]
+}

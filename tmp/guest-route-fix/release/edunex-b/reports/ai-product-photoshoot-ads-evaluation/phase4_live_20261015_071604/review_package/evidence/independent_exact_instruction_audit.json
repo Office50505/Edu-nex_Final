@@ -1,0 +1,31 @@
+{
+  "results": [
+    {
+      "id": "ppads_039",
+      "turn": 1,
+      "expectedExactInstructions": [
+        "The camera itself is her phone. NO phone visible anywhere in the frame."
+      ],
+      "actualAnswer": "Lesson 07\n\nAdd the course FAQ instruction: “The camera itself is her phone. NO phone visible anywhere in the frame.”",
+      "passed": true
+    },
+    {
+      "id": "phase4_new_007",
+      "turn": 1,
+      "expectedExactInstructions": [
+        "The camera itself is her phone. NO phone visible anywhere in the frame."
+      ],
+      "actualAnswer": "Lesson 07\n\nIn Flow choose Video → Ingredients and attach the face, character sheet and product sheet. Recorded settings: 9:16, 720p, 8 sec. The camera itself is the phone: no phone should appear in the frame. Use a normal home room and short dialogue written in Hindi Devanagari, based on the L05 hook. Do not present an AI actor as a real reviewing customer.",
+      "passed": false
+    },
+    {
+      "id": "ppads_conv_003",
+      "turn": 2,
+      "expectedExactInstructions": [
+        "The camera itself is her phone. NO phone visible anywhere in the frame."
+      ],
+      "actualAnswer": "Lesson 07\n\nAdd the course FAQ instruction: “The camera itself is her phone. NO phone visible anywhere in the frame.”",
+      "passed": true
+    }
+  ]
+}

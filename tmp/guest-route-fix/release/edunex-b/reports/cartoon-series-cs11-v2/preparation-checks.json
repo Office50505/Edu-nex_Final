@@ -1,0 +1,64 @@
+{
+  "checked_at_utc": "2026-10-24T06:00:43.909422+00:00",
+  "checks": [
+    {
+      "label": "backend-running",
+      "passed": true
+    },
+    {
+      "label": "isolated-database-connected",
+      "passed": true
+    },
+    {
+      "label": "CS-11-authentication",
+      "passed": true
+    },
+    {
+      "label": "unauthenticated-rejected",
+      "passed": true
+    },
+    {
+      "label": "invalid-session-rejected",
+      "passed": true
+    },
+    {
+      "label": "CS-11-entitlement",
+      "passed": true
+    },
+    {
+      "label": "other-course-entitlement-denied",
+      "passed": true
+    },
+    {
+      "label": "only-CS-11-two-turns",
+      "passed": true
+    },
+    {
+      "label": "zero-provider-requests",
+      "passed": true
+    },
+    {
+      "label": "prior-reports-and-knowledge-unchanged",
+      "passed": true
+    }
+  ],
+  "case_sha256": "346ce72c31c7a3b4f08167e26b85298c529e416e84a904c496d84b5c080405a6",
+  "fixture_course_id": "6adc4972149b352300148646",
+  "fixture_slug": "local-fixture-ai-cartoon-series",
+  "database": "skillomate_mvp_eval_cartoon_fixture_1792821618589_40fd9a22",
+  "endpoint": "http://127.0.0.1:3128",
+  "model": "google/gemini-2.5-flash",
+  "provider_gateway": "https://fal.run/openrouter/router/openai/v1/chat/completions",
+  "credentials_present": true,
+  "runtime_path": "/private/tmp/skillomate-mvp-bCkTwt/runtime.json",
+  "approval_exists": false,
+  "v2_provider_attempts": 0,
+  "v2_blocked_attempts": 0,
+  "v1_historical_attempts": 12,
+  "selected_scenarios": [
+    "CS-11"
+  ],
+  "selected_turns": 2,
+  "live_retest_executed": false,
+  "production_accessed": false
+}

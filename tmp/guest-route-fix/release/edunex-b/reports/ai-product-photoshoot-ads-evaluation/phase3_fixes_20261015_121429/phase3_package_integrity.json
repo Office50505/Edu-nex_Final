@@ -1,0 +1,220 @@
+{
+  "verifiedAt": "2026-10-15T07:08:51.943Z",
+  "secretValueScan": "passed; configured credential values absent",
+  "excluded": "Environment and credential files, real learner data and unrelated project file contents",
+  "historicalFilesVerifiedUnchanged": 91,
+  "sourceFilesMatchedValidatedHashes": true,
+  "externalProviderRequests": 0,
+  "comparisonPdf": {
+    "pages": 2,
+    "visualReview": "Both rendered pages inspected: legible, no clipping or overlap.",
+    "renderer": "PyMuPDF (available locally; reportlab/Poppler unavailable)"
+  },
+  "files": [
+    {
+      "archive": "phase3_implementation_report.md",
+      "sha256": "f2bb0774fdf12613c9ed2f0bcd462dc3bc488a7e1959bd84bbc0c88f2b6db2cf",
+      "bytes": 7461
+    },
+    {
+      "archive": "phase3_targeted_test_results.json",
+      "sha256": "d23cfb7f839a62cde66cd7738bb02723f689f98d5bc8e6fe8617432675cefdbd",
+      "bytes": 104199
+    },
+    {
+      "archive": "phase3_regression_results.md",
+      "sha256": "cef88f280fba91e7b798912d6634de9aea4ffebf4f324dad2c46fc2314687078",
+      "bytes": 3497
+    },
+    {
+      "archive": "phase3_remaining_issues.md",
+      "sha256": "f6ad3ae26835b8c0d1ad53b2a32fbf46cde978d91225c2eaf8fe038bf4a39317",
+      "bytes": 2880
+    },
+    {
+      "archive": "README.md",
+      "sha256": "7520f13c02d434527c336ad9b675dcc726dc756cc39c04c5440f25ab60d404ad",
+      "bytes": 1577
+    },
+    {
+      "archive": "skillomate-phase3-fix-comparison-20261015.pdf",
+      "sha256": "d49f7aff4381e941650a1a5bb756972e222e257a3c11642148e02cf02de6579e",
+      "bytes": 18167
+    },
+    {
+      "archive": "phase3_changes.patch",
+      "sha256": "f4d1cb02f9786d58422b21b43d70e690e92e4e3045902e312ec83d103ca1e13d",
+      "bytes": 142601
+    },
+    {
+      "archive": "source/services/productTutorKnowledge.js",
+      "sha256": "64f228a08b34299f94277521a57d805bd689266e7de008bbedf823909c2f1f35",
+      "bytes": 18220
+    },
+    {
+      "archive": "source/services/productTutorResponse.js",
+      "sha256": "8cd21492240d6af58c6736b35dc6180b3a4380f959a5dda06ada8ac739450bde",
+      "bytes": 15018
+    },
+    {
+      "archive": "source/services/productTutorTasks.js",
+      "sha256": "bcc5b5dbd1fa6dec5b716ecf85ff77ccf87f15f76a05a248b4fef9969f0e7b08",
+      "bytes": 10098
+    },
+    {
+      "archive": "source/services/tutorKnowledge.js",
+      "sha256": "a411d73f309491d16c1ac49f1728d521a7118357325b3cd8c7d0c3abb3e7af1f",
+      "bytes": 18233
+    },
+    {
+      "archive": "source/services/aiTutorService.js",
+      "sha256": "5f3bb1819b40dda96d836e8f7be23cace9f24a74dfd23a463b3304a112a4e20d",
+      "bytes": 76404
+    },
+    {
+      "archive": "source/routes/ai.js",
+      "sha256": "9aaad4e17231eff87b0fd63d8ab94227f48a7fb813b3f8ebe18760d705273c9d",
+      "bytes": 13833
+    },
+    {
+      "archive": "source/models/AiTutorSession.js",
+      "sha256": "627ff1c8ab2930e9f740c82104a303c87bb24a627a89f738921eba38444bbefe",
+      "bytes": 1299
+    },
+    {
+      "archive": "source/knowledge/ai-product-photoshoot-ads/guidance.json",
+      "sha256": "9bc8c1a83461bb38b4fabf3fe9866d828836601400e1428df1ce95dbfe1ca4f1",
+      "bytes": 27080
+    },
+    {
+      "archive": "source/scripts/eval/grade_product_photoshoot_ads_results_v3.py",
+      "sha256": "0585242679ac4edce267c033556cc108d0e18f79d285cd2a745bfe4552cda409",
+      "bytes": 27930
+    },
+    {
+      "archive": "source/scripts/eval/README.md",
+      "sha256": "4dadf3de8739185fe315a00d80ccc1df581e818636ae4238c20ba3c58442d1a0",
+      "bytes": 3906
+    },
+    {
+      "archive": "source/tests/product-tutor-quality.test.cjs",
+      "sha256": "55b388805edec37d8aefb06db656396d14eeb0872d12688db052dace94a8832f",
+      "bytes": 12862
+    },
+    {
+      "archive": "source/tests/ai-chat-history.test.cjs",
+      "sha256": "d741170a5e55468ca55f108a07fa70edbd1ab31b274d70475c732ee60b6ac4d8",
+      "bytes": 38812
+    },
+    {
+      "archive": "source/tests/product-tutor-phase3.test.cjs",
+      "sha256": "9802722a948bfd13e591d300777d730a60cc7c4efaf5f49accb1cd37fba4232f",
+      "bytes": 11409
+    },
+    {
+      "archive": "source/tests/test_product_evaluator_v3.py",
+      "sha256": "c9a9f4f094876c07278ed9811189e6c2b26bd5c6210f58212612c92d054a3657",
+      "bytes": 10480
+    },
+    {
+      "archive": "evidence/node_verified_output.xml",
+      "sha256": "7563e93fa61c686c0644503c8c26ec320e0ae76300258915459c06833659516b",
+      "bytes": 36488
+    },
+    {
+      "archive": "evidence/node_verified_stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "archive": "evidence/node_verified_execution.json",
+      "sha256": "de65325230f93d95ef779e9a16dc4a4dc16c8da76125e8cb5792840ee5b97534",
+      "bytes": 28979
+    },
+    {
+      "archive": "evidence/python_verified_output.log",
+      "sha256": "086e282d0782469dd58676c66aea89eda9525f0feaf238ebbf26dc180334f707",
+      "bytes": 7611
+    },
+    {
+      "archive": "evidence/python_verified_stderr.log",
+      "sha256": "086e282d0782469dd58676c66aea89eda9525f0feaf238ebbf26dc180334f707",
+      "bytes": 7611
+    },
+    {
+      "archive": "evidence/python_verified_execution.json",
+      "sha256": "3ad93bd256b16cdb3723d29edacd13beefb01927dc961e334f9b54b58ad74d89",
+      "bytes": 10783
+    },
+    {
+      "archive": "evidence/offline_template_replay_results_final.json",
+      "sha256": "0747b87f736ebc5de890d8bbc909a03ed03135eef3ea5e2f33c27daf0feffb59",
+      "bytes": 45666
+    },
+    {
+      "archive": "evidence/phase2_saved_response_regrade_v3.json",
+      "sha256": "146042324a3d05811878746ec1ac53612bc83e2cf0763b175933909639ab1943",
+      "bytes": 152947
+    },
+    {
+      "archive": "evidence/phase3_manifest_before.json",
+      "sha256": "71528d4c2843e5b8b3b82cdd73c2c56c7c4eb1dd1e70bafd0b57723224103652",
+      "bytes": 19299
+    },
+    {
+      "archive": "evidence/phase3_validation_manifest.json",
+      "sha256": "fec1cf53659a4e612b1ce03daaa8a13c6d65fc1700f8d8ed5fd9b5ac217bc162",
+      "bytes": 5977
+    },
+    {
+      "archive": "evidence/offline_template_replay_final.cjs",
+      "sha256": "772381ee04767a429b85083846cd24ed19adaa675b4e605243d490f10e69539b",
+      "bytes": 2612
+    },
+    {
+      "archive": "evidence/run_verified_validation.py",
+      "sha256": "94746a6d6dfcd1b15f1c7dbfc408cad278b636cf5c3aca8d1660d95a1af94881",
+      "bytes": 2775
+    },
+    {
+      "archive": "evidence/generate_phase3_reports.py",
+      "sha256": "f1e8937114055fe98444e4b8c67f1d21f3cc2b08a3b5a88517358f72dca8ae28",
+      "bytes": 21216
+    },
+    {
+      "archive": "evidence/create_comparison_pdf.py",
+      "sha256": "3f15a62f4d46c867644ac9bdd0a76d37bfb176161341c84bffbe7488768d66e8",
+      "bytes": 6006
+    },
+    {
+      "archive": "evidence/package_phase3_review.cjs",
+      "sha256": "2e74b819fa3b3f3ea107acca4606fa7898459c928614bf2b43f00c1dfb82f2dd",
+      "bytes": 5528
+    },
+    {
+      "archive": "reference/knowledge/ai-product-photoshoot-ads/training.txt",
+      "sha256": "96471b6991c3724f9b8315fc7b3d1bb73b409eb0272517432cbfdd98882127df",
+      "bytes": 21621
+    },
+    {
+      "archive": "reference/scripts/eval/grade_product_photoshoot_ads_results_v2.py",
+      "sha256": "d838e7bcc63df8cfca13642f0e8d387a8ad89e9ca6b8be169d0427498e86a3a5",
+      "bytes": 20697
+    },
+    {
+      "archive": "reference/scripts/eval/product_photoshoot_ads_test_cases.json",
+      "sha256": "4b8f22be87e1c754eccda7f5e766acf96a906f359d5fd8254a58b1e0c24b3691",
+      "bytes": 25844
+    },
+    {
+      "archive": "reference/tests/test_product_evaluator.py",
+      "sha256": "ba40f2e9ef459f3aebdd70a551711d59f6fbbf1908686413aa8ba4eef0de1563",
+      "bytes": 11483
+    },
+    {
+      "archive": "reference/tests/helpers/deny-network.cjs",
+      "sha256": "67607ea4825b2e220a964da4ce06f2c13ba8ae43df88c00f1f915b3d7bfe0443",
+      "bytes": 563
+    }
+  ]
+}
