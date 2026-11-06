@@ -277,7 +277,7 @@ test('Skillomate plan questions get current one-time access facts', () => {
   assert.match(hinglish, /30 days/);
   assert.match(hinglish, /all Skillomate courses/);
   assert.match(hinglish, /PhonePe one-time payment/i);
-  assert.match(hinglish, /Auto-renewal\/mandate nahi/i);
+  assert.match(hinglish, /Auto-renewal\/mandate nahi|does not create an auto-renewing mandate/i);
   assert.doesNotMatch(hinglish, /specific course prices ki jaankari nahi|check kar sakte/i);
 
   const english = skillomatePlanDirectReply('What is the Skillomate subscription plan?');
@@ -290,7 +290,10 @@ test('Skillomate plan questions get current one-time access facts', () => {
 test('Skillomate platform questions get deterministic product facts', () => {
   assert.match(skillomatePlatformDirectReply('How do I create account and setup profile on Skillomate?'), /mobile number.*OTP|OTP.*mobile number/i);
   assert.match(skillomatePlatformDirectReply('I paid but course access is not active'), /same mobile number|payment reference/i);
-  assert.match(skillomatePlatformDirectReply('Refund kab mil sakta hai?'), /duplicate|access.*deliver|support@skillomate\.in/i);
+  // A generic refund question could concern the learner's own business.
+  const ambiguousRefund = skillomatePlatformDirectReply('Refund kab mil sakta hai?');
+  assert.match(ambiguousRefund, /Skillomate.*business|Skillomate.*another service/i);
+  assert.match(skillomatePlatformDirectReply('Skillomate refund kab mil sakta hai?'), /duplicate|access.*deliver|support@skillomate\.in/i);
   assert.match(skillomatePlatformDirectReply('is certificate professional accreditation?'), /not.*professional accreditation/i);
   assert.match(skillomatePlatformDirectReply('support email and timing batao'), /support@skillomate\.in/i);
   assert.match(skillomatePlatformDirectReply('Who will win the next cricket world cup?'), /Skillomate courses/i);

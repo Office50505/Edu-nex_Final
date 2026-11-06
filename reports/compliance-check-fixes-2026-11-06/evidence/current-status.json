@@ -1,0 +1,52 @@
+{
+  "date": "2026-11-06",
+  "broaderPreviouslyFailingSuite": {
+    "passed": 56,
+    "failed": 0
+  },
+  "fullMobileSuite": {
+    "passed": 187,
+    "failed": 0
+  },
+  "combinedSelectedBackendSuite": {
+    "passed": 246,
+    "failed": 0
+  },
+  "filesChangedSincePreviousHandoff": [
+    "edunex-b/tests/app-store-mobile-compliance.test.cjs"
+  ],
+  "appRuntimeChangedByTestFix": false,
+  "appStoreBuild": {
+    "version": "1.0",
+    "build": "34",
+    "status": "Ready to Submit",
+    "id": "f855b4e9-2a6f-4d0b-ba2d-a33219975b61",
+    "bundleId": "com.alihussainkhan.edunexfinal",
+    "sdkBuild": "23F81a",
+    "minimumIos": "16.4",
+    "architectures": "arm64",
+    "deviceFamily": [
+      "iPhone",
+      "iPad"
+    ],
+    "getTaskAllow": false,
+    "usesNonExemptEncryption": false
+  },
+  "publicPrivacyPage": "Still old September 2026 wording after reload",
+  "productionAccess": {
+    "awsCliAvailable": false,
+    "awsCredentialFilesOrEnvironmentAvailable": false,
+    "expectedSshKeyAvailable": false
+  },
+  "productionDeploymentPerformed": false,
+  "finalDeviceTestsVerified": false,
+  "submittedToReview": false,
+  "selectedSubmissionBuild": "34",
+  "selectionVerifiedAfterReload": true,
+  "draftReviewNotesSaved": true,
+  "draftNotesVerifiedAfterReload": true,
+  "reviewNotesCharacters": 3643,
+  "deploymentOwnerConfirmed": "DevOps",
+  "currentRuntimeCommit": "975a24f59079f4f08d15afc0c4cdc49fc957dbb8",
+  "deploymentConfirmed": false
+}

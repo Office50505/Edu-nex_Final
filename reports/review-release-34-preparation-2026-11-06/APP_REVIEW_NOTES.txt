@@ -1,37 +1,30 @@
-Skillomate provides paid AI video courses, learning progress, offline lessons and Nex AI tutoring.
+DRAFT: Build 34 is selected. Production deployment confirmation, final-device QA and the updated recording are pending. This version has not been resubmitted. Finalize the evidence before review.
 
-GUEST ACCESS (no account required)
-Launch the app without signing in. If the sign-in screen is shown, choose "Continue as Guest". Browse Home/Courses, open a course, and view its description and lesson list without supplying personal information. Paid lessons remain locked for guests; signing in alone does not grant membership.
+PURPOSE / AUDIENCE
+Skillomate is an education service for learners aged 13+ in India, with practical AI video courses, lesson materials, learning progress and optional Nex AI tutoring. It does not promise employment or income.
 
-ACCOUNT AND PAID FEATURES
-Use the review account supplied in the Sign-In Information fields to test protected membership features. With an active entitlement, open a course and play a lesson to review playback and saved progress. Profile, wishlist, downloads, certificates and account controls use the signed-in account. The review credentials are provided separately, not in these notes.
+DEMONSTRATION
+The earlier attached recording covers build 29. DevOps will provide a physical-device recording of the corrected candidate on the latest supported OS, starting with app launch and showing registration, login, paid access/subscription terms, AI/reporting controls and account deletion. Replace this draft reminder with the verified recording attachment or accessible link before resubmission.
 
-APPLE IN-APP PURCHASE
-The membership screen includes the Apple subscription offer, localized price/renewal terms, "Restore Purchases" and "Refresh Access". Restore uses verified Apple entitlements. Existing eligible members can sign in and refresh access. Apple subscriptions are managed through the App Store subscription-management link. Privacy and terms are available from the membership screen.
+GUEST FLOW
+Launch without signing in; if the login screen appears, choose Continue as Guest. Browse Home/Courses, course descriptions and lesson lists without personal information. Paid lessons stay locked. Signing in alone does not grant membership.
 
-OPTIONAL AI DATA SHARING
-In Nex AI or lesson Course AI, the first send checks the current data-sharing choice. Before external AI processing, the app identifies the AI providers and shared information and offers "Allow AI", "Not now" and the privacy-policy link. Declining leaves course access available. Manage or withdraw permission under Nex AI > Chat history > AI Data Controls > AI data sharing permission. Delete AI history is available separately there. Profile, contact, demographic, membership and payment records are not automatically attached to external AI requests; personal information users type into messages can still be shared.
+REVIEW ACCOUNT / SETUP
+Use the credentials in the separate Sign-In Information fields to test account features. DevOps must verify the review account and active entitlement without OTP obstruction before resubmission. With verified membership, open a course and play a lesson; review materials, progress, downloads, wishlist and certificates.
+
+IAP / PAID ACCESS
+Skillomate Premium Monthly uses Apple In-App Purchase (com.skillomate.premium.monthly). Open membership from a locked lesson or profile membership controls. The offer shows its title, duration, localized price, applicable introductory/renewal terms, Terms of Use and privacy links. Restore Purchases and Refresh Access are available. Apple subscriptions are managed through the App Store management link. Test purchase/restore using the sandbox and verified server entitlements.
+
+OPTIONAL AI
+The first send checks permission before external processing. The notice identifies providers/data and offers Allow AI, Not now and Privacy policy. Declining preserves course access. Manage or withdraw permission at Nex AI > Chat history > AI Data Controls > AI data sharing permission; delete saved history separately there. Responses can be reported from their report controls. No public user feed or user-to-user chat is provided. Automatic profile/contact/demographic/billing context is excluded from model requests; information typed in messages may still be shared.
 
 ACCOUNT DELETION
-Profile > Delete Account offers in-app deletion after password verification and typed DELETE confirmation. Apple-billed subscriptions are managed separately; the app provides the subscription-management link and warning.
+Profile > Delete Account requires password verification and typed DELETE confirmation. Use a disposable account for testing. Apple subscription cancellation is separate; the app provides its warning and management link.
 
-AGE AND PRIVACY
-The age rating uses the 13+ override to match the minimum-age terms, with Apple's regional equivalents. The App Store privacy answers include account-linked optional profile-photo uploads, age/gender data, learning activity, AI/user content and support diagnostics. Optional profile photos use the system picker.
+SERVICES / REGIONS
+AWS hosting/S3/CloudFront, MongoDB, MSG91 phone verification, Apple IAP/status verification, and fal.ai/OpenRouter plus the disclosed model provider (Google Gemini by default) support the service. India phone numbers are used for registration; Apple prices, currency and offer eligibility depend on the storefront. Separate web/Android billing does not replace iOS StoreKit.
 
-REVIEW SUPPORT
-Please use the App Review contact information if assistance is needed. The requested physical-device recording must be supplied in the review attachment/link area before resubmission.
+CONTENT / METADATA
+This is an education service, not regulated medical, financial-trading or gambling functionality. App Information contains the developer's content-rights declaration; supply applicable licence/authorization evidence where required. The 13+ override and corrected privacy label are saved. Verify final screenshots, archive privacy/SDK details, regional availability and all recording/access evidence before resubmitting.
 
-PURPOSE AND TARGET AUDIENCE
-Skillomate is an education service for learners aged 13 and above who want structured, practical instruction in AI filmmaking, content creation and related tools. It combines course videos/materials, saved learning progress and optional course-aware tutoring. It does not promise employment or income results.
-
-EXTERNAL SERVICES
-Core infrastructure uses AWS hosting, S3/CloudFront media delivery and MongoDB storage. Phone authentication uses MSG91. iOS digital membership uses Apple In-App Purchase and App Store transaction/status verification. Nex AI uses fal.ai/OpenRouter and the configured model provider identified in the permission notice (Google Gemini by default). Separate web/Android billing integrations are not substitutes for the iOS StoreKit purchase flow.
-
-REGIONAL INFORMATION
-The published terms identify India as the intended service market, and account registration uses Indian phone numbers. StoreKit prices, offer eligibility, currency and renewal terms depend on the App Store account/storefront and are displayed by Apple. The review account supplied separately supports review of account-based features.
-
-CONTENT RIGHTS AND REGULATED FEATURES
-This is an education service, with no medical diagnosis, regulated financial trading or gambling functionality identified. App Store Connect records the developer's declaration of necessary third-party content rights. Any applicable authorization/licence evidence requested for protected course or media assets must accompany the final submission.
-
-IN-APP PURCHASE OVERVIEW
-The Skillomate Premium Monthly subscription provides eligible paid membership access. Navigate to the membership screen from a locked paid lesson or the profile membership controls. The app shows the applicable App Store price and terms, purchase, Restore Purchases, Refresh Access and subscription-management controls.
+For assistance use the App Review contact information above.

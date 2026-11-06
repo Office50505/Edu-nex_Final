@@ -297,6 +297,236 @@ index 179f0bf..9a95064 100644
 -  return { answer, messageId: data?.messageId || null, provider: data?.provider || null, outcome: data?.outcome || null, notice: data.notice || null, sources: Array.isArray(data.sources) ? data.sources : [] };
 +  return { answer, privateAccount: data?.privateAccount === true, messageId: data?.messageId || null, provider: data?.provider || null, outcome: data?.outcome || null, notice: data.notice || null, sources: Array.isArray(data.sources) ? data.sources : [] };
  }
+diff --git a/appcopyai/services/aiConsent.js b/appcopyai/services/aiConsent.js
+new file mode 100644
+index 0000000..15a32fa
+--- /dev/null
++++ b/appcopyai/services/aiConsent.js
+@@ -0,0 +1,42 @@
++// Server records are authoritative. Never persist an "allowed" shortcut locally.
++function changed() { return Object.assign(new Error('The signed-in account changed.'), { code: 'SESSION_CHANGED' }); }
++export function assertAiAccount(session, user) {
++  const current = session?.getUser();
++  if (!current || !user?._id || current._id !== user._id || current.sessionId !== user.sessionId) throw changed();
++}
++function checkedState(state) {
++  // Fail closed against the old backend that unconditionally returned granted:true.
++  if (state?.consentRequired !== true || typeof state.granted !== 'boolean'
++    || !state.policyVersion || !state.providerVersion || !state.disclosure
++    || !Array.isArray(state.providerNames) || !state.providerNames.length) {
++    throw Object.assign(new Error('AI privacy settings are unavailable. Please try again later.'), { code: 'AI_CONSENT_UNAVAILABLE' });
++  }
++  return state;
++}
++export async function readAiConsent({ session, user }) {
++  assertAiAccount(session, user);
++  const state = checkedState(await session.requestJson('/api/ai/consent', { method: 'GET' }));
++  assertAiAccount(session, user);
++  return state;
++}
++export async function saveAiConsent({ session, user, state, granted }) {
++  assertAiAccount(session, user);
++  const saved = checkedState(await session.requestJson('/api/ai/consent', {
++    method: 'PUT', headers: { 'Content-Type': 'application/json' },
++    body: JSON.stringify({ granted, policyVersion: state.policyVersion, providerVersion: state.providerVersion }),
++  }));
++  assertAiAccount(session, user);
++  if (saved.granted !== granted || (granted && (!saved.decidedAt
++    || saved.policyVersion !== state.policyVersion || saved.providerVersion !== state.providerVersion))) {
++    throw new Error('AI privacy choice could not be saved. Please review the current information and try again.');
++  }
++  return saved;
++}
++export async function ensureAiConsent({ session, user, decide }) {
++  const state = await readAiConsent({ session, user });
++  if (state.granted && state.decidedAt) return state;
++  const allowed = await decide(state);
++  assertAiAccount(session, user);
++  await saveAiConsent({ session, user, state, granted: allowed === true });
++  if (allowed !== true) throw Object.assign(new Error('AI data sharing is off. You can continue using your courses.'), { code: 'AI_CONSENT_DECLINED' });
++}
+diff --git a/appcopyai/services/aiConsentPrompt.js b/appcopyai/services/aiConsentPrompt.js
+new file mode 100644
+index 0000000..a08cf8e
+--- /dev/null
++++ b/appcopyai/services/aiConsentPrompt.js
+@@ -0,0 +1,33 @@
++import { Alert, Linking } from 'react-native';
++import { readAiConsent, saveAiConsent } from './aiConsent';
++
++export function askAiConsent(state) {
++  return new Promise(resolve => {
++    Alert.alert('Allow AI data sharing?', state.disclosure, [
++      { text: 'Not now', style: 'cancel', onPress: () => resolve(false) },
++      { text: 'Privacy policy', onPress: () => {
++        // Returning to chat never implies consent; the user can send again.
++        Linking.openURL('https://skillomate.in/privacy').catch(() => {});
++        resolve(false);
++      } },
++      { text: 'Allow AI', onPress: () => resolve(true) },
++    ], { cancelable: true, onDismiss: () => resolve(false) });
++  });
++}
++export async function manageAiConsent({ session, user }) {
++  try {
++    const state = await readAiConsent({ session, user });
++    const granted = state.granted
++      ? await new Promise(resolve => Alert.alert('AI data sharing is on', `${state.disclosure}\n\nWithdraw permission to stop future AI requests?`, [
++        { text: 'Keep enabled', style: 'cancel', onPress: () => resolve(null) },
++        { text: 'Withdraw permission', style: 'destructive', onPress: () => resolve(false) },
++      ], { cancelable: true, onDismiss: () => resolve(null) }))
++      : await askAiConsent(state);
++    if (granted === null) return;
++    await saveAiConsent({ session, user, state, granted });
++    Alert.alert(granted ? 'AI data sharing enabled' : 'AI data sharing off', granted
++      ? 'You can now use Nex AI.' : 'Future AI requests are blocked. Your course access is unchanged. Delete AI history separately to remove saved chats.');
++  } catch (error) {
++    Alert.alert('AI privacy settings', error.message || 'Could not save your choice. Please try again.');
++  }
++}
+diff --git a/appcopyai/tests/aiConsent.test.js b/appcopyai/tests/aiConsent.test.js
+new file mode 100644
+index 0000000..902a88a
+--- /dev/null
++++ b/appcopyai/tests/aiConsent.test.js
+@@ -0,0 +1,91 @@
++const test = require('node:test');
++const assert = require('node:assert/strict');
++const fs = require('node:fs');
++const path = require('node:path');
++async function client() {
++  const core = fs.readFileSync(path.join(__dirname, '../services/aiConsent.js'),'utf8');
++  const url = 'data:text/javascript;base64,'+Buffer.from(core).toString('base64');
++  const source = fs.readFileSync(path.join(__dirname,'../services/aiClient.js'),'utf8')
++    .replace("'./aiConsent'", JSON.stringify(url))
++    .replace("import { askAiConsent } from './aiConsentPrompt';", "const askAiConsent = () => { throw new Error('Unexpected prompt'); };");
++  return { ...await import(url), ...await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64')) };
++}
++const user={_id:'synthetic-a',sessionId:'session-a'};
++const policy={consentRequired:true,granted:false,policyVersion:'current',providerVersion:'provider',providerNames:['Synthetic provider'],disclosure:'Synthetic disclosure',decidedAt:null};
++function fixture(initial={}) {
++  let state={...policy,...initial};let owner=user; const calls=[];
++  const session={getUser:()=>owner,requestJson:async(url,options)=>{
++    calls.push({url,options});
++    if(url==='/api/ai/consent') {
++      if(options.method==='PUT') state={...state,...JSON.parse(options.body),decidedAt:'server-date'};
++      return {...state};
++    }
++    return {answer:'Answer',provider:'fal-openrouter',outcome:{type:'live_model'}};
++  }};
++  return {session,calls,switchUser(){owner={_id:'other',sessionId:'other-session'};},setState(next){state=next;}};
++}
++test('first send discloses before saving acceptance and only then sends chat',async()=>{
++  const {requestTutor}=await client(); const f=fixture();
++  await requestTutor({user,session:f.session,question:'Synthetic',messages:[],decideConsent:async state=>{
++    assert.equal(state.disclosure,'Synthetic disclosure');assert.equal(f.calls.length,1);return true;
++  }});
++  assert.deepEqual(f.calls.map(x=>[x.url,x.options.method]),[['/api/ai/consent','GET'],['/api/ai/consent','PUT'],['/api/ai/chat','POST']]);
++  assert.equal(JSON.parse(f.calls[1].options.body).policyVersion,'current');
++});
++test('decline records refusal with no prompt or history sent to chat',async()=>{
++  const {requestTutor}=await client();const f=fixture();
++  await assert.rejects(requestTutor({user,session:f.session,question:'Private synthetic prompt',messages:[],decideConsent:async()=>false}),e=>e.code==='AI_CONSENT_DECLINED');
++  assert.equal(f.calls.some(x=>x.url==='/api/ai/chat'),false);
++  assert.equal(JSON.parse(f.calls[1].options.body).granted,false);
++  assert.equal(JSON.stringify(f.calls).includes('Private synthetic prompt'),false);
++});
++test('persisted grant is re-read; withdrawal blocks next send rather than trusting local cache',async()=>{
++  const {requestTutor}=await client();const f=fixture({granted:true,decidedAt:'server-date'});
++  await requestTutor({user,session:f.session,question:'One',messages:[]});
++  f.setState({...policy,granted:false});
++  await assert.rejects(requestTutor({user,session:f.session,question:'Two',messages:[],decideConsent:async()=>false}),e=>e.code==='AI_CONSENT_DECLINED');
++  assert.equal(f.calls.filter(x=>x.url==='/api/ai/chat').length,1);
++  assert.equal(f.calls.filter(x=>x.options.method==='GET').length,2);
++});
++test('an old always-granted backend, malformed records, and offline reads fail closed',async()=>{
++  const {requestTutor}=await client();
++  for(const state of [{granted:true,policyVersion:'2026-09-25',providerVersion:'consent-not-required'},null,{}]) {
++    const f=fixture();f.setState(state);
++    await assert.rejects(requestTutor({user,session:f.session,question:'No leak',messages:[]}),e=>e.code==='AI_CONSENT_UNAVAILABLE');
++    assert.equal(f.calls.length,1);
++  }
++  let chatCalls=0;
++  await assert.rejects(requestTutor({user,session:{getUser:()=>user,requestJson:async()=>{throw new Error('Offline');}},question:'No leak',messages:[]}),/Offline/);
++  assert.equal(chatCalls,0);
++});
++test('account switching while permission screen is open cannot grant or send for either account',async()=>{
++  const {requestTutor}=await client(); const f=fixture();
++  await assert.rejects(requestTutor({user,session:f.session,question:'No leak',messages:[],decideConsent:async()=>{f.switchUser();return true;}}),e=>e.code==='SESSION_CHANGED');
++  assert.equal(f.calls.length,1);
++});
++test('failed persistence and changed server disclosure cannot send a chat',async()=>{
++  const {requestTutor}=await client();
++  for(const outcome of ['fail','changed']) {
++    let sends=0;
++    const session={getUser:()=>user,requestJson:async(url,options)=>{
++      if(url==='/api/ai/chat'){sends++;return {};}
++      if(options.method==='PUT') {
++        if(outcome==='fail')throw new Error('Could not save');
++        throw Object.assign(new Error('Review changed disclosure'),{code:'AI_CONSENT_POLICY_CHANGED'});
++      }
++      return policy;
++    }};
++    await assert.rejects(requestTutor({user,session,question:'No leak',messages:[],decideConsent:async()=>true}));
++    assert.equal(sends,0);
++  }
++});
++test('native history excludes locally generated account answers while preserving user messages',async()=>{
++  const {conversationHistory}=await client();
++  const history=conversationHistory([
++    {role:'assistant',content:'Account secret',privateAccount:true},
++    {role:'assistant',content:'Older account secret',provider:'skillomate-learner-facts'},
++    {role:'user',content:'My fictional shop is Copper Wheel'},
++    {role:'assistant',content:'Use consistent framing.'},
++  ]);
++  assert.deepEqual(history,[{role:'user',content:'My fictional shop is Copper Wheel'},{role:'assistant',content:'Use consistent framing.'}]);
++});
+diff --git a/appcopyai/tests/aiConsentPrompt.test.js b/appcopyai/tests/aiConsentPrompt.test.js
+new file mode 100644
+index 0000000..9714d9a
+--- /dev/null
++++ b/appcopyai/tests/aiConsentPrompt.test.js
+@@ -0,0 +1,40 @@
++const test = require('node:test');
++const assert = require('node:assert/strict');
++const vm = require('node:vm');
++const fs = require('node:fs');
++const source = fs.readFileSync(require.resolve('../services/aiConsentPrompt.js'),'utf8')
++  .replace(/^import .*;\n/gm,'').replace(/export /g,'');
++function fixture(granted=false) {
++  const alerts=[],links=[],writes=[];
++  const state={granted,disclosure:'Full synthetic privacy disclosure'};
++  const c={Alert:{alert:(...args)=>alerts.push(args)},Linking:{openURL:async url=>links.push(url)},
++    readAiConsent:async()=>state,saveAiConsent:async value=>writes.push(value)};
++  vm.createContext(c);vm.runInContext(source,c);
++  return {c,alerts,links,writes};
++}
++test('native disclosure requires an explicit Allow AI tap',async()=>{
++  for(const choice of ['Not now','Allow AI','dismiss','Privacy policy']) {
++    const f=fixture();const pending=f.c.askAiConsent({disclosure:'Full synthetic privacy disclosure'});
++    const [title,text,buttons,options]=f.alerts[0];
++    assert.equal(title,'Allow AI data sharing?');assert.equal(text,'Full synthetic privacy disclosure');
++    if(choice==='dismiss')options.onDismiss();else buttons.find(x=>x.text===choice).onPress();
++    assert.equal(await pending,choice==='Allow AI');
++    assert.equal(f.links.length,choice==='Privacy policy'?1:0);
++  }
++});
++test('data controls can withdraw permission and report success only after persistence',async()=>{
++  const f=fixture(true);const pending=f.c.manageAiConsent({session:{},user:{}});
++  await new Promise(resolve=>setImmediate(resolve));
++  assert.equal(f.writes.length,0);
++  f.alerts[0][2].find(x=>x.text==='Withdraw permission').onPress();
++  await pending;assert.equal(f.writes[0].granted,false);
++  assert.equal(f.alerts[1][0],'AI data sharing off');
++});
++test('keeping permission or dismissing controls does not change the record',async()=>{
++  for(const dismiss of [false,true]) {
++    const f=fixture(true);const pending=f.c.manageAiConsent({session:{},user:{}});
++    await new Promise(resolve=>setImmediate(resolve));
++    if(dismiss)f.alerts[0][3].onDismiss();else f.alerts[0][2][0].onPress();
++    await pending;assert.equal(f.writes.length,0);
++  }
++});
 diff --git a/edunex-b/models/User.js b/edunex-b/models/User.js
 index e1146c4..49f63e5 100644
 --- a/edunex-b/models/User.js
@@ -452,6 +682,76 @@ index 51c969a..f12ee13 100644
      res.status(502).json(tutorUnavailable(error.code === 'COURSE_KNOWLEDGE_SCOPE_VIOLATION' ? error.code : 'context_error', req.body?.message));
    }
  }
+diff --git a/edunex-b/services/aiConsent.js b/edunex-b/services/aiConsent.js
+new file mode 100644
+index 0000000..8fbc73d
+--- /dev/null
++++ b/edunex-b/services/aiConsent.js
+@@ -0,0 +1,49 @@
++const crypto = require('node:crypto');
++const User = require('../models/User');
++
++// Change the policy version whenever disclosure/data practices change. The provider
++// fingerprint also invalidates consent when the deployed model or endpoint changes.
++const policyVersion = '2026-11-06.2';
++const model = process.env.FAL_OPENROUTER_MODEL || process.env.FAL_GEMINI_MODEL || 'google/gemini-2.5-flash';
++const endpoint = process.env.FAL_OPENROUTER_URL || 'https://fal.run/openrouter/router/openai/v1/chat/completions';
++const providerNames = ['fal.ai', 'OpenRouter', model.startsWith('google/') ? 'Google Gemini' : `Model provider: ${model.split('/')[0]}`];
++const disclosure = `To answer your questions, Skillomate shares your message, up to 12 recent chat messages, relevant course/lesson material and learning context with ${providerNames.join(', ')} (model: ${model}). Your chosen tutor name may also be included. Skillomate does not automatically attach your account profile, contact details, age, gender, membership or payment records. Account answers generated within Skillomate are excluded from external AI history. Personal information you type into a message can still be shared as part of that message. These providers process this information to generate AI replies. Avoid passwords, payment credentials or other sensitive information in messages. AI is optional: declining does not affect course access. You can withdraw permission in Nex AI > Chat history > AI Data Controls. Withdrawal stops future AI requests; use Delete AI history to delete saved Skillomate chats. Information already processed by providers cannot be recalled by withdrawal.`;
++const providerVersion = crypto.createHash('sha256').update(JSON.stringify({ model, endpoint, providerNames, disclosure })).digest('hex');
++
++function consentState(record) {
++  return {
++    consentRequired: true,
++    policyVersion, providerVersion, providerNames, disclosure,
++    privacyUrl: 'https://skillomate.in/privacy',
++    granted: record?.granted === true && record.policyVersion === policyVersion
++      && record.providerVersion === providerVersion && Boolean(record.decidedAt),
++    decidedAt: record?.decidedAt || null,
++  };
++}
++function consentError(message = 'Allow AI data sharing before using Nex AI.') {
++  return Object.assign(new Error(message), { code: 'AI_CONSENT_REQUIRED', statusCode: 403 });
++}
++async function readConsent(userId) {
++  const user = await User.findById(userId).select('isActive +aiConsent').lean();
++  if (!user || user.isActive === false) throw Object.assign(new Error('Invalid session'), { statusCode: 401 });
++  return consentState(user.aiConsent);
++}
++async function requireAiConsent(userId) {
++  const state = await readConsent(userId);
++  if (!state.granted) throw consentError();
++  return state;
++}
++async function saveConsent(userId, decision) {
++  if (typeof decision?.granted !== 'boolean') {
++    throw Object.assign(new Error('Choose whether to allow AI data sharing.'), { statusCode: 400 });
++  }
++  // A refusal/withdrawal is always accepted, including from a stale client.
++  if (decision.granted && (decision.policyVersion !== policyVersion || decision.providerVersion !== providerVersion)) {
++    throw Object.assign(new Error('AI privacy information changed. Review it again before allowing.'), { code: 'AI_CONSENT_POLICY_CHANGED', statusCode: 409 });
++  }
++  const record = { granted: decision.granted, policyVersion, providerVersion, decidedAt: new Date() };
++  const result = await User.updateOne({ _id: userId, isActive: { $ne: false } }, { $set: { aiConsent: record } }, { runValidators: true });
++  if (result.matchedCount !== 1) throw Object.assign(new Error('Invalid session'), { statusCode: 401 });
++  return consentState(record);
++}
++module.exports = { consentState, readConsent, requireAiConsent, saveConsent };
+diff --git a/edunex-b/services/aiProviderPrivacy.js b/edunex-b/services/aiProviderPrivacy.js
+new file mode 100644
+index 0000000..f0c04eb
+--- /dev/null
++++ b/edunex-b/services/aiProviderPrivacy.js
+@@ -0,0 +1,9 @@
++// Account replies are generated inside Skillomate, never model context. Also
++// recognize older clients/saved chats which predate the privateAccount marker.
++const LOCAL_ACCOUNT_REPLY = /(?:Your|Aapka) Skillomate profile|आपका Skillomate प्रोफाइल|Your plan\/access|Aapka plan\/access|आपका एक्सेस|Last successful payment:|Aakhri successful payment:|अंतिम सफल भुगतान:|For privacy, I can show masked account\/payment|Privacy ke liye main masked account\/payment|गोपनीयता के लिए केवल छिपाए हुए खाते/iu;
++function providerHistory(history) {
++  return (Array.isArray(history) ? history : []).filter(item => item && !item.privateAccount
++    && item.provider !== 'skillomate-learner-facts'
++    && !(item.role === 'assistant' && LOCAL_ACCOUNT_REPLY.test(String(item.content || ''))));
++}
++module.exports = { providerHistory };
 diff --git a/edunex-b/services/aiTutorService.js b/edunex-b/services/aiTutorService.js
 index 2784fdb..3dd37bf 100644
 --- a/edunex-b/services/aiTutorService.js
@@ -703,571 +1003,6 @@ index 4eba3cc..125f5ec 100644
      const prompt = api.calls[0].messages[0].content;
      assert.match(prompt, /Currently selected video .*Tools Setup/);
      assert.match(prompt, /TOOLS_NOTES/);
-diff --git a/edunex-b/tests/ai-tutor-fixture.cjs b/edunex-b/tests/ai-tutor-fixture.cjs
-index 786a80b..3157641 100644
---- a/edunex-b/tests/ai-tutor-fixture.cjs
-+++ b/edunex-b/tests/ai-tutor-fixture.cjs
-@@ -4,6 +4,8 @@ const vm = require('node:vm');
- const path = require('node:path');
- 
- function backend(options = {}) {
-+  // Existing tutor-behavior fixtures explicitly start with a current grant.
-+  const consent = require('./helpers/ai-consent-fixture.cjs').consentFixture({ initial: options.consent || 'granted' });
-   const routes = {};
-   const calls = [];
-   const authCalls = [];
-@@ -14,7 +16,7 @@ function backend(options = {}) {
-       if (name === 'mongoose') return require('mongoose');
-       if (name.includes('aiTutorService')) return serviceModule.exports;
-       if (name === 'express') return { Router: () => ({
--        delete() {},
-+        delete: (url, ...handlers) => { routes[`DELETE ${url}`] = handlers; },
-         get: (url, ...handlers) => { routes[`GET ${url}`] = handlers; },
-         put: (url, ...handlers) => { routes[`PUT ${url}`] = handlers; },
-         post: (url, ...handlers) => { routes[`POST ${url}`] = handlers; },
-@@ -26,6 +28,7 @@ function backend(options = {}) {
-           return next();
-         },
-       };
-+      if (name.includes('/services/aiConsent')) return consent.service;
-       if (name.includes('aiCompliance')) return require('../services/aiCompliance');
-       if (name.includes('AiTutorSession')) return options.sessions ? {
-         findOne: filter => ({select(){return this;},lean:async()=>options.sessions.get(`${filter.user}:${filter.course}`)||null}),
-@@ -39,6 +42,7 @@ function backend(options = {}) {
-         return options.knowledgeTransform ? { ...knowledge, retrieveKnowledge: input => options.knowledgeTransform(knowledge.retrieveKnowledge(input)) } : knowledge;
-       }
-       if (name === './productTutorState') return require('../services/productTutorState');
-+      if (name === './aiProviderPrivacy') return require('../services/aiProviderPrivacy');
-       if (name === './tutorProvider') return require('../services/tutorProvider');
-       if (name === './selectedLessonSummary') return require('../services/selectedLessonSummary');
-       if (name.endsWith('/tutorAvailability')) return require('../services/tutorAvailability');
-@@ -95,6 +99,8 @@ function backend(options = {}) {
-   }
-   const rawChat = body => request('POST', '/chat', body);
-   return {
-+    consent,
-+    handleTutorChat: sandbox.module.exports.handleTutorChat,
-     service: serviceModule.exports,
-     calls,
-     authCalls,
-diff --git a/edunex-b/tests/app-store-mobile-compliance.test.cjs b/edunex-b/tests/app-store-mobile-compliance.test.cjs
-index bd77cab..f5bea6f 100644
---- a/edunex-b/tests/app-store-mobile-compliance.test.cjs
-+++ b/edunex-b/tests/app-store-mobile-compliance.test.cjs
-@@ -97,10 +97,9 @@ test('native session migration verifies Keychain write and removes plaintext Asy
-   assert.equal(secureValues.has(SECURE_SESSION_KEY), false);
- });
- 
--test('mobile AI surfaces send prompts without a consent popup and retain history deletion', () => {
--  assert.doesNotMatch(appSource, /services\/aiConsent|\/api\/ai\/consent|showAiConsent|consentOverride/);
--  assert.doesNotMatch(appSource, /Allow external AI processing|Withdraw AI data consent|AI privacy unavailable/);
--  assert.match(appSource, /async function sendAiMessage\(value = input\)/);
-+test('mobile AI surfaces retain permission management and history deletion', () => {
-+  assert.match(appSource, /manageAiConsent\(\{ session, user \}\)/);
-+  assert.match(appSource, /accessibilityLabel="Manage AI data sharing permission"/);
-   assert.match(appSource, /accessibilityLabel="Delete AI chat history"/);
- });
- 
-diff --git a/edunex-b/tests/mobile-tutor-reliability.test.cjs b/edunex-b/tests/mobile-tutor-reliability.test.cjs
-index cc65dcf..8d31460 100644
---- a/edunex-b/tests/mobile-tutor-reliability.test.cjs
-+++ b/edunex-b/tests/mobile-tutor-reliability.test.cjs
-@@ -4,16 +4,21 @@ const fs = require('node:fs');
- const vm = require('node:vm');
- const path = require('node:path');
- async function client() {
--  const source = fs.readFileSync(path.join(__dirname, '../../appcopyai/services/aiClient.js'), 'utf8');
-+  const core = fs.readFileSync(path.join(__dirname, '../../appcopyai/services/aiConsent.js'), 'utf8');
-+  const coreUrl = 'data:text/javascript;base64,' + Buffer.from(core).toString('base64');
-+  const source = fs.readFileSync(path.join(__dirname, '../../appcopyai/services/aiClient.js'), 'utf8')
-+    .replace("'./aiConsent'", JSON.stringify(coreUrl))
-+    .replace("import { askAiConsent } from './aiConsentPrompt';", "const askAiConsent = () => { throw new Error('Unexpected prompt'); };");
-   return import('data:text/javascript;base64,' + Buffer.from(source).toString('base64'));
- }
- const user = { _id: 'synthetic', sessionId: 'session' };
-+const consent = { consentRequired: true, granted: true, policyVersion: 'current', providerVersion: 'provider', providerNames: ['Synthetic'], disclosure: 'Synthetic', decidedAt: 'date' };
- test('native transport sends course, conversation, prior answer and changed task without failed responses', async () => {
-   const { requestTutor } = await client(); let sent;
-   const data = await requestTutor({ user, activeCourseId: 'local-course', lessonId: 'lesson-2', conversationId: 'same-chat', question: 'Now change the name.',
-     messages: [{ role: 'user', content: 'My repair shop is Copper Wheel.' }, { role: 'assistant', content: 'Use the real photo.' },
-       { role: 'assistant', content: 'Course overview', outcome: { type: 'provider_fallback' } }, { role: 'assistant', content: 'Unavailable', failed: true }],
--    session: { getUser: () => user, requestJson: async (url, options) => { assert.equal(url, '/api/ai/chat'); sent = JSON.parse(options.body);
-+    session: { getUser: () => user, requestJson: async (url, options) => { if (url === '/api/ai/consent') return consent; assert.equal(url, '/api/ai/chat'); sent = JSON.parse(options.body);
-       return { answer: 'Use Copper Cycle.', messageId: 'reply', provider: 'fal-openrouter', outcome: { type: 'live_model' } }; } } });
-   assert.equal(sent.activeCourseId, 'local-course'); assert.equal(sent.conversationId, 'same-chat');
-   assert.equal(sent.lessonId, 'lesson-2');
-@@ -22,14 +27,17 @@ test('native transport sends course, conversation, prior answer and changed task
- test('native transport rejects legacy fallback and structured unavailability', async () => {
-   const { requestTutor } = await client();
-   for (const data of [{ answer: 'Course summary', provider: 'built-in-course-guide' }, { outcome: { type: 'unavailable' } }, { answer: 'Summary', outcome: { type: 'provider_fallback' } }]) {
--    await assert.rejects(requestTutor({ user, question: 'Write a caption.', messages: [], session: { getUser: () => user, requestJson: async () => data } }), e => e.code === 'TUTOR_UNAVAILABLE');
-+    await assert.rejects(requestTutor({ user, question: 'Write a caption.', messages: [], session: { getUser: () => user, requestJson: async url => url === '/api/ai/consent' ? consent : data } }), e => e.code === 'TUTOR_UNAVAILABLE');
-   }
- });
--test('native HTTP failure retains useful public error and diagnostic code', async () => {
-+test('native failure retains useful public error and diagnostic code', async () => {
-   const { requestTutor } = await client();
--  await assert.rejects(requestTutor({ baseUrl: 'http://local.invalid', user, question: 'Help', messages: [],
--    fetcher: async () => ({ ok: false, status: 503, json: async () => ({ error: 'Nex AI is temporarily unavailable.', code: 'TUTOR_UNAVAILABLE', outcome: { providerStatus: 'not_configured' } }) }) }),
--  e => e.status === 503 && e.code === 'TUTOR_UNAVAILABLE' && e.outcome.providerStatus === 'not_configured');
-+  await assert.rejects(requestTutor({ user, question: 'Help', messages: [], session: {
-+    getUser: () => user, requestJson: async url => {
-+      if (url === '/api/ai/consent') return consent;
-+      throw Object.assign(new Error('Nex AI is temporarily unavailable.'), { status: 503, code: 'TUTOR_UNAVAILABLE', outcome: { providerStatus: 'not_configured' } });
-+    },
-+  } }), e => e.status === 503 && e.code === 'TUTOR_UNAVAILABLE' && e.outcome.providerStatus === 'not_configured');
- });
- test('course selection separates stored master conversations and account boundaries', () => {
-   const source = fs.readFileSync(path.join(__dirname, '../../appcopyai/App.js'), 'utf8');
-diff --git a/edunex-b/tests/native-session.test.cjs b/edunex-b/tests/native-session.test.cjs
-index efed909..a913e85 100644
---- a/edunex-b/tests/native-session.test.cjs
-+++ b/edunex-b/tests/native-session.test.cjs
-@@ -2,7 +2,17 @@ const test = require('node:test');
- const assert = require('node:assert/strict');
- const fs = require('node:fs');
- const path = require('node:path');
--const load = name => import('data:text/javascript;base64,' + fs.readFileSync(path.join(__dirname, '../../appcopyai/services', name)).toString('base64'));
-+const sourceUrl = source => 'data:text/javascript;base64,' + Buffer.from(source).toString('base64');
-+const load = name => {
-+  let source = fs.readFileSync(path.join(__dirname, '../../appcopyai/services', name), 'utf8');
-+  if (name === 'aiClient.js') {
-+    const core = fs.readFileSync(path.join(__dirname, '../../appcopyai/services/aiConsent.js'), 'utf8');
-+    source = source.replace("'./aiConsent'", JSON.stringify(sourceUrl(core)))
-+      .replace("import { askAiConsent } from './aiConsentPrompt';", "const askAiConsent = () => { throw new Error('Unexpected consent prompt'); };");
-+  }
-+  return import(sourceUrl(source));
-+};
-+const acceptedConsent = { consentRequired: true, granted: true, policyVersion: 'synthetic', providerVersion: 'synthetic-provider', providerNames: ['Synthetic'], disclosure: 'Synthetic disclosure', decidedAt: '2026-11-06' };
- const initial = { _id: 'u1', sessionId: 's1', accessToken: 'expired', token: 'expired', refreshToken: 'r1', avatar: 'old' };
- const rotated = { _id: 'u1', sessionId: 's1', accessToken: 'fresh', refreshToken: 'r2' };
- const reply = (status, data = {}) => ({ ok: status < 400, status, json: async () => data });
-@@ -44,13 +54,18 @@ test('expired tutor token refreshes, rotates both tokens and retries exactly onc
-   const calls = [];
-   const h = await setup(async (url, options) => {
-     calls.push({ url, ...options });
-+    // Consent is checked before this token expires on the following chat send.
-+    if (url.endsWith('/api/ai/consent')) return reply(200, acceptedConsent);
-     return url.endsWith('/refresh') ? reply(200, rotated) : options.headers.Authorization === 'Bearer expired' ? reply(401) : reply(200, { reply: 'Answer' });
-   });
-   const { requestTutor } = await load('aiClient.js');
-   const result = await requestTutor({ baseUrl: 'https://example.test', user: initial, session: h.session, question: 'Explain', courseId: 'course', assistantName: 'Nex', messages: [{ role: 'user', content: 'Earlier' }] });
--  assert.equal(result.answer, 'Answer'); assert.equal(calls.length, 3);
--  assert.equal(calls[0].body, calls[2].body);
--  assert.equal(calls[2].headers.Authorization, 'Bearer fresh');
-+  assert.equal(result.answer, 'Answer'); assert.equal(calls.length, 4);
-+  assert.ok(calls[0].url.endsWith('/api/ai/consent'));
-+  const chats = calls.filter(call => call.url.endsWith('/api/ai/chat'));
-+  assert.equal(chats.length, 2);
-+  assert.equal(chats[0].body, chats[1].body);
-+  assert.equal(chats[1].headers.Authorization, 'Bearer fresh');
-   assert.equal(h.saved().refreshToken, 'r2'); assert.equal(h.saved().token, 'fresh');
-   const { createNativeSession } = await load('nativeSession.js');
-   const restored = createNativeSession({ baseUrl: '', storage: h.storage, onChange() {} });
-@@ -131,3 +146,24 @@ test('rotated credentials remain in memory on storage failure without silently c
-   await assert.rejects(h.session.requestJson('/api/ai/chat'), /could not be saved/);
-   assert.equal(h.session.getUser().refreshToken, 'r2'); assert.equal(h.ended(), 0);
- });
-+test('expired consent lookup refreshes credentials before chat and refusal still prevents transmission', async () => {
-+  const { requestTutor } = await load('aiClient.js');
-+  for (const allowed of [true, false]) {
-+    const calls=[];
-+    const h=await setup(async (url, options) => {
-+      calls.push({url,...options});
-+      if(url.endsWith('/refresh')) return reply(200,rotated);
-+      if(options.headers.Authorization==='Bearer expired') return reply(401);
-+      if(url.endsWith('/api/ai/consent')) return reply(200,{...acceptedConsent,granted:allowed});
-+      return reply(200,{reply:'Answer'});
-+    });
-+    const send=requestTutor({user:initial,session:h.session,question:'Synthetic question',messages:[],decideConsent:async()=>false});
-+    if(allowed)assert.equal((await send).answer,'Answer');
-+    else await assert.rejects(send,e=>e.code==='AI_CONSENT_DECLINED');
-+    assert.equal(calls.filter(x=>x.url.endsWith('/refresh')).length,1);
-+    const chatCalls=calls.filter(x=>x.url.endsWith('/api/ai/chat'));
-+    assert.equal(chatCalls.length,allowed?1:0);
-+    if(allowed)assert.equal(chatCalls[0].headers.Authorization,'Bearer fresh');
-+    assert.equal(h.saved().refreshToken,'r2');
-+  }
-+});
-diff --git a/edunex-f/src/components/legal/LegalLayout.jsx b/edunex-f/src/components/legal/LegalLayout.jsx
-index fb1fd69..99a444a 100644
---- a/edunex-f/src/components/legal/LegalLayout.jsx
-+++ b/edunex-f/src/components/legal/LegalLayout.jsx
-@@ -3,7 +3,7 @@ import { POLICY_LAST_UPDATED, SUPPORT_EMAIL, businessInfo } from "../../lib/site
- import { route } from "../../lib/routes.js";
- import "./LegalPages.css";
- 
--export function LegalHero({ eyebrow = "Skillomate", title, description, updated = true, actions = null }) {
-+export function LegalHero({ eyebrow = "Skillomate", title, description, updated = true, updatedAt = POLICY_LAST_UPDATED, actions = null }) {
-   return (
-     <section className="legal-hero" aria-labelledby="legal-page-title">
-       <div className="legal-crumbs" aria-label="Breadcrumb">
-@@ -15,7 +15,7 @@ export function LegalHero({ eyebrow = "Skillomate", title, description, updated
-       <h1 id="legal-page-title">{title}</h1>
-       {description ? <p className="legal-hero-copy">{description}</p> : null}
-       <div className="legal-hero-meta">
--        {updated ? <span><EnxIcon name="info" /> Last updated: {POLICY_LAST_UPDATED}</span> : null}
-+        {updated ? <span><EnxIcon name="info" /> Last updated: {updatedAt}</span> : null}
-         <span><EnxIcon name="mail" /> <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a></span>
-       </div>
-       {actions ? <div className="legal-hero-actions">{actions}</div> : null}
-@@ -32,10 +32,10 @@ export function LegalSection({ id, title, children }) {
-   );
- }
- 
--export function LegalLayout({ title, description, children, sections = [], updated = true, aside, actions, pageKey }) {
-+export function LegalLayout({ title, description, children, sections = [], updated = true, updatedAt = POLICY_LAST_UPDATED, aside, actions, pageKey }) {
-   return (
-     <main className="react-page-root legal-page-root" data-page={pageKey || undefined}>
--      <LegalHero title={title} description={description} updated={updated} actions={actions} />
-+      <LegalHero title={title} description={description} updated={updated} updatedAt={updatedAt} actions={actions} />
-       {sections.length ? (
-         <details className="legal-mobile-toc">
-           <summary>On this page</summary>
-diff --git a/edunex-f/src/pages/LegalPolicyPage.jsx b/edunex-f/src/pages/LegalPolicyPage.jsx
-index 36a5b7a..595998c 100644
---- a/edunex-f/src/pages/LegalPolicyPage.jsx
-+++ b/edunex-f/src/pages/LegalPolicyPage.jsx
-@@ -37,7 +37,7 @@ const providerCards = [
-   { icon: "key", title: "OTP authentication", copy: "Phone number OTP authentication may use MSG91 to send and verify one-time passwords." },
-   { icon: "receipt", title: "Payments", copy: "PhonePe may process one-time web payments, and Razorpay may process eligible recurring web subscriptions. App stores may process eligible mobile purchases." },
-   { icon: "dashboard", title: "Infrastructure", copy: "Infrastructure may include Amazon Web Services, Amazon EC2, Amazon S3, Amazon CloudFront and MongoDB, without exposing confidential configuration details." },
--  { icon: "sparkles", title: "AI functionality", copy: "When you use Nex AI, its providers may process your question, up to 12 recent messages and relevant course/lesson context. Skillomate does not send your profile name in the AI request. Avoid sensitive information; you can delete AI history in AI Data Controls." },
-+  { icon: "sparkles", title: "AI functionality", copy: "With your explicit permission, fal.ai, OpenRouter and the model provider identified in the permission notice process messages, up to 12 recent chat messages, course/lesson context and your chosen tutor name to generate replies. The default model provider is Google Gemini. Skillomate does not automatically attach account profile, contact, demographic, membership or payment records. Private account answers are excluded from external AI history. Personal information you type may still be shared. Avoid sensitive information." },
- ];
- 
- const termsItems = [
-@@ -88,6 +88,7 @@ const cookieItems = [
- 
- const policyContent = {
-   privacy: {
-+    updatedAt: "6 November 2026",
-     title: "Privacy Policy",
-     metaTitle: "Privacy Policy | Skillomate",
-     description: "How Skillomate collects, uses, stores and protects account, learning, AI, payment and support information.",
-@@ -100,7 +101,7 @@ const policyContent = {
-       ["not-collected", "Information not required for standard profiles", <PlainList items={privacyNotCollected} />],
-       ["how-we-use", "How we use information", <CheckList items={privacyUses} />],
-       ["payments", "Payments", <p>PhonePe may process one-time web payments and Razorpay may process eligible recurring web subscriptions. Google Play Billing may process Android purchases where applicable. Apple may process eligible iOS purchases through Apple in-app purchase systems. Skillomate may keep transaction identifiers, subscription status and billing records to provide access, reconcile payments, support users and meet compliance obligations.</p>],
--      ["ai-functionality", "AI functionality", <><p>When you use Nex AI, its providers may receive your question, up to 12 recent messages and relevant course or lesson context. Your profile name is not included in that model request, and you should not include passwords, payment details or other sensitive personal information.</p><p>You can delete AI chat history from AI Data Controls. Chat history may also be stored locally in your browser or app so you can reopen prior chats. Reports about unsafe or incorrect replies retain a response hash and report reason rather than the response text.</p><p>AI responses may be inaccurate or incomplete and should not be treated as professional advice.</p></>],
-+      ["ai-functionality", "AI functionality", <><p>With your explicit permission, fal.ai, OpenRouter and the model provider identified in the permission notice process messages, up to 12 recent chat messages, course/lesson context and your chosen tutor name to generate replies. The default model provider is Google Gemini. Skillomate does not automatically attach account profile, contact, demographic, membership or payment records. Private account answers are excluded from external AI history. Personal information you type may still be shared. Avoid sensitive information.</p><p>AI is optional. You can decline without losing course access, and withdraw permission in the mobile app under Nex AI > Chat history > AI Data Controls. Withdrawal stops future AI requests and does not recall information already processed by providers. You can separately delete saved Skillomate AI chat history from AI Data Controls. Chat history may also be stored locally in your browser or app so you can reopen prior chats. Reports about unsafe or incorrect replies retain a response hash and report reason rather than the response text.</p><p>AI responses may be inaccurate or incomplete and should not be treated as professional advice.</p></>],
-       ["sharing", "Data sharing and service providers", <><p>Skillomate may share limited information with service providers that help operate authentication, hosting, storage, payments, notifications, media delivery, AI learning functionality and customer support.</p><InfoGrid items={providerCards} /></>],
-       ["security", "Data security", <p>We use reasonable administrative, technical and organizational safeguards designed to protect information. No online service can guarantee absolute security, and users should keep OTPs, passwords and account access private.</p>],
-       ["retention", "Data retention", <p>Account, profile, learning and local AI history are kept while needed to provide the service and are deleted through the applicable deletion controls. Security and support records are retained only as reasonably needed. Payment and App Store transaction records may be anonymized and retained when required for tax, accounting, reconciliation, fraud prevention, disputes or legal compliance.</p>],
-@@ -205,11 +206,11 @@ export function LegalPolicyPage({ type }) {
-   }, [page]);
- 
-   return (
--    <LegalLayout title={page.title} description={page.description} sections={sectionsFor(page)}>
-+    <LegalLayout title={page.title} description={page.description} sections={sectionsFor(page)} updatedAt={page.updatedAt || POLICY_LAST_UPDATED}>
-       {page.sections.map(([id, title, content]) => <LegalSection key={id} id={id} title={title}>{content}</LegalSection>)}
-       <LegalSection id="services-covered" title="Services covered">
-         <PlainList items={learningServices} />
--        <p>Last updated: {POLICY_LAST_UPDATED}</p>
-+        <p>Last updated: {page.updatedAt || POLICY_LAST_UPDATED}</p>
-       </LegalSection>
-     </LegalLayout>
-   );
-diff --git a/appcopyai/services/aiConsent.js b/appcopyai/services/aiConsent.js
-new file mode 100644
-index 0000000..15a32fa
---- /dev/null
-+++ b/appcopyai/services/aiConsent.js
-@@ -0,0 +1,42 @@
-+// Server records are authoritative. Never persist an "allowed" shortcut locally.
-+function changed() { return Object.assign(new Error('The signed-in account changed.'), { code: 'SESSION_CHANGED' }); }
-+export function assertAiAccount(session, user) {
-+  const current = session?.getUser();
-+  if (!current || !user?._id || current._id !== user._id || current.sessionId !== user.sessionId) throw changed();
-+}
-+function checkedState(state) {
-+  // Fail closed against the old backend that unconditionally returned granted:true.
-+  if (state?.consentRequired !== true || typeof state.granted !== 'boolean'
-+    || !state.policyVersion || !state.providerVersion || !state.disclosure
-+    || !Array.isArray(state.providerNames) || !state.providerNames.length) {
-+    throw Object.assign(new Error('AI privacy settings are unavailable. Please try again later.'), { code: 'AI_CONSENT_UNAVAILABLE' });
-+  }
-+  return state;
-+}
-+export async function readAiConsent({ session, user }) {
-+  assertAiAccount(session, user);
-+  const state = checkedState(await session.requestJson('/api/ai/consent', { method: 'GET' }));
-+  assertAiAccount(session, user);
-+  return state;
-+}
-+export async function saveAiConsent({ session, user, state, granted }) {
-+  assertAiAccount(session, user);
-+  const saved = checkedState(await session.requestJson('/api/ai/consent', {
-+    method: 'PUT', headers: { 'Content-Type': 'application/json' },
-+    body: JSON.stringify({ granted, policyVersion: state.policyVersion, providerVersion: state.providerVersion }),
-+  }));
-+  assertAiAccount(session, user);
-+  if (saved.granted !== granted || (granted && (!saved.decidedAt
-+    || saved.policyVersion !== state.policyVersion || saved.providerVersion !== state.providerVersion))) {
-+    throw new Error('AI privacy choice could not be saved. Please review the current information and try again.');
-+  }
-+  return saved;
-+}
-+export async function ensureAiConsent({ session, user, decide }) {
-+  const state = await readAiConsent({ session, user });
-+  if (state.granted && state.decidedAt) return state;
-+  const allowed = await decide(state);
-+  assertAiAccount(session, user);
-+  await saveAiConsent({ session, user, state, granted: allowed === true });
-+  if (allowed !== true) throw Object.assign(new Error('AI data sharing is off. You can continue using your courses.'), { code: 'AI_CONSENT_DECLINED' });
-+}
-diff --git a/appcopyai/services/aiConsentPrompt.js b/appcopyai/services/aiConsentPrompt.js
-new file mode 100644
-index 0000000..a08cf8e
---- /dev/null
-+++ b/appcopyai/services/aiConsentPrompt.js
-@@ -0,0 +1,33 @@
-+import { Alert, Linking } from 'react-native';
-+import { readAiConsent, saveAiConsent } from './aiConsent';
-+
-+export function askAiConsent(state) {
-+  return new Promise(resolve => {
-+    Alert.alert('Allow AI data sharing?', state.disclosure, [
-+      { text: 'Not now', style: 'cancel', onPress: () => resolve(false) },
-+      { text: 'Privacy policy', onPress: () => {
-+        // Returning to chat never implies consent; the user can send again.
-+        Linking.openURL('https://skillomate.in/privacy').catch(() => {});
-+        resolve(false);
-+      } },
-+      { text: 'Allow AI', onPress: () => resolve(true) },
-+    ], { cancelable: true, onDismiss: () => resolve(false) });
-+  });
-+}
-+export async function manageAiConsent({ session, user }) {
-+  try {
-+    const state = await readAiConsent({ session, user });
-+    const granted = state.granted
-+      ? await new Promise(resolve => Alert.alert('AI data sharing is on', `${state.disclosure}\n\nWithdraw permission to stop future AI requests?`, [
-+        { text: 'Keep enabled', style: 'cancel', onPress: () => resolve(null) },
-+        { text: 'Withdraw permission', style: 'destructive', onPress: () => resolve(false) },
-+      ], { cancelable: true, onDismiss: () => resolve(null) }))
-+      : await askAiConsent(state);
-+    if (granted === null) return;
-+    await saveAiConsent({ session, user, state, granted });
-+    Alert.alert(granted ? 'AI data sharing enabled' : 'AI data sharing off', granted
-+      ? 'You can now use Nex AI.' : 'Future AI requests are blocked. Your course access is unchanged. Delete AI history separately to remove saved chats.');
-+  } catch (error) {
-+    Alert.alert('AI privacy settings', error.message || 'Could not save your choice. Please try again.');
-+  }
-+}
-diff --git a/appcopyai/tests/aiConsent.test.js b/appcopyai/tests/aiConsent.test.js
-new file mode 100644
-index 0000000..902a88a
---- /dev/null
-+++ b/appcopyai/tests/aiConsent.test.js
-@@ -0,0 +1,91 @@
-+const test = require('node:test');
-+const assert = require('node:assert/strict');
-+const fs = require('node:fs');
-+const path = require('node:path');
-+async function client() {
-+  const core = fs.readFileSync(path.join(__dirname, '../services/aiConsent.js'),'utf8');
-+  const url = 'data:text/javascript;base64,'+Buffer.from(core).toString('base64');
-+  const source = fs.readFileSync(path.join(__dirname,'../services/aiClient.js'),'utf8')
-+    .replace("'./aiConsent'", JSON.stringify(url))
-+    .replace("import { askAiConsent } from './aiConsentPrompt';", "const askAiConsent = () => { throw new Error('Unexpected prompt'); };");
-+  return { ...await import(url), ...await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64')) };
-+}
-+const user={_id:'synthetic-a',sessionId:'session-a'};
-+const policy={consentRequired:true,granted:false,policyVersion:'current',providerVersion:'provider',providerNames:['Synthetic provider'],disclosure:'Synthetic disclosure',decidedAt:null};
-+function fixture(initial={}) {
-+  let state={...policy,...initial};let owner=user; const calls=[];
-+  const session={getUser:()=>owner,requestJson:async(url,options)=>{
-+    calls.push({url,options});
-+    if(url==='/api/ai/consent') {
-+      if(options.method==='PUT') state={...state,...JSON.parse(options.body),decidedAt:'server-date'};
-+      return {...state};
-+    }
-+    return {answer:'Answer',provider:'fal-openrouter',outcome:{type:'live_model'}};
-+  }};
-+  return {session,calls,switchUser(){owner={_id:'other',sessionId:'other-session'};},setState(next){state=next;}};
-+}
-+test('first send discloses before saving acceptance and only then sends chat',async()=>{
-+  const {requestTutor}=await client(); const f=fixture();
-+  await requestTutor({user,session:f.session,question:'Synthetic',messages:[],decideConsent:async state=>{
-+    assert.equal(state.disclosure,'Synthetic disclosure');assert.equal(f.calls.length,1);return true;
-+  }});
-+  assert.deepEqual(f.calls.map(x=>[x.url,x.options.method]),[['/api/ai/consent','GET'],['/api/ai/consent','PUT'],['/api/ai/chat','POST']]);
-+  assert.equal(JSON.parse(f.calls[1].options.body).policyVersion,'current');
-+});
-+test('decline records refusal with no prompt or history sent to chat',async()=>{
-+  const {requestTutor}=await client();const f=fixture();
-+  await assert.rejects(requestTutor({user,session:f.session,question:'Private synthetic prompt',messages:[],decideConsent:async()=>false}),e=>e.code==='AI_CONSENT_DECLINED');
-+  assert.equal(f.calls.some(x=>x.url==='/api/ai/chat'),false);
-+  assert.equal(JSON.parse(f.calls[1].options.body).granted,false);
-+  assert.equal(JSON.stringify(f.calls).includes('Private synthetic prompt'),false);
-+});
-+test('persisted grant is re-read; withdrawal blocks next send rather than trusting local cache',async()=>{
-+  const {requestTutor}=await client();const f=fixture({granted:true,decidedAt:'server-date'});
-+  await requestTutor({user,session:f.session,question:'One',messages:[]});
-+  f.setState({...policy,granted:false});
-+  await assert.rejects(requestTutor({user,session:f.session,question:'Two',messages:[],decideConsent:async()=>false}),e=>e.code==='AI_CONSENT_DECLINED');
-+  assert.equal(f.calls.filter(x=>x.url==='/api/ai/chat').length,1);
-+  assert.equal(f.calls.filter(x=>x.options.method==='GET').length,2);
-+});
-+test('an old always-granted backend, malformed records, and offline reads fail closed',async()=>{
-+  const {requestTutor}=await client();
-+  for(const state of [{granted:true,policyVersion:'2026-09-25',providerVersion:'consent-not-required'},null,{}]) {
-+    const f=fixture();f.setState(state);
-+    await assert.rejects(requestTutor({user,session:f.session,question:'No leak',messages:[]}),e=>e.code==='AI_CONSENT_UNAVAILABLE');
-+    assert.equal(f.calls.length,1);
-+  }
-+  let chatCalls=0;
-+  await assert.rejects(requestTutor({user,session:{getUser:()=>user,requestJson:async()=>{throw new Error('Offline');}},question:'No leak',messages:[]}),/Offline/);
-+  assert.equal(chatCalls,0);
-+});
-+test('account switching while permission screen is open cannot grant or send for either account',async()=>{
-+  const {requestTutor}=await client(); const f=fixture();
-+  await assert.rejects(requestTutor({user,session:f.session,question:'No leak',messages:[],decideConsent:async()=>{f.switchUser();return true;}}),e=>e.code==='SESSION_CHANGED');
-+  assert.equal(f.calls.length,1);
-+});
-+test('failed persistence and changed server disclosure cannot send a chat',async()=>{
-+  const {requestTutor}=await client();
-+  for(const outcome of ['fail','changed']) {
-+    let sends=0;
-+    const session={getUser:()=>user,requestJson:async(url,options)=>{
-+      if(url==='/api/ai/chat'){sends++;return {};}
-+      if(options.method==='PUT') {
-+        if(outcome==='fail')throw new Error('Could not save');
-+        throw Object.assign(new Error('Review changed disclosure'),{code:'AI_CONSENT_POLICY_CHANGED'});
-+      }
-+      return policy;
-+    }};
-+    await assert.rejects(requestTutor({user,session,question:'No leak',messages:[],decideConsent:async()=>true}));
-+    assert.equal(sends,0);
-+  }
-+});
-+test('native history excludes locally generated account answers while preserving user messages',async()=>{
-+  const {conversationHistory}=await client();
-+  const history=conversationHistory([
-+    {role:'assistant',content:'Account secret',privateAccount:true},
-+    {role:'assistant',content:'Older account secret',provider:'skillomate-learner-facts'},
-+    {role:'user',content:'My fictional shop is Copper Wheel'},
-+    {role:'assistant',content:'Use consistent framing.'},
-+  ]);
-+  assert.deepEqual(history,[{role:'user',content:'My fictional shop is Copper Wheel'},{role:'assistant',content:'Use consistent framing.'}]);
-+});
-diff --git a/appcopyai/tests/aiConsentPrompt.test.js b/appcopyai/tests/aiConsentPrompt.test.js
-new file mode 100644
-index 0000000..9714d9a
---- /dev/null
-+++ b/appcopyai/tests/aiConsentPrompt.test.js
-@@ -0,0 +1,40 @@
-+const test = require('node:test');
-+const assert = require('node:assert/strict');
-+const vm = require('node:vm');
-+const fs = require('node:fs');
-+const source = fs.readFileSync(require.resolve('../services/aiConsentPrompt.js'),'utf8')
-+  .replace(/^import .*;\n/gm,'').replace(/export /g,'');
-+function fixture(granted=false) {
-+  const alerts=[],links=[],writes=[];
-+  const state={granted,disclosure:'Full synthetic privacy disclosure'};
-+  const c={Alert:{alert:(...args)=>alerts.push(args)},Linking:{openURL:async url=>links.push(url)},
-+    readAiConsent:async()=>state,saveAiConsent:async value=>writes.push(value)};
-+  vm.createContext(c);vm.runInContext(source,c);
-+  return {c,alerts,links,writes};
-+}
-+test('native disclosure requires an explicit Allow AI tap',async()=>{
-+  for(const choice of ['Not now','Allow AI','dismiss','Privacy policy']) {
-+    const f=fixture();const pending=f.c.askAiConsent({disclosure:'Full synthetic privacy disclosure'});
-+    const [title,text,buttons,options]=f.alerts[0];
-+    assert.equal(title,'Allow AI data sharing?');assert.equal(text,'Full synthetic privacy disclosure');
-+    if(choice==='dismiss')options.onDismiss();else buttons.find(x=>x.text===choice).onPress();
-+    assert.equal(await pending,choice==='Allow AI');
-+    assert.equal(f.links.length,choice==='Privacy policy'?1:0);
-+  }
-+});
-+test('data controls can withdraw permission and report success only after persistence',async()=>{
-+  const f=fixture(true);const pending=f.c.manageAiConsent({session:{},user:{}});
-+  await new Promise(resolve=>setImmediate(resolve));
-+  assert.equal(f.writes.length,0);
-+  f.alerts[0][2].find(x=>x.text==='Withdraw permission').onPress();
-+  await pending;assert.equal(f.writes[0].granted,false);
-+  assert.equal(f.alerts[1][0],'AI data sharing off');
-+});
-+test('keeping permission or dismissing controls does not change the record',async()=>{
-+  for(const dismiss of [false,true]) {
-+    const f=fixture(true);const pending=f.c.manageAiConsent({session:{},user:{}});
-+    await new Promise(resolve=>setImmediate(resolve));
-+    if(dismiss)f.alerts[0][3].onDismiss();else f.alerts[0][2][0].onPress();
-+    await pending;assert.equal(f.writes.length,0);
-+  }
-+});
-diff --git a/edunex-b/services/aiConsent.js b/edunex-b/services/aiConsent.js
-new file mode 100644
-index 0000000..8fbc73d
---- /dev/null
-+++ b/edunex-b/services/aiConsent.js
-@@ -0,0 +1,49 @@
-+const crypto = require('node:crypto');
-+const User = require('../models/User');
-+
-+// Change the policy version whenever disclosure/data practices change. The provider
-+// fingerprint also invalidates consent when the deployed model or endpoint changes.
-+const policyVersion = '2026-11-06.2';
-+const model = process.env.FAL_OPENROUTER_MODEL || process.env.FAL_GEMINI_MODEL || 'google/gemini-2.5-flash';
-+const endpoint = process.env.FAL_OPENROUTER_URL || 'https://fal.run/openrouter/router/openai/v1/chat/completions';
-+const providerNames = ['fal.ai', 'OpenRouter', model.startsWith('google/') ? 'Google Gemini' : `Model provider: ${model.split('/')[0]}`];
-+const disclosure = `To answer your questions, Skillomate shares your message, up to 12 recent chat messages, relevant course/lesson material and learning context with ${providerNames.join(', ')} (model: ${model}). Your chosen tutor name may also be included. Skillomate does not automatically attach your account profile, contact details, age, gender, membership or payment records. Account answers generated within Skillomate are excluded from external AI history. Personal information you type into a message can still be shared as part of that message. These providers process this information to generate AI replies. Avoid passwords, payment credentials or other sensitive information in messages. AI is optional: declining does not affect course access. You can withdraw permission in Nex AI > Chat history > AI Data Controls. Withdrawal stops future AI requests; use Delete AI history to delete saved Skillomate chats. Information already processed by providers cannot be recalled by withdrawal.`;
-+const providerVersion = crypto.createHash('sha256').update(JSON.stringify({ model, endpoint, providerNames, disclosure })).digest('hex');
-+
-+function consentState(record) {
-+  return {
-+    consentRequired: true,
-+    policyVersion, providerVersion, providerNames, disclosure,
-+    privacyUrl: 'https://skillomate.in/privacy',
-+    granted: record?.granted === true && record.policyVersion === policyVersion
-+      && record.providerVersion === providerVersion && Boolean(record.decidedAt),
-+    decidedAt: record?.decidedAt || null,
-+  };
-+}
-+function consentError(message = 'Allow AI data sharing before using Nex AI.') {
-+  return Object.assign(new Error(message), { code: 'AI_CONSENT_REQUIRED', statusCode: 403 });
-+}
-+async function readConsent(userId) {
-+  const user = await User.findById(userId).select('isActive +aiConsent').lean();
-+  if (!user || user.isActive === false) throw Object.assign(new Error('Invalid session'), { statusCode: 401 });
-+  return consentState(user.aiConsent);
-+}
-+async function requireAiConsent(userId) {
-+  const state = await readConsent(userId);
-+  if (!state.granted) throw consentError();
-+  return state;
-+}
-+async function saveConsent(userId, decision) {
-+  if (typeof decision?.granted !== 'boolean') {
-+    throw Object.assign(new Error('Choose whether to allow AI data sharing.'), { statusCode: 400 });
-+  }
-+  // A refusal/withdrawal is always accepted, including from a stale client.
-+  if (decision.granted && (decision.policyVersion !== policyVersion || decision.providerVersion !== providerVersion)) {
-+    throw Object.assign(new Error('AI privacy information changed. Review it again before allowing.'), { code: 'AI_CONSENT_POLICY_CHANGED', statusCode: 409 });
-+  }
-+  const record = { granted: decision.granted, policyVersion, providerVersion, decidedAt: new Date() };
-+  const result = await User.updateOne({ _id: userId, isActive: { $ne: false } }, { $set: { aiConsent: record } }, { runValidators: true });
-+  if (result.matchedCount !== 1) throw Object.assign(new Error('Invalid session'), { statusCode: 401 });
-+  return consentState(record);
-+}
-+module.exports = { consentState, readConsent, requireAiConsent, saveConsent };
-diff --git a/edunex-b/services/aiProviderPrivacy.js b/edunex-b/services/aiProviderPrivacy.js
-new file mode 100644
-index 0000000..f0c04eb
---- /dev/null
-+++ b/edunex-b/services/aiProviderPrivacy.js
-@@ -0,0 +1,9 @@
-+// Account replies are generated inside Skillomate, never model context. Also
-+// recognize older clients/saved chats which predate the privateAccount marker.
-+const LOCAL_ACCOUNT_REPLY = /(?:Your|Aapka) Skillomate profile|आपका Skillomate प्रोफाइल|Your plan\/access|Aapka plan\/access|आपका एक्सेस|Last successful payment:|Aakhri successful payment:|अंतिम सफल भुगतान:|For privacy, I can show masked account\/payment|Privacy ke liye main masked account\/payment|गोपनीयता के लिए केवल छिपाए हुए खाते/iu;
-+function providerHistory(history) {
-+  return (Array.isArray(history) ? history : []).filter(item => item && !item.privateAccount
-+    && item.provider !== 'skillomate-learner-facts'
-+    && !(item.role === 'assistant' && LOCAL_ACCOUNT_REPLY.test(String(item.content || ''))));
-+}
-+module.exports = { providerHistory };
 diff --git a/edunex-b/tests/ai-consent.test.cjs b/edunex-b/tests/ai-consent.test.cjs
 new file mode 100644
 index 0000000..546077b
@@ -1432,6 +1167,226 @@ index 0000000..f4a5313
 +  const api=fixture();const state=(await api.request('GET','/consent')).result;
 +  assert.equal(api.consent.service.consentState({...state,granted:true,decidedAt:new Date(),policyVersion:'2026-11-06.1'}).granted,false);
 +});
+diff --git a/edunex-b/tests/ai-tutor-fixture.cjs b/edunex-b/tests/ai-tutor-fixture.cjs
+index 786a80b..3157641 100644
+--- a/edunex-b/tests/ai-tutor-fixture.cjs
++++ b/edunex-b/tests/ai-tutor-fixture.cjs
+@@ -4,6 +4,8 @@ const vm = require('node:vm');
+ const path = require('node:path');
+ 
+ function backend(options = {}) {
++  // Existing tutor-behavior fixtures explicitly start with a current grant.
++  const consent = require('./helpers/ai-consent-fixture.cjs').consentFixture({ initial: options.consent || 'granted' });
+   const routes = {};
+   const calls = [];
+   const authCalls = [];
+@@ -14,7 +16,7 @@ function backend(options = {}) {
+       if (name === 'mongoose') return require('mongoose');
+       if (name.includes('aiTutorService')) return serviceModule.exports;
+       if (name === 'express') return { Router: () => ({
+-        delete() {},
++        delete: (url, ...handlers) => { routes[`DELETE ${url}`] = handlers; },
+         get: (url, ...handlers) => { routes[`GET ${url}`] = handlers; },
+         put: (url, ...handlers) => { routes[`PUT ${url}`] = handlers; },
+         post: (url, ...handlers) => { routes[`POST ${url}`] = handlers; },
+@@ -26,6 +28,7 @@ function backend(options = {}) {
+           return next();
+         },
+       };
++      if (name.includes('/services/aiConsent')) return consent.service;
+       if (name.includes('aiCompliance')) return require('../services/aiCompliance');
+       if (name.includes('AiTutorSession')) return options.sessions ? {
+         findOne: filter => ({select(){return this;},lean:async()=>options.sessions.get(`${filter.user}:${filter.course}`)||null}),
+@@ -39,6 +42,7 @@ function backend(options = {}) {
+         return options.knowledgeTransform ? { ...knowledge, retrieveKnowledge: input => options.knowledgeTransform(knowledge.retrieveKnowledge(input)) } : knowledge;
+       }
+       if (name === './productTutorState') return require('../services/productTutorState');
++      if (name === './aiProviderPrivacy') return require('../services/aiProviderPrivacy');
+       if (name === './tutorProvider') return require('../services/tutorProvider');
+       if (name === './selectedLessonSummary') return require('../services/selectedLessonSummary');
+       if (name.endsWith('/tutorAvailability')) return require('../services/tutorAvailability');
+@@ -95,6 +99,8 @@ function backend(options = {}) {
+   }
+   const rawChat = body => request('POST', '/chat', body);
+   return {
++    consent,
++    handleTutorChat: sandbox.module.exports.handleTutorChat,
+     service: serviceModule.exports,
+     calls,
+     authCalls,
+diff --git a/edunex-b/tests/app-store-mobile-compliance.test.cjs b/edunex-b/tests/app-store-mobile-compliance.test.cjs
+index bd77cab..4c89816 100644
+--- a/edunex-b/tests/app-store-mobile-compliance.test.cjs
++++ b/edunex-b/tests/app-store-mobile-compliance.test.cjs
+@@ -14,6 +14,33 @@ const {
+ } = require(path.join(mobileRoot, 'services/subscriptions.js'));
+ 
+ const appSource = fs.readFileSync(path.join(mobileRoot, 'App.js'), 'utf8');
++const vm = require('node:vm');
++const babel = require(path.join(mobileRoot, 'node_modules/@babel/core'));
++const appAst = babel.parseSync(appSource, { configFile: false, babelrc: false, parserOpts: { plugins: ['jsx'] } });
++const appNodeSource = node => appSource.slice(node.start, node.end);
++function findAppNode(node, predicate) {
++  if (!node || typeof node !== 'object') return null;
++  if (predicate(node)) return node;
++  for (const value of Object.values(node)) for (const child of Array.isArray(value) ? value : [value]) {
++    const found = findAppNode(child, predicate); if (found) return found;
++  }
++  return null;
++}
++function courseRenderRoute() {
++  const node = findAppNode(appAst, node => node.type === 'IfStatement'
++    && appNodeSource(node.test).includes('selectedCourse')
++    && appNodeSource(node.test).includes('mainScreen')
++    && appNodeSource(node.consequent).includes('<ReelsScreen')
++    && appNodeSource(node.consequent).includes('<VideoListScreen'));
++  assert.ok(node, 'actual course/player render route is present');
++  return appNodeSource(node.consequent);
++}
++function tabletStyle(name) {
++  const node = findAppNode(appAst, node => node.type === 'ObjectProperty' && node.key?.name === name);
++  assert.ok(node, `tablet style ${name} is defined`);
++  return vm.runInNewContext(`(${appNodeSource(node.value)})`);
++}
++
+ const upgradeModalSource = appSource.slice(
+   appSource.indexOf('function UpgradeModal'),
+   appSource.indexOf('function notificationIconForType'),
+@@ -97,10 +124,9 @@ test('native session migration verifies Keychain write and removes plaintext Asy
+   assert.equal(secureValues.has(SECURE_SESSION_KEY), false);
+ });
+ 
+-test('mobile AI surfaces send prompts without a consent popup and retain history deletion', () => {
+-  assert.doesNotMatch(appSource, /services\/aiConsent|\/api\/ai\/consent|showAiConsent|consentOverride/);
+-  assert.doesNotMatch(appSource, /Allow external AI processing|Withdraw AI data consent|AI privacy unavailable/);
+-  assert.match(appSource, /async function sendAiMessage\(value = input\)/);
++test('mobile AI surfaces retain permission management and history deletion', () => {
++  assert.match(appSource, /manageAiConsent\(\{ session, user \}\)/);
++  assert.match(appSource, /accessibilityLabel="Manage AI data sharing permission"/);
+   assert.match(appSource, /accessibilityLabel="Delete AI chat history"/);
+ });
+ 
+@@ -337,13 +363,19 @@ test('iOS native bundle explains photo-library access used by the editable profi
+   assert.match(infoPlist, /<key>NSPhotoLibraryUsageDescription<\/key>\s*<string>[^<]+<\/string>/);
+ });
+ 
+-test('logged-in tablet screens constrain content and bottom navigation width', () => {
+-  assert.match(appSource, /tabletContentFrame: \{\s+width: "100%",\s+maxWidth: 760,\s+alignSelf: "center"/);
+-  assert.match(appSource, /tabletListContent: \{\s+width: "100%",\s+maxWidth: 760,\s+alignSelf: "center"/);
+-  assert.match(appSource, /tabletFrame: \{ width: "100%", maxWidth: 920, alignSelf: "center" \}/);
+-  assert.match(appSource, /tabletScrollContent: \{ width: "100%", maxWidth: 920, alignSelf: "center" \}/);
+-  assert.match(appSource, /const isTabletNav = navViewportWidth >= 768/);
+-  assert.match(appSource, /Math\.min\(navViewportWidth - 72, searchOpen \? 920 : 760\)/);
++test('tablet content and navigation stay centered within readable viewport bounds', () => {
++  for (const [name, maxWidth] of [['tabletContentFrame', 760], ['tabletListContent', 760], ['tabletFrame', 920], ['tabletScrollContent', 920]]) {
++    const style = tabletStyle(name);
++    assert.equal(style.width, '100%'); assert.equal(style.alignSelf, 'center');
++    assert.equal(style.maxWidth, maxWidth);
++  }
++  const width = findAppNode(appAst, node => node.type === 'VariableDeclarator' && node.id?.name === 'tabletNavWidth');
++  assert.ok(width);
++  for (const navViewportWidth of [768, 834, 1024, 1366]) for (const searchOpen of [false, true]) {
++    const actual = vm.runInNewContext(appNodeSource(width.init), { navViewportWidth, searchOpen });
++    assert.ok(actual <= navViewportWidth - 72);
++    assert.equal(actual, Math.min(navViewportWidth - 72, searchOpen ? 920 : 760));
++  }
+   assert.match(appSource, /homeStyles\.tabletScrollContent/);
+   assert.match(appSource, /s\.tabletListContent/);
+   assert.match(appSource, /s\.tabletContentFrame/);
+@@ -478,12 +510,7 @@ test('lecture player back uses the interactive pager and preserves its route-awa
+   assert.match(appSource, /const backToLessons = useCallback\(\(\) => \{\s+if \(!isPreviewOnly\) loadCourseProgress\(\);\s+setStartIndex\(null\)/);
+   assert.match(appSource, /if \(mainScreen === "courses" && selectedCourse && startIndex !== null\) \{\s+backToLessons\(\);\s+return true;\s+\}/);
+   assert.match(appSource, /const requestPlayerBack = useCallback\(\(\) => \{\s+if \(Platform\.OS === "ios" && playerBackLayerRef\.current\?\.goBack\?\.\(\)\) return true;\s+return handleAppBack\(\)/);
+-  const loggedInStart = appSource.indexOf('// ── Logged-in');
+-  assert.notEqual(loggedInStart, -1, 'logged-in render section is present');
+-  const courseRouteStart = appSource.indexOf('if (mainScreen === "courses" && selectedCourse)', loggedInStart);
+-  assert.notEqual(courseRouteStart, -1, 'course and player route is present');
+-  const courseRouteEnd = appSource.indexOf('\n  if (mainScreen === "certificates")', courseRouteStart);
+-  const courseRouteSource = appSource.slice(courseRouteStart, courseRouteEnd === -1 ? undefined : courseRouteEnd);
++  const courseRouteSource = courseRenderRoute();
+   assert.match(courseRouteSource, /const playerReturnsToCourse = Boolean\([\s\S]+startIndex !== null && immediateBackRoute\?\.selectedCourse/);
+   assert.match(courseRouteSource, /const playerDestination = playerReturnsToCourse \? courseScreen : rootScreen/);
+   assert.match(courseRouteSource, /<InteractiveBackPager[\s\S]+ref=\{playerBackLayerRef\}[\s\S]+destination=\{playerDestination\}[\s\S]+onBack=\{handleAppBack\}/);
+@@ -503,40 +530,55 @@ test('downloaded lecture player shows offline status inside the top lecture pill
+ 
+ test('course detail back returns to the courses page instead of home', () => {
+   assert.match(appSource, /if \(mainScreen === "courses" && selectedCourse\) \{\s+loadCourseProgress\(\);\s+setSelectedCourse\(null\);\s+setCourseOpenStatus\(\{ key: "", loading: false, error: "" \}\);\s+setStartIndex\(null\);\s+setInitialTime\(0\);\s+setPreloadedVideos\(null\);\s+setIsPreviewOnly\(false\);\s+return true;\s+\}/);
+-  const courseDetailStart = appSource.indexOf('if (mainScreen === "courses" && selectedCourse) {', appSource.indexOf('// ── Logged-in'));
+-  assert.notEqual(courseDetailStart, -1, 'course detail render route is present');
+-  const courseDetailEnd = appSource.indexOf('return withGlobalBackGesture((', courseDetailStart);
+-  const courseDetailSource = appSource.slice(courseDetailStart, courseDetailEnd === -1 ? undefined : courseDetailEnd);
++  const courseDetailSource = courseRenderRoute();
+   assert.match(courseDetailSource, /<VideoListScreen/);
+   assert.match(courseDetailSource, /onBack=\{handleAppBack\}/);
+ });
+ 
+-test('course lesson list exposes per-lesson download actions', () => {
+-  const start = appSource.indexOf('function VideoListScreen');
+-  assert.notEqual(start, -1, 'VideoListScreen is present');
+-  const nextFunction = appSource.indexOf('\nfunction ', start + 10);
+-  const source = appSource.slice(start, nextFunction === -1 ? undefined : nextFunction);
+-  assert.match(source, /onDownloadVideo,/);
+-  assert.match(source, /const isDownloading = dl\?\.status === "downloading"/);
+-  assert.match(source, /const isDownloaded = dl\?\.status === "done"/);
+-  assert.match(source, /style=\{\[\s+s\.videoDownloadButton,/);
+-  assert.match(source, /event\?\.stopPropagation\?\.\(\)/);
+-  assert.match(source, /onDownloadVideo\(item, course\?\._id, course\?\.title \|\| "", index\)/);
+-  assert.match(source, /accessibilityLabel=\{downloadAccessibility\}/);
+-  assert.match(appSource, /const startDownload = useCallback\(async \(video, courseId, courseTitle, videoIndex = 0\)/);
+-  assert.match(appSource, /const downloadId = getDownloadId\(video, videoIndex\)/);
+-  assert.match(appSource, /onDownloadVideo=\{startDownload\}/);
+-  assert.match(appSource, /videoDownloadButton: \{/);
+-  assert.doesNotMatch(appSource, /Alert\.alert\("Downloaded"/);
++test('course lesson list passes the selected lesson, course and progress to its download control', () => {
++  const screen = findAppNode(appAst, node => node.type === 'FunctionDeclaration' && node.id?.name === 'VideoListScreen');
++  const button = findAppNode(screen, node => node.type === 'JSXOpeningElement' && node.name?.name === 'LessonDownloadButton');
++  assert.ok(button, 'lesson rows include the shared download control');
++  const video = { _id: 'lesson', title: 'A lesson' }, course = { _id: 'course', title: 'A course' }, dl = { status: 'downloading' };
++  const onDownloadVideo = () => {};
++  const context = { item: video, index: 3, course, dl, onDownloadVideo };
++  const props = Object.fromEntries(button.attributes.map(attribute => [attribute.name.name,
++    vm.runInNewContext(appNodeSource(attribute.value.expression), context)]));
++  assert.equal(props.video, video); assert.equal(props.index, 3);
++  assert.equal(props.courseId, 'course'); assert.equal(props.courseTitle, 'A course');
++  assert.equal(props.download, dl); assert.equal(props.onDownload, onDownloadVideo);
++  const binding = findAppNode(appAst, node => node.type === 'JSXAttribute' && node.name?.name === 'onDownloadVideo'
++    && node.value?.expression?.name === 'startDownload');
++  assert.ok(binding, 'rendered screen receives the real downloader');
+ });
+ 
+ test('protected course downloads prefer prepared MP4 and securely fall back to authorized HLS', () => {
+   assert.match(appSource, /filePath = downloadKind === "hls" && !protectedCloudfront \? downloadManifestPath\(FileSystem, downloadId\) : downloadPath\(FileSystem, downloadId\)/);
+   assert.match(appSource, /kind: downloadKind === "hls" && !protectedCloudfront \? "hls" : "mp4"/);
+-  assert.match(appSource, /requestPreparedCloudfrontDownload\(\{ session: nativeSession, courseId, videoId: protectedVideoId \}\)/);
++  const call = findAppNode(appAst, node => node.type === 'CallExpression' && node.callee?.name === 'requestPreparedCloudfrontDownload');
++  const scopedSession = { requestJson() {} }, nativeSession = { requestJson() { assert.fail('unscoped session'); } };
++  const binding = findAppNode(appAst, node => node.type === 'VariableDeclarator' && node.id?.name === 'session'
++    && node.init?.callee?.object?.name === 'scope' && node.init?.callee?.property?.name === 'session');
++  assert.ok(call); assert.ok(binding);
++  const session = vm.runInNewContext(appNodeSource(binding.init), { scope: { session: value => {
++    assert.equal(value, nativeSession); return scopedSession;
++  } }, nativeSession });
++  const grant = vm.runInNewContext(`(${appNodeSource(call.arguments[0])})`, { session, courseId: 'course', protectedVideoId: 'lesson' });
++  assert.equal(grant.session, scopedSession); assert.equal(grant.courseId, 'course'); assert.equal(grant.videoId, 'lesson');
+   assert.match(appSource, /if \(Platform\.OS !== "ios" \|\| !canFallbackToCloudFrontHlsDownload\(error\)\) throw error/);
+-  assert.match(appSource, /const lease = await fetchPlaybackLease\(\{ courseId, video: \{ \.\.\.video, _id: protectedVideoId \}, user: u \}\)/);
+-  assert.match(appSource, /hlsValidation = await downloadHlsToAppCache\(\{\s+hlsUrl: lease\.hlsUrl/);
++  const downloader = findAppNode(appAst, node => node.type === 'VariableDeclarator' && node.id?.name === 'startDownload');
++  const leaseCall = findAppNode(downloader, node => node.type === 'CallExpression' && node.callee?.name === 'fetchPlaybackLease');
++  const hlsCall = findAppNode(downloader, node => node.type === 'CallExpression' && node.callee?.name === 'downloadHlsToAppCache');
++  assert.ok(leaseCall); assert.ok(hlsCall);
++  const u = { _id: 'account', sessionId: 'session' }, scope = { signal: new AbortController().signal };
++  const context = { courseId: 'course', video: { title: 'Lesson' }, protectedVideoId: 'lesson', u, scope,
++    lease: { hlsUrl: 'https://authorized.invalid/master.m3u8' }, targetDir: 'cache/lesson/', filePath: 'cache/lesson/master.m3u8' };
++  const leaseRequest = vm.runInNewContext(`(${appNodeSource(leaseCall.arguments[0])})`, context);
++  assert.equal(leaseRequest.user, u); assert.equal(leaseRequest.signal, scope.signal);
++  assert.equal(leaseRequest.courseId, 'course'); assert.equal(leaseRequest.video._id, 'lesson');
++  const hlsRequest = vm.runInNewContext(`(${appNodeSource(hlsCall.arguments[0])})`, context);
++  assert.equal(hlsRequest.scope, scope); assert.equal(hlsRequest.hlsUrl, context.lease.hlsUrl);
++  assert.equal(hlsRequest.manifestPath, context.filePath);
+   assert.match(cloudfrontDownloadSource, /session\.requestJson\(grantPath, \{\s+method: "POST"/);
+   assert.match(cloudfrontDownloadSource, /body: JSON\.stringify\(\{ prepared: true \}\)/);
+   assert.match(cloudfrontDownloadSource, /for \(let attempt = 0; attempt < maxStatusAttempts; attempt \+= 1\)/);
 diff --git a/edunex-b/tests/helpers/ai-consent-fixture.cjs b/edunex-b/tests/helpers/ai-consent-fixture.cjs
 new file mode 100644
 index 0000000..bfd0c68
@@ -1468,3 +1423,228 @@ index 0000000..bfd0c68
 +  return { service, writes, setUnavailable(value) { unavailable = value; }, get record() { return record; } };
 +}
 +module.exports = { consentFixture };
+diff --git a/edunex-b/tests/mobile-tutor-reliability.test.cjs b/edunex-b/tests/mobile-tutor-reliability.test.cjs
+index cc65dcf..8d31460 100644
+--- a/edunex-b/tests/mobile-tutor-reliability.test.cjs
++++ b/edunex-b/tests/mobile-tutor-reliability.test.cjs
+@@ -4,16 +4,21 @@ const fs = require('node:fs');
+ const vm = require('node:vm');
+ const path = require('node:path');
+ async function client() {
+-  const source = fs.readFileSync(path.join(__dirname, '../../appcopyai/services/aiClient.js'), 'utf8');
++  const core = fs.readFileSync(path.join(__dirname, '../../appcopyai/services/aiConsent.js'), 'utf8');
++  const coreUrl = 'data:text/javascript;base64,' + Buffer.from(core).toString('base64');
++  const source = fs.readFileSync(path.join(__dirname, '../../appcopyai/services/aiClient.js'), 'utf8')
++    .replace("'./aiConsent'", JSON.stringify(coreUrl))
++    .replace("import { askAiConsent } from './aiConsentPrompt';", "const askAiConsent = () => { throw new Error('Unexpected prompt'); };");
+   return import('data:text/javascript;base64,' + Buffer.from(source).toString('base64'));
+ }
+ const user = { _id: 'synthetic', sessionId: 'session' };
++const consent = { consentRequired: true, granted: true, policyVersion: 'current', providerVersion: 'provider', providerNames: ['Synthetic'], disclosure: 'Synthetic', decidedAt: 'date' };
+ test('native transport sends course, conversation, prior answer and changed task without failed responses', async () => {
+   const { requestTutor } = await client(); let sent;
+   const data = await requestTutor({ user, activeCourseId: 'local-course', lessonId: 'lesson-2', conversationId: 'same-chat', question: 'Now change the name.',
+     messages: [{ role: 'user', content: 'My repair shop is Copper Wheel.' }, { role: 'assistant', content: 'Use the real photo.' },
+       { role: 'assistant', content: 'Course overview', outcome: { type: 'provider_fallback' } }, { role: 'assistant', content: 'Unavailable', failed: true }],
+-    session: { getUser: () => user, requestJson: async (url, options) => { assert.equal(url, '/api/ai/chat'); sent = JSON.parse(options.body);
++    session: { getUser: () => user, requestJson: async (url, options) => { if (url === '/api/ai/consent') return consent; assert.equal(url, '/api/ai/chat'); sent = JSON.parse(options.body);
+       return { answer: 'Use Copper Cycle.', messageId: 'reply', provider: 'fal-openrouter', outcome: { type: 'live_model' } }; } } });
+   assert.equal(sent.activeCourseId, 'local-course'); assert.equal(sent.conversationId, 'same-chat');
+   assert.equal(sent.lessonId, 'lesson-2');
+@@ -22,14 +27,17 @@ test('native transport sends course, conversation, prior answer and changed task
+ test('native transport rejects legacy fallback and structured unavailability', async () => {
+   const { requestTutor } = await client();
+   for (const data of [{ answer: 'Course summary', provider: 'built-in-course-guide' }, { outcome: { type: 'unavailable' } }, { answer: 'Summary', outcome: { type: 'provider_fallback' } }]) {
+-    await assert.rejects(requestTutor({ user, question: 'Write a caption.', messages: [], session: { getUser: () => user, requestJson: async () => data } }), e => e.code === 'TUTOR_UNAVAILABLE');
++    await assert.rejects(requestTutor({ user, question: 'Write a caption.', messages: [], session: { getUser: () => user, requestJson: async url => url === '/api/ai/consent' ? consent : data } }), e => e.code === 'TUTOR_UNAVAILABLE');
+   }
+ });
+-test('native HTTP failure retains useful public error and diagnostic code', async () => {
++test('native failure retains useful public error and diagnostic code', async () => {
+   const { requestTutor } = await client();
+-  await assert.rejects(requestTutor({ baseUrl: 'http://local.invalid', user, question: 'Help', messages: [],
+-    fetcher: async () => ({ ok: false, status: 503, json: async () => ({ error: 'Nex AI is temporarily unavailable.', code: 'TUTOR_UNAVAILABLE', outcome: { providerStatus: 'not_configured' } }) }) }),
+-  e => e.status === 503 && e.code === 'TUTOR_UNAVAILABLE' && e.outcome.providerStatus === 'not_configured');
++  await assert.rejects(requestTutor({ user, question: 'Help', messages: [], session: {
++    getUser: () => user, requestJson: async url => {
++      if (url === '/api/ai/consent') return consent;
++      throw Object.assign(new Error('Nex AI is temporarily unavailable.'), { status: 503, code: 'TUTOR_UNAVAILABLE', outcome: { providerStatus: 'not_configured' } });
++    },
++  } }), e => e.status === 503 && e.code === 'TUTOR_UNAVAILABLE' && e.outcome.providerStatus === 'not_configured');
+ });
+ test('course selection separates stored master conversations and account boundaries', () => {
+   const source = fs.readFileSync(path.join(__dirname, '../../appcopyai/App.js'), 'utf8');
+diff --git a/edunex-b/tests/native-session.test.cjs b/edunex-b/tests/native-session.test.cjs
+index efed909..a913e85 100644
+--- a/edunex-b/tests/native-session.test.cjs
++++ b/edunex-b/tests/native-session.test.cjs
+@@ -2,7 +2,17 @@ const test = require('node:test');
+ const assert = require('node:assert/strict');
+ const fs = require('node:fs');
+ const path = require('node:path');
+-const load = name => import('data:text/javascript;base64,' + fs.readFileSync(path.join(__dirname, '../../appcopyai/services', name)).toString('base64'));
++const sourceUrl = source => 'data:text/javascript;base64,' + Buffer.from(source).toString('base64');
++const load = name => {
++  let source = fs.readFileSync(path.join(__dirname, '../../appcopyai/services', name), 'utf8');
++  if (name === 'aiClient.js') {
++    const core = fs.readFileSync(path.join(__dirname, '../../appcopyai/services/aiConsent.js'), 'utf8');
++    source = source.replace("'./aiConsent'", JSON.stringify(sourceUrl(core)))
++      .replace("import { askAiConsent } from './aiConsentPrompt';", "const askAiConsent = () => { throw new Error('Unexpected consent prompt'); };");
++  }
++  return import(sourceUrl(source));
++};
++const acceptedConsent = { consentRequired: true, granted: true, policyVersion: 'synthetic', providerVersion: 'synthetic-provider', providerNames: ['Synthetic'], disclosure: 'Synthetic disclosure', decidedAt: '2026-11-06' };
+ const initial = { _id: 'u1', sessionId: 's1', accessToken: 'expired', token: 'expired', refreshToken: 'r1', avatar: 'old' };
+ const rotated = { _id: 'u1', sessionId: 's1', accessToken: 'fresh', refreshToken: 'r2' };
+ const reply = (status, data = {}) => ({ ok: status < 400, status, json: async () => data });
+@@ -44,13 +54,18 @@ test('expired tutor token refreshes, rotates both tokens and retries exactly onc
+   const calls = [];
+   const h = await setup(async (url, options) => {
+     calls.push({ url, ...options });
++    // Consent is checked before this token expires on the following chat send.
++    if (url.endsWith('/api/ai/consent')) return reply(200, acceptedConsent);
+     return url.endsWith('/refresh') ? reply(200, rotated) : options.headers.Authorization === 'Bearer expired' ? reply(401) : reply(200, { reply: 'Answer' });
+   });
+   const { requestTutor } = await load('aiClient.js');
+   const result = await requestTutor({ baseUrl: 'https://example.test', user: initial, session: h.session, question: 'Explain', courseId: 'course', assistantName: 'Nex', messages: [{ role: 'user', content: 'Earlier' }] });
+-  assert.equal(result.answer, 'Answer'); assert.equal(calls.length, 3);
+-  assert.equal(calls[0].body, calls[2].body);
+-  assert.equal(calls[2].headers.Authorization, 'Bearer fresh');
++  assert.equal(result.answer, 'Answer'); assert.equal(calls.length, 4);
++  assert.ok(calls[0].url.endsWith('/api/ai/consent'));
++  const chats = calls.filter(call => call.url.endsWith('/api/ai/chat'));
++  assert.equal(chats.length, 2);
++  assert.equal(chats[0].body, chats[1].body);
++  assert.equal(chats[1].headers.Authorization, 'Bearer fresh');
+   assert.equal(h.saved().refreshToken, 'r2'); assert.equal(h.saved().token, 'fresh');
+   const { createNativeSession } = await load('nativeSession.js');
+   const restored = createNativeSession({ baseUrl: '', storage: h.storage, onChange() {} });
+@@ -131,3 +146,24 @@ test('rotated credentials remain in memory on storage failure without silently c
+   await assert.rejects(h.session.requestJson('/api/ai/chat'), /could not be saved/);
+   assert.equal(h.session.getUser().refreshToken, 'r2'); assert.equal(h.ended(), 0);
+ });
++test('expired consent lookup refreshes credentials before chat and refusal still prevents transmission', async () => {
++  const { requestTutor } = await load('aiClient.js');
++  for (const allowed of [true, false]) {
++    const calls=[];
++    const h=await setup(async (url, options) => {
++      calls.push({url,...options});
++      if(url.endsWith('/refresh')) return reply(200,rotated);
++      if(options.headers.Authorization==='Bearer expired') return reply(401);
++      if(url.endsWith('/api/ai/consent')) return reply(200,{...acceptedConsent,granted:allowed});
++      return reply(200,{reply:'Answer'});
++    });
++    const send=requestTutor({user:initial,session:h.session,question:'Synthetic question',messages:[],decideConsent:async()=>false});
++    if(allowed)assert.equal((await send).answer,'Answer');
++    else await assert.rejects(send,e=>e.code==='AI_CONSENT_DECLINED');
++    assert.equal(calls.filter(x=>x.url.endsWith('/refresh')).length,1);
++    const chatCalls=calls.filter(x=>x.url.endsWith('/api/ai/chat'));
++    assert.equal(chatCalls.length,allowed?1:0);
++    if(allowed)assert.equal(chatCalls[0].headers.Authorization,'Bearer fresh');
++    assert.equal(h.saved().refreshToken,'r2');
++  }
++});
+diff --git a/edunex-b/tests/tutor-knowledge.test.cjs b/edunex-b/tests/tutor-knowledge.test.cjs
+index cf221f3..5f48db5 100644
+--- a/edunex-b/tests/tutor-knowledge.test.cjs
++++ b/edunex-b/tests/tutor-knowledge.test.cjs
+@@ -277,7 +277,7 @@ test('Skillomate plan questions get current one-time access facts', () => {
+   assert.match(hinglish, /30 days/);
+   assert.match(hinglish, /all Skillomate courses/);
+   assert.match(hinglish, /PhonePe one-time payment/i);
+-  assert.match(hinglish, /Auto-renewal\/mandate nahi/i);
++  assert.match(hinglish, /Auto-renewal\/mandate nahi|does not create an auto-renewing mandate/i);
+   assert.doesNotMatch(hinglish, /specific course prices ki jaankari nahi|check kar sakte/i);
+ 
+   const english = skillomatePlanDirectReply('What is the Skillomate subscription plan?');
+@@ -290,7 +290,10 @@ test('Skillomate plan questions get current one-time access facts', () => {
+ test('Skillomate platform questions get deterministic product facts', () => {
+   assert.match(skillomatePlatformDirectReply('How do I create account and setup profile on Skillomate?'), /mobile number.*OTP|OTP.*mobile number/i);
+   assert.match(skillomatePlatformDirectReply('I paid but course access is not active'), /same mobile number|payment reference/i);
+-  assert.match(skillomatePlatformDirectReply('Refund kab mil sakta hai?'), /duplicate|access.*deliver|support@skillomate\.in/i);
++  // A generic refund question could concern the learner's own business.
++  const ambiguousRefund = skillomatePlatformDirectReply('Refund kab mil sakta hai?');
++  assert.match(ambiguousRefund, /Skillomate.*business|Skillomate.*another service/i);
++  assert.match(skillomatePlatformDirectReply('Skillomate refund kab mil sakta hai?'), /duplicate|access.*deliver|support@skillomate\.in/i);
+   assert.match(skillomatePlatformDirectReply('is certificate professional accreditation?'), /not.*professional accreditation/i);
+   assert.match(skillomatePlatformDirectReply('support email and timing batao'), /support@skillomate\.in/i);
+   assert.match(skillomatePlatformDirectReply('Who will win the next cricket world cup?'), /Skillomate courses/i);
+diff --git a/edunex-f/src/components/legal/LegalLayout.jsx b/edunex-f/src/components/legal/LegalLayout.jsx
+index fb1fd69..99a444a 100644
+--- a/edunex-f/src/components/legal/LegalLayout.jsx
++++ b/edunex-f/src/components/legal/LegalLayout.jsx
+@@ -3,7 +3,7 @@ import { POLICY_LAST_UPDATED, SUPPORT_EMAIL, businessInfo } from "../../lib/site
+ import { route } from "../../lib/routes.js";
+ import "./LegalPages.css";
+ 
+-export function LegalHero({ eyebrow = "Skillomate", title, description, updated = true, actions = null }) {
++export function LegalHero({ eyebrow = "Skillomate", title, description, updated = true, updatedAt = POLICY_LAST_UPDATED, actions = null }) {
+   return (
+     <section className="legal-hero" aria-labelledby="legal-page-title">
+       <div className="legal-crumbs" aria-label="Breadcrumb">
+@@ -15,7 +15,7 @@ export function LegalHero({ eyebrow = "Skillomate", title, description, updated
+       <h1 id="legal-page-title">{title}</h1>
+       {description ? <p className="legal-hero-copy">{description}</p> : null}
+       <div className="legal-hero-meta">
+-        {updated ? <span><EnxIcon name="info" /> Last updated: {POLICY_LAST_UPDATED}</span> : null}
++        {updated ? <span><EnxIcon name="info" /> Last updated: {updatedAt}</span> : null}
+         <span><EnxIcon name="mail" /> <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a></span>
+       </div>
+       {actions ? <div className="legal-hero-actions">{actions}</div> : null}
+@@ -32,10 +32,10 @@ export function LegalSection({ id, title, children }) {
+   );
+ }
+ 
+-export function LegalLayout({ title, description, children, sections = [], updated = true, aside, actions, pageKey }) {
++export function LegalLayout({ title, description, children, sections = [], updated = true, updatedAt = POLICY_LAST_UPDATED, aside, actions, pageKey }) {
+   return (
+     <main className="react-page-root legal-page-root" data-page={pageKey || undefined}>
+-      <LegalHero title={title} description={description} updated={updated} actions={actions} />
++      <LegalHero title={title} description={description} updated={updated} updatedAt={updatedAt} actions={actions} />
+       {sections.length ? (
+         <details className="legal-mobile-toc">
+           <summary>On this page</summary>
+diff --git a/edunex-f/src/pages/LegalPolicyPage.jsx b/edunex-f/src/pages/LegalPolicyPage.jsx
+index 36a5b7a..595998c 100644
+--- a/edunex-f/src/pages/LegalPolicyPage.jsx
++++ b/edunex-f/src/pages/LegalPolicyPage.jsx
+@@ -37,7 +37,7 @@ const providerCards = [
+   { icon: "key", title: "OTP authentication", copy: "Phone number OTP authentication may use MSG91 to send and verify one-time passwords." },
+   { icon: "receipt", title: "Payments", copy: "PhonePe may process one-time web payments, and Razorpay may process eligible recurring web subscriptions. App stores may process eligible mobile purchases." },
+   { icon: "dashboard", title: "Infrastructure", copy: "Infrastructure may include Amazon Web Services, Amazon EC2, Amazon S3, Amazon CloudFront and MongoDB, without exposing confidential configuration details." },
+-  { icon: "sparkles", title: "AI functionality", copy: "When you use Nex AI, its providers may process your question, up to 12 recent messages and relevant course/lesson context. Skillomate does not send your profile name in the AI request. Avoid sensitive information; you can delete AI history in AI Data Controls." },
++  { icon: "sparkles", title: "AI functionality", copy: "With your explicit permission, fal.ai, OpenRouter and the model provider identified in the permission notice process messages, up to 12 recent chat messages, course/lesson context and your chosen tutor name to generate replies. The default model provider is Google Gemini. Skillomate does not automatically attach account profile, contact, demographic, membership or payment records. Private account answers are excluded from external AI history. Personal information you type may still be shared. Avoid sensitive information." },
+ ];
+ 
+ const termsItems = [
+@@ -88,6 +88,7 @@ const cookieItems = [
+ 
+ const policyContent = {
+   privacy: {
++    updatedAt: "6 November 2026",
+     title: "Privacy Policy",
+     metaTitle: "Privacy Policy | Skillomate",
+     description: "How Skillomate collects, uses, stores and protects account, learning, AI, payment and support information.",
+@@ -100,7 +101,7 @@ const policyContent = {
+       ["not-collected", "Information not required for standard profiles", <PlainList items={privacyNotCollected} />],
+       ["how-we-use", "How we use information", <CheckList items={privacyUses} />],
+       ["payments", "Payments", <p>PhonePe may process one-time web payments and Razorpay may process eligible recurring web subscriptions. Google Play Billing may process Android purchases where applicable. Apple may process eligible iOS purchases through Apple in-app purchase systems. Skillomate may keep transaction identifiers, subscription status and billing records to provide access, reconcile payments, support users and meet compliance obligations.</p>],
+-      ["ai-functionality", "AI functionality", <><p>When you use Nex AI, its providers may receive your question, up to 12 recent messages and relevant course or lesson context. Your profile name is not included in that model request, and you should not include passwords, payment details or other sensitive personal information.</p><p>You can delete AI chat history from AI Data Controls. Chat history may also be stored locally in your browser or app so you can reopen prior chats. Reports about unsafe or incorrect replies retain a response hash and report reason rather than the response text.</p><p>AI responses may be inaccurate or incomplete and should not be treated as professional advice.</p></>],
++      ["ai-functionality", "AI functionality", <><p>With your explicit permission, fal.ai, OpenRouter and the model provider identified in the permission notice process messages, up to 12 recent chat messages, course/lesson context and your chosen tutor name to generate replies. The default model provider is Google Gemini. Skillomate does not automatically attach account profile, contact, demographic, membership or payment records. Private account answers are excluded from external AI history. Personal information you type may still be shared. Avoid sensitive information.</p><p>AI is optional. You can decline without losing course access, and withdraw permission in the mobile app under Nex AI > Chat history > AI Data Controls. Withdrawal stops future AI requests and does not recall information already processed by providers. You can separately delete saved Skillomate AI chat history from AI Data Controls. Chat history may also be stored locally in your browser or app so you can reopen prior chats. Reports about unsafe or incorrect replies retain a response hash and report reason rather than the response text.</p><p>AI responses may be inaccurate or incomplete and should not be treated as professional advice.</p></>],
+       ["sharing", "Data sharing and service providers", <><p>Skillomate may share limited information with service providers that help operate authentication, hosting, storage, payments, notifications, media delivery, AI learning functionality and customer support.</p><InfoGrid items={providerCards} /></>],
+       ["security", "Data security", <p>We use reasonable administrative, technical and organizational safeguards designed to protect information. No online service can guarantee absolute security, and users should keep OTPs, passwords and account access private.</p>],
+       ["retention", "Data retention", <p>Account, profile, learning and local AI history are kept while needed to provide the service and are deleted through the applicable deletion controls. Security and support records are retained only as reasonably needed. Payment and App Store transaction records may be anonymized and retained when required for tax, accounting, reconciliation, fraud prevention, disputes or legal compliance.</p>],
+@@ -205,11 +206,11 @@ export function LegalPolicyPage({ type }) {
+   }, [page]);
+ 
+   return (
+-    <LegalLayout title={page.title} description={page.description} sections={sectionsFor(page)}>
++    <LegalLayout title={page.title} description={page.description} sections={sectionsFor(page)} updatedAt={page.updatedAt || POLICY_LAST_UPDATED}>
+       {page.sections.map(([id, title, content]) => <LegalSection key={id} id={id} title={title}>{content}</LegalSection>)}
+       <LegalSection id="services-covered" title="Services covered">
+         <PlainList items={learningServices} />
+-        <p>Last updated: {POLICY_LAST_UPDATED}</p>
++        <p>Last updated: {page.updatedAt || POLICY_LAST_UPDATED}</p>
+       </LegalSection>
+     </LegalLayout>
+   );

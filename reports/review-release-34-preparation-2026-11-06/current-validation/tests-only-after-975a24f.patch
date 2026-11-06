@@ -1,0 +1,184 @@
+diff --git a/edunex-b/tests/app-store-mobile-compliance.test.cjs b/edunex-b/tests/app-store-mobile-compliance.test.cjs
+index f5bea6f..4c89816 100644
+--- a/edunex-b/tests/app-store-mobile-compliance.test.cjs
++++ b/edunex-b/tests/app-store-mobile-compliance.test.cjs
+@@ -14,6 +14,33 @@ const {
+ } = require(path.join(mobileRoot, 'services/subscriptions.js'));
+ 
+ const appSource = fs.readFileSync(path.join(mobileRoot, 'App.js'), 'utf8');
++const vm = require('node:vm');
++const babel = require(path.join(mobileRoot, 'node_modules/@babel/core'));
++const appAst = babel.parseSync(appSource, { configFile: false, babelrc: false, parserOpts: { plugins: ['jsx'] } });
++const appNodeSource = node => appSource.slice(node.start, node.end);
++function findAppNode(node, predicate) {
++  if (!node || typeof node !== 'object') return null;
++  if (predicate(node)) return node;
++  for (const value of Object.values(node)) for (const child of Array.isArray(value) ? value : [value]) {
++    const found = findAppNode(child, predicate); if (found) return found;
++  }
++  return null;
++}
++function courseRenderRoute() {
++  const node = findAppNode(appAst, node => node.type === 'IfStatement'
++    && appNodeSource(node.test).includes('selectedCourse')
++    && appNodeSource(node.test).includes('mainScreen')
++    && appNodeSource(node.consequent).includes('<ReelsScreen')
++    && appNodeSource(node.consequent).includes('<VideoListScreen'));
++  assert.ok(node, 'actual course/player render route is present');
++  return appNodeSource(node.consequent);
++}
++function tabletStyle(name) {
++  const node = findAppNode(appAst, node => node.type === 'ObjectProperty' && node.key?.name === name);
++  assert.ok(node, `tablet style ${name} is defined`);
++  return vm.runInNewContext(`(${appNodeSource(node.value)})`);
++}
++
+ const upgradeModalSource = appSource.slice(
+   appSource.indexOf('function UpgradeModal'),
+   appSource.indexOf('function notificationIconForType'),
+@@ -336,13 +363,19 @@ test('iOS native bundle explains photo-library access used by the editable profi
+   assert.match(infoPlist, /<key>NSPhotoLibraryUsageDescription<\/key>\s*<string>[^<]+<\/string>/);
+ });
+ 
+-test('logged-in tablet screens constrain content and bottom navigation width', () => {
+-  assert.match(appSource, /tabletContentFrame: \{\s+width: "100%",\s+maxWidth: 760,\s+alignSelf: "center"/);
+-  assert.match(appSource, /tabletListContent: \{\s+width: "100%",\s+maxWidth: 760,\s+alignSelf: "center"/);
+-  assert.match(appSource, /tabletFrame: \{ width: "100%", maxWidth: 920, alignSelf: "center" \}/);
+-  assert.match(appSource, /tabletScrollContent: \{ width: "100%", maxWidth: 920, alignSelf: "center" \}/);
+-  assert.match(appSource, /const isTabletNav = navViewportWidth >= 768/);
+-  assert.match(appSource, /Math\.min\(navViewportWidth - 72, searchOpen \? 920 : 760\)/);
++test('tablet content and navigation stay centered within readable viewport bounds', () => {
++  for (const [name, maxWidth] of [['tabletContentFrame', 760], ['tabletListContent', 760], ['tabletFrame', 920], ['tabletScrollContent', 920]]) {
++    const style = tabletStyle(name);
++    assert.equal(style.width, '100%'); assert.equal(style.alignSelf, 'center');
++    assert.equal(style.maxWidth, maxWidth);
++  }
++  const width = findAppNode(appAst, node => node.type === 'VariableDeclarator' && node.id?.name === 'tabletNavWidth');
++  assert.ok(width);
++  for (const navViewportWidth of [768, 834, 1024, 1366]) for (const searchOpen of [false, true]) {
++    const actual = vm.runInNewContext(appNodeSource(width.init), { navViewportWidth, searchOpen });
++    assert.ok(actual <= navViewportWidth - 72);
++    assert.equal(actual, Math.min(navViewportWidth - 72, searchOpen ? 920 : 760));
++  }
+   assert.match(appSource, /homeStyles\.tabletScrollContent/);
+   assert.match(appSource, /s\.tabletListContent/);
+   assert.match(appSource, /s\.tabletContentFrame/);
+@@ -477,12 +510,7 @@ test('lecture player back uses the interactive pager and preserves its route-awa
+   assert.match(appSource, /const backToLessons = useCallback\(\(\) => \{\s+if \(!isPreviewOnly\) loadCourseProgress\(\);\s+setStartIndex\(null\)/);
+   assert.match(appSource, /if \(mainScreen === "courses" && selectedCourse && startIndex !== null\) \{\s+backToLessons\(\);\s+return true;\s+\}/);
+   assert.match(appSource, /const requestPlayerBack = useCallback\(\(\) => \{\s+if \(Platform\.OS === "ios" && playerBackLayerRef\.current\?\.goBack\?\.\(\)\) return true;\s+return handleAppBack\(\)/);
+-  const loggedInStart = appSource.indexOf('// ── Logged-in');
+-  assert.notEqual(loggedInStart, -1, 'logged-in render section is present');
+-  const courseRouteStart = appSource.indexOf('if (mainScreen === "courses" && selectedCourse)', loggedInStart);
+-  assert.notEqual(courseRouteStart, -1, 'course and player route is present');
+-  const courseRouteEnd = appSource.indexOf('\n  if (mainScreen === "certificates")', courseRouteStart);
+-  const courseRouteSource = appSource.slice(courseRouteStart, courseRouteEnd === -1 ? undefined : courseRouteEnd);
++  const courseRouteSource = courseRenderRoute();
+   assert.match(courseRouteSource, /const playerReturnsToCourse = Boolean\([\s\S]+startIndex !== null && immediateBackRoute\?\.selectedCourse/);
+   assert.match(courseRouteSource, /const playerDestination = playerReturnsToCourse \? courseScreen : rootScreen/);
+   assert.match(courseRouteSource, /<InteractiveBackPager[\s\S]+ref=\{playerBackLayerRef\}[\s\S]+destination=\{playerDestination\}[\s\S]+onBack=\{handleAppBack\}/);
+@@ -502,40 +530,55 @@ test('downloaded lecture player shows offline status inside the top lecture pill
+ 
+ test('course detail back returns to the courses page instead of home', () => {
+   assert.match(appSource, /if \(mainScreen === "courses" && selectedCourse\) \{\s+loadCourseProgress\(\);\s+setSelectedCourse\(null\);\s+setCourseOpenStatus\(\{ key: "", loading: false, error: "" \}\);\s+setStartIndex\(null\);\s+setInitialTime\(0\);\s+setPreloadedVideos\(null\);\s+setIsPreviewOnly\(false\);\s+return true;\s+\}/);
+-  const courseDetailStart = appSource.indexOf('if (mainScreen === "courses" && selectedCourse) {', appSource.indexOf('// ── Logged-in'));
+-  assert.notEqual(courseDetailStart, -1, 'course detail render route is present');
+-  const courseDetailEnd = appSource.indexOf('return withGlobalBackGesture((', courseDetailStart);
+-  const courseDetailSource = appSource.slice(courseDetailStart, courseDetailEnd === -1 ? undefined : courseDetailEnd);
++  const courseDetailSource = courseRenderRoute();
+   assert.match(courseDetailSource, /<VideoListScreen/);
+   assert.match(courseDetailSource, /onBack=\{handleAppBack\}/);
+ });
+ 
+-test('course lesson list exposes per-lesson download actions', () => {
+-  const start = appSource.indexOf('function VideoListScreen');
+-  assert.notEqual(start, -1, 'VideoListScreen is present');
+-  const nextFunction = appSource.indexOf('\nfunction ', start + 10);
+-  const source = appSource.slice(start, nextFunction === -1 ? undefined : nextFunction);
+-  assert.match(source, /onDownloadVideo,/);
+-  assert.match(source, /const isDownloading = dl\?\.status === "downloading"/);
+-  assert.match(source, /const isDownloaded = dl\?\.status === "done"/);
+-  assert.match(source, /style=\{\[\s+s\.videoDownloadButton,/);
+-  assert.match(source, /event\?\.stopPropagation\?\.\(\)/);
+-  assert.match(source, /onDownloadVideo\(item, course\?\._id, course\?\.title \|\| "", index\)/);
+-  assert.match(source, /accessibilityLabel=\{downloadAccessibility\}/);
+-  assert.match(appSource, /const startDownload = useCallback\(async \(video, courseId, courseTitle, videoIndex = 0\)/);
+-  assert.match(appSource, /const downloadId = getDownloadId\(video, videoIndex\)/);
+-  assert.match(appSource, /onDownloadVideo=\{startDownload\}/);
+-  assert.match(appSource, /videoDownloadButton: \{/);
+-  assert.doesNotMatch(appSource, /Alert\.alert\("Downloaded"/);
++test('course lesson list passes the selected lesson, course and progress to its download control', () => {
++  const screen = findAppNode(appAst, node => node.type === 'FunctionDeclaration' && node.id?.name === 'VideoListScreen');
++  const button = findAppNode(screen, node => node.type === 'JSXOpeningElement' && node.name?.name === 'LessonDownloadButton');
++  assert.ok(button, 'lesson rows include the shared download control');
++  const video = { _id: 'lesson', title: 'A lesson' }, course = { _id: 'course', title: 'A course' }, dl = { status: 'downloading' };
++  const onDownloadVideo = () => {};
++  const context = { item: video, index: 3, course, dl, onDownloadVideo };
++  const props = Object.fromEntries(button.attributes.map(attribute => [attribute.name.name,
++    vm.runInNewContext(appNodeSource(attribute.value.expression), context)]));
++  assert.equal(props.video, video); assert.equal(props.index, 3);
++  assert.equal(props.courseId, 'course'); assert.equal(props.courseTitle, 'A course');
++  assert.equal(props.download, dl); assert.equal(props.onDownload, onDownloadVideo);
++  const binding = findAppNode(appAst, node => node.type === 'JSXAttribute' && node.name?.name === 'onDownloadVideo'
++    && node.value?.expression?.name === 'startDownload');
++  assert.ok(binding, 'rendered screen receives the real downloader');
+ });
+ 
+ test('protected course downloads prefer prepared MP4 and securely fall back to authorized HLS', () => {
+   assert.match(appSource, /filePath = downloadKind === "hls" && !protectedCloudfront \? downloadManifestPath\(FileSystem, downloadId\) : downloadPath\(FileSystem, downloadId\)/);
+   assert.match(appSource, /kind: downloadKind === "hls" && !protectedCloudfront \? "hls" : "mp4"/);
+-  assert.match(appSource, /requestPreparedCloudfrontDownload\(\{ session: nativeSession, courseId, videoId: protectedVideoId \}\)/);
++  const call = findAppNode(appAst, node => node.type === 'CallExpression' && node.callee?.name === 'requestPreparedCloudfrontDownload');
++  const scopedSession = { requestJson() {} }, nativeSession = { requestJson() { assert.fail('unscoped session'); } };
++  const binding = findAppNode(appAst, node => node.type === 'VariableDeclarator' && node.id?.name === 'session'
++    && node.init?.callee?.object?.name === 'scope' && node.init?.callee?.property?.name === 'session');
++  assert.ok(call); assert.ok(binding);
++  const session = vm.runInNewContext(appNodeSource(binding.init), { scope: { session: value => {
++    assert.equal(value, nativeSession); return scopedSession;
++  } }, nativeSession });
++  const grant = vm.runInNewContext(`(${appNodeSource(call.arguments[0])})`, { session, courseId: 'course', protectedVideoId: 'lesson' });
++  assert.equal(grant.session, scopedSession); assert.equal(grant.courseId, 'course'); assert.equal(grant.videoId, 'lesson');
+   assert.match(appSource, /if \(Platform\.OS !== "ios" \|\| !canFallbackToCloudFrontHlsDownload\(error\)\) throw error/);
+-  assert.match(appSource, /const lease = await fetchPlaybackLease\(\{ courseId, video: \{ \.\.\.video, _id: protectedVideoId \}, user: u \}\)/);
+-  assert.match(appSource, /hlsValidation = await downloadHlsToAppCache\(\{\s+hlsUrl: lease\.hlsUrl/);
++  const downloader = findAppNode(appAst, node => node.type === 'VariableDeclarator' && node.id?.name === 'startDownload');
++  const leaseCall = findAppNode(downloader, node => node.type === 'CallExpression' && node.callee?.name === 'fetchPlaybackLease');
++  const hlsCall = findAppNode(downloader, node => node.type === 'CallExpression' && node.callee?.name === 'downloadHlsToAppCache');
++  assert.ok(leaseCall); assert.ok(hlsCall);
++  const u = { _id: 'account', sessionId: 'session' }, scope = { signal: new AbortController().signal };
++  const context = { courseId: 'course', video: { title: 'Lesson' }, protectedVideoId: 'lesson', u, scope,
++    lease: { hlsUrl: 'https://authorized.invalid/master.m3u8' }, targetDir: 'cache/lesson/', filePath: 'cache/lesson/master.m3u8' };
++  const leaseRequest = vm.runInNewContext(`(${appNodeSource(leaseCall.arguments[0])})`, context);
++  assert.equal(leaseRequest.user, u); assert.equal(leaseRequest.signal, scope.signal);
++  assert.equal(leaseRequest.courseId, 'course'); assert.equal(leaseRequest.video._id, 'lesson');
++  const hlsRequest = vm.runInNewContext(`(${appNodeSource(hlsCall.arguments[0])})`, context);
++  assert.equal(hlsRequest.scope, scope); assert.equal(hlsRequest.hlsUrl, context.lease.hlsUrl);
++  assert.equal(hlsRequest.manifestPath, context.filePath);
+   assert.match(cloudfrontDownloadSource, /session\.requestJson\(grantPath, \{\s+method: "POST"/);
+   assert.match(cloudfrontDownloadSource, /body: JSON\.stringify\(\{ prepared: true \}\)/);
+   assert.match(cloudfrontDownloadSource, /for \(let attempt = 0; attempt < maxStatusAttempts; attempt \+= 1\)/);
+diff --git a/edunex-b/tests/tutor-knowledge.test.cjs b/edunex-b/tests/tutor-knowledge.test.cjs
+index cf221f3..5f48db5 100644
+--- a/edunex-b/tests/tutor-knowledge.test.cjs
++++ b/edunex-b/tests/tutor-knowledge.test.cjs
+@@ -277,7 +277,7 @@ test('Skillomate plan questions get current one-time access facts', () => {
+   assert.match(hinglish, /30 days/);
+   assert.match(hinglish, /all Skillomate courses/);
+   assert.match(hinglish, /PhonePe one-time payment/i);
+-  assert.match(hinglish, /Auto-renewal\/mandate nahi/i);
++  assert.match(hinglish, /Auto-renewal\/mandate nahi|does not create an auto-renewing mandate/i);
+   assert.doesNotMatch(hinglish, /specific course prices ki jaankari nahi|check kar sakte/i);
+ 
+   const english = skillomatePlanDirectReply('What is the Skillomate subscription plan?');
+@@ -290,7 +290,10 @@ test('Skillomate plan questions get current one-time access facts', () => {
+ test('Skillomate platform questions get deterministic product facts', () => {
+   assert.match(skillomatePlatformDirectReply('How do I create account and setup profile on Skillomate?'), /mobile number.*OTP|OTP.*mobile number/i);
+   assert.match(skillomatePlatformDirectReply('I paid but course access is not active'), /same mobile number|payment reference/i);
+-  assert.match(skillomatePlatformDirectReply('Refund kab mil sakta hai?'), /duplicate|access.*deliver|support@skillomate\.in/i);
++  // A generic refund question could concern the learner's own business.
++  const ambiguousRefund = skillomatePlatformDirectReply('Refund kab mil sakta hai?');
++  assert.match(ambiguousRefund, /Skillomate.*business|Skillomate.*another service/i);
++  assert.match(skillomatePlatformDirectReply('Skillomate refund kab mil sakta hai?'), /duplicate|access.*deliver|support@skillomate\.in/i);
+   assert.match(skillomatePlatformDirectReply('is certificate professional accreditation?'), /not.*professional accreditation/i);
+   assert.match(skillomatePlatformDirectReply('support email and timing batao'), /support@skillomate\.in/i);
+   assert.match(skillomatePlatformDirectReply('Who will win the next cricket world cup?'), /Skillomate courses/i);

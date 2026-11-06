@@ -2,11 +2,11 @@
   "preparedVersion": "1.0",
   "preparedBuild": "34",
   "sourcePrepared": true,
-  "signedBinaryCreated": false,
-  "uploadedToAppStoreConnect": false,
-  "selectedBuildInAppStoreConnect": "29",
+  "signedBinaryCreated": true,
+  "uploadedToAppStoreConnect": true,
+  "selectedBuildInAppStoreConnect": "34",
   "reviewNotesPrepared": true,
-  "reviewNotesSavedInAppStoreConnect": false,
+  "reviewNotesSavedInAppStoreConnect": true,
   "buildAndUploadAssignedTo": "DevOps",
   "mobileTests": {
     "passed": 187,
@@ -19,7 +19,7 @@
   "nativeConfigurationValidation": "passed",
   "cumulativePatchReverseCheck": "passed",
   "pdfPages": 2,
-  "remaining": "Create/upload and test the exact signed candidate; replace selected build 29 and save matched notes with the required physical-device recording.",
+  "remaining": "DevOps deployment/commit confirmation and final-device runtime/recording evidence; finalize notes before resubmission.",
   "prebuildReviewChecks": {
     "mobilePassed": 43,
     "backendPassed": 52,
@@ -28,5 +28,16 @@
   "finalDeviceTesting": "NOT_RUN_ON_FINAL_BUILD",
   "physicalRecording": "PENDING_DEVOPS",
   "newBuildStartedForIssue6": false,
-  "existingOlderRecording": "App Review has a build-29 recording; not independently viewed or accepted as current evidence"
+  "existingOlderRecording": "App Review has a build-29 recording; not independently viewed or accepted as current evidence",
+  "builtBy": "DevOps",
+  "buildProcessing": "Ready to Submit",
+  "reviewNotesStatus": "Explicit draft with pending deployment/QA/recording",
+  "combinedSelectedBackendTests": {
+    "passed": 246,
+    "failed": 0
+  },
+  "previouslyFailingSuite": {
+    "passed": 56,
+    "failed": 0
+  }
 }

@@ -4,7 +4,7 @@
   "preparedBuild": "34",
   "latestUploadedBuildObserved": "33",
   "selectedBuildObserved": "29",
-  "binaryCreated": false,
+  "binaryCreated": true,
   "ownerAssignedBuildUpload": "DevOps",
   "files": [
     {
@@ -93,7 +93,7 @@
     },
     {
       "path": "edunex-b/tests/app-store-mobile-compliance.test.cjs",
-      "sha256": "1c9e5522a7c99bc5d3f6baa31b4800cff76e1cfd003428367d9ff2567b8ec125"
+      "sha256": "6ea42b1e1cae0b7799c21f4020c84818620180c885fa6b8a0d18135c7c01acdb"
     },
     {
       "path": "edunex-b/tests/helpers/ai-consent-fixture.cjs",
@@ -108,6 +108,10 @@
       "sha256": "47e1fc3e1ced91cd600f501dde2b8252b227d6ae5e6075809b465012d6bfca58"
     },
     {
+      "path": "edunex-b/tests/tutor-knowledge.test.cjs",
+      "sha256": "4eb6b16d400f82f88b5c6f46c072112699ab2505b9b343a1869144a37151077d"
+    },
+    {
       "path": "edunex-f/src/components/legal/LegalLayout.jsx",
       "sha256": "7669ba28d487ad6ffaaa5fdcf425c61cba4fa355f08c127b1fa8a7f052c622c4"
     },
@@ -115,5 +119,9 @@
       "path": "edunex-f/src/pages/LegalPolicyPage.jsx",
       "sha256": "c502a3dd506f9373089a65e0b690d8e3da0e14db02599419e68a13e8dcc5e075"
     }
-  ]
+  ],
+  "binaryBuiltBy": "DevOps",
+  "appStoreBuildId": "f855b4e9-2a6f-4d0b-ba2d-a33219975b61",
+  "binarySourceIdentityIndependentlyVerified": false,
+  "runtimeCommitNowPresent": "975a24f59079f4f08d15afc0c4cdc49fc957dbb8"
 }

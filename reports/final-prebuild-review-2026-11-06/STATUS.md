@@ -1,5 +1,7 @@
 # Final pre-build recheck - 6 November 2026
 
+> Follow-up: the six failing checks below have now been reconciled and pass (56/56). See [the current correction report](../compliance-check-fixes-2026-11-06/README.md). The policy deployment, final-device evidence and other release gates remain open. The remainder of this file preserves the earlier audit snapshot.
+
 Decision: **NO full-compliance sign-off. Source preparation is not submission readiness. No new build was created.**
 
 ## Confirmed completed work

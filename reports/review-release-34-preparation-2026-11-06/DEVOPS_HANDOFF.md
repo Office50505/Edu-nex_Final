@@ -1,3 +1,7 @@
+> SOURCE COMMIT UPDATE: Runtime changes are now committed locally as `975a24f59079f4f08d15afc0c4cdc49fc957dbb8`. Confirm the deployed commit. `release-source.patch` is cumulative from c79e212; `current-validation/tests-only-after-975a24f.patch` contains only the test reconciliation for a checkout already at 975a24f. Do not apply both patches to the same checkout.
+
+> CURRENT UPDATE: Build 34 is processed and selected in the draft; matching draft notes were saved and verified after reload. The six failing checks are fixed (56/56); mobile 187/187 and combined selected backend 246/246 pass. No app-runtime changes were made for the test reconciliation. DevOps will deploy backend/website and confirm the commit. Final-device QA/recording and finalizing notes remain pending. Read `current-validation/README.md`; the build-creation instructions below preserve the earlier preparation history and do not mean another build is required for test-only changes.
+
 # Skillomate iOS release 1.0 (34): prepared for DevOps
 
 **Status: SOURCE PREPARED. No new signed build has been created or uploaded by this task.** The user assigned build/upload to DevOps. App Store Connect still selects build 29. The newest uploaded build observed on 6 November was 33; it predates the current AI fixes and must not be substituted for this release.
