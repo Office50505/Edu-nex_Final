@@ -74,17 +74,54 @@ test('fresh installs default to browsing and authentication remains explicitly d
   assert.doesNotMatch(slice(home) + slice(list), /user\.avatar/);
 });
 
+test('guest headers use a neutral account icon while signed-in accounts retain their avatar', () => {
+  const component = ast.program.body.find(node => node.type === 'FunctionDeclaration' && node.id.name === 'AccountAvatar');
+  assert.ok(component);
+  const c = {
+    React: { createElement: (type, props, ...children) => ({ type, props: { ...props, children } }) },
+    View: 'View', Ionicons: 'Ionicons', AvatarImage: 'AvatarImage',
+    C: { surface: '#111', textSub: '#aaa' }, Math,
+  };
+  const compiled = babel.transformSync(slice(component), {
+    configFile: false, babelrc: false, plugins: [require.resolve('@babel/plugin-transform-react-jsx')],
+  }).code;
+  vm.createContext(c); vm.runInContext(`${compiled}\nthis.AccountAvatar = AccountAvatar;`, c);
+
+  const guest = c.AccountAvatar({ user: null, size: 40 });
+  assert.equal(guest.type, 'View');
+  assert.equal(guest.props.children[0].type, 'Ionicons');
+  assert.equal(guest.props.children[0].props.name, 'person-outline');
+
+  const account = c.AccountAvatar({ user: { avatar: 'a7' }, size: 40 });
+  assert.equal(account.type, 'AvatarImage');
+  assert.equal(account.props.avatarId, 'a7');
+
+  const headers = ['HomeScreen', 'CourseListScreen'].map(name => slice(ast.program.body.find(node => node.type === 'FunctionDeclaration' && node.id.name === name))).join('\n');
+  assert.match(headers, /<AccountAvatar user=\{user\}/);
+  assert.doesNotMatch(headers, /<AvatarImage avatarId=\{user\?\.avatar \|\| "a1"\}/);
+
+  const homeStyles = slice(ast.program.body.find(node => node.type === 'FunctionDeclaration' && node.id.name === 'createHomeStyles'));
+  const profileButtonStyle = homeStyles.slice(homeStyles.indexOf('profileButton:'), homeStyles.indexOf('scrollViewport:'));
+  assert.match(profileButtonStyle, /borderWidth: 1, borderColor: HOME_PALETTE\.border/);
+  assert.doesNotMatch(profileButtonStyle, /HOME_PALETTE\.gold/);
+});
+
 function renderApp(overrides = {}) {
   const isolated = babel.parseSync(slice(app), { configFile: false, babelrc: false, parserOpts: { plugins: ['jsx'] } });
   const globals = new Set();
   babel.traverse(isolated, { ReferencedIdentifier(path) { if (!path.scope.hasBinding(path.node.name)) globals.add(path.node.name); } });
   const c = Object.fromEntries([...globals].map(name => [name, () => {}]));
+  c.stateUpdates = {};
   let stateIndex = 0;
   const states = app.body.body.filter(n => n.type === 'VariableDeclaration').flatMap(n => n.declarations)
     .filter(d => d.init?.callee?.name === 'useState').map(d => d.id.elements[0]?.name);
   Object.assign(c, {
     React: { createElement: (type, props, ...children) => ({ type, props: { ...props, children } }) },
-    useState: initial => { const name = states[stateIndex++]; return [Object.hasOwn(overrides, name) ? overrides[name] : name === 'isRestoring' ? false : typeof initial === 'function' ? initial() : initial, () => {}]; },
+    useState: initial => {
+      const name = states[stateIndex++];
+      const value = Object.hasOwn(overrides, name) ? overrides[name] : name === 'isRestoring' ? false : typeof initial === 'function' ? initial() : initial;
+      return [value, next => { c.stateUpdates[name] = typeof next === 'function' ? next(value) : next; }];
+    },
     useRef: value => ({ current: value }), useCallback: fn => fn, useMemo: fn => fn(), useEffect() {},
     useWindowDimensions: () => ({ width: 390 }), useColorScheme: () => 'dark',
     createNativeSession: () => ({ setUser() {}, requestJson: async () => assert.fail('Rendering guest pages must not call private APIs') }),
@@ -102,7 +139,13 @@ function renderApp(overrides = {}) {
     for (const child of node.props?.children?.flat(Infinity) || []) { const result = find(child, type); if (result) return result; }
     return null;
   }
-  return { c, find: type => find(c.tree, c[type]) };
+  function findByLabel(node, label) {
+    if (!node || typeof node !== 'object') return null;
+    if (node.props?.accessibilityLabel === label) return node;
+    for (const child of node.props?.children?.flat(Infinity) || []) { const result = findByLabel(child, label); if (result) return result; }
+    return null;
+  }
+  return { c, find: type => find(c.tree, c[type]), findByLabel: label => findByLabel(c.tree, label) };
 }
 test('the actual app renders guest Home and course navigation without showing authentication', () => {
   const f = renderApp(); const tabs = f.find('SwipeableRootTabs');
@@ -116,7 +159,12 @@ test('the actual guest profile is an optional account page and login has a guest
   const profile = renderApp({ mainScreen: 'profile' }); assert.ok(profile.find('GuestAccountScreen'));
   const auth = renderApp({ showAuth: true });
   function labels(node) { return !node || typeof node !== 'object' ? [] : [node.props?.accessibilityLabel, ...(node.props?.children?.flat(Infinity) || []).flatMap(labels)].filter(Boolean); }
-  assert.ok(labels(auth.c.tree).includes('Continue as Guest'));
+  const authLabels = labels(auth.c.tree);
+  assert.ok(authLabels.includes('Continue as Guest'));
+  assert.ok(authLabels.indexOf('Create an account') < authLabels.indexOf('Continue as Guest'));
+  auth.findByLabel('Continue as Guest').props.onPress();
+  assert.equal(auth.c.stateUpdates.showAuth, false);
+  assert.equal(auth.c.stateUpdates.mainScreen, 'home');
 });
 
 test('the guest player receives only public lessons with its selected index remapped', () => {

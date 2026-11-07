@@ -56,11 +56,12 @@ function createFakeRedis({ connectError = null, getError = null, setError = null
   return { calls, client, listeners, store };
 }
 
-async function withCacheService({ nodeEnv, redisUrl, prefix = 'skillomate:test', fake }, run) {
+async function withCacheService({ nodeEnv, redisUrl, useRedisInDevelopment, prefix = 'skillomate:test', fake }, run) {
   const previousEnv = {
     CACHE_PREFIX: process.env.CACHE_PREFIX,
     NODE_ENV: process.env.NODE_ENV,
     REDIS_URL: process.env.REDIS_URL,
+    USE_REDIS_CACHE_IN_DEVELOPMENT: process.env.USE_REDIS_CACHE_IN_DEVELOPMENT,
   };
   const originalLoad = Module._load;
   let createCount = 0;
@@ -70,6 +71,8 @@ async function withCacheService({ nodeEnv, redisUrl, prefix = 'skillomate:test',
   process.env.CACHE_PREFIX = prefix;
   if (redisUrl === undefined) delete process.env.REDIS_URL;
   else process.env.REDIS_URL = redisUrl;
+  if (useRedisInDevelopment === undefined) delete process.env.USE_REDIS_CACHE_IN_DEVELOPMENT;
+  else process.env.USE_REDIS_CACHE_IN_DEVELOPMENT = useRedisInDevelopment;
 
   delete require.cache[servicePath];
   Module._load = function load(request, parent, isMain) {
@@ -310,6 +313,33 @@ test('Phase 3 shared cache policy', async (t) => {
       assert.equal(inspection.createCount(), 0);
       await service.clearCacheNamespace('public-read');
       assert.equal(await service.getJsonCache('public-read', 'categories'), null);
+    });
+  });
+
+  await t.test('development ignores an inaccessible shared Redis URL unless explicitly opted in', async () => {
+    const fake = createFakeRedis({ connectError: Object.assign(new Error('unreachable'), { code: 'ECONNREFUSED' }) });
+    await withCacheService({ nodeEnv: 'development', redisUrl: 'rediss://private-cache.example:6379', fake }, async (service, inspection) => {
+      await service.setJsonCache('public-read', 'courses', [{ name: 'Local course' }], 60);
+      assert.deepEqual(await service.getJsonCache('public-read', 'courses'), [{ name: 'Local course' }]);
+      assert.equal(service.getCacheBackend(), 'memory');
+      assert.equal(service.isSharedRedisConfigured(), false);
+      assert.equal(inspection.createCount(), 0, 'local requests must not wait for private Redis');
+    });
+  });
+
+  await t.test('development can explicitly opt into shared Redis testing', async () => {
+    const fake = createFakeRedis();
+    await withCacheService({
+      nodeEnv: 'development',
+      redisUrl: 'rediss://cache.example:6379',
+      useRedisInDevelopment: 'true',
+      fake,
+    }, async (service, inspection) => {
+      await service.setJsonCache('public-read', 'courses', [{ name: 'Shared course' }], 60);
+      assert.deepEqual(await service.getJsonCache('public-read', 'courses'), [{ name: 'Shared course' }]);
+      assert.equal(service.getCacheBackend(), 'redis-connected');
+      assert.equal(service.isSharedRedisConfigured(), true);
+      assert.equal(inspection.createCount(), 1);
     });
   });
 

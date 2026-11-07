@@ -452,6 +452,24 @@ function AvatarImage({ avatarId, size = 40, style }) {
   return <Image accessible={false} source={src} style={[{ width: size, height: size, borderRadius: size / 2 }, style]} resizeMode="cover" />;
 }
 
+function AccountAvatar({ user, size = 40, style }) {
+  if (user) {
+    return <AvatarImage avatarId={user.avatar || "a1"} size={size} style={style} />;
+  }
+
+  return (
+    <View
+      accessible={false}
+      style={[
+        { width: size, height: size, borderRadius: size / 2, alignItems: "center", justifyContent: "center", backgroundColor: C.surface },
+        style,
+      ]}
+    >
+      <Ionicons name="person-outline" size={Math.round(size * 0.56)} color={C.textSub} />
+    </View>
+  );
+}
+
 async function pickProfileImage() {
   const result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ["images"],
@@ -8287,7 +8305,7 @@ return StyleSheet.create({
   headerButton: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, alignItems: "center", justifyContent: "center", backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.border, position: "relative" },
   headerFlagButton: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, alignItems: "center", justifyContent: "center", backgroundColor: HOME_PALETTE.dangerSurface, borderWidth: 1, borderColor: HOME_PALETTE.dangerBorder },
   headerDot: { position: "absolute", top: 10, right: 11, width: 7, height: 7, borderRadius: 4, backgroundColor: HOME_PALETTE.gold, borderWidth: 1, borderColor: HOME_PALETTE.surface },
-  profileButton: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, alignItems: "center", justifyContent: "center", overflow: "hidden", backgroundColor: HOME_PALETTE.surface, borderWidth: 2, borderColor: HOME_PALETTE.gold },
+  profileButton: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, alignItems: "center", justifyContent: "center", overflow: "hidden", backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.border },
   scrollViewport: { flex: 1 },
   tabletScrollViewport: { marginBottom: Platform.OS === "ios" ? 118 : 132 },
   scrollContent: { paddingTop: 10, paddingBottom: Platform.OS === "ios" ? 112 : 118 },
@@ -8504,7 +8522,7 @@ function LegacyHomeScreenDraft({ session, user, onGoToCourses, onGoToAI, onGoToD
                 accessibilityRole="button"
                 accessibilityLabel="Open profile"
               >
-                <AvatarImage avatarId={user?.avatar || "a1"} size={38} style={{ borderRadius: 0 }} />
+                <AccountAvatar user={user} size={38} style={{ borderRadius: 0 }} />
               </TouchableOpacity>
             </View>
           </View>
@@ -9137,7 +9155,7 @@ function HomeScreen({
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                 testID="home-profile-button"
               >
-                <AvatarImage avatarId={user?.avatar || "a1"} size={40} style={{ borderRadius: 20 }} />
+                <AccountAvatar user={user} size={40} style={{ borderRadius: 20 }} />
               </TouchableOpacity>
             </View>
           </View>
@@ -9490,7 +9508,7 @@ function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, 
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               testID="courses-profile-button"
             >
-              <AvatarImage avatarId={user?.avatar || "a1"} size={40} style={{ borderRadius: 20 }} />
+              <AccountAvatar user={user} size={40} style={{ borderRadius: 20 }} />
             </TouchableOpacity>
           </View>
         </View>
@@ -14226,10 +14244,6 @@ export default function App() {
               <Text style={[s.authBrandTagline, isTabletLayout && s.authBrandTaglineTablet]}>LEARN · GROW · EARN</Text>
             </View>
 
-            <TouchableOpacity onPress={() => { setShowAuth(false); clearLoginForm(); resetSignup(); }}
-              style={[s.btn, s.btnOutline, { marginBottom: 20 }]} accessibilityRole="button" accessibilityLabel="Continue as Guest">
-              <Text style={{ color: C.primary, fontWeight: "700" }}>Continue as Guest</Text>
-            </TouchableOpacity>
             <View style={[s.authHeadingBlock, isTabletLayout && s.authHeadingBlockTablet]}>
               <Text style={[s.authWelcome, isTabletLayout && s.authWelcomeTablet]}>Welcome back</Text>
               <Text style={[s.authWelcomeSub, isTabletLayout && s.authWelcomeSubTablet]}>Continue your AI learning journey.</Text>
@@ -14316,6 +14330,20 @@ export default function App() {
                   <Text style={s.authCreateText}>Create account</Text>
                 </TouchableOpacity>
               </View>
+
+              <TouchableOpacity
+                onPress={() => {
+                  navigateRootTab("home");
+                  setShowAuth(false);
+                  clearLoginForm();
+                  resetSignup();
+                }}
+                style={[s.btn, s.btnOutline, { marginTop: 8 }]}
+                accessibilityRole="button"
+                accessibilityLabel="Continue as Guest"
+              >
+                <Text style={{ color: C.primary, fontWeight: "700" }}>Continue as Guest</Text>
+              </TouchableOpacity>
             </View>
 
             <View style={s.authFooter}>

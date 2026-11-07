@@ -2,7 +2,14 @@ const { createClient } = require('redis');
 
 const REDIS_URL = process.env.REDIS_URL || '';
 const CACHE_PREFIX = process.env.CACHE_PREFIX || 'edunex';
-const MEMORY_CACHE_ENABLED = !REDIS_URL && process.env.NODE_ENV !== 'production';
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+// Local development often loads production-shaped environment files while the
+// shared Redis service is only reachable from the deployed network. Do not make
+// public API requests wait for that unreachable cache. Developers can still opt
+// into shared-Redis testing explicitly when they have network access to it.
+const USE_SHARED_REDIS = Boolean(REDIS_URL)
+  && (IS_PRODUCTION || process.env.USE_REDIS_CACHE_IN_DEVELOPMENT === 'true');
+const MEMORY_CACHE_ENABLED = !IS_PRODUCTION && !USE_SHARED_REDIS;
 const REDIS_CONNECT_TIMEOUT_MS = 2000;
 const REDIS_RECONNECT_MAX_RETRIES = 3;
 const REDIS_RECONNECT_MAX_DELAY_MS = 2000;
@@ -80,7 +87,7 @@ function createRedisClient() {
 }
 
 async function getRedisClient() {
-  if (!REDIS_URL) return null;
+  if (!USE_SHARED_REDIS) return null;
 
   if (!redisClient) {
     redisClient = createRedisClient();
@@ -173,12 +180,12 @@ async function clearCacheNamespace(namespace) {
 
 function getCacheBackend() {
   if (MEMORY_CACHE_ENABLED) return 'memory';
-  if (!REDIS_URL) return 'disabled/no-shared-cache';
+  if (!USE_SHARED_REDIS) return 'disabled/no-shared-cache';
   return redisClient?.isReady ? 'redis-connected' : 'redis-disconnected';
 }
 
 function isSharedRedisConfigured() {
-  return Boolean(REDIS_URL);
+  return USE_SHARED_REDIS;
 }
 
 module.exports = {
