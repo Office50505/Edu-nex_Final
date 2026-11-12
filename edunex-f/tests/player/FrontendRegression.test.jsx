@@ -113,6 +113,9 @@ describe("reported frontend regressions", () => {
     expect(screen.getByText("Lecture 1 of 34")).toBeTruthy();
     expect(screen.getByText("Lecture 34 of 34")).toBeTruthy();
     expect(screen.getAllByText("Open lecture")).toHaveLength(34);
+    const firstLectureMeta = screen.getByText("Lecture 1 of 34").closest(".watched-card-meta");
+    expect(firstLectureMeta).toBeTruthy();
+    expect(firstLectureMeta?.textContent).toContain("Open lecture");
   });
 
   it("uses actual course counts instead of placeholder lesson or module totals", () => {

@@ -9008,9 +9008,16 @@ html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .watched
 }
 
 .react-page-root[data-page="index.html"] .watched-card em {
-  margin-top: 4px;
   color: #64748B;
   font-size: .72rem;
+}
+
+.react-page-root[data-page="index.html"] .watched-card-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin-top: 4px;
 }
 
 .react-page-root[data-page="index.html"] .watched-empty {

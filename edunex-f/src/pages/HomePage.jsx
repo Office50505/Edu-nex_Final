@@ -654,8 +654,10 @@ export function CurriculumShowcase({ courses, status, authUserId, hasAccess, acc
                         <span>{duration}</span>
                       </div>
                       <strong>{title}</strong>
-                      <small>Lecture {item.lessonIndex + 1} of {lessonCount(item.course)}</small>
-                      <em><MaterialIcon>play_circle</MaterialIcon>Open lecture</em>
+                      <span className="watched-card-meta">
+                        <small>Lecture {item.lessonIndex + 1} of {lessonCount(item.course)}</small>
+                        <em><MaterialIcon>play_circle</MaterialIcon>Open lecture</em>
+                      </span>
                     </button>
                   );
                 })}
