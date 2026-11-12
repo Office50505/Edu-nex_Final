@@ -1,0 +1,1096 @@
+TAP version 13
+# Subtest: accounts have separate metadata and video directories, including similar IDs
+ok 1 - accounts have separate metadata and video directories, including similar IDs
+  ---
+  duration_ms: 1.215333
+  ...
+# Subtest: ownerless legacy records are never imported into an account
+ok 2 - ownerless legacy records are never imported into an account
+  ---
+  duration_ms: 0.402292
+  ...
+# Subtest: download recovery restores only the signed-in owner and rejects another account path
+ok 3 - download recovery restores only the signed-in owner and rejects another account path
+  ---
+  duration_ms: 3.393042
+  ...
+# Subtest: logout cancels the native transfer and ignores late progress and completion
+ok 4 - logout cancels the native transfer and ignores late progress and completion
+  ---
+  duration_ms: 1.468917
+  ...
+# Subtest: an account change blocks late filesystem and authorization responses
+ok 5 - an account change blocks late filesystem and authorization responses
+  ---
+  duration_ms: 0.489208
+  ...
+# Subtest: logout during preparation prevents further polling or a transfer
+ok 6 - logout during preparation prevents further polling or a transfer
+  ---
+  duration_ms: 1.398334
+  ...
+# Subtest: signed-out sessions cannot create a download scope
+ok 7 - signed-out sessions cannot create a download scope
+  ---
+  duration_ms: 0.116125
+  ...
+# Subtest: first send discloses before saving acceptance and only then sends chat
+ok 8 - first send discloses before saving acceptance and only then sends chat
+  ---
+  duration_ms: 9.312084
+  ...
+# Subtest: decline records refusal with no prompt or history sent to chat
+ok 9 - decline records refusal with no prompt or history sent to chat
+  ---
+  duration_ms: 1.4175
+  ...
+# Subtest: persisted grant is re-read; withdrawal blocks next send rather than trusting local cache
+ok 10 - persisted grant is re-read; withdrawal blocks next send rather than trusting local cache
+  ---
+  duration_ms: 0.775083
+  ...
+# Subtest: an old always-granted backend, malformed records, and offline reads fail closed
+ok 11 - an old always-granted backend, malformed records, and offline reads fail closed
+  ---
+  duration_ms: 0.937333
+  ...
+# Subtest: account switching while permission screen is open cannot grant or send for either account
+ok 12 - account switching while permission screen is open cannot grant or send for either account
+  ---
+  duration_ms: 1.3005
+  ...
+# Subtest: failed persistence and changed server disclosure cannot send a chat
+ok 13 - failed persistence and changed server disclosure cannot send a chat
+  ---
+  duration_ms: 2.2405
+  ...
+# Subtest: native history excludes locally generated account answers while preserving user messages
+ok 14 - native history excludes locally generated account answers while preserving user messages
+  ---
+  duration_ms: 0.522375
+  ...
+# Subtest: native disclosure requires an explicit Allow AI tap
+ok 15 - native disclosure requires an explicit Allow AI tap
+  ---
+  duration_ms: 4.03475
+  ...
+# Subtest: data controls can withdraw permission and report success only after persistence
+ok 16 - data controls can withdraw permission and report success only after persistence
+  ---
+  duration_ms: 5.477708
+  ...
+# Subtest: keeping permission or dismissing controls does not change the record
+ok 17 - keeping permission or dismissing controls does not change the record
+  ---
+  duration_ms: 2.037958
+  ...
+# Subtest: the observed AI response renders bold labels and italic examples without delimiters
+ok 18 - the observed AI response renders bold labels and italic examples without delimiters
+  ---
+  duration_ms: 2.138792
+  ...
+# Subtest: underscore emphasis and nested emphasis retain their styles
+ok 19 - underscore emphasis and nested emphasis retain their styles
+  ---
+  duration_ms: 0.148583
+  ...
+# Subtest: headings, quotes and ordered or unordered lists remain readable
+ok 20 - headings, quotes and ordered or unordered lists remain readable
+  ---
+  duration_ms: 0.092166
+  ...
+# Subtest: code fences preserve literal syntax, indentation and identifiers
+ok 21 - code fences preserve literal syntax, indentation and identifiers
+  ---
+  duration_ms: 0.170917
+  ...
+# Subtest: inline code and escaped Markdown remain literal
+ok 22 - inline code and escaped Markdown remain literal
+  ---
+  duration_ms: 0.260083
+  ...
+# Subtest: link labels remain readable and unclosed code blocks remain literal
+ok 23 - link labels remain readable and unclosed code blocks remain literal
+  ---
+  duration_ms: 0.22
+  ...
+# Subtest: empty input, Unicode and literal multiplication are preserved
+ok 24 - empty input, Unicode and literal multiplication are preserved
+  ---
+  duration_ms: 0.439083
+  ...
+# Subtest: reporting opens the custom menu rather than a native multi-button alert
+ok 25 - reporting opens the custom menu rather than a native multi-button alert
+  ---
+  duration_ms: 140.087875
+  ...
+# Subtest: every reason, including Privacy and Other, submits the intended response and backend reason
+ok 26 - every reason, including Privacy and Other, submits the intended response and backend reason
+  ---
+  duration_ms: 698.633458
+  ...
+# Subtest: failed submissions stay open with a retry message and allow another attempt
+ok 27 - failed submissions stay open with a retry message and allow another attempt
+  ---
+  duration_ms: 128.958375
+  ...
+# Subtest: rapid taps cannot submit two reports or replace the message in flight
+ok 28 - rapid taps cannot submit two reports or replace the message in flight
+  ---
+  duration_ms: 145.742708
+  ...
+# Subtest: late report responses after unmount or account change cannot show confirmation
+ok 29 - late report responses after unmount or account change cannot show confirmation
+  ---
+  duration_ms: 124.3265
+  ...
+# Subtest: custom modal renders all five reasons plus Cancel, supports scrolling and disables duplicate taps
+ok 30 - custom modal renders all five reasons plus Cancel, supports scrolling and disables duplicate taps
+  ---
+  duration_ms: 58.405875
+  ...
+# Subtest: HTTP 404 HTML error does not leak server markup or internal routes
+ok 31 - HTTP 404 HTML error does not leak server markup or internal routes
+  ---
+  duration_ms: 2.701375
+  ...
+# Subtest: HTTP 502 HTML error does not leak server markup or internal routes
+ok 32 - HTTP 502 HTML error does not leak server markup or internal routes
+  ---
+  duration_ms: 0.435084
+  ...
+# Subtest: HTTP 503 HTML error does not leak server markup or internal routes
+ok 33 - HTTP 503 HTML error does not leak server markup or internal routes
+  ---
+  duration_ms: 0.273084
+  ...
+# Subtest: a successful non-JSON response is a retryable error, not an empty lesson list
+ok 34 - a successful non-JSON response is a retryable error, not an empty lesson list
+  ---
+  duration_ms: 0.280667
+  ...
+# Subtest: JSON lessons and meaningful JSON server errors retain their existing behavior
+ok 35 - JSON lessons and meaningful JSON server errors retain their existing behavior
+  ---
+  duration_ms: 0.461167
+  ...
+# Subtest: builds a shareable HTTPS lesson link with course and video identifiers
+ok 36 - builds a shareable HTTPS lesson link with course and video identifiers
+  ---
+  duration_ms: 3.088708
+  ...
+# Subtest: parses current and legacy Skillomate video links
+ok 37 - parses current and legacy Skillomate video links
+  ---
+  duration_ms: 0.885083
+  ...
+# Subtest: rejects untrusted, insecure, unrelated and incomplete links
+ok 38 - rejects untrusted, insecure, unrelated and incomplete links
+  ---
+  duration_ms: 0.103916
+  ...
+# Subtest: captures native code, message and nested StoreKit cause without serializing raw fields
+ok 39 - captures native code, message and nested StoreKit cause without serializing raw fields
+  ---
+  duration_ms: 5.546791
+  ...
+# Subtest: redacts sensitive text, bounds cause depth and survives logger failures
+ok 40 - redacts sensitive text, bounds cause depth and survives logger failures
+  ---
+  duration_ms: 0.144542
+  ...
+# Subtest: actual hook records native callbacks while preserving cancellation behavior
+ok 41 - actual hook records native callbacks while preserving cancellation behavior
+  ---
+  duration_ms: 1.57675
+  ...
+# Subtest: concurrent callbacks share verification and finishing; failed attempts remain retryable
+ok 42 - concurrent callbacks share verification and finishing; failed attempts remain retryable
+  ---
+  duration_ms: 2.803125
+  ...
+# Subtest: recovery verifies expired pending transactions before refresh and ignores unrelated products
+ok 43 - recovery verifies expired pending transactions before refresh and ignores unrelated products
+  ---
+  duration_ms: 0.833458
+  ...
+# Subtest: restore includes expired history without publishing duplicate events and deduplicates transactions
+ok 44 - restore includes expired history without publishing duplicate events and deduplicates transactions
+  ---
+  duration_ms: 0.186208
+  ...
+# Subtest: failed ownership verification stops recovery; pending approval is not finished
+ok 45 - failed ownership verification stops recovery; pending approval is not finished
+  ---
+  duration_ms: 0.1825
+  ...
+# Subtest: Subscribe clears a verified expired unfinished transaction before requesting a new purchase
+ok 46 - Subscribe clears a verified expired unfinished transaction before requesting a new purchase
+  ---
+  duration_ms: 3.824417
+  ...
+# Subtest: Subscribe does not start another purchase when recovery finds active access or fails verification
+ok 47 - Subscribe does not start another purchase when recovery finds active access or fails verification
+  ---
+  duration_ms: 1.752792
+  ...
+# Subtest: duplicate and already-owned callbacks recover without displaying the generic purchase error
+ok 48 - duplicate and already-owned callbacks recover without displaying the generic purchase error
+  ---
+  duration_ms: 7.216
+  ...
+# Subtest: rapid Subscribe taps cannot submit two native purchase requests
+ok 49 - rapid Subscribe taps cannot submit two native purchase requests
+  ---
+  duration_ms: 2.031917
+  ...
+# Subtest: duplicate callback during successful verification shares work and releases the purchase lock
+ok 50 - duplicate callback during successful verification shares work and releases the purchase lock
+  ---
+  duration_ms: 1.015417
+  ...
+# Subtest: pending approval blocks another charge and cancellation unlocks checkout
+ok 51 - pending approval blocks another charge and cancellation unlocks checkout
+  ---
+  duration_ms: 1.482
+  ...
+# Subtest: duplicate errors delivered through both callback and request rejection do not leave checkout busy
+ok 52 - duplicate errors delivered through both callback and request rejection do not leave checkout busy
+  ---
+  duration_ms: 0.583416
+  ...
+# Subtest: native pending transaction ID is replaced by the same transaction’s JWS before backend verification
+ok 53 - native pending transaction ID is replaced by the same transaction’s JWS before backend verification
+  ---
+  duration_ms: 0.438708
+  ...
+# Subtest: recovery never verifies or finishes an ID-only transaction when its signed history is absent
+ok 54 - recovery never verifies or finishes an ID-only transaction when its signed history is absent
+  ---
+  duration_ms: 0.74975
+  ...
+# Subtest: signed-data fallback cannot substitute another transaction or product
+ok 55 - signed-data fallback cannot substitute another transaction or product
+  ---
+  duration_ms: 0.330959
+  ...
+# Subtest: direct purchase callbacks also recover ID-only snapshots without sending IDs to the backend
+ok 56 - direct purchase callbacks also recover ID-only snapshots without sending IDs to the backend
+  ---
+  duration_ms: 2.822791
+  ...
+# Subtest: multiple pending snapshots use one history read and each keeps its own signed data
+ok 57 - multiple pending snapshots use one history read and each keeps its own signed data
+  ---
+  duration_ms: 0.556875
+  ...
+# Subtest: Viral Hook with resume-only activity appears before the untouched Influencer course
+ok 58 - Viral Hook with resume-only activity appears before the untouched Influencer course
+  ---
+  duration_ms: 1.46875
+  ...
+# Subtest: the most recently watched unfinished course wins over catalogue order and lesson count
+ok 59 - the most recently watched unfinished course wins over catalogue order and lesson count
+  ---
+  duration_ms: 0.400375
+  ...
+# Subtest: partial progress and completed IDs count even before lesson metadata is loaded
+ok 60 - partial progress and completed IDs count even before lesson metadata is loaded
+  ---
+  duration_ms: 0.555167
+  ...
+# Subtest: resume returns to the last watched lesson even when earlier lessons are unfinished
+ok 61 - resume returns to the last watched lesson even when earlier lessons are unfinished
+  ---
+  duration_ms: 0.249375
+  ...
+# Subtest: after finishing the last watched lesson, resume advances to the next unfinished lesson
+ok 62 - after finishing the last watched lesson, resume advances to the next unfinished lesson
+  ---
+  duration_ms: 0.310167
+  ...
+# Subtest: invalid timestamps cannot stop a valid recent course from reaching the top
+ok 63 - invalid timestamps cannot stop a valid recent course from reaching the top
+  ---
+  duration_ms: 0.267833
+  ...
+# Subtest: pressing Continue resumes the displayed course, lesson and position
+ok 64 - pressing Continue resumes the displayed course, lesson and position
+  ---
+  duration_ms: 0.330083
+  ...
+# Subtest: completed courses do not displace unfinished study and still allow review
+ok 65 - completed courses do not displace unfinished study and still allow review
+  ---
+  duration_ms: 0.326708
+  ...
+# Subtest: a hung catalogue request exits loading with a timeout message
+ok 66 - a hung catalogue request exits loading with a timeout message
+  ---
+  duration_ms: 29.351333
+  ...
+# Subtest: the deadline also covers a response body that stalls after headers
+ok 67 - the deadline also covers a response body that stalls after headers
+  ---
+  duration_ms: 23.865917
+  ...
+# Subtest: Retry can recover after a timed-out initial request
+ok 68 - Retry can recover after a timed-out initial request
+  ---
+  duration_ms: 23.5095
+  ...
+# Subtest: HTTP errors and invalid payloads show a retryable error instead of poisoning the cache
+ok 69 - HTTP errors and invalid payloads show a retryable error instead of poisoning the cache
+  ---
+  duration_ms: 0.994084
+  ...
+# Subtest: a failed pull-to-refresh preserves usable cached courses and stops refreshing
+ok 70 - a failed pull-to-refresh preserves usable cached courses and stops refreshing
+  ---
+  duration_ms: 0.314542
+  ...
+# Subtest: a superseded response cannot replace newer courses or reset their loading state
+ok 71 - a superseded response cannot replace newer courses or reset their loading state
+  ---
+  duration_ms: 0.460292
+  ...
+# Subtest: unmount cancels the pending request and ignores its late failure
+ok 72 - unmount cancels the pending request and ignores its late failure
+  ---
+  duration_ms: 2.023292
+  ...
+# Subtest: both initial failure and cached-refresh failure expose working Retry actions
+ok 73 - both initial failure and cached-refresh failure expose working Retry actions
+  ---
+  duration_ms: 15.8705
+  ...
+# Subtest: preparation, unknown total, transfer bytes and final verification have honest labels
+ok 74 - preparation, unknown total, transfer bytes and final verification have honest labels
+  ---
+  duration_ms: 1.064333
+  ...
+# Subtest: Cancel while preparing aborts the authorization request and removes the partial folder
+ok 75 - Cancel while preparing aborts the authorization request and removes the partial folder
+  ---
+  duration_ms: 283.738291
+  ...
+# Subtest: Cancel stops only the selected transfer, removes its partial files and permits downloading it again
+ok 76 - Cancel stops only the selected transfer, removes its partial files and permits downloading it again
+  ---
+  duration_ms: 278.381292
+  ...
+# Subtest: rapid download taps share one task and tapping an already saved lesson keeps its video file
+ok 77 - rapid download taps share one task and tapping an already saved lesson keeps its video file
+  ---
+  duration_ms: 180.822917
+  ...
+# Subtest: pull-to-refresh keeps a live download visible and cancellable
+ok 78 - pull-to-refresh keeps a live download visible and cancellable
+  ---
+  duration_ms: 227.558542
+  ...
+# Subtest: cancelling a segmented HLS download stops the current segment and removes its partial bundle
+ok 79 - cancelling a segmented HLS download stops the current segment and removes its partial bundle
+  ---
+  duration_ms: 179.126125
+  ...
+# Subtest: cancellation during server preparation polling prevents any further poll or transfer
+ok 80 - cancellation during server preparation polling prevents any further poll or transfer
+  ---
+  duration_ms: 0.480666
+  ...
+# Subtest: only an explicitly enabled native bridge permits logging and the native probe
+ok 81 - only an explicitly enabled native bridge permits logging and the native probe
+  ---
+  duration_ms: 3.232417
+  ...
+# Subtest: startup marker and both pre-normalization representations retain every safe phase
+ok 82 - startup marker and both pre-normalization representations retain every safe phase
+  ---
+  duration_ms: 1.296042
+  ...
+# Subtest: malformed or absent recurrence values remain unknown rather than coercing to zero
+ok 83 - malformed or absent recurrence values remain unknown rather than coercing to zero
+  ---
+  duration_ms: 0.306167
+  ...
+# Subtest: a missing JS product can still be compared with the explicit configured native query
+ok 84 - a missing JS product can still be compared with the explicit configured native query
+  ---
+  duration_ms: 0.083709
+  ...
+# Subtest: configured and effective offer IDs are recorded separately without any session or binding value
+ok 85 - configured and effective offer IDs are recorded separately without any session or binding value
+  ---
+  duration_ms: 0.084083
+  ...
+# Subtest: diagnostics distinguish absent offer from returned offer rejected by an exact validation check
+ok 86 - diagnostics distinguish absent offer from returned offer rejected by an exact validation check
+  ---
+  duration_ms: 0.225084
+  ...
+# Subtest: checkout compares actual tokens in memory and emits only equality booleans
+ok 87 - checkout compares actual tokens in memory and emits only equality booleans
+  ---
+  duration_ms: 0.354834
+  ...
+# Subtest: raw/config objects cannot smuggle unknown fields or sensitive data into emitted diagnostics
+ok 88 - raw/config objects cannot smuggle unknown fields or sensitive data into emitted diagnostics
+  ---
+  duration_ms: 0.535833
+  ...
+# Subtest: a native diagnostic bridge failure cannot prevent checkout code from continuing
+ok 89 - a native diagnostic bridge failure cannot prevent checkout code from continuing
+  ---
+  duration_ms: 0.663375
+  ...
+# Google Play subscription offer regression tests passed (68 rejection cases checked in both supported shapes).
+# Subtest: /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/appcopyai/tests/googlePlaySubscriptionOffers.test.js
+ok 14 - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/appcopyai/tests/googlePlaySubscriptionOffers.test.js
+  ---
+  duration_ms: 51.623459
+  ...
+# Subtest: a guest opens course details and can play public lessons without a session
+ok 91 - a guest opens course details and can play public lessons without a session
+  ---
+  duration_ms: 11.341583
+  ...
+# Subtest: a direct link to a paid lesson opens details rather than starting a different free video
+ok 92 - a direct link to a paid lesson opens details rather than starting a different free video
+  ---
+  duration_ms: 1.597834
+  ...
+# Subtest: a guest never trusts members-only videos cached in a home card
+ok 93 - a guest never trusts members-only videos cached in a home card
+  ---
+  duration_ms: 0.41525
+  ...
+# Subtest: a late public response cannot replace the new signed-in account view
+ok 94 - a late public response cannot replace the new signed-in account view
+  ---
+  duration_ms: 0.334125
+  ...
+# Subtest: course data uses public requests for guests and non-members; paid accounts retain session refresh
+ok 95 - course data uses public requests for guests and non-members; paid accounts retain session refresh
+  ---
+  duration_ms: 0.585625
+  ...
+# Subtest: public CloudFront authorization sends no personal identity or bearer credentials
+ok 96 - public CloudFront authorization sends no personal identity or bearer credentials
+  ---
+  duration_ms: 0.672333
+  ...
+# Subtest: fresh installs default to browsing and authentication remains explicitly dismissible
+ok 97 - fresh installs default to browsing and authentication remains explicitly dismissible
+  ---
+  duration_ms: 0.241167
+  ...
+# Subtest: guest headers use a neutral account icon while signed-in accounts retain their avatar
+ok 98 - guest headers use a neutral account icon while signed-in accounts retain their avatar
+  ---
+  duration_ms: 45.770875
+  ...
+# Subtest: the actual app renders guest Home and course navigation without showing authentication
+ok 99 - the actual app renders guest Home and course navigation without showing authentication
+  ---
+  duration_ms: 456.103583
+  ...
+# Subtest: the actual guest profile is an optional account page and login has a guest exit
+ok 100 - the actual guest profile is an optional account page and login has a guest exit
+  ---
+  duration_ms: 448.582084
+  ...
+# Subtest: the guest player receives only public lessons with its selected index remapped
+ok 101 - the guest player receives only public lessons with its selected index remapped
+  ---
+  duration_ms: 159.283
+  ...
+# Subtest: the native player consumes a guest lease instead of waiting forever for a login session
+ok 102 - the native player consumes a guest lease instead of waiting forever for a login session
+  ---
+  duration_ms: 1.231375
+  ...
+# Subtest: the native player rejects a lease from a different course, lesson or account session
+ok 103 - the native player rejects a lease from a different course, lesson or account session
+  ---
+  duration_ms: 0.547833
+  ...
+# Subtest: guests cannot play an automatically exposed introduction from an older backend
+ok 104 - guests cannot play an automatically exposed introduction from an older backend
+  ---
+  duration_ms: 0.300458
+  ...
+# Subtest: only the explicit-free backend policy may enable free guest lessons
+ok 105 - only the explicit-free backend policy may enable free guest lessons
+  ---
+  duration_ms: 0.225625
+  ...
+# Subtest: Indian numbers pasted with country code, spaces, brackets or hyphens retain all ten local digits
+ok 106 - Indian numbers pasted with country code, spaces, brackets or hyphens retain all ten local digits
+  ---
+  duration_ms: 0.606208
+  ...
+# Subtest: local numbers beginning with 91 keep their prefix and unsupported lengths remain invalid
+ok 107 - local numbers beginning with 91 keep their prefix and unsupported lengths remain invalid
+  ---
+  duration_ms: 0.07475
+  ...
+# Subtest: repeated entry normalization and typing country-code digits do not lose any digits
+ok 108 - repeated entry normalization and typing country-code digits do not lose any digits
+  ---
+  duration_ms: 0.096833
+  ...
+# Subtest: all three phone fields normalize complete pasted text without a native character limit
+ok 109 - all three phone fields normalize complete pasted text without a native character limit
+  ---
+  duration_ms: 214.683167
+  ...
+# Subtest: login, OTP send/resend/verify, registration and both reset requests submit the same normalized number
+ok 110 - login, OTP send/resend/verify, registration and both reset requests submit the same normalized number
+  ---
+  duration_ms: 4994.88575
+  ...
+# Subtest: unsupported numbers cannot send authentication requests or be silently cropped to another number
+ok 111 - unsupported numbers cannot send authentication requests or be silently cropped to another number
+  ---
+  duration_ms: 1209.206583
+  ...
+# Subtest: Forgot Password pre-fills the local number from a country-code login entry
+ok 112 - Forgot Password pre-fills the local number from a country-code login entry
+  ---
+  duration_ms: 203.029875
+  ...
+# Subtest: protected lesson metadata receives the same ID in the list, player and downloader
+ok 113 - protected lesson metadata receives the same ID in the list, player and downloader
+  ---
+  duration_ms: 2.148709
+  ...
+# Subtest: visible download action starts the requested lesson and stops the play-row press
+ok 114 - visible download action starts the requested lesson and stops the play-row press
+  ---
+  duration_ms: 0.571417
+  ...
+# Subtest: both download entry points expose progress, saved state and retry without duplicate requests
+ok 115 - both download entry points expose progress, saved state and retry without duplicate requests
+  ---
+  duration_ms: 0.406458
+  ...
+# Subtest: unsupported lessons do not offer a download that can never start
+ok 116 - unsupported lessons do not offer a download that can never start
+  ---
+  duration_ms: 0.290583
+  ...
+# Subtest: a protected metadata-only lesson completes the authorized download and appears in saved downloads
+ok 117 - a protected metadata-only lesson completes the authorized download and appears in saved downloads
+  ---
+  duration_ms: 68.280417
+  ...
+# Subtest: empty Downloads gives users a direct route to courses
+ok 118 - empty Downloads gives users a direct route to courses
+  ---
+  duration_ms: 182.059
+  ...
+# Subtest: actual downloader cannot publish a late completion after logout
+ok 119 - actual downloader cannot publish a late completion after logout
+  ---
+  duration_ms: 66.858541
+  ...
+# Subtest: logout clears downloads and cancels transfers before clearing the user
+ok 120 - logout clears downloads and cancels transfers before clearing the user
+  ---
+  duration_ms: 124.029375
+  ...
+# Subtest: both platforms offer their native subscribe action and access refresh
+ok 121 - both platforms offer their native subscribe action and access refresh
+  ---
+  duration_ms: 2.391083
+  ...
+# Subtest: verified access closes the gate without starting a purchase
+ok 122 - verified access closes the gate without starting a purchase
+  ---
+  duration_ms: 10.039
+  ...
+# Subtest: inactive and failed refreshes stay open with actionable feedback
+ok 123 - inactive and failed refreshes stay open with actionable feedback
+  ---
+  duration_ms: 0.996292
+  ...
+# Subtest: rapid refresh taps make one request and disable billing actions until finished
+ok 124 - rapid refresh taps make one request and disable billing actions until finished
+  ---
+  duration_ms: 0.479875
+  ...
+# Subtest: refresh is blocked while a purchase is running
+ok 125 - refresh is blocked while a purchase is running
+  ---
+  duration_ms: 0.332458
+  ...
+# Subtest: subscription details remains a fallback when refresh is unavailable
+ok 126 - subscription details remains a fallback when refresh is unavailable
+  ---
+  duration_ms: 0.301333
+  ...
+# Subtest: mock billing requires Android development and explicit opt-in
+ok 127 - mock billing requires Android development and explicit opt-in
+  ---
+  duration_ms: 0.566375
+  ...
+# Subtest: simulated outcomes remain separate from actual subscription entitlement
+ok 128 - simulated outcomes remain separate from actual subscription entitlement
+  ---
+  duration_ms: 0.308459
+  ...
+# Subtest: Resend calls the dedicated endpoint and stays on code entry with visible success feedback
+ok 129 - Resend calls the dedicated endpoint and stays on code entry with visible success feedback
+  ---
+  duration_ms: 332.326708
+  ...
+# Subtest: initial Send OTP retains the original send endpoint
+ok 130 - initial Send OTP retains the original send endpoint
+  ---
+  duration_ms: 314.759458
+  ...
+# Subtest: server cooldown and network errors remain visible without removing the existing code
+ok 131 - server cooldown and network errors remain visible without removing the existing code
+  ---
+  duration_ms: 279.68875
+  ...
+# Subtest: rapid Resend taps and Verify while resending make only one request
+ok 132 - rapid Resend taps and Verify while resending make only one request
+  ---
+  duration_ms: 118.230208
+  ...
+# Subtest: Resend during verification cannot replace the code being checked
+ok 133 - Resend during verification cannot replace the code being checked
+  ---
+  duration_ms: 119.368125
+  ...
+# Subtest: development QA resend simulates delivery and releases the request lock
+ok 134 - development QA resend simulates delivery and releases the request lock
+  ---
+  duration_ms: 119.030917
+  ...
+# Subtest: visible Resend button invokes resend and exposes its disabled loading state
+ok 135 - visible Resend button invokes resend and exposes its disabled loading state
+  ---
+  duration_ms: 147.833
+  ...
+# Subtest: leaving signup during sending, resending or verification ignores late success
+ok 136 - leaving signup during sending, resending or verification ignores late success
+  ---
+  duration_ms: 388.600542
+  ...
+# Subtest: late network and server errors cannot appear after leaving signup
+ok 137 - late network and server errors cannot appear after leaving signup
+  ---
+  duration_ms: 490.861209
+  ...
+# Subtest: an old response cannot unlock a newer request or clear its loading indicator
+ok 138 - an old response cannot unlock a newer request or clear its loading indicator
+  ---
+  duration_ms: 234.558833
+  ...
+# Subtest: changing phone or screen invalidates the old request through the actual lifecycle effect
+ok 139 - changing phone or screen invalidates the old request through the actual lifecycle effect
+  ---
+  duration_ms: 343.908708
+  ...
+# Subtest: unmount cleanup prevents delayed verification from navigating or storing a token
+ok 140 - unmount cleanup prevents delayed verification from navigating or storing a token
+  ---
+  duration_ms: 144.587416
+  ...
+# Subtest: signing in while an OTP request is pending discards the old verification response
+ok 141 - signing in while an OTP request is pending discards the old verification response
+  ---
+  duration_ms: 121.100959
+  ...
+# Subtest: delayed QA callbacks cannot reopen signup or unlock a newer request
+ok 142 - delayed QA callbacks cannot reopen signup or unlock a newer request
+  ---
+  duration_ms: 237.463708
+  ...
+# Subtest: iOS and Android hide every cached inactive lesson cell from accessibility
+ok 143 - iOS and Android hide every cached inactive lesson cell from accessibility
+  ---
+  duration_ms: 1.726709
+  ...
+# Subtest: the current lesson retains independently accessible controls
+ok 144 - the current lesson retains independently accessible controls
+  ---
+  duration_ms: 0.380916
+  ...
+# Subtest: changing lessons moves accessibility exposure to the new cell only
+ok 145 - changing lessons moves accessibility exposure to the new cell only
+  ---
+  duration_ms: 4.74275
+  ...
+# Subtest: opening a sheet hides the underlying video cell from accessibility
+ok 146 - opening a sheet hides the underlying video cell from accessibility
+  ---
+  duration_ms: 0.278709
+  ...
+# Subtest: hidden chrome removes top, side and description controls from the iOS accessibility tree
+ok 147 - hidden chrome removes top, side and description controls from the iOS accessibility tree
+  ---
+  duration_ms: 0.273583
+  ...
+# Subtest: inactive or suspended videos do not mount their playback controls or stale settings
+ok 148 - inactive or suspended videos do not mount their playback controls or stale settings
+  ---
+  duration_ms: 0.396875
+  ...
+# Subtest: leaving a video closes its settings so returning cannot reopen an old panel
+ok 149 - leaving a video closes its settings so returning cannot reopen an old panel
+  ---
+  duration_ms: 0.595791
+  ...
+# Subtest: Lectures opens the picker on the active lecture page and closes other sheets
+ok 150 - Lectures opens the picker on the active lecture page and closes other sheets
+  ---
+  duration_ms: 50.5205
+  ...
+# Subtest: Notes opens notes rather than the picker, including after Lectures was opened
+ok 151 - Notes opens notes rather than the picker, including after Lectures was opened
+  ---
+  duration_ms: 12.668792
+  ...
+# Subtest: a lecture selection closes the picker and scrolls to the requested lesson
+ok 152 - a lecture selection closes the picker and scrolls to the requested lesson
+  ---
+  duration_ms: 10.447417
+  ...
+# Subtest: invalid lesson selections cannot navigate away or close the picker
+ok 153 - invalid lesson selections cannot navigate away or close the picker
+  ---
+  duration_ms: 3.462208
+  ...
+# Subtest: failed lesson questions can be retried with their original text
+ok 154 - failed lesson questions can be retried with their original text
+  ---
+  duration_ms: 4.68825
+  ...
+# Subtest: successful answers and fresh lesson chats do not offer a failed-question retry
+ok 155 - successful answers and fresh lesson chats do not offer a failed-question retry
+  ---
+  duration_ms: 0.594292
+  ...
+# Subtest: paused skip -10 seconds preserves playback intent
+ok 156 - paused skip -10 seconds preserves playback intent
+  ---
+  duration_ms: 1.15575
+  ...
+# Subtest: paused skip 10 seconds preserves playback intent
+ok 157 - paused skip 10 seconds preserves playback intent
+  ---
+  duration_ms: 0.24275
+  ...
+# Subtest: paused timeline drag preserves playback intent and saves the position
+ok 158 - paused timeline drag preserves playback intent and saves the position
+  ---
+  duration_ms: 0.261834
+  ...
+# Subtest: playing skip -10 seconds preserves playback intent
+ok 159 - playing skip -10 seconds preserves playback intent
+  ---
+  duration_ms: 0.252458
+  ...
+# Subtest: playing skip 10 seconds preserves playback intent
+ok 160 - playing skip 10 seconds preserves playback intent
+  ---
+  duration_ms: 0.198292
+  ...
+# Subtest: playing timeline drag preserves playback intent and saves the position
+ok 161 - playing timeline drag preserves playback intent and saves the position
+  ---
+  duration_ms: 0.192833
+  ...
+# Subtest: a buffering lesson uses intended playback rather than a transient not-playing flag
+ok 162 - a buffering lesson uses intended playback rather than a transient not-playing flag
+  ---
+  duration_ms: 0.19825
+  ...
+# Subtest: an inactive lesson cannot resume from a stale playing intention
+ok 163 - an inactive lesson cannot resume from a stale playing intention
+  ---
+  duration_ms: 0.204416
+  ...
+# Subtest: seeking stays within the lesson and a commit without a drag does nothing
+ok 164 - seeking stays within the lesson and a commit without a drag does nothing
+  ---
+  duration_ms: 0.33325
+  ...
+# Subtest: sourceLoad after a paused seek cannot restart native playback
+ok 165 - sourceLoad after a paused seek cannot restart native playback
+  ---
+  duration_ms: 0.54625
+  ...
+# Subtest: sourceLoad still starts native playback when playback is intended
+ok 166 - sourceLoad still starts native playback when playback is intended
+  ---
+  duration_ms: 0.260459
+  ...
+# Subtest: statusChange after a paused seek cannot restart native playback
+ok 167 - statusChange after a paused seek cannot restart native playback
+  ---
+  duration_ms: 0.221208
+  ...
+# Subtest: statusChange still starts native playback when playback is intended
+ok 168 - statusChange still starts native playback when playback is intended
+  ---
+  duration_ms: 0.185041
+  ...
+# Subtest: Profile loads account statistics and shows real counts, including zero
+ok 169 - Profile loads account statistics and shows real counts, including zero
+  ---
+  duration_ms: 2.267583
+  ...
+# Subtest: errors and malformed counts show N/A rather than a fabricated zero
+ok 170 - errors and malformed counts show N/A rather than a fabricated zero
+  ---
+  duration_ms: 1.428417
+  ...
+# Subtest: unmounting or switching accounts prevents late results from updating Profile
+ok 171 - unmounting or switching accounts prevents late results from updating Profile
+  ---
+  duration_ms: 1.537959
+  ...
+# Subtest: a profile refresh can retry after a failed request
+ok 172 - a profile refresh can retry after a failed request
+  ---
+  duration_ms: 1.498959
+  ...
+# Subtest: actual progress saver exposes a network failure then applies only the successful retry
+ok 173 - actual progress saver exposes a network failure then applies only the successful retry
+  ---
+  duration_ms: 95.68175
+  ...
+# Subtest: legacy endpoint fallback remains available only for a missing modern route
+ok 174 - legacy endpoint fallback remains available only for a missing modern route
+  ---
+  duration_ms: 175.878375
+  ...
+# Subtest: switching accounts during a request cannot retry the legacy endpoint as the next user
+ok 175 - switching accounts during a request cannot retry the legacy endpoint as the next user
+  ---
+  duration_ms: 33.991417
+  ...
+# Subtest: warning renders readable feedback and an accessible retry button, disabled while saving
+ok 176 - warning renders readable feedback and an accessible retry button, disabled while saving
+  ---
+  duration_ms: 46.406042
+  ...
+# Subtest: failed saves show a warning and retry the original position without fabricated watch time
+ok 177 - failed saves show a warning and retry the original position without fabricated watch time
+  ---
+  duration_ms: 0.992125
+  ...
+# Subtest: repeated failures retain one warning per lesson and retry only its latest position
+ok 178 - repeated failures retain one warning per lesson and retry only its latest position
+  ---
+  duration_ms: 0.127084
+  ...
+# Subtest: a successful heartbeat automatically clears that lesson while preserving other failures
+ok 179 - a successful heartbeat automatically clears that lesson while preserving other failures
+  ---
+  duration_ms: 0.156208
+  ...
+# Subtest: rapid retry taps share one request and keep the warning after another failure
+ok 180 - rapid retry taps share one request and keep the warning after another failure
+  ---
+  duration_ms: 0.122834
+  ...
+# Subtest: late older responses cannot clear a newer failure or overwrite newer saved progress
+ok 181 - late older responses cannot clear a newer failure or overwrite newer saved progress
+  ---
+  duration_ms: 0.179375
+  ...
+# Subtest: retry waits for a newer heartbeat already in flight instead of resending a stale position
+ok 182 - retry waits for a newer heartbeat already in flight instead of resending a stale position
+  ---
+  duration_ms: 0.37275
+  ...
+# Subtest: logout and session replacement prevent late success, failure or retry from affecting the next account
+ok 183 - logout and session replacement prevent late success, failure or retry from affecting the next account
+  ---
+  duration_ms: 0.738917
+  ...
+# Subtest: observed expired record cannot display ACTIVE or imply lifetime access
+ok 184 - observed expired record cannot display ACTIVE or imply lifetime access
+  ---
+  duration_ms: 0.569666
+  ...
+# Subtest: verified access takes precedence over a stale billing status
+ok 185 - verified access takes precedence over a stale billing status
+  ---
+  duration_ms: 0.999625
+  ...
+# Subtest: past-due and invalid expiry never show active access
+ok 186 - past-due and invalid expiry never show active access
+  ---
+  duration_ms: 0.181666
+  ...
+# Subtest: explicit server denial overrides a legacy paid status
+ok 187 - explicit server denial overrides a legacy paid status
+  ---
+  duration_ms: 0.119
+  ...
+# Subtest: free accounts do not expose stale expiry dates
+ok 188 - free accounts do not expose stale expiry dates
+  ---
+  duration_ms: 0.250833
+  ...
+# Subtest: verified trial and cancel-at-period-end remain active through expiry
+ok 189 - verified trial and cancel-at-period-end remain active through expiry
+  ---
+  duration_ms: 0.127209
+  ...
+# Subtest: revoked, refunded and expired states cannot inherit an ACTIVE badge
+ok 190 - revoked, refunded and expired states cannot inherit an ACTIVE badge
+  ---
+  duration_ms: 0.213459
+  ...
+# Subtest: unknown verification state never grants display access
+ok 191 - unknown verification state never grants display access
+  ---
+  duration_ms: 0.109292
+  ...
+# Subtest: undated legacy access does not claim to be lifetime access
+ok 192 - undated legacy access does not claim to be lifetime access
+  ---
+  duration_ms: 1.198709
+  ...
+# Subtest: grace access displays its grace expiry rather than the expired billing period
+ok 193 - grace access displays its grace expiry rather than the expired billing period
+  ---
+  duration_ms: 0.247583
+  ...
+# Subtest: video playlists, media files and encoded media paths never become image candidates
+ok 194 - video playlists, media files and encoded media paths never become image candidates
+  ---
+  duration_ms: 1.040167
+  ...
+# Subtest: valid uploaded images, extensionless image endpoints and Drive thumbnails remain usable
+ok 195 - valid uploaded images, extensionless image endpoints and Drive thumbnails remain usable
+  ---
+  duration_ms: 0.286208
+  ...
+# Subtest: an invalid landscape thumbnail does not hide a valid portrait thumbnail
+ok 196 - an invalid landscape thumbnail does not hide a valid portrait thumbnail
+  ---
+  duration_ms: 0.073542
+  ...
+# Subtest: invalid lesson artwork falls back to valid course artwork before any image request
+ok 197 - invalid lesson artwork falls back to valid course artwork before any image request
+  ---
+  duration_ms: 0.200459
+  ...
+# Subtest: provider thumbnails are retained when uploaded thumbnail fields contain video URLs
+ok 198 - provider thumbnails are retained when uploaded thumbnail fields contain video URLs
+  ---
+  duration_ms: 0.061583
+  ...
+# Subtest: missing usable artwork leaves the existing visual placeholder without an invalid request
+ok 199 - missing usable artwork leaves the existing visual placeholder without an invalid request
+  ---
+  duration_ms: 0.05025
+  ...
+# Subtest: valid lesson uploads retain priority over provider and course fallbacks
+ok 200 - valid lesson uploads retain priority over provider and course fallbacks
+  ---
+  duration_ms: 0.084333
+  ...
+# Subtest: a failed image and failed proxy advance to course artwork and stop after exhausting candidates
+ok 201 - a failed image and failed proxy advance to course artwork and stop after exhausting candidates
+  ---
+  duration_ms: 62.932458
+  ...
+# Subtest: the actual image component skips a media URL and immediately uses fallback artwork
+ok 202 - the actual image component skips a media URL and immediately uses fallback artwork
+  ---
+  duration_ms: 12.4975
+  ...
+# Subtest: Wishlist times out both stalled connections and stalled response bodies with a visible error
+ok 203 - Wishlist times out both stalled connections and stalled response bodies with a visible error
+  ---
+  duration_ms: 86.26925
+  ...
+# Subtest: Wishlist errors and malformed responses cannot be presented as an empty saved list
+ok 204 - Wishlist errors and malformed responses cannot be presented as an empty saved list
+  ---
+  duration_ms: 2.169333
+  ...
+# Subtest: Wishlist Retry recovers and an empty wishlist clears old courses without fetching
+ok 205 - Wishlist Retry recovers and an empty wishlist clears old courses without fetching
+  ---
+  duration_ms: 1.405083
+  ...
+# Subtest: leaving Wishlist aborts its request and ignores a late response
+ok 206 - leaving Wishlist aborts its request and ignores a late response
+  ---
+  duration_ms: 0.866917
+  ...
+# Subtest: AI availability exits checking when either request hangs and cancels the other request
+ok 207 - AI availability exits checking when either request hangs and cancels the other request
+  ---
+  duration_ms: 83.039959
+  ...
+# Subtest: AI rejects unhealthy and malformed responses and Retry can recover course scope
+ok 208 - AI rejects unhealthy and malformed responses and Retry can recover course scope
+  ---
+  duration_ms: 2.437833
+  ...
+# Subtest: AI distinguishes a course without indexed lessons from a network failure
+ok 209 - AI distinguishes a course without indexed lessons from a network failure
+  ---
+  duration_ms: 1.360375
+  ...
+# Subtest: AI cleanup aborts both checks and ignores late responses after navigation or account changes
+ok 210 - AI cleanup aborts both checks and ignores late responses after navigation or account changes
+  ---
+  duration_ms: 1.354334
+  ...
+# Subtest: visible Retry buttons trigger fresh Wishlist and AI checks
+ok 211 - visible Retry buttons trigger fresh Wishlist and AI checks
+  ---
+  duration_ms: 5.26775
+  ...
+# Subtest: Back from a saved course restores Wishlist and retains the earlier Profile entry
+ok 212 - Back from a saved course restores Wishlist and retains the earlier Profile entry
+  ---
+  duration_ms: 2.263791
+  ...
+# Subtest: Wishlist remains the destination even when navigation history has not been recorded yet
+ok 213 - Wishlist remains the destination even when navigation history has not been recorded yet
+  ---
+  duration_ms: 0.698084
+  ...
+# Subtest: Back from the player first returns to lessons, then to Wishlist
+ok 214 - Back from the player first returns to lessons, then to Wishlist
+  ---
+  duration_ms: 0.835542
+  ...
+# Subtest: leaving while a course loads prevents its late response from reopening it
+ok 215 - leaving while a course loads prevents its late response from reopening it
+  ---
+  duration_ms: 1.110583
+  ...
+# Subtest: explicit tab navigation clears the Wishlist destination and ignores late course data
+ok 216 - explicit tab navigation clears the Wishlist destination and ignores late course data
+  ---
+  duration_ms: 0.707041
+  ...
+# Subtest: Wishlist course selection explicitly supplies its return destination
+ok 217 - Wishlist course selection explicitly supplies its return destination
+  ---
+  duration_ms: 0.344167
+  ...
+1..217
+# tests 217
+# suites 0
+# pass 217
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7267.476125

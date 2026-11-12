@@ -1,0 +1,20 @@
+▶ Phase 8 ALB readiness endpoint and MongoDB pool
+  ✔ MongoDB connected and Redis connected returns 200 (0.565041ms)
+  ✔ MongoDB unavailable returns 503 (0.07ms)
+  ✔ Redis unavailable returns 503 (0.059042ms)
+  ✔ both dependencies unavailable returns 503 (0.098459ms)
+  ✔ /api/health behavior remains unchanged (0.24ms)
+  ✔ readiness performs only ping reads and no writes (0.130459ms)
+  ✔ readiness reuses one Redis singleton across requests (0.587ms)
+  ✔ MongoDB pool defaults and invalid values parse safely (0.121916ms)
+  ✔ environment overrides MongoDB pool values (0.070792ms)
+  ✔ dependency errors expose no connection secrets in responses or logs (0.1895ms)
+✔ Phase 8 ALB readiness endpoint and MongoDB pool (3.216625ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 41.851666

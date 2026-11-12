@@ -226,10 +226,16 @@ test('planning retrieval keeps channel principles and omits unrelated template b
 // authorize, append to, reset or modify the real historical QA accounting.
 function accountingFixture() {
   const fs=require('node:fs'),path=require('node:path'),os=require('node:os'),crypto=require('node:crypto');
-  const {createGate}=require('../../tmp/nex-final-qa-20261027/gate.cjs');
+  const {createGate,LOCAL,LIMIT,DURATION}=require('../../tmp/nex-final-qa-20261027/gate.cjs');
   const directory=fs.mkdtempSync(path.join(os.tmpdir(),'task-preserving-accounting-'));
   const sha=value=>crypto.createHash('sha256').update(value).digest('hex');
-  const session=JSON.parse(fs.readFileSync(path.resolve(__dirname,'../../tmp/nex-final-qa-20261027/session.json')));
+  // Generate an independent offline session for this checkout. Historical
+  // sessions, their approvals and their provider accounting remain untouched.
+  const session={schema_version:1,suite:'OFFLINE-TASK-PRESERVING-ACCOUNTING',
+    session_id:crypto.randomUUID(),environment:{...LOCAL},user_id:user._id,course_id:course._id,
+    model:'google/gemini-2.5-flash',provider_url:'https://fal.run/openrouter/router/openai/v1/chat/completions',
+    max_provider_attempts:LIMIT,approval_duration_minutes:DURATION/60000,
+    allowed_paths:['/api/ai/chat','/api/course-ai/chat']};
   const revision=JSON.stringify({sources:{'edunex-b/services/businessResponsePipeline.js':sha(fs.readFileSync(path.resolve(__dirname,'../services/businessResponsePipeline.js')))}});
   session.source_revision_sha256=sha(revision);
   const bytes=JSON.stringify(session),hash=sha(bytes);
@@ -242,6 +248,22 @@ function accountingFixture() {
   const context={path:'/api/ai/chat',environment:session.environment,req:{method:'POST',headers:{host:'127.0.0.1:3129'},socket:{remoteAddress:'127.0.0.1',localAddress:'127.0.0.1'},compatAuth:{userId:session.user_id},body:{activeCourseId:session.course_id,conversationId:'offline-repair-accounting'}},knowledge:{activeCourse:{id:session.course_id},materialsAvailable:true}};
   return {gate,context,cleanup:()=>fs.rmSync(directory,{recursive:true,force:true})};
 }
+
+test('accounting gate still rejects a session from a different workspace',()=>{
+  const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+  const {createGate}=require('../../tmp/nex-final-qa-20261027/gate.cjs');
+  const f=accountingFixture();
+  try{
+    const directory=path.dirname(f.gate.ledgerPath);
+    const session={...f.gate.frozen,environment:{...f.gate.frozen.environment,workspaceRoot:path.join(directory,'other-checkout')}};
+    const bytes=JSON.stringify(session);
+    fs.writeFileSync(path.join(directory,'session.json'),bytes);
+    fs.writeFileSync(path.join(directory,'session.sha256'),crypto.createHash('sha256').update(bytes).digest('hex')+'\n');
+    assert.throws(()=>createGate({directory,configured:f.gate.configured}),{code:'manual_qa_invalid_session'});
+    assert.equal(f.gate.count(),0);
+    assert.equal(fs.existsSync(f.gate.approvalPath),false);
+  }finally{f.cleanup();}
+});
 
 for (const approval of ['open','awaiting','one-left']) test(`generation and bounded repair share durable accounting: ${approval}`,async()=>{
   const f=accountingFixture();

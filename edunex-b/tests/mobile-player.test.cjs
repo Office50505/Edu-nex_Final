@@ -2,7 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
-const parser = require('../../edunex-f/node_modules/@babel/parser');
+const parser = require('../../appcopyai/node_modules/@babel/parser');
 const source = fs.readFileSync(require('node:path').join(__dirname, '../../appcopyai/App.js'), 'utf8');
 const ast = parser.parse(source, { sourceType: 'module', plugins: ['jsx'] });
 const nodes = [];
@@ -22,6 +22,10 @@ function navigation(preview) {
   let refreshes = 0;
   const context = { ...state, userRef: { current: { _id: 'user' } }, legalPage: null, courseAiTarget: null, certModal: null, showAppUpgrade: false, showProblemReport: false, routeHistoryRef: { current: [] }, setCanGoBack() {}, restoreRoute: () => false, loadCourseProgress: () => refreshes++, TextInput: { State: { currentlyFocusedInput: () => null } }, Platform: { OS: 'android' } };
   for (const name of Object.keys(state)) context[`set${name[0].toUpperCase()}${name.slice(1)}`] = value => { state[name] = value; context[name] = value; };
+  context.otpRequestGeneration = { current: 0 };
+  context.otpRequestInFlight = { current: true };
+  context.setOtpLoading = value => { state.otpLoading = value; };
+  context.invalidateOtpRequest = compile(declaration('invalidateOtpRequest').init.arguments[0], context);
   context.backToLessons = compile(declaration('backToLessons').init.arguments[0], context);
   context.handleAppBack = compile(declaration('handleAppBack').init.arguments[0], context);
   context.requestPlayerBack = compile(declaration('requestPlayerBack').init.arguments[0], context);
@@ -32,6 +36,9 @@ for (const preview of [false, true]) {
   test(`Back exits ${preview ? 'preview' : 'enrolled'} playback one level and keeps lessons`, () => {
     const n = navigation(preview);
     assert.equal(n.back(), true);
+    assert.equal(n.context.otpRequestGeneration.current, 1);
+    assert.equal(n.context.otpRequestInFlight.current, false);
+    assert.equal(n.state.otpLoading, false);
     assert.equal(n.state.mainScreen, 'courses');
     assert.equal(n.state.selectedCourse._id, 'course');
     assert.equal(n.state.startIndex, null);
@@ -45,6 +52,8 @@ test('on-screen Back uses the same lesson-preserving transition', () => {
   const handler = component.attributes.find(a => a.name?.name === 'onBack').value.expression;
   const n = navigation(false);
   compile(handler, n.context)();
+  assert.equal(n.context.otpRequestGeneration.current, 1);
+  assert.equal(n.context.otpRequestInFlight.current, false);
   assert.equal(n.state.startIndex, null);
   assert.equal(n.state.selectedCourse._id, 'course');
 });

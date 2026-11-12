@@ -1,0 +1,12 @@
+{
+  "url": "https://skillomate.in/privacy",
+  "servedBundleUrl": "https://skillomate.in/assets/index-ss2tRMxy.js",
+  "bundleSha256": "6dbcd94c9e0b553a8060930fdc8298ced83f0481ad7c021e8261634d5223dd6f",
+  "september2026Present": false,
+  "aiPolicySnippets": [],
+  "method": "static served-bundle text inspection, not a fresh browser rendering",
+  "appChunkUrl": "https://skillomate.in/assets/App-B1NEaB_9.js",
+  "appChunkSha256": "4921088d5374af134c7ac40678fe6cefb8498c0fa4bd40a6f35937591125cea7",
+  "policyTextLocated": false,
+  "conclusion": "Inconclusive: the fetched entry and application chunks do not contain the policy paragraph. Earlier rendered-policy observations are not re-certified by this static check."
+}

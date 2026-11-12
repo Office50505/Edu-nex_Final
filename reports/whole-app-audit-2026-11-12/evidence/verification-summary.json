@@ -1,0 +1,29 @@
+{
+  "dateLocal": "2026-11-12",
+  "mobile": {
+    "passed": 217,
+    "failed": 0
+  },
+  "web": {
+    "files": 42,
+    "passed": 309,
+    "failed": 0
+  },
+  "backendFinal": {
+    "total": 1773,
+    "passed": 1762,
+    "failed": 11
+  },
+  "marketingTypecheck": {
+    "exitCode": 0,
+    "diagnosticLines": 0
+  },
+  "webCompilation": {
+    "exitCode": 0,
+    "warning": "large HLS chunk"
+  },
+  "runtimeCodeChangedDuringAudit": false,
+  "temporarySetupCleaned": true,
+  "ramDiskUnmounted": true,
+  "temporaryDependencyLinksRemoved": true
+}

@@ -1,0 +1,50 @@
+✔ first send discloses before saving acceptance and only then sends chat (9.142708ms)
+✔ decline records refusal with no prompt or history sent to chat (0.873166ms)
+✔ persisted grant is re-read; withdrawal blocks next send rather than trusting local cache (0.733542ms)
+✔ an old always-granted backend, malformed records, and offline reads fail closed (1.765208ms)
+✔ account switching while permission screen is open cannot grant or send for either account (0.641125ms)
+✔ failed persistence and changed server disclosure cannot send a chat (0.480041ms)
+✔ native history excludes locally generated account answers while preserving user messages (0.609708ms)
+✔ CSV export neutralizes formulas while preserving quotes and multiline content (2.701833ms)
+✔ shared deletion revokes access, completes deletion and queues unresolved billing cancellation (12.467083ms)
+✔ shared deletion includes certificates, analytics and billing and deletes user last (1.007167ms)
+✔ provider timeout and legacy PhonePe failure queue cancellation without blocking deletion (2.123667ms)
+✔ deletion works without billing and repeated requests are idempotent (1.7715ms)
+✔ mobile AI sends bounded history through its consent-aware session (3.23775ms)
+✔ mobile AI propagates HTTP failures through the native session (1.439958ms)
+[nex-ai-debug] {"conversation_id":"","request_active_course_id":"","resolved_active_course_id":"","current_topic":"","current_intent":"","rewritten_retrieval_query":"Explain prompting","retrieved_chunk_ids":[],"retrieved_chunk_hashes":[],"retrieved_source_hashes":[],"retrieved_translation_hashes":[],"retrieved_course_ids":[],"retrieved_course_names":[],"scores_ranks":[],"selected_exact_prompt_template_id":"","provider_model_path":"fal-openrouter"}
+✔ first use defaults off; explicit current acceptance persists and allows chat (234.114667ms)
+✔ decline and withdrawal are recorded and block old and new clients (1.268417ms)
+✔ obsolete policy, provider, missing versions or non-boolean decisions cannot grant (3.088ms)
+✔ unavailable consent storage fails closed without any provider call (0.796291ms)
+✔ shared chat handler used by the legacy course endpoint also enforces consent (0.724875ms)
+✔ withdrawing during a failed attempt stops a scheduled external retry (0.922083ms)
+✔ native transport sends course, conversation, prior answer and changed task without failed responses (3.259417ms)
+✔ native transport rejects legacy fallback and structured unavailability (1.319625ms)
+✔ native failure retains useful public error and diagnostic code (0.525167ms)
+✔ course selection separates stored master conversations and account boundaries (4.612375ms)
+✔ cancelling one caller aborts its network request while preserving other requests and login (4.646125ms)
+✔ caller cancellation also aborts a stalled response body (0.388625ms)
+✔ expired tutor token refreshes, rotates both tokens and retries exactly once with identical history (2.768417ms)
+✔ concurrent 401 responses share one refresh; profile updates preserve rotated credentials (3.679792ms)
+✔ a successful token rotation triggers one backend entitlement synchronization callback (0.496791ms)
+✔ temporary refresh errors preserve login and never retry the AI request (1.003125ms)
+✔ revocation, missing refresh token and a second 401 end the session without loops (0.667416ms)
+✔ logout or account switch during refresh cannot restore or clear another session (4.4075ms)
+✔ late tutor response after logout is discarded; 403 does not refresh or log out (0.578ms)
+✔ refresh timeout preserves session; response body timeout is bounded too (12.581084ms)
+✔ rotated credentials remain in memory on storage failure without silently claiming persistence (0.27725ms)
+✔ expired consent lookup refreshes credentials before chat and refusal still prevents transmission (0.415083ms)
+✔ diagnostics distinguish live success from unverified providers and never leak credentials (28.583208ms)
+✔ missing plan and disabled jobs need attention (0.582333ms)
+✔ database outage skips dependent queries instead of claiming they pass (0.11875ms)
+✔ individual query failure does not hide other diagnostics (0.138042ms)
+✔ health endpoint requires admin middleware (0.763625ms)
+ℹ tests 41
+ℹ suites 0
+ℹ pass 41
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 310.922416

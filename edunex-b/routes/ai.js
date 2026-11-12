@@ -427,10 +427,17 @@ async function handleTutorChat(req, res) {
       }
     }
     if (!reply) {
+      // Provider availability must not discard learner-supplied product facts.
+      // Context has already passed course access checks; an empty reply saves
+      // the user turn without recording an assistant answer that never existed.
+      if (knowledge?.materialsAvailable && isProductKnowledge(knowledge)) {
+        await requireAiConsent(req.compatAuth?.userId);
+        state = resolveConversationState({ message, history, knowledge, savedState });
+        await persistTutorChat(req, courseId, history, message, '', state).catch(() => {});
+      }
       const status = failureStatus || providerDiagnostics.status;
-      const debugPayload = aiDebugPayload({ req, requestedCourseId, resolvedCourseId: courseId, knowledge, state: null, selectedTemplateId, provider: 'unavailable' });
+      const debugPayload = aiDebugPayload({ req, requestedCourseId, resolvedCourseId: courseId, knowledge, state, selectedTemplateId, provider: 'unavailable' });
       logAiDebug(debugPayload);
-      // Failed turns are not saved as successful assistant messages or learner facts.
       return res.status(status === 'timeout' ? 504 : 503).json({ ...tutorUnavailable(status, message),
         messageId: crypto.randomUUID(), provider: 'unavailable',
         ...(req.body?.debugAi ? { debug: { ...debugPayload, history_restored: historyRestored, provider: providerDiagnostics } } : {}),

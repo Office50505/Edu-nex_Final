@@ -1,0 +1,27 @@
+{
+  "recorded_at_utc": "2026-11-12T09:43:25.701652+00:00",
+  "native_app_version": "1.0",
+  "native_app_build": "33",
+  "native_bundle_id": "com.alihussainkhan.skillomate.dev",
+  "runtime_mode": "current working-tree JavaScript served by local Expo Metro on port 8081",
+  "metro_observation": "iOS Bundled 338ms index.js (908 modules)",
+  "ui_observations": [
+    "Home rendered after development reload",
+    "AI Filmmaking course loaded 15 premium lessons",
+    "Selecting premium lesson opened guest membership gate",
+    "Sign-in screen prepared; no credentials entered"
+  ],
+  "limitations": [
+    "Native binary remains build 33",
+    "Backend still points to deployed api.skillomate.in; local backend fixes are not deployed",
+    "Signed-in checks await explicit test-account sign-in authorization",
+    "StoreKit and physical-device validation remain pending"
+  ],
+  "source_sha256": {
+    "appcopyai/App.js": "ad88fe7db56b9781b275d1f65f8b9732d70c827d124cc9fd37c1c58ff2ce5e6f",
+    "appcopyai/services/aiClient.js": "2b2d33fa4edabed209f6ad370a5c015855c54c643563f7c670519a758af3d2f5",
+    "appcopyai/services/aiConsent.js": "f818b1639c09dd6dd8e9378c8b70cfb3e66942691830daf8c5cd2deeb34060c1",
+    "edunex-b/routes/ai.js": "2ab3a0913e2e7d20e748041c6e3f96342fe857880000587dfb5d6ff6c62aacb5",
+    "edunex-b/services/productTutorResponse.js": "2c09688b3803080f7d502a257cb3ab11b6dcbd1c18091f560df83385ebe09a25"
+  }
+}

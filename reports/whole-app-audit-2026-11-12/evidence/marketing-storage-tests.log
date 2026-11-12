@@ -1,0 +1,13 @@
+✔ checkout survives unavailable storage: session=true, local=false (19.876333ms)
+✔ checkout survives unavailable storage: session=false, local=true (3.243208ms)
+✔ checkout survives unavailable storage: session=false, local=false (2.623083ms)
+✔ both storage providers may be blocked without throwing during checkout or cleanup (2.108958ms)
+✔ expired persisted checkout sessions are removed rather than restored (1.865709ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 143.945042

@@ -1,0 +1,75 @@
+{
+  "observedDateLocal": "2026-11-12",
+  "timezone": "Asia/Kolkata",
+  "method": "Read-only Chrome accessibility inspection through cua_repl; sanitized observations only",
+  "app": "Skillomate",
+  "appId": "6790396358",
+  "version": "1.0",
+  "submissionStatus": "Waiting for Review",
+  "selectedBuild": "35",
+  "artifactId": "68c9309f-d4b4-4114-9e5e-1fdbd2b0770d",
+  "artifactMetadata": {
+    "binaryState": "Validated",
+    "uploadDateAsDisplayed": "Nov 7, 2026 at 3:52 PM",
+    "originalFileName": "64a8e7be-dedf-483d-ab77-56db10fc26a0.ipa",
+    "sdkBuildIdentifier": "23F81a",
+    "sdkVersionIndependentlyVerified": false,
+    "includesSymbols": true,
+    "nonExemptEncryption": false,
+    "minimumIos": "16.4",
+    "minimumMacosAsDisplayed": "13.3",
+    "minimumVisionosAsDisplayed": "1.0",
+    "architecture": "arm64",
+    "deviceFamily": ["iPhone", "iPad"],
+    "getTaskAllow": false,
+    "betaReportsActive": true,
+    "bundleId": "com.alihussainkhan.edunexfinal"
+  },
+  "notes": {
+    "stillMarkedDraft": true,
+    "incorrectlySaysNotResubmitted": true,
+    "declaresDeploymentDeviceQaRecordingPending": true,
+    "mentionsOlderBuild29Recording": true,
+    "newRecordingVisibleInVersionAttachmentArea": false,
+    "reviewThreadAttachmentHistoryRevalidatedToday": false
+  },
+  "privacy": {
+    "publishedAsDisplayed": "6 days ago",
+    "numberOfDataTypes": 13,
+    "photosOrVideos": "Linked, App Functionality",
+    "otherDataTypes": "Linked, App Functionality",
+    "otherDiagnosticData": "Linked, App Functionality",
+    "userId": "Linked, App Functionality, Analytics, Product Personalization",
+    "productInteraction": "Linked, App Functionality, Analytics, Product Personalization",
+    "policyUrl": "https://skillomate.in/privacy"
+  },
+  "information": {
+    "category": "Education",
+    "rating": "13+ in 172 countries or regions; regional equivalents; earlier OS 12+ with exceptions",
+    "contentRightsDeclaration": true,
+    "traderSelfIdentification": true,
+    "license": "Apple Standard License Agreement",
+    "productionAndSandboxNotificationUrl": "https://api.skillomate.in/api/apple-iap/notifications"
+  },
+  "subscription": {
+    "productId": "com.skillomate.premium.monthly",
+    "duration": "1 month",
+    "groupAndProductStatus": "Waiting for Review",
+    "groupId": "22420353",
+    "productRecordId": "6816879146",
+    "gracePeriod": "3 days, paid-to-paid renewals, sandbox only",
+    "streamlinedPurchasing": "On",
+    "currentPricesAndOffersIndependentlyVerified": false
+  },
+  "productionPrivacyBrowser": {
+    "url": "https://skillomate.in/privacy",
+    "refreshedBeforeConclusion": true,
+    "displayedUpdateDate": "September 2026",
+    "namedAiRecipientsPresentInRenderedPolicy": false,
+    "localCurrentConsentNames": ["fal.ai", "OpenRouter", "Google Gemini by default"],
+    "pricingNavigationPresent": true,
+    "authenticatedConsentEnforcementTested": false
+  },
+  "writesPerformed": false,
+  "reviewerCredentialsCopiedToArtifacts": false
+}

@@ -1,0 +1,33 @@
+{
+  "historical_qa_directory": "tmp/nex-viral-hook-live-qa-20261028",
+  "files_checked": 26,
+  "all_files_byte_identical": true,
+  "sha256": {
+    "STEPS.txt": "53901fc865a3f8dea9112ab6ce6ce26c928a7dbec250a18a9ede4e04e68ccf75",
+    "app-evaluate.cjs": "4afd34d5bb034ced23e032a55da18e78ae1a1ead2b6b8d9640913f3777bafa45",
+    "app-inspect.js": "0136c3de658c2eb2e60f535d9afe514b7298d266edb8a4af536ca153700c17a4",
+    "availability.cjs": "5911cbbe4c6036653a891cf840a8ad423e51c2794f440d6996fd73e65eda6196",
+    "control.cjs": "77bcc5aa19cf4dff0ffb1ee7f993135d1cb47da68f294cf5a4adaca0b2a6d2ff",
+    "gate-tests.log": "059f6361770445f864b3fd995bfd1354fe15e054e87cd58731b1de02ac735bfc",
+    "gate.cjs": "60f6647180c8044ba12d2d284ca65872b9af817244ebff3c0afdf68729a8ee6b",
+    "gate.test.cjs": "0a2f4988ec173dc5b5d3f921ba658457b196ce2c1de53de2caa8c02184a8a439",
+    "guard.cjs": "a0e89fcfc61b7d0fbae5b12650b49c4da3ded715dd6b950d08900d36f25c29c3",
+    "inspect.cjs": "dd3ecb292a09b0e6d486879c33e075edf57dad22deef49a972a8c19f342c09fe",
+    "knowledge-check.cjs": "92cea00fc11a91b7f198cfb834e36cc7e7528667f3a631efbd6361b04d3fa13b",
+    "pipeline-check.cjs": "1b3d366badc8986d6d2bad4d49d1c24da05a3eaec8a45497b3c7a18ef81d8486",
+    "pipeline_traces.jsonl": "2027ae1a9d5f84c308d88ecf6c1b154bb7cb07b5bc76ab08a58047b62d5c3092",
+    "preparation-report.json": "a2d0d9c73959247313de8f3943870999551401b5f4a814c5fc4e2b17a24ffcea",
+    "previous-ledgers.sha256.json": "54db6150465f3030ff886f06455293203ce7db28b5348dac53a32b8a2eda6bb9",
+    "provider_approval.json": "24b9c2d1dc5721e13a72d9b7ff7dc970927bf2b5eec38667a9ebcc1d07413eeb",
+    "provider_attempts.jsonl": "2c740017b0a9776ec37959c1c7f844149101b8c7046387f7ed03af96c2900308",
+    "readiness.json": "789ecde8acc6d660376c962563e98e34a241322531f5d2e4682cc076a0de8195",
+    "server.cjs": "2c29f7fdf331123f97ba2e2c39137c9e1dd18e5f3aeb68d176ab10a6da53dfc8",
+    "session.json": "503cc64e58c620a7fef0889c670c8935452b42557488c21e8e23a7cba66bf5de",
+    "session.sha256": "501f4e1f316b0ec966eac14d753325de6c549174442aec24b9dcb31a77afd706",
+    "simulator-before.json": "6fa840dd038cd0f2ba7c656a2e951eb38bcc57dcc777e1964c67247a30fcf29b",
+    "simulator-exact-templates.json": "5c5e89c81737f491267ebca5d565729acdf538cdbb60bd9b901aee940addcde4",
+    "source-files.json": "1643d2daff73bc28eb523bc8bfc4664647980f2a04b9aeaebbd9067393a9915e",
+    "source-revision.json": "accad21b7b4d2690515de8b47473f529fc2c0de18be385fb4a672c62e0f60090",
+    "unauthorized-route-check.json": "1f7e1b1e2467fccc4e7a54878487741c83b5b87b66d2a3aa18e0776bb9013db8"
+  }
+}

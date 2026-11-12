@@ -1,0 +1,10 @@
+{
+  "appcopyai/App.js": "8692c5a19350dc42f89cc60dc986594ddbecea6f706bc70a8fd2e34ddd4dd1e9",
+  "appcopyai/app.json": "6299150be9c13d8070068a01b682dfe5d1a1cb7462e75375b19770d385003404",
+  "appcopyai/ios/ProtectedVideo/PrivacyInfo.xcprivacy": "dcf37c7db00fc04abf21b9ad42ab783f115d15e22ece951ba97362b1aa173d9a",
+  "appcopyai/ios/ProtectedVideo.xcodeproj/project.pbxproj": "27eb42dd98d0ee77f496794f4d11e4607d3e773fc79a6cc9e6f9c15c29f9f2cb",
+  "edunex-b/tests/mobile-player.test.cjs": "64a2e058c6fc3001e3e05affe09b4c6b423db4a04494e372ab4afa0e6263863e",
+  "edunex-b/services/aiConsent.js": "9b00c72cbed75b7f9d1b50ea31566ad9a1ab4ebc735b575a8bedd8da32837a56",
+  "edunex-b/services/aiProviderPrivacy.js": "fa7b6ed01dadf47dea847f1adcc85c1952be5e18963246213b052db4d30534e7",
+  "edunex-b/package-lock.json": "41620513eb92f8b0f0c5ca2ef9c452fd70e30172367bac9d80aa2c34b641f7a0"
+}

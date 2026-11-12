@@ -1,0 +1,28 @@
+✖ versioned CS-11 cases bind to the existing eight-lesson fixture without a DB/provider (16.91625ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 208.159625
+
+✖ failing tests:
+
+test at tests/cartoon-cs11-v2-fixture.test.cjs:8:1
+✖ versioned CS-11 cases bind to the existing eight-lesson fixture without a DB/provider (16.91625ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/cartoon-cs11-v2-fixture.test.cjs:20:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

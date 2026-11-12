@@ -1,0 +1,73 @@
+vite v7.3.6 building client environment for production...
+transforming...
+[plugin vite:esbuild] src/pages/LegalPolicyPage.jsx: The character ">" is not valid inside a JSX element
+102 |        ["how-we-use", "How we use information", <CheckList items={privacyUses} />],
+103 |        ["payments", "Payments", <p>PhonePe may process one-time web payments and Razorpay may process eligible recurri...
+104 |  ...ess, and withdraw permission in the mobile app under Nex AI > Chat history > AI Data Controls. Withdrawal stops fu...
+    |                                                                 ^
+105 |        ["sharing", "Data sharing and service providers", <><p>Skillomate may share limited information with service pr...
+106 |        ["security", "Data security", <p>We use reasonable administrative, technical and organizational safeguards desi...
+
+[plugin vite:esbuild] src/pages/LegalPolicyPage.jsx: The character ">" is not valid inside a JSX element
+102 |        ["how-we-use", "How we use information", <CheckList items={privacyUses} />],
+103 |        ["payments", "Payments", <p>PhonePe may process one-time web payments and Razorpay may process eligible recurri...
+104 |  ...aw permission in the mobile app under Nex AI > Chat history > AI Data Controls. Withdrawal stops future AI request...
+    |                                                                 ^
+105 |        ["sharing", "Data sharing and service providers", <><p>Skillomate may share limited information with service pr...
+106 |        ["security", "Data security", <p>We use reasonable administrative, technical and organizational safeguards desi...
+
+✓ 144 modules transformed.
+rendering chunks...
+computing gzip size...
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/index.html                                  2.54 kB │ gzip:   1.13 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/manrope-latin-v20-C46ZzDBF.woff2    24.58 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/fraunces-latin-v38-BOz5zopO.woff2   67.39 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/ProfilePage-CV7YYS0j.css             0.12 kB │ gzip:   0.12 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/index-CGE6nEVe.css                   0.64 kB │ gzip:   0.27 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/mobile-footer-fix-CskgRbKW.css       0.70 kB │ gzip:   0.29 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/App-CL4uoYHc.css                     1.54 kB │ gzip:   0.56 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/PaymentPage-vf6iCB8V.css             2.89 kB │ gzip:   0.86 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/LegalLayout-0vZByguF.css             9.54 kB │ gzip:   2.43 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/VideosPage-XZ8eAAVq.css             12.45 kB │ gzip:   3.21 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/theme-DxxevV1l.css                  13.39 kB │ gzip:   2.53 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/AdOfferPage-BPrnLfph.css            14.26 kB │ gzip:   3.79 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/app-Dz769QAt.css                   276.64 kB │ gzip:  43.98 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/hls-BJjYWekv.css                   439.22 kB │ gzip:  61.09 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/courseDescription-D74W-Y_P.js        0.57 kB │ gzip:   0.30 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/courseAccess-Xv2jzRqf.js             0.78 kB │ gzip:   0.47 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/RedirectPage-DxzVuOmC.js             1.15 kB │ gzip:   0.59 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/authNavigation-PqCgKxA8.js           1.25 kB │ gzip:   0.62 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/analytics-Co0Qotoa.js                1.32 kB │ gzip:   0.64 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/ContactPage-BjFjVMc2.js              1.65 kB │ gzip:   0.71 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/razorpayCheckout-CXgfSe7g.js         1.71 kB │ gzip:   0.96 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/AboutPage-Bk2Q_69c.js                2.51 kB │ gzip:   1.08 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/HelpPage-DI22R-Fy.js                 3.06 kB │ gzip:   1.30 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/useLearningProgress-QSh2ctIH.js      3.07 kB │ gzip:   1.45 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/DeleteAccountPage-CmudxqVK.js        3.98 kB │ gzip:   1.73 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/LegalLayout-CxQ2kmC1.js              5.20 kB │ gzip:   1.98 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/PricingPage-BwPRSOnb.js              5.97 kB │ gzip:   1.85 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/WishlistPage-CNoUiloD.js            14.09 kB │ gzip:   4.09 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/CertificatesPage-BFfzMZ36.js        15.41 kB │ gzip:   4.32 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/CourseDetailsPage-Dc2Jf4q9.js       16.41 kB │ gzip:   5.16 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/AiTutorPage-DaP4CpnE.js             17.01 kB │ gzip:   6.11 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/AdOfferPage-ChMFOw1g.js             19.73 kB │ gzip:   7.04 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/EditProfilePage-CcBNVCyu.js         19.92 kB │ gzip:   5.66 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/LoginPage-EOxyAXDg.js               20.65 kB │ gzip:   6.32 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/LegalPage-CmzsHlDY.js               22.75 kB │ gzip:   7.13 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/ProfilePage-xd0WdVld.js             29.74 kB │ gzip:   7.63 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/PaymentPage-wrygpswH.js             33.17 kB │ gzip:   8.37 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/DashboardPage-DYcIwZx_.js           35.00 kB │ gzip:   9.70 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/CoursesPage-Di7UDpex.js             38.33 kB │ gzip:  10.03 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/SignupPage-Dt9Zw5YQ.js              39.75 kB │ gzip:  10.60 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/nex-ai-widget-C7iEbCaM.js           50.46 kB │ gzip:  12.13 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/edunex-api-Bb72aUzw.js              61.70 kB │ gzip:  15.64 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/VideosPage-CEiu5cau.js             119.85 kB │ gzip:  32.85 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/App-BqOobw5Z.js                    128.19 kB │ gzip:  35.53 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/index-BztX9nm0.js                  195.84 kB │ gzip:  61.68 kB
+../../../../../../../Volumes/SkillomateAudit/frontend-dist/assets/hls-CHvgiN7v.js                    826.10 kB │ gzip: 246.14 kB
+
+(!) Some chunks are larger than 650 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 1.70s

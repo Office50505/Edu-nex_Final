@@ -1,0 +1,75 @@
+TAP version 13
+# Subtest: Back exits enrolled playback one level and keeps lessons
+ok 1 - Back exits enrolled playback one level and keeps lessons
+  ---
+  duration_ms: 8.72975
+  ...
+# Subtest: Back exits preview playback one level and keeps lessons
+ok 2 - Back exits preview playback one level and keeps lessons
+  ---
+  duration_ms: 5.207
+  ...
+# Subtest: on-screen Back uses the same lesson-preserving transition
+ok 3 - on-screen Back uses the same lesson-preserving transition
+  ---
+  duration_ms: 5.073917
+  ...
+# Subtest: player overlays cover the screen with the React Native 0.86 StyleSheet API
+ok 4 - player overlays cover the screen with the React Native 0.86 StyleSheet API
+  ---
+  duration_ms: 3.012959
+  ...
+# Subtest: uploaded CloudFront lesson thumbnails win over provider guesses
+ok 5 - uploaded CloudFront lesson thumbnails win over provider guesses
+  ---
+  duration_ms: 2.228583
+  ...
+# Subtest: mute and playback speed changes do not trigger a source reload
+ok 6 - mute and playback speed changes do not trigger a source reload
+  ---
+  duration_ms: 0.7585
+  ...
+# Subtest: center player tap hides visible controls before toggling playback
+ok 7 - center player tap hides visible controls before toggling playback
+  ---
+  duration_ms: 1.878959
+  ...
+# Subtest: 2x edge hold gestures consume movement and do not let the page pan underneath
+ok 8 - 2x edge hold gestures consume movement and do not let the page pan underneath
+  ---
+  duration_ms: 2.307625
+  ...
+# Subtest: AI suggestions disappear after the first user message
+ok 9 - AI suggestions disappear after the first user message
+  ---
+  duration_ms: 2.280458
+  ...
+# Subtest: mobile JSON requests time out while waiting for response data
+ok 10 - mobile JSON requests time out while waiting for response data
+  ---
+  duration_ms: 4.26025
+  ...
+# Subtest: mobile JSON requests honor cancellation and reject HTTP failures
+ok 11 - mobile JSON requests honor cancellation and reject HTTP failures
+  ---
+  duration_ms: 0.844833
+  ...
+# Subtest: Home displays course metadata before its playback request finishes
+ok 12 - Home displays course metadata before its playback request finishes
+  ---
+  duration_ms: 2.381125
+  ...
+# Subtest: leaving playback tolerates an already released native player
+ok 13 - leaving playback tolerates an already released native player
+  ---
+  duration_ms: 0.886584
+  ...
+1..13
+# tests 13
+# suites 0
+# pass 13
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 240.90375

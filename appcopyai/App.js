@@ -310,6 +310,12 @@ function normalizeThumbnailUrl(url, width = 1600) {
   const value = String(url || "").trim();
   if (!value) return "";
 
+  // Bad catalogue metadata can put a video URL in an artwork field. Keep
+  // extensionless image endpoints, but never send known media files to Image.
+  let path = value.split(/[?#]/, 1)[0];
+  try { path = decodeURIComponent(path); } catch (_) {}
+  if (/\.(?:m3u8?|mpd|mp4|m4v|mov|webm|mkv|avi|ts|m4s|mp3|m4a|aac|wav|ogg)\/?$/i.test(path)) return "";
+
   const driveFileId = getGoogleDriveFileId(value);
   if (!driveFileId) return value.startsWith("/") && !value.startsWith("//") ? `${API_BASE}${value}` : value;
 
@@ -321,6 +327,7 @@ function getThumbnailUrlCandidates(url, width = 1600) {
   if (!rawUrl) return [];
 
   const normalizedUrl = normalizeThumbnailUrl(rawUrl, width);
+  if (!normalizedUrl) return [];
   const candidates = [normalizedUrl];
   const imageHost = getImageHost(normalizedUrl).toLowerCase();
   const apiHost = getImageHost(API_BASE).toLowerCase();
@@ -2253,8 +2260,9 @@ async function fetchPlaybackLease({ courseId, video, user, signal, timeoutMs = P
 }
 
 function getLessonThumbnailUrl(lesson, course) {
-  if (lesson?.thumbnailUrl || lesson?.thumbnailVerticalUrl) {
-    return normalizeThumbnailUrl(lesson.thumbnailUrl || lesson.thumbnailVerticalUrl, 640);
+  for (const candidate of [lesson?.thumbnailUrl, lesson?.thumbnailVerticalUrl]) {
+    const thumbnail = normalizeThumbnailUrl(candidate, 640);
+    if (thumbnail) return thumbnail;
   }
   const bunnyGuid = getBunnyGuid(lesson);
   if (bunnyGuid) {
@@ -2519,8 +2527,11 @@ function CourseThumbnailImage({ course, preferVertical = false }) {
   );
 }
 
-function RemoteThumbnailImage({ imageUrl, screen, courseId, borderRadius = 8 }) {
-  const candidates = useMemo(() => getThumbnailUrlCandidates(imageUrl, 1000), [imageUrl]);
+function RemoteThumbnailImage({ imageUrl, fallbackImageUrl, screen, courseId, borderRadius = 8 }) {
+  const candidates = useMemo(() => [...new Set([
+    ...getThumbnailUrlCandidates(imageUrl, 1000),
+    ...getThumbnailUrlCandidates(fallbackImageUrl, 1000),
+  ])], [imageUrl, fallbackImageUrl]);
   const [candidateIndex, setCandidateIndex] = useState(0);
 
   useEffect(() => {
@@ -4804,6 +4815,9 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     onSettingsOpenChange?.(Boolean(isActive && showSettings));
     return () => onSettingsOpenChange?.(false);
   }, [isActive, onSettingsOpenChange, showSettings]);
+  useEffect(() => {
+    if (!isActive) setShowSettings(false);
+  }, [isActive]);
   const chromeSessionKey = video?._id || video?.id || videoProp?._id || videoProp?.id || video?.bunnyGuid || video?.bunnyVideoId || video?.youtubeId || videoIdProp || "video";
   const playbackHasVisibleProgress = hasPlaybackStarted || currentTime > 0.05;
   const canAutoHideChrome = Boolean(isActive && !suspendSurface && !showSettings && !playerControlActive && !isEnded && isPlaying && playbackHasVisibleProgress);
@@ -5166,9 +5180,12 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
       setCurrentTime(nextTime);
       setNativeTime(nextTime);
     }
-    if (isActive) {
+    if (isActive && shouldBePlayingRef.current) {
       setIsPlaying(true);
       playNativePlayer();
+    } else {
+      setIsPlaying(false);
+      pauseNativePlayer();
     }
   });
 
@@ -5260,9 +5277,11 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     }
     if (status === "readyToPlay" && isNativeVideo && isActive) {
       setIsEnded(false);
-      setIsPlaying(true);
+      const shouldResume = shouldBePlayingRef.current;
+      setIsPlaying(shouldResume);
       setIsBuffering(false);
-      playNativePlayer();
+      if (shouldResume) playNativePlayer();
+      else pauseNativePlayer();
       return;
     }
     if (status === "error") {
@@ -6075,6 +6094,16 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     setCurrentTime(t);
   }
 
+  function seekToPosition(t) {
+    const shouldResume = Boolean(isActive && shouldBePlayingRef.current);
+    shouldBePlayingRef.current = shouldResume;
+    clearAutoPlayTimers();
+    setIsPlaying(shouldResume);
+    setIsBuffering(false);
+    sendCmd(shouldResume ? "seekAndPlay" : "seekTo", [t, true]);
+    if (!shouldResume) sendCmd("pauseVideo");
+  }
+
   function handleSeekCommit() {
     if (!isDraggingRef.current) return;
     isDraggingRef.current = false;
@@ -6083,15 +6112,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     seekGuardRef.current = { until: Date.now() + 3000, target: t };
     setCurrentTime(t);
     if (duration <= 0 || t < duration - 0.5) setIsEnded(false);
-    if (isActive) {
-      shouldBePlayingRef.current = true;
-      setIsPlaying(true);
-      setIsBuffering(false);
-      clearAutoPlayTimers();
-      sendCmd("seekAndPlay", [t, true]);
-    } else {
-      sendCmd("seekTo", [t, true]);
-    }
+    seekToPosition(t);
   }
 
   function restart() {
@@ -6106,15 +6127,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     seekGuardRef.current = { until: Date.now() + 3000, target: t };
     if (duration <= 0 || t < duration - 0.5) setIsEnded(false);
     setCurrentTime(t);
-    if (isActive) {
-      shouldBePlayingRef.current = true;
-      setIsPlaying(true);
-      setIsBuffering(false);
-      clearAutoPlayTimers();
-      sendCmd("seekAndPlay", [t, true]);
-    } else {
-      sendCmd("seekTo", [t, true]);
-    }
+    seekToPosition(t);
     setSeekAnim(secs > 0 ? "right" : "left");
     setTimeout(() => setSeekAnim(null), 600);
   }
@@ -6218,7 +6231,9 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   const playerPanelOpen = showSettings;
 
   return (
-    <View style={[s.player, { height }]}>
+    <View style={[s.player, { height }]}
+      accessibilityElementsHidden={!showLiveSurface}
+      importantForAccessibility={showLiveSurface ? "auto" : "no-hide-descendants"}>
       {!showLiveSurface ? (
         <View style={s.suspendedVideoSurface} pointerEvents="none">
           {suspendedPosterUrl ? (
@@ -6348,10 +6363,11 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
           )}
         </>
       )}
-      {renderPlayerChrome && (
+      {showLiveSurface && renderPlayerChrome && (
         <Animated.View
           style={[StyleSheet.absoluteFill, playerChromeAnimatedStyle]}
           pointerEvents={showPlayerChrome ? "box-none" : "none"}
+          accessibilityElementsHidden={!showPlayerChrome}
           importantForAccessibility={showPlayerChrome ? "auto" : "no-hide-descendants"}
           renderToHardwareTextureAndroid={Platform.OS === "android"}
         >
@@ -7123,12 +7139,16 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
           const itemDescription = plainCourseDescription(getVideoDescription(item)) || "No description available.";
           const itemSummary = itemDescription === "No description available." ? "" : itemDescription;
           const itemLessonLabel = videos.length ? `Lecture ${Math.min(videos.length, index + 1)}/${videos.length}` : "Lecture";
-          const cellChromePointerEvents = isCurrent && !playerChromeHidden ? "box-none" : "none";
+          const cellAccessibilityHidden = !isCurrent || videoUiOverlayOpen;
+          const cellChromeHidden = cellAccessibilityHidden || playerChromeHidden;
+          const cellChromePointerEvents = cellChromeHidden ? "none" : "box-none";
           const itemDownload = downloads?.[getDownloadId(item, index, courseId)];
           const itemLocalPath = itemDownload?.status === "done" ? (itemDownload.playbackPath || itemDownload.path) : null;
           const itemIsOffline = !!itemLocalPath;
           return (
-            <View style={[s.reelItem, { height: reelFrameHeight }]}>
+            <View style={[s.reelItem, { height: reelFrameHeight }]}
+              accessibilityElementsHidden={cellAccessibilityHidden}
+              importantForAccessibility={cellAccessibilityHidden ? "no-hide-descendants" : "auto"}>
               <VideoItem video={item} courseId={courseId} course={course} user={user}
                 onComplete={() => { /* Completion comes from validated progress responses. */ }}
                 onProgress={async (currentTime, duration) => {
@@ -7161,7 +7181,8 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
                 <Animated.View
                   style={[s.webPlayerTopBar, webPlayerChromeAnimatedStyle]}
                   pointerEvents={cellChromePointerEvents}
-                  importantForAccessibility={isCurrent && !playerChromeHidden ? "auto" : "no-hide-descendants"}
+                  accessibilityElementsHidden={cellChromeHidden}
+                  importantForAccessibility={cellChromeHidden ? "no-hide-descendants" : "auto"}
                 >
                   <SafeAreaView edges={["left", "right"]} style={s.webPlayerTopSafeArea} pointerEvents="box-none">
                     <TouchableOpacity
@@ -7215,7 +7236,8 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
                 <Animated.View
                   style={[s.webPlayerSideRail, webPlayerChromeAnimatedStyle]}
                   pointerEvents={cellChromePointerEvents}
-                  importantForAccessibility={isCurrent && !playerChromeHidden ? "auto" : "no-hide-descendants"}
+                  accessibilityElementsHidden={cellChromeHidden}
+                  importantForAccessibility={cellChromeHidden ? "no-hide-descendants" : "auto"}
                 >
                   <TouchableOpacity onPress={() => user?._id ? setShowCourseAi(true) : onRequireSignIn?.()} style={s.webPlayerRailBtn} accessibilityRole="button" accessibilityLabel="Ask Course AI">
                     <Ionicons name="sparkles" size={20} color="#fff" />
@@ -7234,7 +7256,9 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
                 </Animated.View>
               )}
               {isNearActive && !playerSettingsOpen && renderWebPlayerChrome && (
-                <Animated.View style={[s.webPlayerMeta, webPlayerChromeAnimatedStyle]} pointerEvents={cellChromePointerEvents}>
+                <Animated.View style={[s.webPlayerMeta, webPlayerChromeAnimatedStyle]} pointerEvents={cellChromePointerEvents}
+                  accessibilityElementsHidden={cellChromeHidden}
+                  importantForAccessibility={cellChromeHidden ? "no-hide-descendants" : "auto"}>
                   <TouchableOpacity
                     onPress={() => setShowDescription(true)}
                     activeOpacity={0.86}
@@ -7436,6 +7460,7 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
                       {thumbnailUrl ? (
                         <RemoteThumbnailImage
                           imageUrl={thumbnailUrl}
+                          fallbackImageUrl={getCourseThumbnailUri(course, true)}
                           screen="Player lecture picker"
                           courseId={courseId}
                           borderRadius={8}
@@ -7720,6 +7745,7 @@ function VideoListScreen({
                   {thumbnailUrl ? (
                     <RemoteThumbnailImage
                       imageUrl={thumbnailUrl}
+                      fallbackImageUrl={getCourseThumbnailUri(course, true)}
                       screen="Course lesson row"
                       courseId={course?._id}
                       borderRadius={8}
@@ -7936,6 +7962,7 @@ function HomeMedia({ course, lesson, borderRadius = 12, screen = "Home media" })
       </View>
       <RemoteThumbnailImage
         imageUrl={imageUrl}
+        fallbackImageUrl={getCourseThumbnailUri(course, true)}
         screen={screen}
         courseId={course?._id}
         borderRadius={borderRadius}

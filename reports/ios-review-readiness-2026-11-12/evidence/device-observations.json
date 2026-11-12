@@ -1,0 +1,16 @@
+{
+  "dateLocal": "2026-11-12",
+  "commands": ["xcodebuild -version", "xcodebuild -showsdks", "xcrun simctl list devices available", "xcrun devicectl list devices", "xcodebuild -list -project appcopyai/ios/ProtectedVideo.xcodeproj"],
+  "hostXcode": "27.2 (27B52)",
+  "hostIosSdk": "27.2",
+  "availableSimulatorRuntime": "iOS 26.5",
+  "simulatorsBootedDuringAudit": false,
+  "physicalDevices": [{"model": "iPhone 11 Pro Max", "state": "unavailable"}, {"model": "iPhone 15", "state": "unavailable"}],
+  "nativeTargets": ["ProtectedVideo"],
+  "sharedSchemeMissingTestTarget": "ProtectedVideoTests",
+  "nativeTestsExecuted": false,
+  "archiveAttempted": false,
+  "reasonNoArchive": "Audit request, no final-build artifact available; less than 1 GiB disk free before restoring backend dependencies",
+  "physicalBuild35RuntimeTestsExecuted": false,
+  "sandboxTransactionsExecuted": false
+}

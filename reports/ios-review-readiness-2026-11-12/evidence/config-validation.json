@@ -1,0 +1,173 @@
+{
+  "expoVersion": "1.0",
+  "expoBuild": "34",
+  "nativeBuilds": [
+    "34",
+    "34"
+  ],
+  "minimumIos": [
+    "16.4"
+  ],
+  "supportsTablet": true,
+  "nativeDeviceFamilies": [
+    "1,2",
+    "1,2"
+  ],
+  "bundleId": "com.alihussainkhan.edunexfinal",
+  "ats": {
+    "NSAllowsArbitraryLoads": false,
+    "NSAllowsLocalNetworking": false
+  },
+  "entitlements": {},
+  "tracking": false,
+  "privacyTypes": [
+    {
+      "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypeName",
+      "NSPrivacyCollectedDataTypeLinked": true,
+      "NSPrivacyCollectedDataTypePurposes": [
+        "NSPrivacyCollectedDataTypePurposeAppFunctionality",
+        "NSPrivacyCollectedDataTypePurposeProductPersonalization"
+      ],
+      "NSPrivacyCollectedDataTypeTracking": false
+    },
+    {
+      "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypeEmailAddress",
+      "NSPrivacyCollectedDataTypeLinked": true,
+      "NSPrivacyCollectedDataTypePurposes": [
+        "NSPrivacyCollectedDataTypePurposeAppFunctionality"
+      ],
+      "NSPrivacyCollectedDataTypeTracking": false
+    },
+    {
+      "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypePhoneNumber",
+      "NSPrivacyCollectedDataTypeLinked": true,
+      "NSPrivacyCollectedDataTypePurposes": [
+        "NSPrivacyCollectedDataTypePurposeAppFunctionality"
+      ],
+      "NSPrivacyCollectedDataTypeTracking": false
+    },
+    {
+      "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypeUserID",
+      "NSPrivacyCollectedDataTypeLinked": true,
+      "NSPrivacyCollectedDataTypePurposes": [
+        "NSPrivacyCollectedDataTypePurposeAppFunctionality",
+        "NSPrivacyCollectedDataTypePurposeProductPersonalization",
+        "NSPrivacyCollectedDataTypePurposeAnalytics"
+      ],
+      "NSPrivacyCollectedDataTypeTracking": false
+    },
+    {
+      "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypePhotosorVideos",
+      "NSPrivacyCollectedDataTypeLinked": true,
+      "NSPrivacyCollectedDataTypePurposes": [
+        "NSPrivacyCollectedDataTypePurposeAppFunctionality"
+      ],
+      "NSPrivacyCollectedDataTypeTracking": false
+    },
+    {
+      "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypePurchaseHistory",
+      "NSPrivacyCollectedDataTypeLinked": true,
+      "NSPrivacyCollectedDataTypePurposes": [
+        "NSPrivacyCollectedDataTypePurposeAppFunctionality"
+      ],
+      "NSPrivacyCollectedDataTypeTracking": false
+    },
+    {
+      "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypeProductInteraction",
+      "NSPrivacyCollectedDataTypeLinked": true,
+      "NSPrivacyCollectedDataTypePurposes": [
+        "NSPrivacyCollectedDataTypePurposeAppFunctionality",
+        "NSPrivacyCollectedDataTypePurposeProductPersonalization",
+        "NSPrivacyCollectedDataTypePurposeAnalytics"
+      ],
+      "NSPrivacyCollectedDataTypeTracking": false
+    },
+    {
+      "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypeOtherUserContent",
+      "NSPrivacyCollectedDataTypeLinked": true,
+      "NSPrivacyCollectedDataTypePurposes": [
+        "NSPrivacyCollectedDataTypePurposeAppFunctionality",
+        "NSPrivacyCollectedDataTypePurposeProductPersonalization"
+      ],
+      "NSPrivacyCollectedDataTypeTracking": false
+    },
+    {
+      "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypeCustomerSupport",
+      "NSPrivacyCollectedDataTypeLinked": true,
+      "NSPrivacyCollectedDataTypePurposes": [
+        "NSPrivacyCollectedDataTypePurposeAppFunctionality"
+      ],
+      "NSPrivacyCollectedDataTypeTracking": false
+    },
+    {
+      "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypeOtherDataTypes",
+      "NSPrivacyCollectedDataTypeLinked": true,
+      "NSPrivacyCollectedDataTypePurposes": [
+        "NSPrivacyCollectedDataTypePurposeAppFunctionality"
+      ],
+      "NSPrivacyCollectedDataTypeTracking": false
+    },
+    {
+      "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypeCrashData",
+      "NSPrivacyCollectedDataTypeLinked": false,
+      "NSPrivacyCollectedDataTypePurposes": [
+        "NSPrivacyCollectedDataTypePurposeAppFunctionality"
+      ],
+      "NSPrivacyCollectedDataTypeTracking": false
+    },
+    {
+      "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypePerformanceData",
+      "NSPrivacyCollectedDataTypeLinked": false,
+      "NSPrivacyCollectedDataTypePurposes": [
+        "NSPrivacyCollectedDataTypePurposeAppFunctionality"
+      ],
+      "NSPrivacyCollectedDataTypeTracking": false
+    },
+    {
+      "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypeOtherDiagnosticData",
+      "NSPrivacyCollectedDataTypeLinked": true,
+      "NSPrivacyCollectedDataTypePurposes": [
+        "NSPrivacyCollectedDataTypePurposeAppFunctionality"
+      ],
+      "NSPrivacyCollectedDataTypeTracking": false
+    }
+  ],
+  "requiredReasonApis": [
+    {
+      "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
+      "NSPrivacyAccessedAPITypeReasons": [
+        "CA92.1"
+      ]
+    },
+    {
+      "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryFileTimestamp",
+      "NSPrivacyAccessedAPITypeReasons": [
+        "C617.1",
+        "0A2A.1",
+        "3B52.1"
+      ]
+    },
+    {
+      "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategorySystemBootTime",
+      "NSPrivacyAccessedAPITypeReasons": [
+        "35F9.1"
+      ]
+    },
+    {
+      "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryDiskSpace",
+      "NSPrivacyAccessedAPITypeReasons": [
+        "E174.1",
+        "85F4.1"
+      ]
+    }
+  ],
+  "guidelineEntries": 138,
+  "totalClauseEntries": 271,
+  "clauseStatuses": {
+    "PARTIAL": 64,
+    "PENDING": 72,
+    "CONDITIONAL_NA": 98,
+    "BLOCKED": 29,
+    "OMITTED": 8
+  }
+}

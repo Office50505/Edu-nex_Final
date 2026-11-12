@@ -1,0 +1,121 @@
+TAP version 13
+# Subtest: Back exits enrolled playback one level and keeps lessons
+not ok 1 - Back exits enrolled playback one level and keeps lessons
+  ---
+  duration_ms: 6.474458
+  location: '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/mobile-player.test.cjs:32:3'
+  failureType: 'testCodeFailure'
+  error: 'invalidateOtpRequest is not defined'
+  code: 'ERR_TEST_FAILURE'
+  name: 'ReferenceError'
+  stack: |-
+    evalmachine.<anonymous>:2:5
+    Object.back (evalmachine.<anonymous>:8:7)
+    TestContext.<anonymous> (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/mobile-player.test.cjs:34:20)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    node:internal/test_runner/harness:255:12
+    node:internal/process/task_queues:140:7
+    AsyncResource.runInAsyncScope (node:async_hooks:206:9)
+    AsyncResource.runMicrotask (node:internal/process/task_queues:137:8)
+  ...
+# Subtest: Back exits preview playback one level and keeps lessons
+not ok 2 - Back exits preview playback one level and keeps lessons
+  ---
+  duration_ms: 3.047417
+  location: '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/mobile-player.test.cjs:32:3'
+  failureType: 'testCodeFailure'
+  error: 'invalidateOtpRequest is not defined'
+  code: 'ERR_TEST_FAILURE'
+  name: 'ReferenceError'
+  stack: |-
+    evalmachine.<anonymous>:2:5
+    Object.back (evalmachine.<anonymous>:8:7)
+    TestContext.<anonymous> (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/mobile-player.test.cjs:34:20)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: on-screen Back uses the same lesson-preserving transition
+not ok 3 - on-screen Back uses the same lesson-preserving transition
+  ---
+  duration_ms: 5.891292
+  location: '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/mobile-player.test.cjs:43:1'
+  failureType: 'testCodeFailure'
+  error: 'invalidateOtpRequest is not defined'
+  code: 'ERR_TEST_FAILURE'
+  name: 'ReferenceError'
+  stack: |-
+    evalmachine.<anonymous>:2:5
+    evalmachine.<anonymous>:3:12
+    TestContext.<anonymous> (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/mobile-player.test.cjs:47:30)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: player overlays cover the screen with the React Native 0.86 StyleSheet API
+ok 4 - player overlays cover the screen with the React Native 0.86 StyleSheet API
+  ---
+  duration_ms: 3.483875
+  ...
+# Subtest: uploaded CloudFront lesson thumbnails win over provider guesses
+ok 5 - uploaded CloudFront lesson thumbnails win over provider guesses
+  ---
+  duration_ms: 2.4865
+  ...
+# Subtest: mute and playback speed changes do not trigger a source reload
+ok 6 - mute and playback speed changes do not trigger a source reload
+  ---
+  duration_ms: 0.707667
+  ...
+# Subtest: center player tap hides visible controls before toggling playback
+ok 7 - center player tap hides visible controls before toggling playback
+  ---
+  duration_ms: 1.782833
+  ...
+# Subtest: 2x edge hold gestures consume movement and do not let the page pan underneath
+ok 8 - 2x edge hold gestures consume movement and do not let the page pan underneath
+  ---
+  duration_ms: 2.259833
+  ...
+# Subtest: AI suggestions disappear after the first user message
+ok 9 - AI suggestions disappear after the first user message
+  ---
+  duration_ms: 2.486625
+  ...
+# Subtest: mobile JSON requests time out while waiting for response data
+ok 10 - mobile JSON requests time out while waiting for response data
+  ---
+  duration_ms: 4.472292
+  ...
+# Subtest: mobile JSON requests honor cancellation and reject HTTP failures
+ok 11 - mobile JSON requests honor cancellation and reject HTTP failures
+  ---
+  duration_ms: 0.7695
+  ...
+# Subtest: Home displays course metadata before its playback request finishes
+ok 12 - Home displays course metadata before its playback request finishes
+  ---
+  duration_ms: 2.3005
+  ...
+# Subtest: leaving playback tolerates an already released native player
+ok 13 - leaving playback tolerates an already released native player
+  ---
+  duration_ms: 0.934
+  ...
+1..13
+# tests 13
+# suites 0
+# pass 10
+# fail 3
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 218.786916

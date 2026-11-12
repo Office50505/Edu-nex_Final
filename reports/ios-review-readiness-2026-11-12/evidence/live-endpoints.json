@@ -1,0 +1,42 @@
+[
+  {
+    "url": "https://api.skillomate.in/api/health",
+    "status": 200,
+    "finalUrl": "https://api.skillomate.in/api/health",
+    "body": {
+      "ok": true,
+      "service": "Skillomate API",
+      "uptimeSeconds": 425381,
+      "cache": "redis-connected"
+    }
+  },
+  {
+    "url": "https://api.skillomate.in/api/ready",
+    "status": 200,
+    "finalUrl": "https://api.skillomate.in/api/ready",
+    "body": {
+      "ok": true,
+      "service": "Skillomate API",
+      "mongodb": "connected",
+      "redis": "connected"
+    }
+  },
+  {
+    "url": "https://api.skillomate.in/api/ai/consent",
+    "status": 401,
+    "finalUrl": "https://api.skillomate.in/api/ai/consent",
+    "body": {
+      "error": "Invalid session"
+    }
+  },
+  {
+    "url": "https://skillomate.in/support",
+    "status": 200,
+    "finalUrl": "https://skillomate.in/support"
+  },
+  {
+    "url": "https://skillomate.in/terms",
+    "status": 200,
+    "finalUrl": "https://skillomate.in/terms"
+  }
+]

@@ -107,10 +107,14 @@ test('already grounded creative hooks use one call without correction',async()=>
 // Exercise the unchanged real QA gate against the normal route/adapter, with a
 // fresh OFFLINE-only fixture, never the historical approval or attempt files.
 function offlineGate(){
- const {createGate,sha}=require('../../tmp/nex-viral-hook-live-qa-20261028/gate.cjs');
+ const {createGate,sha,LOCAL,LIMIT,DURATION}=require('../../tmp/nex-viral-hook-live-qa-20261028/gate.cjs');
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'viral-grounding-accounting-'));
- const s=JSON.parse(fs.readFileSync(path.resolve(__dirname,'../../tmp/nex-viral-hook-live-qa-20261028/session.json')));
- const revision=JSON.stringify({sources:{}})+'\n';s.source_revision_sha256=sha(revision);s.session_id=crypto.randomUUID();const bytes=JSON.stringify(s)+'\n',h=sha(bytes);
+ const s={schema_version:1,suite:'OFFLINE-VIRAL-HOOK-ACCOUNTING',session_id:crypto.randomUUID(),
+  environment:{...LOCAL},user_id:user._id,course_id:course._id,
+  model:'google/gemini-2.5-flash',provider_url:'https://fal.run/openrouter/router/openai/v1/chat/completions',
+  max_provider_attempts:LIMIT,approval_duration_minutes:DURATION/60000,
+  allowed_paths:['/api/ai/chat','/api/course-ai/chat']};
+ const revision=JSON.stringify({sources:{'edunex-b/services/viralHookTutor.js':sha(fs.readFileSync(path.resolve(__dirname,'../services/viralHookTutor.js')))}})+'\n';s.source_revision_sha256=sha(revision);const bytes=JSON.stringify(s)+'\n',h=sha(bytes);
  fs.writeFileSync(path.join(dir,'session.json'),bytes);fs.writeFileSync(path.join(dir,'session.sha256'),h+'\n');fs.writeFileSync(path.join(dir,'source-revision.json'),revision);
  const initial={type:'session_initialized',sequence:0,session_id:s.session_id,session_sha256:h,previous_hash:'',time:new Date().toISOString()};
  fs.writeFileSync(path.join(dir,'provider_attempts.jsonl'),JSON.stringify({...initial,digest:sha(JSON.stringify(initial))})+'\n');fs.writeFileSync(path.join(dir,'pipeline_traces.jsonl'),'');
@@ -119,6 +123,17 @@ function offlineGate(){
  const context={req,path:'/api/ai/chat',environment:s.environment,requestId:'offline',knowledge:{activeCourse:{id:s.course_id},materialsAvailable:true}};
  return {gate,context,cleanup:()=>fs.rmSync(dir,{recursive:true,force:true})};
 }
+test('viral accounting still rejects a session from another workspace',()=>{
+ const {createGate,sha}=require('../../tmp/nex-viral-hook-live-qa-20261028/gate.cjs');
+ const f=offlineGate();try{
+  const directory=path.dirname(f.gate.ledgerPath);
+  const session={...f.gate.frozen,environment:{...f.gate.frozen.environment,workspaceRoot:path.join(directory,'other-checkout')}};
+  const bytes=JSON.stringify(session)+'\n';
+  fs.writeFileSync(path.join(directory,'session.json'),bytes);fs.writeFileSync(path.join(directory,'session.sha256'),sha(bytes)+'\n');
+  assert.throws(()=>createGate({directory,configured:f.gate.configured}),{code:'manual_qa_invalid_session'});
+  assert.equal(f.gate.count(),0);assert.equal(fs.existsSync(f.gate.approvalPath),false);
+ }finally{f.cleanup()}
+});
 test('generation plus one grounding repair debit the same existing attempt gate',async()=>{
  const f=offlineGate();try{f.gate.authorize(f.gate.hash);
  const api=make({replies:[saved[1].raw,clean2],providerHook:payload=>f.gate.consume(payload,f.context)});

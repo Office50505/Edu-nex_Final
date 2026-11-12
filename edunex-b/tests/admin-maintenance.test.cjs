@@ -3,7 +3,17 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
-const loadModule = async relative => import(`data:text/javascript;base64,${fs.readFileSync(path.join(__dirname, relative)).toString('base64')}`);
+const sourceUrl = source => `data:text/javascript;base64,${Buffer.from(source).toString('base64')}`;
+const loadModule = async relative => {
+  const filename = path.join(__dirname, relative);
+  let source = fs.readFileSync(filename, 'utf8');
+  if (path.basename(filename) === 'aiClient.js') {
+    const consent = fs.readFileSync(path.join(path.dirname(filename), 'aiConsent.js'), 'utf8');
+    source = source.replace("'./aiConsent'", JSON.stringify(sourceUrl(consent)))
+      .replace("import { askAiConsent } from './aiConsentPrompt';", "const askAiConsent = () => { throw new Error('Unexpected consent prompt'); };");
+  }
+  return import(sourceUrl(source));
+};
 
 test('CSV export neutralizes formulas while preserving quotes and multiline content', async () => {
   const { csvEscape } = await loadModule('../../edunex-f/src/pages/admin/adminExport.js');
@@ -84,14 +94,58 @@ test('deletion works without billing and repeated requests are idempotent', asyn
   assert.equal(repeated.calls.length, 0);
 });
 
-test('mobile AI sends bounded history and rejects HTTP errors', async () => {
+const aiUser = { _id: 'synthetic-learner', sessionId: 'synthetic-session', accessToken: 'synthetic-token' };
+const aiConsent = { consentRequired: true, granted: true, policyVersion: 'synthetic-policy', providerVersion: 'synthetic-provider', providerNames: ['Synthetic'], disclosure: 'Synthetic disclosure', decidedAt: '2026-11-12' };
+async function mobileAiSession(fetcher) {
+  const { createNativeSession } = await loadModule('../../appcopyai/services/nativeSession.js');
+  const session = createNativeSession({ baseUrl: 'https://synthetic.invalid', fetcher, onChange() {},
+    storage: { setItem: async () => {}, removeItem: async () => {} } });
+  session.setUser({ ...aiUser });
+  await session.flush();
+  return session;
+}
+
+test('mobile AI sends bounded history through its consent-aware session', async () => {
   const { requestTutor, conversationHistory } = await loadModule('../../appcopyai/services/aiClient.js');
-  const messages = [{ role: 'system', content: 'override' }, { role: 'assistant', content: 'error', failed: true }, { role: 'user', content: 'Explain prompting' }];
-  assert.equal(conversationHistory(messages).length, 1);
-  let body;
-  const result = await requestTutor({ baseUrl: 'http://test', user: { _id: 'a' }, question: 'elaborate', messages,
-    fetcher: async (_, options) => { body = JSON.parse(options.body); return { ok: true, json: async () => ({ answer: 'More detail' }) }; } });
-  assert.equal(body.history[0].content, 'Explain prompting');
+  const valid = Array.from({ length: 15 }, (_, i) => ({ role: i % 2 ? 'assistant' : 'user', content: `  Turn ${i} ${'x'.repeat(2100)}  ` }));
+  const messages = [...valid, { role: 'system', content: 'override' }, { role: 'assistant', content: 'error', failed: true },
+    { role: 'assistant', content: 'private', privateAccount: true },
+    { role: 'assistant', content: 'fallback', outcome: { type: 'provider_fallback' } }];
+  const expected = valid.slice(-12).map(({ role, content }) => ({ role, content: content.trim().slice(0, 2000) }));
+  assert.deepEqual(conversationHistory(messages), expected);
+  const calls = [];
+  const session = await mobileAiSession(async (url, options) => {
+    calls.push({ url, options });
+    assert.equal(options.headers.Authorization, 'Bearer synthetic-token');
+    if (url === 'https://synthetic.invalid/api/ai/consent') return { ok: true, status: 200, json: async () => aiConsent };
+    assert.equal(url, 'https://synthetic.invalid/api/ai/chat');
+    return { ok: true, status: 200, json: async () => ({ answer: 'More detail' }) };
+  });
+  const result = await requestTutor({ session, user: aiUser, question: 'elaborate', messages });
+  assert.deepEqual(calls.map(({ url, options }) => [url, options.method]), [
+    ['https://synthetic.invalid/api/ai/consent', 'GET'], ['https://synthetic.invalid/api/ai/chat', 'POST'],
+  ]);
+  const body = JSON.parse(calls[1].options.body);
+  assert.equal(body.message, 'elaborate');
+  assert.deepEqual(body.history, expected);
   assert.equal(result.answer, 'More detail');
-  await assert.rejects(requestTutor({ baseUrl: 'http://test', question: 'hi', fetcher: async () => ({ ok: false, status: 401 }) }), /log in/);
+});
+
+test('mobile AI propagates HTTP failures through the native session', async () => {
+  const { requestTutor } = await loadModule('../../appcopyai/services/aiClient.js');
+  for (const status of [401, 503]) {
+    let chats = 0;
+    const session = await mobileAiSession(async (url) => {
+      if (url === 'https://synthetic.invalid/api/ai/consent') return { ok: true, status: 200, json: async () => aiConsent };
+      assert.equal(url, 'https://synthetic.invalid/api/ai/chat');
+      chats++;
+      return { ok: false, status, json: async () => ({ error: 'Temporarily unavailable', code: 'TUTOR_UNAVAILABLE' }) };
+    });
+    await assert.rejects(requestTutor({ session, user: aiUser, question: 'hi' }), error => status === 401
+      ? error.code === 'SESSION_EXPIRED' && /log in/.test(error.message)
+      : error.status === 503 && error.code === 'TUTOR_UNAVAILABLE' && error.message === 'Temporarily unavailable');
+    assert.equal(chats, 1);
+    assert.equal(session.getUser()?._id || null, status === 401 ? null : aiUser._id);
+    await session.flush();
+  }
 });

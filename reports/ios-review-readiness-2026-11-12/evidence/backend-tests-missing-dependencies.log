@@ -1,0 +1,2172 @@
+node:internal/modules/cjs/loader:1573
+  throw err;
+  ^
+
+Error: Cannot find module 'mongoose'
+Require stack:
+- /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/models/Subscription.js
+- /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/services/accountEntitlement.js
+- /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/account-entitlement.test.cjs
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+    at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+    at Module._load (node:internal/modules/cjs/loader:1346:5)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.require (node:internal/modules/cjs/loader:1679:12)
+    at require (node:internal/modules/helpers:196:16)
+    at Object.<anonymous> (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/models/Subscription.js:1:18)
+    at Module._compile (node:internal/modules/cjs/loader:1934:14) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/models/Subscription.js',
+    '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/services/accountEntitlement.js',
+    '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/account-entitlement.test.cjs'
+  ]
+}
+
+Node.js v26.5.0
+✖ tests/account-entitlement.test.cjs (84.001958ms)
+✖ phase5 route persists supplied colour fields for a later request without client history (60.969583ms)
+✖ phase5 route preserves saved video topic across an omitted-history language follow-up (1.066834ms)
+✖ phase5 colour slots do not cross a new conversation boundary (0.903708ms)
+✖ AI lesson materials use independent store access and reject revoked store mirrors (0.841792ms)
+✖ consent endpoints and chat retain authentication before their handlers (22.036625ms)
+✖ chat blocks a valid prompt with absent consent (16.825333ms)
+✖ chat blocks a valid prompt with declined consent (2.313417ms)
+✖ chat blocks a valid prompt with outdated consent (2.272333ms)
+✖ chat forwards earlier turns between system context and the new question (2.517583ms)
+✖ history rejects injected roles and malformed entries, bounds size, and remains optional (5.344666ms)
+✔ popup sends successful history, blocks overlapping sends, and clears on New chat (40.970167ms)
+✔ popup omits failures and discards late replies after reset or account change (1.588916ms)
+✖ source markers and reference lists are hidden from learner replies (1.169833ms)
+✖ empty or failed provider replies return honest unavailability (1.003875ms)
+✖ plan questions bypass provider and answer with current Skillomate access facts (2.29475ms)
+✖ product ad price questions stay in active course flow instead of subscription facts (2.228292ms)
+✖ active product course still answers explicit Skillomate subscription questions deterministically (2.091542ms)
+✖ ambiguous product ad follow-ups keep active course context (24.606708ms)
+✖ learner account questions bypass provider with safe profile and payment facts (8.946916ms)
+✖ provider receives formatted prompts but no page query secrets or contact fallback (2.71775ms)
+✖ active course scope excludes other course catalog and materials from provider context (2.998708ms)
+✖ active AI Filmmaking face consistency answer does not call provider or merge courses (3.326125ms)
+✖ production path isolates direct AI Filmmaking course question from AI Influencer chunks (1.620333ms)
+✖ production path keeps AI Filmmaking topic through exact follow-up prompt lookup (2.800958ms)
+✖ production path allows explicit AI Influencer comparison without blended course answer (0.934542ms)
+✖ current video summary stays scoped to the selected lesson for: what is in this video (0.85425ms)
+✖ current video summary stays scoped to the selected lesson for: summarize this video (0.751125ms)
+✖ current video summary stays scoped to the selected lesson for: is video mein kya sikhaya hai (0.730917ms)
+✖ current video summary stays scoped to the selected lesson for: iska summary batao (0.731125ms)
+✖ invalid or cross-course lesson selection does not leak lesson notes (0.761875ms)
+✖ selected paid notes stay inaccessible without an active subscription (0.765958ms)
+✖ provider outage returns unavailability rather than selected-video filler (3.197875ms)
+✔ widget uses the current lesson at send time and clears it away from the player (47.911583ms)
+✖ product exact prompt route uses a complete authorized template without a provider request (1.421958ms)
+✖ product procedural questions use source-linked localized workflow facts (0.8285ms)
+✖ product route never gives paid template bodies to an inactive learner (0.813375ms)
+✖ product provider output with wrong language is marked as a local replacement (0.72275ms)
+✖ product policy catches an invented first-person endorsement in an otherwise successful provider answer (1.2405ms)
+✖ product safety refusal works without paid material and without calling a provider (1.008958ms)
+✖ product provider failures return honest errors with safe diagnostic status (0.890083ms)
+✖ unconfigured provider is explicitly unavailable rather than a live answer (0.849375ms)
+✖ phase3 negated platform terms cannot reroute a supplied product price to subscription facts (0.888416ms)
+✖ phase3 persisted product memory survives omitted client history and stays within learner and conversation (1.388333ms)
+✖ phase3 persisted facts from a different active course are not reused (2.127917ms)
+✖ phase7 route keeps a Hindi product through an omitted-history language switch and exact prompt (2.038958ms)
+✖ phase7 route overview and mobile-framing repair use local sources with accurate provenance (1.902583ms)
+✖ phase9 route delegates compound tasks with both scoped references and truthful origin (1.884291ms)
+✖ phase9 route restores prior reasoning messages when the same conversation omits client history (0.98025ms)
+✖ phase9 route does not restore history across learner or conversation boundaries (0.798166ms)
+✖ phase9 route performs one language repair and marks the delivered result as replacement (0.745875ms)
+✖ phase9 literal asset requests bypass provider and preserve declared product (24.386292ms)
+✖ phase9 a failed second language response stays bounded and explicitly incomplete (7.686417ms)
+✖ phase9 a transport failure during language repair is bounded and safely diagnosed (0.930209ms)
+✖ phase9 saved language informs an ambiguous compound continuation without changing its task (0.791417ms)
+✖ phase9 restored server history is withheld after material access expires (0.752084ms)
+✖ phase9 a non-product course never restores product message history (0.790166ms)
+✖ phase9 a safe alternative inherits the supported lesson and retains replacement provenance (0.746792ms)
+✖ phase9 legacy product sessions restore history without requiring the new language field (3.167708ms)
+✖ phase14a omitted-history replacement persists new identity and clears old facts (2.512083ms)
+✖ first use defaults off; explicit current acceptance persists and allows chat (50.631333ms)
+✖ decline and withdrawal are recorded and block old and new clients (1.062541ms)
+✖ obsolete policy, provider, missing versions or non-boolean decisions cannot grant (0.978834ms)
+✖ unavailable consent storage fails closed without any provider call (4.75775ms)
+✖ shared chat handler used by the legacy course endpoint also enforces consent (2.075875ms)
+✖ withdrawing during a failed attempt stops a scheduled external retry (2.631875ms)
+✖ actual external payload contains learning context without automatic account or billing facts (39.402542ms)
+✖ local account reply is available without a provider call and is not saved as model history (2.212959ms)
+✖ legacy local account replies are excluded from client-supplied and restored saved history (3.309542ms)
+✔ private-account markers and old multilingual account templates are excluded at the boundary (1.551667ms)
+✖ explicit user message content is retained and consent explains this limitation (2.586833ms)
+✖ provider retries use the same minimal payload (2.907917ms)
+✖ language repair requests keep the same private-data boundary (1.717208ms)
+✖ the previous consent policy no longer authorizes the changed data practice (3.618917ms)
+✔ iOS external-link policy allows legal/support/resources and blocks purchase steering (1.28675ms)
+✔ native session migration verifies Keychain write and removes plaintext AsyncStorage copy (0.200458ms)
+✔ mobile AI surfaces retain permission management and history deletion (0.345667ms)
+✔ Android player omits the non-functional fullscreen control (1.441208ms)
+✔ Android app links route verified Skillomate video URLs into the running app (0.280333ms)
+✔ Android back stays inside the app and dismisses focused course search first (0.2205ms)
+✔ premium access is fail-closed for unknown, retry, revoked and expired states (1.183541ms)
+✔ production mobile source contains no enabled QA fixtures or iOS web-purchase steering (2.847ms)
+✔ premium gate popup starts the platform store subscription and exposes required purchase controls (0.226041ms)
+✔ subscription provider labels stay in Subscription Details scope for every supported provider (0.411834ms)
+✔ Google Play offer normalization selects the dedicated ₹9 three-day phase and ₹499 monthly renewal (1.064333ms)
+✔ Google Play client uses the eligible offer token and verifies before acknowledging (0.357917ms)
+✔ iOS exposes only the standard recurring App Store subscription (0.327792ms)
+✔ local iOS StoreKit configuration has one ₹499 monthly plan and no introductory offer (0.098834ms)
+✔ StoreKit client verifies before finishing, handles cancellation, and restores only active access (0.181541ms)
+✔ each unsubscribed login automatically sees the platform subscription popup once (1.667917ms)
+✔ iOS privacy manifest declares uploaded photos without claiming device identifiers or tracking (0.144667ms)
+✔ iOS native bundle explains photo-library access used by the editable profile picker (1.77525ms)
+✔ tablet content and navigation stay centered within readable viewport bounds (205.352791ms)
+✔ home header keeps the logo visible beside action buttons on phones (1.22ms)
+✔ course search suggestions hide internal category identifiers (0.263917ms)
+✔ root page swipe is bidirectional and disabled while search is open (2.220458ms)
+✔ AI chat composer sits directly above the keyboard on iOS (0.943458ms)
+✔ global back gesture stays invisible while the player exposes its intentional edge-back cue (0.885458ms)
+✔ report and personal detail dialogs keep fields and actions reachable above the keyboard (1.614916ms)
+✔ secondary account tablet screens use the shared centered content frame (0.850791ms)
+✔ course detail tablet screen constrains lesson list and notes sheet (4.594083ms)
+✔ lecture player back uses the interactive pager and preserves its route-aware destination (91.551458ms)
+✔ downloaded lecture player shows offline status inside the top lecture pill (9.607792ms)
+✔ course detail back returns to the courses page instead of home (50.560542ms)
+✔ course lesson list passes the selected lesson, course and progress to its download control (64.394625ms)
+✔ protected course downloads prefer prepared MP4 and securely fall back to authorized HLS (100.504042ms)
+✔ Bunny lesson downloads fall back to the default pull-zone host instead of 503 (0.1315ms)
+✔ login and signup screens use larger tablet auth frames (1.404709ms)
+✔ profile avatar picker keeps unique bundled choices and falls back from unknown legacy values (0.060916ms)
+✖ age policy rejects 12, accepts 13, and signup UIs have no fabricated default age (1.818166ms)
+node:internal/modules/cjs/loader:1573
+  throw err;
+  ^
+
+Error: Cannot find module '@apple/app-store-server-library'
+Require stack:
+- /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/services/appleIapService.js
+- /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/apple-iap.test.cjs
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+    at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+    at Module._load (node:internal/modules/cjs/loader:1346:5)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.require (node:internal/modules/cjs/loader:1679:12)
+    at require (node:internal/modules/helpers:196:16)
+    at Object.<anonymous> (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/services/appleIapService.js:8:5)
+    at Module._compile (node:internal/modules/cjs/loader:1934:14) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/services/appleIapService.js',
+    '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/apple-iap.test.cjs'
+  ]
+}
+
+Node.js v26.5.0
+✖ tests/apple-iap.test.cjs (96.885ms)
+✔ registered phone is prefilled once without appearing in login URL (1.380208ms)
+✔ expired phone and unsafe next destinations are discarded (0.243625ms)
+✔ signup prefill is isolated, expires, and preserves a safe destination (0.248709ms)
+✔ cancels immediately and confirms remote cancellation before allowing deletion (4.268667ms)
+✔ terminal subscriptions can be retried without cancelling again (0.445458ms)
+✔ unconfirmed cancellation and provider outages stop deletion (5.378333ms)
+✔ unresolved checkout stops deletion, simulated mandates do not (0.898125ms)
+✔ unsupported real PhonePe cancellation cannot silently permit deletion (1.149625ms)
+✔ deletion request normalizes contact data and discards untrusted fields (1.780125ms)
+✔ deletion request rejects malformed data and missing confirmation (0.565834ms)
+node:internal/modules/cjs/loader:1573
+  throw err;
+  ^
+
+Error: Cannot find module 'mongoose'
+Require stack:
+- /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/models/DownloadGrant.js
+- /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/services/downloadGrantService.js
+- /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/download-grant.test.cjs
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+    at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+    at Module._load (node:internal/modules/cjs/loader:1346:5)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.require (node:internal/modules/cjs/loader:1679:12)
+    at require (node:internal/modules/helpers:196:16)
+    at Object.<anonymous> (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/models/DownloadGrant.js:1:18)
+    at Module._compile (node:internal/modules/cjs/loader:1934:14) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/models/DownloadGrant.js',
+    '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/services/downloadGrantService.js',
+    '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/download-grant.test.cjs'
+  ]
+}
+
+Node.js v26.5.0
+✖ tests/download-grant.test.cjs (51.002417ms)
+✔ video download piping keeps the response open until every byte is written (7.356167ms)
+✔ an empty provider body is rejected before starting the response (0.88875ms)
+node:internal/modules/cjs/loader:1573
+  throw err;
+  ^
+
+Error: Cannot find module '../../edunex-f/node_modules/@babel/parser'
+Require stack:
+- /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/mobile-player.test.cjs
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+    at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+    at Module._load (node:internal/modules/cjs/loader:1346:5)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.require (node:internal/modules/cjs/loader:1679:12)
+    at require (node:internal/modules/helpers:196:16)
+    at Object.<anonymous> (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/mobile-player.test.cjs:5:16)
+    at Module._compile (node:internal/modules/cjs/loader:1934:14) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/mobile-player.test.cjs'
+  ]
+}
+
+Node.js v26.5.0
+✖ tests/mobile-player.test.cjs (58.135458ms)
+✔ cancelling one caller aborts its network request while preserving other requests and login (2.707667ms)
+✔ caller cancellation also aborts a stalled response body (0.284666ms)
+✔ expired tutor token refreshes, rotates both tokens and retries exactly once with identical history (2.987791ms)
+✔ concurrent 401 responses share one refresh; profile updates preserve rotated credentials (3.991417ms)
+✔ a successful token rotation triggers one backend entitlement synchronization callback (0.776ms)
+✔ temporary refresh errors preserve login and never retry the AI request (1.241458ms)
+✔ revocation, missing refresh token and a second 401 end the session without loops (1.388625ms)
+✔ logout or account switch during refresh cannot restore or clear another session (2.944125ms)
+✔ late tutor response after logout is discarded; 403 does not refresh or log out (0.678791ms)
+✔ refresh timeout preserves session; response body timeout is bounded too (11.884625ms)
+✔ rotated credentials remain in memory on storage failure without silently claiming persistence (1.673375ms)
+✔ expired consent lookup refreshes credentials before chat and refusal still prevents transmission (1.387084ms)
+node:internal/modules/cjs/loader:1573
+  throw err;
+  ^
+
+Error: Cannot find module 'jsonwebtoken'
+Require stack:
+- /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/onboarding.test.cjs
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+    at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+    at Module._load (node:internal/modules/cjs/loader:1346:5)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.require (node:internal/modules/cjs/loader:1679:12)
+    at require (node:internal/modules/helpers:196:16)
+    at Object.<anonymous> (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/onboarding.test.cjs:5:13)
+    at Module._compile (node:internal/modules/cjs/loader:1934:14) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/onboarding.test.cjs'
+  ]
+}
+
+Node.js v26.5.0
+✖ tests/onboarding.test.cjs (56.9865ms)
+✔ MSG91 alias is honored and client development flag cannot bypass SMS (7.863125ms)
+✔ MSG91 request timeout is configurable and defaults above the old 10 second ceiling (1.698416ms)
+✔ resend is immediately available and uses MSG91 retry endpoint (1.212959ms)
+✔ verification consumes OTP once and blocks replay (1.247625ms)
+✔ provider errors and malformed success responses fail closed (2.868417ms)
+✔ five failed attempts block further verification and expiry blocks valid-looking OTP (3.207667ms)
+✔ only six digits reach MSG91 verification, including leading zeros (2.179958ms)
+✔ development OTPs also have six digits even with obsolete four-digit config (3.10575ms)
+✔ Skillomate OTP uses the new OTP template with provider-owned sender/DLT mapping (1.4165ms)
+✖ reset cannot bypass OTP even when signup AUTO_VERIFY_OTP is enabled (2.513042ms)
+✖ verified reset hashes password and revokes user and session credentials (1.537708ms)
+✖ weak passwords are rejected before consuming OTP (0.610583ms)
+✖ request hides unknown accounts and confirmation cannot change one (0.443584ms)
+node:internal/modules/cjs/loader:1573
+  throw err;
+  ^
+
+Error: Cannot find module '@aws-sdk/client-s3'
+Require stack:
+- /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/services/profileImageStorage.js
+- /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/profile-image-storage.test.cjs
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+    at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+    at Module._load (node:internal/modules/cjs/loader:1346:5)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.require (node:internal/modules/cjs/loader:1679:12)
+    at require (node:internal/modules/helpers:196:16)
+    at Object.<anonymous> (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/services/profileImageStorage.js:5:61)
+    at Module._compile (node:internal/modules/cjs/loader:1934:14) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/services/profileImageStorage.js',
+    '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/profile-image-storage.test.cjs'
+  ]
+}
+
+Node.js v26.5.0
+✖ tests/profile-image-storage.test.cjs (57.974292ms)
+node:internal/modules/cjs/loader:1573
+  throw err;
+  ^
+
+Error: Cannot find module 'mongoose'
+Require stack:
+- /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/services/mobileCompatibilityService.js
+- /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/public-course-access.test.cjs
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+    at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+    at Module._load (node:internal/modules/cjs/loader:1346:5)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.require (node:internal/modules/cjs/loader:1679:12)
+    at require (node:internal/modules/helpers:196:16)
+    at Object.<anonymous> (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/services/mobileCompatibilityService.js:1:18)
+    at Module._compile (node:internal/modules/cjs/loader:1934:14) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/services/mobileCompatibilityService.js',
+    '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/public-course-access.test.cjs'
+  ]
+}
+
+Node.js v26.5.0
+✖ tests/public-course-access.test.cjs (68.566833ms)
+✔ reviewer seed command exists and requires explicit credentials (0.38125ms)
+✔ reviewer seed creates active tester learner access without app auth bypass (0.197833ms)
+node:internal/modules/cjs/loader:1573
+  throw err;
+  ^
+
+Error: Cannot find module 'mongoose'
+Require stack:
+- /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/models/AdminFeatureSettings.js
+- /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/screen-capture-policy.test.cjs
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+    at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+    at Module._load (node:internal/modules/cjs/loader:1346:5)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.require (node:internal/modules/cjs/loader:1679:12)
+    at require (node:internal/modules/helpers:196:16)
+    at Object.<anonymous> (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/models/AdminFeatureSettings.js:1:18)
+    at Module._compile (node:internal/modules/cjs/loader:1934:14) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/models/AdminFeatureSettings.js',
+    '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/screen-capture-policy.test.cjs'
+  ]
+}
+
+Node.js v26.5.0
+✖ tests/screen-capture-policy.test.cjs (53.722791ms)
+✔ sensitive request limiter keys authenticated users and returns Retry-After (0.533ms)
+node:internal/modules/cjs/loader:1573
+  throw err;
+  ^
+
+Error: Cannot find module 'jsonwebtoken'
+Require stack:
+- /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/single-session.test.cjs
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+    at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+    at Module._load (node:internal/modules/cjs/loader:1346:5)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.require (node:internal/modules/cjs/loader:1679:12)
+    at require (node:internal/modules/helpers:196:16)
+    at Object.<anonymous> (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/single-session.test.cjs:6:13)
+    at Module._compile (node:internal/modules/cjs/loader:1934:14) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/single-session.test.cjs'
+  ]
+}
+
+Node.js v26.5.0
+✖ tests/single-session.test.cjs (53.971ms)
+✔ cancelled or expired records preserve an already-paid trial window (1.351ms)
+✔ cancelled subscriptions preserve a paid billing period (0.074958ms)
+✔ expired paid windows do not grant access (0.0975ms)
+✔ active Google Play periods grant access and revoked store state cannot use stale user status (0.469792ms)
+✔ an independent legacy billing period remains valid alongside an inactive store record (0.09575ms)
+✔ Google course access honors grace, cancellation, payment failures and expiry independently of stale user status (0.098333ms)
+✔ Google course access rejects cached product/package mismatches just like the status API (0.079917ms)
+✔ an expired legacy record cannot revive its own stale User mirror (0.051542ms)
+✔ independent Apple and Google periods survive expiry of another provider (0.077167ms)
+✔ combined access preserves Razorpay grace without borrowing it for Google (0.127542ms)
+ℹ tests 168
+ℹ suites 0
+ℹ pass 85
+ℹ fail 83
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1093.99125
+
+✖ failing tests:
+
+test at tests/account-entitlement.test.cjs:1:1
+✖ tests/account-entitlement.test.cjs (84.001958ms)
+  'test failed'
+
+test at tests/ai-chat-history.test.cjs:105:1
+✖ phase5 route persists supplied colour fields for a later request without client history (60.969583ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:119:1
+✖ phase5 route preserves saved video topic across an omitted-history language follow-up (1.066834ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:131:1
+✖ phase5 colour slots do not cross a new conversation boundary (0.903708ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:141:1
+✖ AI lesson materials use independent store access and reject revoked store mirrors (0.841792ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:161:1
+✖ consent endpoints and chat retain authentication before their handlers (22.036625ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:174:3
+✖ chat blocks a valid prompt with absent consent (16.825333ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:174:3
+✖ chat blocks a valid prompt with declined consent (2.313417ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:174:3
+✖ chat blocks a valid prompt with outdated consent (2.272333ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:183:1
+✖ chat forwards earlier turns between system context and the new question (2.517583ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:192:1
+✖ history rejects injected roles and malformed entries, bounds size, and remains optional (5.344666ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:258:1
+✖ source markers and reference lists are hidden from learner replies (1.169833ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:267:1
+✖ empty or failed provider replies return honest unavailability (1.003875ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:278:1
+✖ plan questions bypass provider and answer with current Skillomate access facts (2.29475ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:289:1
+✖ product ad price questions stay in active course flow instead of subscription facts (2.228292ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:311:1
+✖ active product course still answers explicit Skillomate subscription questions deterministically (2.091542ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:326:1
+✖ ambiguous product ad follow-ups keep active course context (24.606708ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:351:1
+✖ learner account questions bypass provider with safe profile and payment facts (8.946916ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:384:1
+✖ provider receives formatted prompts but no page query secrets or contact fallback (2.71775ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:395:1
+✖ active course scope excludes other course catalog and materials from provider context (2.998708ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:418:1
+✖ active AI Filmmaking face consistency answer does not call provider or merge courses (3.326125ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:442:1
+✖ production path isolates direct AI Filmmaking course question from AI Influencer chunks (1.620333ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:472:1
+✖ production path keeps AI Filmmaking topic through exact follow-up prompt lookup (2.800958ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:511:1
+✖ production path allows explicit AI Influencer comparison without blended course answer (0.934542ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:551:3
+✖ current video summary stays scoped to the selected lesson for: what is in this video (0.85425ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:551:3
+✖ current video summary stays scoped to the selected lesson for: summarize this video (0.751125ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:551:3
+✖ current video summary stays scoped to the selected lesson for: is video mein kya sikhaya hai (0.730917ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:551:3
+✖ current video summary stays scoped to the selected lesson for: iska summary batao (0.731125ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:568:1
+✖ invalid or cross-course lesson selection does not leak lesson notes (0.761875ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:574:1
+✖ selected paid notes stay inaccessible without an active subscription (0.765958ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:580:1
+✖ provider outage returns unavailability rather than selected-video filler (3.197875ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:606:1
+✖ product exact prompt route uses a complete authorized template without a provider request (1.421958ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:614:1
+✖ product procedural questions use source-linked localized workflow facts (0.8285ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:621:1
+✖ product route never gives paid template bodies to an inactive learner (0.813375ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:626:1
+✖ product provider output with wrong language is marked as a local replacement (0.72275ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:637:1
+✖ product policy catches an invented first-person endorsement in an otherwise successful provider answer (1.2405ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:644:1
+✖ product safety refusal works without paid material and without calling a provider (1.008958ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:650:1
+✖ product provider failures return honest errors with safe diagnostic status (0.890083ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:658:1
+✖ unconfigured provider is explicitly unavailable rather than a live answer (0.849375ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:664:1
+✖ phase3 negated platform terms cannot reroute a supplied product price to subscription facts (0.888416ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:674:1
+✖ phase3 persisted product memory survives omitted client history and stays within learner and conversation (1.388333ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:687:1
+✖ phase3 persisted facts from a different active course are not reused (2.127917ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:694:1
+✖ phase7 route keeps a Hindi product through an omitted-history language switch and exact prompt (2.038958ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:705:1
+✖ phase7 route overview and mobile-framing repair use local sources with accurate provenance (1.902583ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:714:1
+✖ phase9 route delegates compound tasks with both scoped references and truthful origin (1.884291ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:719:1
+✖ phase9 route restores prior reasoning messages when the same conversation omits client history (0.98025ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:726:1
+✖ phase9 route does not restore history across learner or conversation boundaries (0.798166ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:733:1
+✖ phase9 route performs one language repair and marks the delivered result as replacement (0.745875ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:738:1
+✖ phase9 literal asset requests bypass provider and preserve declared product (24.386292ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:741:1
+✖ phase9 a failed second language response stays bounded and explicitly incomplete (7.686417ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:745:1
+✖ phase9 a transport failure during language repair is bounded and safely diagnosed (0.930209ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:749:1
+✖ phase9 saved language informs an ambiguous compound continuation without changing its task (0.791417ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:757:1
+✖ phase9 restored server history is withheld after material access expires (0.752084ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:764:1
+✖ phase9 a non-product course never restores product message history (0.790166ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:770:1
+✖ phase9 a safe alternative inherits the supported lesson and retains replacement provenance (0.746792ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:776:1
+✖ phase9 legacy product sessions restore history without requiring the new language field (3.167708ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-chat-history.test.cjs:781:1
+✖ phase14a omitted-history replacement persists new identity and clears old facts (2.512083ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs', '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-chat-history.test.cjs' ]
+  }
+
+test at tests/ai-consent.test.cjs:10:1
+✖ first use defaults off; explicit current acceptance persists and allows chat (50.631333ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-consent.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs', '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-consent.test.cjs' ]
+  }
+
+test at tests/ai-consent.test.cjs:28:1
+✖ decline and withdrawal are recorded and block old and new clients (1.062541ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-consent.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs', '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-consent.test.cjs' ]
+  }
+
+test at tests/ai-consent.test.cjs:41:1
+✖ obsolete policy, provider, missing versions or non-boolean decisions cannot grant (0.978834ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-consent.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs', '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-consent.test.cjs' ]
+  }
+
+test at tests/ai-consent.test.cjs:50:1
+✖ unavailable consent storage fails closed without any provider call (4.75775ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-consent.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs', '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-consent.test.cjs' ]
+  }
+
+test at tests/ai-consent.test.cjs:56:1
+✖ shared chat handler used by the legacy course endpoint also enforces consent (2.075875ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-consent.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs', '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-consent.test.cjs' ]
+  }
+
+test at tests/ai-consent.test.cjs:62:1
+✖ withdrawing during a failed attempt stops a scheduled external retry (2.631875ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-consent.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs', '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-consent.test.cjs' ]
+  }
+
+test at tests/ai-provider-privacy.test.cjs:18:1
+✖ actual external payload contains learning context without automatic account or billing facts (39.402542ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-provider-privacy.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs', '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-provider-privacy.test.cjs' ]
+  }
+
+test at tests/ai-provider-privacy.test.cjs:26:1
+✖ local account reply is available without a provider call and is not saved as model history (2.212959ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-provider-privacy.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs', '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-provider-privacy.test.cjs' ]
+  }
+
+test at tests/ai-provider-privacy.test.cjs:34:1
+✖ legacy local account replies are excluded from client-supplied and restored saved history (3.309542ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-provider-privacy.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs', '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-provider-privacy.test.cjs' ]
+  }
+
+test at tests/ai-provider-privacy.test.cjs:59:1
+✖ explicit user message content is retained and consent explains this limitation (2.586833ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-provider-privacy.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs', '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-provider-privacy.test.cjs' ]
+  }
+
+test at tests/ai-provider-privacy.test.cjs:68:1
+✖ provider retries use the same minimal payload (2.907917ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-provider-privacy.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs', '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-provider-privacy.test.cjs' ]
+  }
+
+test at tests/ai-provider-privacy.test.cjs:72:1
+✖ language repair requests keep the same private-data boundary (1.717208ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-provider-privacy.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs', '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-provider-privacy.test.cjs' ]
+  }
+
+test at tests/ai-provider-privacy.test.cjs:80:1
+✖ the previous consent policy no longer authorizes the changed data practice (3.618917ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-provider-privacy.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs:16:39)
+      at evalmachine.<anonymous>:3:18 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-tutor-fixture.cjs', '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/ai-provider-privacy.test.cjs' ]
+  }
+
+test at tests/app-store-mobile-compliance.test.cjs:614:1
+✖ age policy rejects 12, accepts 13, and signup UIs have no fabricated default age (1.818166ms)
+  Error: Cannot find module 'mongoose'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/models/User.js
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/app-store-mobile-compliance.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at Object.<anonymous> (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/models/User.js:1:18)
+      at Module._compile (node:internal/modules/cjs/loader:1934:14)
+      at Object..js (node:internal/modules/cjs/loader:2074:10)
+      at Module.load (node:internal/modules/cjs/loader:1656:32)
+      at Module._load (node:internal/modules/cjs/loader:1448:12)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at TestContext.<anonymous> (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/app-store-mobile-compliance.test.cjs:615:16)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/models/User.js', '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/app-store-mobile-compliance.test.cjs' ]
+  }
+
+test at tests/apple-iap.test.cjs:1:1
+✖ tests/apple-iap.test.cjs (96.885ms)
+  'test failed'
+
+test at tests/download-grant.test.cjs:1:1
+✖ tests/download-grant.test.cjs (51.002417ms)
+  'test failed'
+
+test at tests/mobile-player.test.cjs:1:1
+✖ tests/mobile-player.test.cjs (58.135458ms)
+  'test failed'
+
+test at tests/onboarding.test.cjs:1:1
+✖ tests/onboarding.test.cjs (56.9865ms)
+  'test failed'
+
+test at tests/password-reset.test.cjs:37:1
+✖ reset cannot bypass OTP even when signup AUTO_VERIFY_OTP is enabled (2.513042ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'jsonwebtoken'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/password-reset.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/password-reset.test.cjs:27:14)
+      at evalmachine.<anonymous>:2:13 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/password-reset.test.cjs' ]
+  }
+
+test at tests/password-reset.test.cjs:43:1
+✖ verified reset hashes password and revokes user and session credentials (1.537708ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'jsonwebtoken'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/password-reset.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/password-reset.test.cjs:27:14)
+      at evalmachine.<anonymous>:2:13 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/password-reset.test.cjs' ]
+  }
+
+test at tests/password-reset.test.cjs:52:1
+✖ weak passwords are rejected before consuming OTP (0.610583ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'jsonwebtoken'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/password-reset.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/password-reset.test.cjs:27:14)
+      at evalmachine.<anonymous>:2:13 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/password-reset.test.cjs' ]
+  }
+
+test at tests/password-reset.test.cjs:58:1
+✖ request hides unknown accounts and confirmation cannot change one (0.443584ms)
+  node:internal/modules/cjs/loader:1573
+    throw err;
+    ^
+  
+  Error: Cannot find module 'jsonwebtoken'
+  Require stack:
+  - /Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/password-reset.test.cjs
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1569:15)
+      at wrapResolveFilename (node:internal/modules/cjs/loader:1123:27)
+      at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1147:10)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1174:12)
+      at Module._load (node:internal/modules/cjs/loader:1346:5)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+      at Module.require (node:internal/modules/cjs/loader:1679:12)
+      at require (node:internal/modules/helpers:196:16)
+      at require (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/password-reset.test.cjs:27:14)
+      at evalmachine.<anonymous>:2:13 {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [ '/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/password-reset.test.cjs' ]
+  }
+
+test at tests/profile-image-storage.test.cjs:1:1
+✖ tests/profile-image-storage.test.cjs (57.974292ms)
+  'test failed'
+
+test at tests/public-course-access.test.cjs:1:1
+✖ tests/public-course-access.test.cjs (68.566833ms)
+  'test failed'
+
+test at tests/screen-capture-policy.test.cjs:1:1
+✖ tests/screen-capture-policy.test.cjs (53.722791ms)
+  'test failed'
+
+test at tests/single-session.test.cjs:1:1
+✖ tests/single-session.test.cjs (53.971ms)
+  'test failed'

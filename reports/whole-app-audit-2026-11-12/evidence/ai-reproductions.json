@@ -1,0 +1,76 @@
+{
+  "syntheticFixturesOnly": true,
+  "liveProviderRequests": 0,
+  "unavailableProviderContext": {
+    "turns": [
+      {
+        "message": "My item is a hollow ebony whistle tray. Price: 915. Material: wood.",
+        "statusCode": 503,
+        "response": {
+          "error": "Nex AI is temporarily unavailable. Please try your question again shortly.",
+          "code": "TUTOR_UNAVAILABLE",
+          "outcome": {
+            "type": "unavailable",
+            "liveModelAnswer": false,
+            "providerStatus": "not_configured",
+            "failureClass": "infrastructure"
+          },
+          "messageId": "cce0ef10-b6fa-4d63-8ccb-a61926a0b5d1",
+          "provider": "unavailable"
+        },
+        "persistedSessionCount": 0
+      },
+      {
+        "message": "Replace the product with a soft felt marimba cover.",
+        "statusCode": 503,
+        "response": {
+          "error": "Nex AI is temporarily unavailable. Please try your question again shortly.",
+          "code": "TUTOR_UNAVAILABLE",
+          "outcome": {
+            "type": "unavailable",
+            "liveModelAnswer": false,
+            "providerStatus": "not_configured",
+            "failureClass": "infrastructure"
+          },
+          "messageId": "ae0ff127-c04a-466d-b31f-9f8b8d3b764a",
+          "provider": "unavailable"
+        },
+        "persistedSessionCount": 0
+      },
+      {
+        "message": "Copy the complete L02 White Studio template for the same product.",
+        "statusCode": 200,
+        "response": {
+          "answer": "L02 White Studio\n\n```text\nUse the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n```\n\nFields still in brackets need your details; I have not invented them.",
+          "reply": "L02 White Studio\n\n```text\nUse the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n```\n\nFields still in brackets need your details; I have not invented them.",
+          "provider": "course-knowledge-rule",
+          "sources": [],
+          "privateAccount": false,
+          "messageId": "7ce8c8a6-e2e1-4c1c-98f9-97fc177c3ca4",
+          "notice": null,
+          "outcome": {
+            "type": "local_rule",
+            "liveModelAnswer": false,
+            "providerStatus": "not_configured",
+            "responseIssue": null
+          },
+          "knowledge": "course-materials"
+        },
+        "persistedSessionCount": 1
+      }
+    ],
+    "providerRequests": 0
+  },
+  "repairPayload": {
+    "injectedProviderRequests": 2,
+    "instructionExcerpt": "Correct only these unsupported factual propositions: undefined. Preserve the learner task, niche, audience, requested hook count, hook types, language",
+    "missingViolations": true,
+    "reply": "A plain background shows the product clearly, whereas a busy scene supplies context.\nCaption: Here is a carved cedar reed bridge. View its supplied details.",
+    "outcome": {
+      "type": "validated_local_replacement",
+      "liveModelAnswer": false,
+      "providerStatus": "success",
+      "responseIssue": "response_grounding_repaired"
+    }
+  }
+}

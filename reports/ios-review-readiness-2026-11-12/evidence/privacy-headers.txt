@@ -1,0 +1,15 @@
+HTTP/2 200 
+content-type: text/html
+content-length: 2535
+accept-ranges: bytes
+server: AmazonS3
+last-modified: Wed, 04 Nov 2026 08:32:46 GMT
+x-amz-server-side-encryption: AES256
+date: Thu, 12 Nov 2026 01:28:22 GMT
+etag: "c606b241e6ffa95135d08786263e3902"
+x-cache: Error from cloudfront
+via: 1.1 69e5fba7c1fe854e243ae24a6b2b22c2.cloudfront.net (CloudFront)
+x-amz-cf-pop: MCI50-P4
+x-amz-cf-id: M8ELxi0LOl3HvX8hhtojaHR390vccT4nYNaSetWdBGrpN7FMiv7hZg==
+age: 18483
+

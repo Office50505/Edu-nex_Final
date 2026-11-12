@@ -240,7 +240,7 @@ function validateProductReply({ reply, message, history = [], knowledge }) {
       const draft=knowledge.materialsAvailable&&draftProductAd({message,facts,language,records:knowledge.records});
       const compound=knowledge.requestContext?.compound;
       const notice={english:'Some requested reasoning could not be completed safely. Here is a factual draft:',hindi:'माँगी गई कुछ व्याख्या सुरक्षित रूप से पूरी नहीं हो सकी। यह तथ्यों पर आधारित ड्राफ्ट है:',hinglish:'Kuch requested reasoning safely poori nahi ho saki. Yeh factual draft hai:'}[language];
-      return {reply:(compound?notice+'\n\n':'')+(draft?.reply||safeAd[language]),issue:'unsupported_product_claim',groundingViolations:violations,...(compound?{repairRequest:{kind:'grounding',language,originalAnswer:String(reply).slice(0,4000)}}:{})};
+      return {reply:(compound?notice+'\n\n':'')+(draft?.reply||safeAd[language]),issue:'unsupported_product_claim',groundingViolations:violations,...(compound?{repairRequest:{kind:'grounding',language,issues:violations,originalAnswer:String(reply).slice(0,4000)}}:{})};
     }
   }
   if (!explanationLanguageMatches(reply, language, facts.product)) {

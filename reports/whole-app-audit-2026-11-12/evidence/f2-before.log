@@ -1,0 +1,51 @@
+[nex-ai-debug] {"conversation_id":"","request_active_course_id":"6e0000000000000000000011","resolved_active_course_id":"6e0000000000000000000011","current_topic":"Ad plan","current_intent":"caption","rewritten_retrieval_query":"My product is a carved cedar reed bridge. Compare plain and busy references, choose one first and write a caption.","retrieved_chunk_ids":["ai-product-photoshoot-ads:training:workflow:product-sheet-banana","ai-product-photoshoot-ads:training:workflow:product-video","ai-product-photoshoot-ads:training:workflow:ugc-video","ai-product-photoshoot-ads:training:workflow:product-photos","ai-product-photoshoot-ads:training:workflow:ad-plan","ai-product-photoshoot-ads:training:faq:chat-g-p-t-ka-ad-bahut-generic"],"retrieved_chunk_hashes":["56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2","ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d","0ddcd4cd92bef6253f0f689cb53e6540ce491d6a7657e509c0d314d47104d126","cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d","d6f78ee930b9429a7609a63d027430fee7986270c0f8717d52ab63d877839c00","b0e611ea11b554c6d1e1be872932b204a231f9e784066f9a9a245df617122669"],"retrieved_source_hashes":["96471b6991c3724f9b8315fc7b3d1bb73b409eb0272517432cbfdd98882127df"],"retrieved_translation_hashes":["2b6e14207486a1cbac4fa35a55be64c14b67471dc164a05f7c143d1c5555e3b9","134e7dc7b8cb241b980584214e3a5c6e995f9b56aeaadb778aa5f8678e5aa034","fbbca5fd82e6ba0c9974e459c1fd1acb0b096934060481669c9eedde905b588b","b6e099477a8df01b7d64e57e2c1783a08a57a8d6c891f33a1d452a3a25433b2e","8f6eeec666ddc2fa58258514366b49fc603b6b14d4bc95c4ddfb7886f026a32d","c51a129ace8cad93b9feee2a01e86d0352aa41c7eb7ecfa0fc0f5c457e09a1b0"],"retrieved_course_ids":["6e0000000000000000000011"],"retrieved_course_names":["AI Product Photoshoot & Ads"],"scores_ranks":[{"rank":1,"score":"113.5182","course_id":"6e0000000000000000000011","section":"Product sheet banana"},{"rank":2,"score":"113.3759","course_id":"6e0000000000000000000011","section":"Product video"},{"rank":3,"score":"113.3636","course_id":"6e0000000000000000000011","section":"UGC video"},{"rank":4,"score":"111.7320","course_id":"6e0000000000000000000011","section":"Product photos"},{"rank":5,"score":"104.5424","course_id":"6e0000000000000000000011","section":"Ad plan"},{"rank":6,"score":"86.4795","course_id":"6e0000000000000000000011","section":"chat G.P.T ka ad bahut generic"}],"selected_exact_prompt_template_id":"","provider_model_path":"course-response-policy"}
+[nex-ai-debug] {"conversation_id":"","request_active_course_id":"6e0000000000000000000011","resolved_active_course_id":"6e0000000000000000000011","current_topic":"Ad plan","current_intent":"caption","rewritten_retrieval_query":"My product is a woven piccolo bag. Compare plain and busy references, choose one and write a caption.","retrieved_chunk_ids":["ai-product-photoshoot-ads:training:workflow:product-sheet-banana","ai-product-photoshoot-ads:training:workflow:product-video","ai-product-photoshoot-ads:training:workflow:ugc-video","ai-product-photoshoot-ads:training:workflow:product-photos","ai-product-photoshoot-ads:training:workflow:ad-plan","ai-product-photoshoot-ads:training:faq:chat-g-p-t-ka-ad-bahut-generic"],"retrieved_chunk_hashes":["56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2","ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d","0ddcd4cd92bef6253f0f689cb53e6540ce491d6a7657e509c0d314d47104d126","cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d","d6f78ee930b9429a7609a63d027430fee7986270c0f8717d52ab63d877839c00","b0e611ea11b554c6d1e1be872932b204a231f9e784066f9a9a245df617122669"],"retrieved_source_hashes":["96471b6991c3724f9b8315fc7b3d1bb73b409eb0272517432cbfdd98882127df"],"retrieved_translation_hashes":["2b6e14207486a1cbac4fa35a55be64c14b67471dc164a05f7c143d1c5555e3b9","134e7dc7b8cb241b980584214e3a5c6e995f9b56aeaadb778aa5f8678e5aa034","fbbca5fd82e6ba0c9974e459c1fd1acb0b096934060481669c9eedde905b588b","b6e099477a8df01b7d64e57e2c1783a08a57a8d6c891f33a1d452a3a25433b2e","8f6eeec666ddc2fa58258514366b49fc603b6b14d4bc95c4ddfb7886f026a32d","c51a129ace8cad93b9feee2a01e86d0352aa41c7eb7ecfa0fc0f5c457e09a1b0"],"retrieved_course_ids":["6e0000000000000000000011"],"retrieved_course_names":["AI Product Photoshoot & Ads"],"scores_ranks":[{"rank":1,"score":"113.5182","course_id":"6e0000000000000000000011","section":"Product sheet banana"},{"rank":2,"score":"113.3759","course_id":"6e0000000000000000000011","section":"Product video"},{"rank":3,"score":"113.3636","course_id":"6e0000000000000000000011","section":"UGC video"},{"rank":4,"score":"111.7320","course_id":"6e0000000000000000000011","section":"Product photos"},{"rank":5,"score":"103.6800","course_id":"6e0000000000000000000011","section":"Ad plan"},{"rank":6,"score":"85.5201","course_id":"6e0000000000000000000011","section":"chat G.P.T ka ad bahut generic"}],"selected_exact_prompt_template_id":"","provider_model_path":"course-response-policy"}
+[nex-ai-debug] {"conversation_id":"","request_active_course_id":"6e0000000000000000000011","resolved_active_course_id":"6e0000000000000000000011","current_topic":"Ad plan","current_intent":"caption","rewritten_retrieval_query":"My product is a woven piccolo bag. Compare plain and busy references, choose one and write a caption.","retrieved_chunk_ids":["ai-product-photoshoot-ads:training:workflow:product-sheet-banana","ai-product-photoshoot-ads:training:workflow:product-video","ai-product-photoshoot-ads:training:workflow:ugc-video","ai-product-photoshoot-ads:training:workflow:product-photos","ai-product-photoshoot-ads:training:workflow:ad-plan","ai-product-photoshoot-ads:training:faq:chat-g-p-t-ka-ad-bahut-generic"],"retrieved_chunk_hashes":["56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2","ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d","0ddcd4cd92bef6253f0f689cb53e6540ce491d6a7657e509c0d314d47104d126","cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d","d6f78ee930b9429a7609a63d027430fee7986270c0f8717d52ab63d877839c00","b0e611ea11b554c6d1e1be872932b204a231f9e784066f9a9a245df617122669"],"retrieved_source_hashes":["96471b6991c3724f9b8315fc7b3d1bb73b409eb0272517432cbfdd98882127df"],"retrieved_translation_hashes":["2b6e14207486a1cbac4fa35a55be64c14b67471dc164a05f7c143d1c5555e3b9","134e7dc7b8cb241b980584214e3a5c6e995f9b56aeaadb778aa5f8678e5aa034","fbbca5fd82e6ba0c9974e459c1fd1acb0b096934060481669c9eedde905b588b","b6e099477a8df01b7d64e57e2c1783a08a57a8d6c891f33a1d452a3a25433b2e","8f6eeec666ddc2fa58258514366b49fc603b6b14d4bc95c4ddfb7886f026a32d","c51a129ace8cad93b9feee2a01e86d0352aa41c7eb7ecfa0fc0f5c457e09a1b0"],"retrieved_course_ids":["6e0000000000000000000011"],"retrieved_course_names":["AI Product Photoshoot & Ads"],"scores_ranks":[{"rank":1,"score":"113.5182","course_id":"6e0000000000000000000011","section":"Product sheet banana"},{"rank":2,"score":"113.3759","course_id":"6e0000000000000000000011","section":"Product video"},{"rank":3,"score":"113.3636","course_id":"6e0000000000000000000011","section":"UGC video"},{"rank":4,"score":"111.7320","course_id":"6e0000000000000000000011","section":"Product photos"},{"rank":5,"score":"103.6800","course_id":"6e0000000000000000000011","section":"Ad plan"},{"rank":6,"score":"85.5201","course_id":"6e0000000000000000000011","section":"chat G.P.T ka ad bahut generic"}],"selected_exact_prompt_template_id":"","provider_model_path":"course-response-policy"}
+✖ phase11 grounding repair preserves a compound explanation and marks repaired provenance (223.866083ms)
+✖ phase11 grounding repair request carries every detected product violation (3.50275ms)
+✔ phase11 unsafe grounding repair is revalidated and never delivered (39.164792ms)
+✔ phase11 grounding repair failure retains safe draft without claiming full compound success (34.245084ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 2
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 384.206917
+
+✖ failing tests:
+
+test at tests/product-tutor-phase11.test.cjs:98:1
+✖ phase11 grounding repair preserves a compound explanation and marks repaired provenance (223.866083ms)
+  SyntaxError: "undefined" is not valid JSON
+      at JSON.parse (<anonymous>)
+      at TestContext.<anonymous> (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/product-tutor-phase11.test.cjs:108:24)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+
+test at tests/product-tutor-phase11.test.cjs:114:1
+✖ phase11 grounding repair request carries every detected product violation (3.50275ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + undefined
+  - [
+  -   'ad copy contains unprovided content: offers, superior, comfort, free, case',
+  -   'unprovided specification or benefit: Offers superior comfort and a free case'
+  - ]
+  
+      at TestContext.<anonymous> (/Users/shekharchouhan/Documents/GitHub/Lookmefy-Unified-Backend/Edu-nex_Final/edunex-b/tests/product-tutor-phase11.test.cjs:122:9)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: [ 'ad copy contains unprovided content: offers, superior, comfort, free, case', 'unprovided specification or benefit: Offers superior comfort and a free case' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

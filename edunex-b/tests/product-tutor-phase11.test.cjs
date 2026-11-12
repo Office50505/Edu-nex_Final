@@ -96,8 +96,44 @@ test('phase11 actual compound route passes decomposed tasks to provider fixture'
  const r=await api.chat({courseId,message:'Contrast Lesson 06 and Lesson 07 and explain their references.',debugAi:true});assert.equal(api.calls.length,1);assert.equal(r.debug.response_selection.mode,'model');assert.match(api.calls[0].messages[0].content,/Task plan/);assert.equal(r.outcome.type,'live_model');
 });
 test('phase11 grounding repair preserves a compound explanation and marks repaired provenance',async()=>{
- const {api,courseId}=route({replies:['Plain background is useful. Caption: Offers superior comfort and a free case.','A plain background shows the product clearly, whereas a busy scene supplies context.\nCaption: Here is a carved cedar reed bridge. View its supplied details.']});
- const r=await api.chat({courseId,message:'My product is a carved cedar reed bridge. Compare plain and busy references, choose one first and write a caption.',debugAi:true});assert.equal(api.calls.length,2);assert.match(api.calls[1].messages[0].content,/replace every unsupported product assertion/);assert.match(r.reply,/whereas/);assert.match(r.reply,/Caption/);assert.doesNotMatch(r.reply,/free case/);assert.equal(r.outcome.type,'validated_local_replacement');assert.equal(r.outcome.responseIssue,'response_grounding_repaired');
+ const original='Plain background is useful. Caption: Offers superior comfort and a free case.';
+ const message='My product is a carved cedar reed bridge. Compare plain and busy references, choose one first and write a caption.';
+ const {api,courseId}=route({replies:[original,'A plain background shows the product clearly, whereas a busy scene supplies context.\nCaption: Here is a carved cedar reed bridge. View its supplied details.']});
+ const r=await api.chat({courseId,message,debugAi:true});
+ assert.equal(api.calls.length,2);
+ const repairPrompt=api.calls[1].messages[0].content;
+ const serializedIssues=repairPrompt.match(/Correct only these unsupported factual propositions: (.*?)\. Preserve the learner task/)[1];
+ const expectedIssues=unsupportedAdClaims(original,K.productFacts(message));
+ assert.ok(expectedIssues.length>0);
+ assert.deepEqual(JSON.parse(serializedIssues),expectedIssues);
+ assert.doesNotMatch(repairPrompt,/unsupported factual propositions: undefined/);
+ assert.ok(repairPrompt.includes(JSON.stringify(original)));
+ assert.ok(api.calls[1].messages.some(turn=>turn.role==='user'&&turn.content.includes(message)));
+ assert.match(r.reply,/whereas/);assert.match(r.reply,/Caption/);assert.doesNotMatch(r.reply,/free case/);assert.equal(r.outcome.type,'validated_local_replacement');assert.equal(r.outcome.responseIssue,'response_grounding_repaired');
+});
+test('phase11 grounding repair request carries every detected product violation',()=>{
+ const message='My product is a carved cedar reed bridge. Compare plain and busy references, choose one first and write a caption.';
+ const original='Plain background is useful. Caption: Offers superior comfort and a free case.';
+ const {knowledge,facts}=run(message);
+ const checked=R.validateProductReply({message,knowledge,reply:original});
+ const expected=unsupportedAdClaims(original,facts);
+ assert.ok(expected.length>0);
+ assert.deepEqual(checked.groundingViolations,expected);
+ assert.deepEqual(checked.repairRequest.issues,expected);
+ assert.equal(checked.repairRequest.kind,'grounding');
+ assert.equal(checked.repairRequest.language,'english');
+ assert.equal(checked.repairRequest.originalAnswer,original);
+});
+test('phase11 unsafe grounding repair is revalidated and never delivered',async()=>{
+ const original='Caption: Includes a gold-plated mouthpiece.';
+ const {api,courseId}=route({replies:[original,'Caption: Offers a free luxury case.']});
+ const r=await api.chat({courseId,message:'My product is a woven piccolo bag. Compare plain and busy references, choose one and write a caption.',debugAi:true});
+ assert.equal(api.calls.length,2);
+ assert.equal(r.outcome.liveModelAnswer,false);
+ assert.equal(r.outcome.responseIssue,'unsupported_product_claim');
+ assert.match(r.reply,/could not be completed safely/);
+ assert.match(r.reply,/woven piccolo bag/);
+ assert.doesNotMatch(r.reply,/gold-plated|luxury case/);
 });
 test('phase11 grounding repair failure retains safe draft without claiming full compound success',async()=>{
  const {api,courseId}=route({reply:'Caption: Includes a gold-plated mouthpiece.',failAt:[2]});
