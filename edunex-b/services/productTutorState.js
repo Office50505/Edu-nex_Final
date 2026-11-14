@@ -148,6 +148,7 @@ function extraSlots(text){
  return result;
 }
 function scopeProductState(previous={},scope={}){
+ previous=previous&&typeof previous==='object'&&!Array.isArray(previous)?previous:{};
  if((scope.courseId&&previous.courseId&&scope.courseId!==previous.courseId)||(scope.conversationId&&previous.conversationId&&scope.conversationId!==previous.conversationId))return {};
  return previous;
 }

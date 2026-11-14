@@ -138,22 +138,33 @@ function protectedSource(source) {
     || ['exact-template', 'faq', 'workflow', 'lesson-summary'].includes(source?.contentType);
 }
 
-function assertKnowledgeScope(knowledge, { activeCourse, includeMaterials }) {
+function isIntegratedCourse(course) {
+  return Boolean(course?._id && (!course.status || course.status === 'published')
+    && COURSE_DOCUMENTS.some(group => group.slugs.includes(course.slug)
+      && (!group.ownerCourseId || group.ownerCourseId === String(course._id))));
+}
+
+function assertKnowledgeScope(knowledge, { activeCourse, includeMaterials, authorizedCourses }) {
+  const allowed = Array.isArray(authorizedCourses) ? authorizedCourses.filter(isIntegratedCourse) : null;
   const protectedItems = [...(knowledge.sources || []), ...(knowledge.records || []), ...(knowledge.debugChunks || [])].filter(protectedSource);
-  if (protectedItems.some(item => !includeMaterials || !activeCourse?._id
+  if (protectedItems.some(item => allowed ? !includeMaterials || !allowed.some(course => String(course._id) === String(item.courseId)
+    && (!item.courseSlug || item.courseSlug === course.slug)) : !includeMaterials || !activeCourse?._id
     || String(item.courseId || '') !== String(activeCourse._id)
     || (item.courseSlug && item.courseSlug !== activeCourse.slug))) {
     const error = new Error('Retrieved course material failed server scope validation');
     error.code = 'COURSE_KNOWLEDGE_SCOPE_VIOLATION';
     throw error;
   }
-  assertCourseTextScope([knowledge.excerpts, knowledge.bestExcerpt, knowledge.activeLessonExcerpt].join('\n'), { activeCourse, includeMaterials });
+  assertCourseTextScope([knowledge.excerpts, knowledge.bestExcerpt, knowledge.activeLessonExcerpt].join('\n'), { activeCourse, includeMaterials, authorizedCourses });
 }
 
-function forbiddenCourseDocuments({ activeCourse, includeMaterials }) {
-  const family = includeMaterials && activeCourse ? COURSE_DOCUMENTS.find(group => group.slugs.includes(activeCourse.slug)
-    && (!group.ownerCourseId || group.ownerCourseId === String(activeCourse._id))) : null;
-  return localDocuments.filter(doc => !family?.slugs.includes(doc.courseSlug));
+function forbiddenCourseDocuments({ activeCourse, includeMaterials, authorizedCourses }) {
+  const allowed = includeMaterials ? Array.isArray(authorizedCourses) ? authorizedCourses.filter(isIntegratedCourse)
+    : activeCourse ? [activeCourse] : [] : [];
+  const families = COURSE_DOCUMENTS.filter(group => allowed.some(course => group.slugs.includes(course.slug)
+    && (!group.ownerCourseId || group.ownerCourseId === String(course._id))));
+  return localDocuments.filter(doc => !families.some(group => group.slugs.includes(doc.courseSlug)
+    && (!doc.ownerCourseId || doc.ownerCourseId === group.ownerCourseId)));
 }
 
 function assertCourseTextScope(text, scope) {
@@ -166,11 +177,11 @@ function assertCourseTextScope(text, scope) {
   }
 }
 
-function scopeConversationHistory(history, { activeCourse, includeMaterials, savedState } = {}) {
-  if (savedState?.activeCourseId && String(savedState.activeCourseId) !== String(activeCourse?._id || '')) return [];
+function scopeConversationHistory(history, { activeCourse, includeMaterials, savedState, authorizedCourses } = {}) {
+  if (!authorizedCourses && savedState?.activeCourseId && String(savedState.activeCourseId) !== String(activeCourse?._id || '')) return [];
   const normalize = value => String(value).replace(/\s+/gu, ' ').trim();
   // History is untrusted. Do not re-forward recognized foreign approved material as context.
-  const foreign = forbiddenCourseDocuments({ activeCourse, includeMaterials }).map(doc => normalize(doc.content));
+  const foreign = forbiddenCourseDocuments({ activeCourse, includeMaterials, authorizedCourses }).map(doc => normalize(doc.content));
   return history.filter(item => !foreign.some(body => body.length > 60 && normalize(item.content).includes(body)));
 }
 
@@ -224,7 +235,7 @@ function requestedLessonNumberFromText(value) {
   return match ? Number(match[1]) : null;
 }
 
-function retrieveKnowledge({ courses, message, history = [], includeMaterials = false, activeLesson = null, activeCourse = null, allowCrossCourse = false, conversationContext = {} }) {
+function retrieveKnowledge({ courses, message, history = [], includeMaterials = false, activeLesson = null, activeCourse = null, allowCrossCourse = false, conversationContext = {}, requireMaterial = false }) {
   // Resolve ownership against the server-provided catalog; never trust an orphan/forged active object.
   const matching = activeCourse ? courses.filter(course => sameCourse(course, activeCourse)) : courses.length === 1 ? courses : [];
   const owner = matching.length === 1 ? matching[0] : null;
@@ -292,6 +303,8 @@ function retrieveKnowledge({ courses, message, history = [], includeMaterials = 
     if (group.some(word => weights.has(word))) for (const word of group) if (!weights.has(word)) weights.set(word, 0.45);
   }
   const indexed = candidates.filter(candidate => creativeRecordAllowed(candidate, creativeRequest)
+    && (packFor(owner)?.domain !== 'real-estate-videos' || candidate.contentType !== 'counterexample'
+      || /\b(?:wrong|bad|failed|mistake|comparison|galti)\b|गलती|गलत/iu.test(message))
     && (!packFor(owner)?.retrieval?.explicitAssetsOnly || tutorRequest?.copyRequested
       || !['exact-template', 'example-answers'].includes(candidate.contentType)
       || (candidate.contentType === 'example-answers' && /\bexamples?\b|उदाहरण/iu.test(message)))
@@ -336,11 +349,19 @@ function retrieveKnowledge({ courses, message, history = [], includeMaterials = 
       if (count) score += weight * Math.log(1 + indexed.length / (frequencies.get(word) || 1)) * count / (count + 1.2 + doc.tokens.length / 200);
     }
     return { ...doc, score };
-  }).filter(doc => doc.score > 0).sort((a, b) => b.score - a.score);
+  }).filter(doc => doc.score > 0 || materialAccess && requireMaterial
+    && ['course-material','lesson-notes'].includes(doc.kind) && doc.content?.trim())
+    .sort((a, b) => b.score - a.score);
 
   const selected = [];
   const seen = new Set();
-  for (const doc of ranked) {
+  // In authorized unified retrieval, public overviews can fill all six slots
+  // before the aggregator ever sees a protected material candidate. Reserve a
+  // material first. If lexical overlap is empty, the bounded owner-local pool
+  // still supplies course context; do not widen ownership or access. Truly
+  // absent materials remain visible in unified retrievalCoverage.
+  const material = materialAccess && requireMaterial ? ranked.find(d => ['course-material','lesson-notes'].includes(d.kind)) : null;
+  for (const doc of material ? [material,...ranked] : ranked) {
     const key = doc.chunkId ? `${doc.course._id}:${doc.chunkId}` : `${doc.title}:${doc.heading}${doc.active || filmmakingWorkflow ? `:${doc.chunkStart || 0}` : ''}`;
     if (seen.has(key)) continue;
     seen.add(key);
@@ -358,6 +379,9 @@ function retrieveKnowledge({ courses, message, history = [], includeMaterials = 
   }));
   return {
     sources,
+    // Shared record surface for Nex AI aggregation and future transcript adapters.
+    // Source ownership and optional media/time metadata stay with each record.
+    retrievedItems: selected.map(doc => ({ ...doc, courseId: String(doc.course._id), courseSlug: doc.course.slug, course: undefined })),
     excerpts: selected.map((doc, index) => `[${sources[index].id}] ${doc.title} — ${doc.heading} (${doc.kind})${doc.lessonId ? ` [Lesson ${String(doc.lessonNumber).padStart(2,'0')}; ${doc.lessonId}]` : ''}\n${doc.content}${doc.translations?.english ? `\nReviewed English translation: ${doc.translations.english}` : ''}`).join('\n\n'),
     records: selected.filter(doc => doc.kind === 'course-material').map(doc => ({ ...doc, courseId: String(doc.course._id), course: undefined })),
     bestExcerpt: selected[0]?.content || '',
@@ -420,4 +444,4 @@ function retrievePlatformKnowledge({ message, history = [] } = {}) {
   };
 }
 
-module.exports = { ...coursePacks, retrieveKnowledge, retrievePlatformKnowledge, hasLessonAccess, allowsCourseComparison, assertKnowledgeScope, assertCourseTextScope, scopeConversationHistory, activeCourseEntitlement, filmmakingWorkflowReply };
+module.exports = { ...coursePacks, retrieveKnowledge, retrievePlatformKnowledge, hasLessonAccess, allowsCourseComparison, assertKnowledgeScope, assertCourseTextScope, scopeConversationHistory, activeCourseEntitlement, filmmakingWorkflowReply, isIntegratedCourse };

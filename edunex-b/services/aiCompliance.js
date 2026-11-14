@@ -18,7 +18,7 @@ const FILTER_BYPASS_PATTERN = new RegExp([
   `${SAFETY_CONTROL}.{0,80}${AMBIGUOUS_ACTION}`,
   '\\b(?:trick|beat)\\s+(?:(?:the|google)\\s+){0,2}(?:flow|veo)\\b',
 ].join('|'), 'i');
-const EXPLICIT_SEXUAL_PATTERN = /\b(?:porn|pornographic|explicit sex|sex scene|nude|naked|nsfw|erotic|sexual|seductive|strip|lingerie|cleavage|bedroom)\b.{0,80}\b(?:prompt|image|video|generate|generation|flow|veo|clip|scene)\b|\b(?:prompt|image|video|generate|generation|flow|veo|clip|scene)\b.{0,80}\b(?:porn|pornographic|explicit sex|sex scene|nude|naked|nsfw|erotic|sexual|seductive|strip|lingerie|cleavage)\b/i;
+const EXPLICIT_SEXUAL_PATTERN = /\b(?:porn|pornographic|explicit sex|sex scene|nude|naked|nsfw|erotic|sexual|seductive|strip|lingerie|cleavage)\b.{0,80}\b(?:prompt|image|video|generate|generation|flow|veo|clip|scene)\b|\b(?:prompt|image|video|generate|generation|flow|veo|clip|scene)\b.{0,80}\b(?:porn|pornographic|explicit sex|sex scene|nude|naked|nsfw|erotic|sexual|seductive|strip|lingerie|cleavage)\b/i;
 const MINOR_OR_AGE_AMBIGUOUS_PATTERN = /\b(?:minor|underage|child|kid|teen|teenage|schoolgirl|schoolboy|young girl|young boy|little girl|little boy|age ambiguous|age-ambiguous|looks young|barely legal|17|16|15|14|13|12)\b/i;
 const SEXUALIZED_APPEARANCE_PATTERN = /\b(?:sexual|sexy|seductive|revealing|nude|naked|lingerie|cleavage|erotic|porn|strip|hot)\b/i;
 
@@ -39,14 +39,14 @@ function checkAiInput(value) {
   return { ok: true, message };
 }
 
-function sanitizeAiOutput(value) {
+function sanitizeAiOutput(value, maxLength = 6000) {
   const configuredSecrets = [
     process.env.FAL_API_KEY,
     process.env.FAL_KEY,
     process.env.OPENROUTER_API_KEY,
     process.env.GEMINI_API_KEY,
   ].filter(secret => typeof secret === 'string' && secret.length >= 8);
-  let output = String(value || '').slice(0, 6000);
+  let output = String(value || '').slice(0, Math.min(60000, Math.max(1, Number(maxLength) || 6000)));
   for (const secret of configuredSecrets) output = output.split(secret).join('[redacted]');
   output = output
     .replace(/\b(?:sk-[A-Za-z0-9_-]{16,}|AIza[A-Za-z0-9_-]{20,})\b/g, '[redacted]')

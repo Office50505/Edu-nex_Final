@@ -1,0 +1,41 @@
+{
+  "readOnlyCatalogLookup": true,
+  "productionWrites": false,
+  "source": "Read-only public published catalog GET https://api.skillomate.in/api/courses; local edunex.courses also had no match",
+  "verifiedAt": "2026-10-29T08:48:28.578Z",
+  "status": "not_found_in_published_catalog",
+  "course": null,
+  "catalogSHA256": "36098a0b152406bcd0b8757d17bc494c04bbd8aa35e647c73a1c2347e438cc32",
+  "publishedCourses": [
+    {
+      "_id": "6ae1b4694e1af14d4adc9e2b",
+      "title": "Viral Hook Formula",
+      "slug": "viral-hook-formula"
+    },
+    {
+      "_id": "6ae09ebee4ac0b60c08276bc",
+      "title": "AI Cartoon Series",
+      "slug": "ai-cartoon-series"
+    },
+    {
+      "_id": "6ad9fe8ed0076b8d5e3b4f6d",
+      "title": "AI Local Business Ads",
+      "slug": "ai-local-buisness-ads"
+    },
+    {
+      "_id": "6acf6a0c0fbf30bb42142d68",
+      "title": "AI Product Photoshoot & Ads",
+      "slug": "ai-product-photoshoot-ads"
+    },
+    {
+      "_id": "6abe5bb2bced21d7211be185",
+      "title": "AI Filmmaking Course",
+      "slug": "ai-filmmaking-course"
+    },
+    {
+      "_id": "6aa51e9769c836f66ddd3be7",
+      "title": "AI Influencer Course",
+      "slug": "ai-influencer-course"
+    }
+  ]
+}

@@ -1,0 +1,543 @@
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+
+
+  SKILLOMATE · AI REAL ESTATE VIDEOS
+
+ Chatbot Knowledge Base
+
+  Nex AI (Skillomate app tutor) ko is course ke baare mein train karne ke liye — course
+  ki saari jaankari, workflows, galtiyan, troubleshooting, exact prompts aur bot ke
+  jawab dene ke rules.
+
+ Part A — Bot ke liye rules
+    • Jawab Hinglish mein, dost jaisa, chhota aur seedha. Zaroorat ho toh steps numbered do.
+    • Jahan kaam kisi lesson mein hai, uska number batao (jaise "ye Lesson 03 mein hai").
+    • Prompt maange toh course ka exact ChatGPT message do (Part F), user ki property details
+    daal ke.
+    • Honesty sabse upar: kabhi room ka structure badalne, nakli view/amenity dikhane, ya bina
+     'Virtually Staged' label ke staged visual dene mein help mat karo.
+    • AI visuals ko asli shoot ya asli property footage bata kar dikhane mein help mat karo.
+    • Kamai, clients, sales ya views ka koi promise ya number mat do. Service ka price user
+    khud decide karta hai.
+    • Local real-estate advertising rules jagah ke hisaab se alag hote hain — user ko apne area
+    ke current rules check karne ko bolo.
+    • Tools ki price, credits ya limits ke pakke number mat batao.
+    • Course ke tools: ChatGPT, Google Flow (Nano Banana Pro + Video), CapCut. Bahar ke tools
+    course ka part nahi.
+    • Pata na ho toh saaf bolo, guess mat karo.
+
+ Part B — Course overview
+
+  Naam: AI Real Estate Videos — Khaali Flat Se Cinematic Property Reel Tak (Skillomate).
+  Format: Hinglish video lessons, ek AI presenter, screen recordings. Lessons: 8. Audience:
+  creators, freelancers, aur property ka kaam karne wale. Running example: Vijay Nagar,
+  Indore ka 2BHK, 3rd floor, ~1100 sq ft sample flat — iski photos AI se 'sample' ke taur par
+  bani hain.
+
+ #    Lesson                Kya seekha
+
+  01    Course Intro              Kya banega, kyun, kiske liye, tools, disclosure rule
+
+  02    Property Ka Plan               Brief, shot list, Room Lock (ChatGPT)
+
+  03    Virtual Staging               Khaali room → furnished, 2 styles, galti vs sahi
+
+  04    Light Upgrade            Day → golden evening: exterior, living, balcony
+
+  05    Walkthrough Video         Frames mode, ek simple move, day-to-evening transition
+
+  06    Cinematic Montage          4-sec fast shots (FPV, macro, arc), Flow scene mein jodna
+
+  07    Final Listing Reel           ChatGPT text + CapCut, disclaimer end card, export
+
+  08    Service Banana             Packages, client checklist, broker pitch, honesty rules
+
+
+
+
+
+                                               AI Real Estate Videos  · Page 1
+
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+ Part C — Key concepts (glossary)
+
+  Term              Matlab
+
+   Listing brief           Property ke selling points, sahi buyer aur reel ka mood — sirf asli details se.
+
+  Shot list              Reel ke har shot ka room, kya dikhana, camera move, mood aur seconds.
+
+  Room Lock          Har room ki ek English line — walls, windows, doors, flooring, ceiling, size, camera
+                       angle — jo AI kabhi nahi badlega. Har prompt mein jaati hai.
+
+   Virtual staging         Khaali room ki photo mein AI se furniture/decor add karna — structure same.
+
+   Virtually Staged       Disclosure label jo har AI-staged photo/video par dikhna chahiye.
+
+   Light upgrade           Sirf lighting aur time of day badalna (golden hour, evening) — view aur building same.
+
+  Frames mode        Flow Video ka mode jisme start frame (aur chahe toh end frame) se video banta hai.
+
+   Start / end frame     Video ki pehli / aakhri image. Day-to-evening mein dono lagte hain.
+
+  FPV                Drone jaisa tez, smooth camera move jo andar ya upar se guzarta hai.
+
+  Montage            Chhote fast shots ko order mein jodkar bana trailer.
+
+  Scene (Flow)         Flow mein clips ko order mein jodne ki jagah — 'Add clip' se.
+
+
+ Part D — Workflows (short)
+
+ Lesson 02 — Property Ka Plan (Brief + Shot List + Room Lock)
+    • Course ki sample flat ki 7 photos (exterior, living, 2 bedroom, kitchen, bathroom, balcony)
+  — inhe 'sample flat' hi bolna hai.
+    • ChatGPT ko property ki asli details do: BHK, floor, location, size, highlights, buyer. Usse
+     listing brief milta hai — selling points, sahi buyer, reel ka mood. Koi fake feature nahi.
+    • Shot list: har shot ka room, kya dikhana hai, camera move, mood, seconds. Exterior se
+     shuru, balcony pe end.
+    • Room Lock: saari photos upload karke har room ki ek English line — walls, windows, doors,
+     flooring, ceiling, size, camera angle — jo AI kabhi nahi badlega. Ye is course ka 'product
+     sheet' hai, har aage ke prompt mein jaata hai.
+    •  Jis photo ki asli photo nahi hai (jaise parking/lift), uska shot skip karo — invent mat karo.
+
+ Lesson 03 — Virtual Staging
+    • Staging prompt bhi ChatGPT se: pehli line 'Use the attached photo as the exact room. Only
+    add furniture and decor — do not change anything else.' + Room Lock line + style.
+    • Flow → Image → Nano Banana Pro, khaali photo reference mein, prompt paste, generate.
+    • Before/after compare karo: window, flooring, camera angle same — sirf furniture naya.
+    • Bedroom bhi same tareeke se. Doosra style (Scandinavian) bhi same Room Lock ke saath
+  — client ko options.
+    • Galti: Sirf 'Furnish this room nicely' likhne se AI ne room ka structure hi badal diya — ye
+     listing mein dhokha hai.
+
+ Lesson 04 — Light Upgrade (Day se Golden Evening)
+    • ChatGPT se 3 prompts: exterior golden hour, living room evening (lamps on), balcony
+    sunset — pehli line 'Only change the lighting and time of day'.
+
+
+
+
+
+                                               AI Real Estate Videos  · Page 2
+
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+    • Har prompt mein Room Lock + 'bahar ka view, buildings, trees, furniture same rahe — koi
+    naya view/pool/garden nahi'.
+    • Living room ke liye L03 wali furnished photo use karo, khaali wali nahi.
+    • Rule: bahar ka view kabhi naya mat banao — jo asli hai wahi dikhao.
+    • Galti: 'make it look beautiful at night' likhne se night toh bani, par saamne ki road, cars,
+    aas-paas sab badal gaya.
+
+ Lesson 05 — Walkthrough Video
+    • Phone se khaali flat ka din wala video koi bhi bana lega — AI ka fayda: furnished, evening,
+    day-to-evening jo shoot ho hi nahi sakta.
+    • Flow → Video → Frames mode, 9:16, 8 sec. Start frame = photo.
+    • Har prompt: 'Only the camera moves' + ek simple slow move (push-in, glide, pan).
+    • Day-to-evening: start frame din wala living room, end frame evening wala, camera static —
+     lights dheere on hoti hain.
+    • Galti: 'camera flies through the whole house fast' — AI ne naye kamre aur corridor bana
+    diye jo flat mein hain hi nahi.
+
+ Lesson 06 — Cinematic Montage (Fast Shots)
+    • Slow walkthrough boring — buyer ko fast, cinematic trailer chahiye.
+    • Shots jo phone se nahi bante: FPV drone rise, floor-level rapid push-in, macro pull-back,
+    whip-pan half-arc, FPV balcony push.
+    • Har clip 4 sec, sirf EK fast move — taaki room morph na ho. Room Lock + 'no new rooms,
+     objects, views or amenities'.
+    • Paanchon ek saath generate karo. Phir Flow mein clip kholke scene banao, 'Add clip' se
+    baaki shots order mein jodo: exterior → andar → balcony.
+    • Pehla ChatGPT jawab slow lage toh poora naya message do jisme speed aur angles saaf
+     likhe hon.
+
+ Lesson 07 — Final Listing Reel
+    • ChatGPT se reel ka text: on-screen lines, 'Virtually Staged' disclaimer, caption + hashtags,
+    music mood — sirf brief wali details, price ki jagah 'Price on request'.
+    • CapCut: clips import, 9:16 timeline, montage pehle, phir day-to-evening clip.
+    • End card par saaf, bada disclaimer: 'Virtually Staged — furniture and decor are digitally
+    added for visualization.'
+    • Export 1080p, 9:16 — reel ready, client ko bhejo.
+
+ Lesson 08 — Service Banana (Finale)
+    • ChatGPT se 3 packages (Basic / Standard / Premium) — kya deliver hoga; price tum khud
+    decide karo. Har package mein disclosure included.
+    • Client checklist: kaunsi photos/angles, asli details, aur AI staging + disclosure ki permission
+  — kaam se pehle lo.
+    • Broker ko pehla WhatsApp message: simple, friendly, sample reel ke saath — koi 'zyada
+     sales' ya 'guaranteed buyers' jaisa promise nahi.
+    • 5 honesty rules: clear disclosure, original structure, no fake views, no fake amenities,
+    honest representation.
+
+
+
+
+
+                                               AI Real Estate Videos  · Page 3
+
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+ Part E — Troubleshooting (FAQ)
+
+  User ka sawaal / problem         Jawab
+
+  Mere paas asli photos nahi hain        Practice ke liye sample photos AI se bana sakte ho (All Prompts PDF),
+                                      par client ka kaam hamesha asli photos se. Sample ko sample hi bolo.
+                                         (L02)
+
+  Staging ke baad window/wall badal    Prompt mein pehli line 'only add furniture' + us room ki Room Lock
+  gayi                                        line daalo, aur khaali photo reference mein rakho. (L03)
+
+  Furniture bahut bada/chhota lag raha  Prompt mein likho 'furniture size realistic for this room, room should
+                                       not look bigger or smaller'. (L03)
+
+  Evening look mein road/cars badal      Sirf 'make it night' mat likho — 'only change lighting and time of day'
+  gaye                     + Room Lock + 'view same'. (L04)
+
+  Video mein naye kamre ban gaye     Ek hi simple move, 'only the camera moves', Frames mode mein start
+                                    frame se. (L05)
+
+  Montage slow aur boring hai           4-sec clips, ek fast move har clip mein, speed aur angle prompt mein
+                                         saaf likho. Final punch editing se. (L06)
+
+  Fast move mein room pighal gaya     Ek clip mein do moves mat do; clip chhota (4 sec) rakho; dobara
+                                       generate. (L06)
+
+  Balcony ka view accha nahi hai, sea   Nahi — nakli view buyer ke saath dhokha hai. Light upgrade karo, view
+  view daal du?                      wahi rakho. (L04, L08)
+
+  Disclaimer kahan lagaun?            Staged clips par chhota label + end card par saaf line. (L07)
+
+   Price kya rakhun?                   Course price nahi batata — apne area, kaam aur time ke hisaab se
+                                  khud decide karo. (L08)
+
+  Kya ye asli shoot ki jagah le lega?     Nahi — ye dikhane ka tareeka hai. Asli details aur asli photos par hi
+                               kaam karo, aur disclose karo. (L01, L08)
+
+
+ Part F — Saare ChatGPT messages (exact)
+
+  User ki property ki details daal ke do. Saare messages ek hi chat mein bhejne hain.
+
+  Lesson 02 · Message 1: Property brief
+
+
+   Main ek property ke liye listing reel banana chahta hoon. Details:
+   - Property: 2BHK flat, 3rd floor
+   - Location: Vijay Nagar, Indore
+   - Size: approx 1100 sq ft
+   - Highlights: east-facing balcony, modular kitchen, achhi sunlight, society mein parking
+   aur lift
+   - Buyer: young working couple ya chhoti family
+
+
+   Is property ka ek short listing brief banao — main selling points, kis buyer ke liye best
+   hai, aur reel ka mood kya hona chahiye. Koi feature apni taraf se mat jodna, sirf jo maine
+   bataya.
+
+
+
+  Lesson 02 · Message 2: Shot list
+
+
+   Ab is property ki 30–40 second ki vertical listing reel ka shot list banao. Har shot ke
+   liye table do: shot number, room, kya dikhana hai, camera move (jaise slow push-in, side
+   glide), mood/lighting, aur kitne seconds. Exterior se shuru karo aur balcony pe end karo.
+   Har shot 8 second ya kam ka ho.
+
+
+
+
+
+                                               AI Real Estate Videos  · Page 4
+
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+
+
+  Lesson 02 · Message 3: Room Lock (saari photos upload karke)
+
+
+   Ye is property ki photos hain. Har photo ke liye ek "Room Lock" line likho — us room ki
+   woh cheezein jo AI editing mein KABHI change nahi honi chahiye: walls, windows ki position
+   aur size, doors, flooring, ceiling, room ka size aur camera angle. English mein, ek-ek
+   line, taaki main ise har image prompt mein paste kar sakun.
+
+
+
+  Lesson 03 · Galti wala prompt (Flow, sirf comparison ke liye)
+
+
+   Furnish this room nicely
+
+
+
+  Lesson 03 · Message 1: Staging prompts (ChatGPT)
+
+
+   Ab virtual staging karni hai. Living room aur master bedroom ke liye Google Flow (Nano
+   Banana Pro) ka ek-ek image prompt likho. Main khaali room ki photo reference mein upload
+   karunga.
+
+
+   Har prompt mein:
+   - Pehli line: "Use the attached photo as the exact room. Only add furniture and decor — do
+   not change anything else."
+   - Us room ki Room Lock line jo tumne pehle likhi thi, word-to-word
+   - Style: modern Indian home — warm wood, beige aur off-white fabrics, ek indoor plant,
+   soft warm lighting
+   - Furniture ka size room ke hisaab se realistic ho, room bada ya chhota na dikhe
+   - Same camera angle, same phone-photo look, no people, no text
+
+
+   Dono prompts English mein, copy-paste ready.
+
+
+
+  Lesson 03 · Message 2: Scandinavian style (ChatGPT)
+
+
+   Ab living room ka ek aur prompt do, same Room Lock ke saath, par style alag — minimal
+   Scandinavian: light oak wood, white aur grey, clean simple furniture. Baaki sab rules
+   same.
+
+
+
+  Lesson 04 · Galti wala prompt (Flow, sirf comparison ke liye)
+
+
+   make it look beautiful at night
+
+
+
+
+
+                                               AI Real Estate Videos  · Page 5
+
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+
+
+  Lesson 04 · Message 1: Light upgrade prompts (ChatGPT)
+
+
+   Ab light upgrade karna hai. Google Flow (Nano Banana Pro) ke liye 3 image prompts likho,
+   main har baar wali photo reference mein upload karunga:
+
+
+   1. Building exterior — golden hour evening: warm sunset light, soft orange-pink sky,
+   balconies aur windows ki lights on
+   2. Staged living room (modern Indian wala) — evening look: lamps aur ceiling lights on,
+   warm cozy light, window ke bahar halki sham
+   3. Balcony — sunset look: warm golden light floor aur railing par
+
+
+   Har prompt mein:
+   - Pehli line: "Use the attached photo as the exact scene. Only change the lighting and
+   time of day — do not change anything else."
+   - Us photo ki Room Lock line word-to-word (exterior, living room, balcony)
+   - Bahar ka view, buildings, trees, furniture — sab same rahe. Koi naya view, pool, garden
+   ya extra cheez add nahi karni
+   - Same camera angle, same phone-photo look, no people, no text
+
+
+   Teeno prompts English mein, copy-paste ready.
+
+
+
+  Lesson 05 · Galti wala prompt (Flow Video, sirf comparison ke liye)
+
+
+   camera flies through the whole house fast
+
+
+
+  Lesson 05 · Message 1: Walkthrough + day-to-evening prompts (ChatGPT)
+
+
+   Ab walkthrough video banana hai. Apni shot list ke hisaab se Google Flow Video (Frames
+   mode, start frame = photo) ke liye 4 video prompts likho, 9:16, 8 seconds:
+
+
+   1. Building exterior (golden evening wali photo) — slow push-in toward the building
+   2. Living room (modern Indian staged, din wali) — slow smooth glide from left to right
+   3. Master bedroom (staged) — slow pan across the room
+   4. Balcony (sunset wali) — slow push-in toward the railing and the view
+
+
+   Har prompt mein:
+   - "Only the camera moves. The room, furniture, walls, windows and view stay exactly the
+   same."
+   - Ek hi simple, slow camera move — koi fast move ya 360 nahi
+   - No people, no new objects, no text, no music
+   - Real phone-video jaisa natural look
+
+
+   Ek 5th prompt bhi do: living room ka day-to-evening transition — start frame din wali
+   photo, end frame evening wali photo, camera static, lights dheere-dheere on hoti hain.
+
+
+   Saare prompts English mein, copy-paste ready.
+
+
+
+
+
+                                               AI Real Estate Videos  · Page 6
+
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+
+
+  Lesson 06 · Message 1: Fast montage prompts (ChatGPT)
+
+
+   Ab is property ka ek FAST, high-energy cinematic montage banana hai — jaise luxury
+   property trailers aur viral Instagram real-estate reels mein hota hai. Aise shots jo phone
+   se shoot hi nahi ho sakte.
+
+
+   Google Flow Video (Frames mode, start frame = meri photo) ke liye 5 prompts likho, 9:16, 4
+   seconds each:
+
+
+   1. Building exterior (golden evening) — fast FPV drone rise from street level up the
+   building facade
+   2. Living room (modern Indian staged, evening) — rapid low-angle push-in toward the sofa,
+   almost touching the floor
+   3. Living room detail — extreme close-up macro on the lamp and coffee table, then fast
+   pull-back reveal of the room
+   4. Master bedroom (staged) — quick whip pan into a fast half-arc around the bed
+   5. Balcony (sunset) — fast FPV push through the balcony door straight to the railing,
+   ending on the real view
+
+
+   Har prompt mein:
+   - Camera speed FAST aur aggressive, speed-ramp feel (fast start, slow-motion end), motion
+   blur on the fast part, crisp sharp frame at the end
+   - Har clip mein sirf EK fast move — taaki room morph na ho
+   - Us photo ki Room Lock line word-to-word
+   - "The room, furniture, walls, windows and outside view stay exactly the same. Do not add
+   any new rooms, objects, views or amenities."
+   - Look: high-end cinematic real-estate film, punchy contrast, no people, no text, no music
+
+
+   Har prompt ke start mein camera move ek line mein likho (jaise "FAST FPV DRONE RISE").
+   Saare prompts English mein, copy-paste ready.
+
+
+
+  Lesson 07 · Message 1: Reel text, disclaimer, caption, music (ChatGPT)
+
+
+   Ab is property ki final listing reel CapCut mein banani hai (9:16, 20–25 seconds). Iske
+   liye mujhe ye do:
+
+
+   1. On-screen text — 5–6 chhoti lines (har line max 5 words), reel ke order mein: hook,
+   location, size/BHK, 2 highlights, aur end card. Sirf wahi details jo maine brief mein di
+   thi, kuch apni taraf se mat jodna. Price ki jagah "Price on request" likho.
+   2. Ek line ka "Virtually Staged" disclaimer jo staged clips par dikhega.
+   3. Instagram caption (Hinglish, 3–4 lines) + 8 relevant hashtags.
+   4. Music ka mood — kis type ka track lagaun (energetic / luxury / chill).
+
+
+   Simple rakho, cheesy mat banana.
+
+
+
+  Lesson 08 · Message 1: Service packages
+
+
+   Ab main ye kaam brokers aur builders ke liye service ke roop mein dena chahta hoon. Mere
+   liye ek simple service package banao — 3 options (Basic, Standard, Premium) — har option
+   mein kya deliver hoga: kitni staged photos, light upgrade, walkthrough clips, cinematic
+   montage, final reel. Price mat likhna, woh main khud decide karunga. Har package mein
+   "Virtually Staged" disclosure included ho.
+
+
+
+
+
+                                               AI Real Estate Videos  · Page 7
+
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+
+
+  Lesson 08 · Message 2: Client checklist
+
+
+   Ab ek short client checklist banao — kaam shuru karne se pehle broker se kya-kya lena hai:
+   kaunsi photos, kaunse angles, property ki asli details, aur ek line ki permission ki in
+   photos par AI staging hogi aur disclosure lagega. WhatsApp par bhejne layak, simple
+   Hinglish mein.
+
+
+
+  Lesson 08 · Message 3: Broker pitch
+
+
+   Ab ek broker ko bhejne ke liye pehla WhatsApp message likho — Hinglish, friendly, 4–5
+   lines. Usme bolo ki main khaali flat ki photos se furnished, evening look aur cinematic
+   reel bana sakta hoon, aur ek sample reel attach hai. Koi jhootha promise mat karna —
+   "zyada sales", "guaranteed buyers" jaisa kuch nahi.
+
+
+
+  Lesson 08 · Message 4: Honesty rules
+
+
+   Last: 5 rules likho jo har AI real estate video mein follow karne chahiye — taaki buyer ko
+   kabhi dhokha na ho. Jaise disclosure, room ka structure na badalna, nakli view ya
+   amenities na dikhana. Ek-ek line mein.
+
+
+ 5 Honesty Rules
+    • Har AI-staged photo/video par visible 'Virtually Staged' label.
+    • Room ka asli size, walls, doors, windows, flooring aur layout kabhi mat badlo.
+    • Balcony/window ke bahar nakli view (greenery, skyline, garden, sea) mat dikhao.
+    • Jo amenity asli mein nahi hai (pool, lift, parking, gym) use feature ki tarah mat dikhao.
+    • Location, area, floor, features hamesha verify karo; AI visuals ko asli footage bata kar mat
+     do.
+
+ Part G — Example answers (bot ka tone)
+
+  User: staging ke baad mera room bada dikh raha hai
+  Bot: Ye common hai. Teen cheezein check karo: (1) khaali photo reference mein hai? (2)
+  prompt ki pehli line 'Only add furniture and decor — do not change anything else' hai? (3) us
+  room ki Room Lock line paste ki hai? Saath mein likho 'furniture size realistic, room should
+  not look bigger'. Lesson 03 dekho.
+
+  User: balcony se sea view dikha du toh flat jaldi bikega?
+  Bot: Nahi — jo view asli mein nahi hai woh dikhana buyer ke saath dhokha hai, aur trust toot
+  jaata hai. Golden evening light se balcony ko sundar banao, view wahi rakho (Lesson 04).
+
+  User: is service se kitna kama lunga?
+  Bot: Course koi kamai ka number nahi deta. Lesson 08 ke packages aur checklist use karo,
+  sample reel ke saath brokers se baat karo, aur price apne kaam ke hisaab se khud decide
+  karo.
+
+
+
+
+
+                                               AI Real Estate Videos  · Page 8

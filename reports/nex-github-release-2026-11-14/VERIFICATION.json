@@ -1,0 +1,58 @@
+{
+  "localPreparation": "PASS",
+  "productionReadiness": "BLOCKED",
+  "productionAccess": {
+    "identityCheck": "BLOCKED",
+    "profile": "default",
+    "providerRequests": 0,
+    "databaseWrites": 0,
+    "reason": "InvalidClientTokenId"
+  },
+  "baseCommit": "a52c455b3b38d39c4fa1775c64ee3cec8eb9b00e",
+  "previousVerifiedBase": "cfd6b5a46196cfe31ed5f45a8fd4a1f32622f533",
+  "remoteChangesPreserved": true,
+  "runtimeSourceHashesMatched": 279,
+  "runtimeSourceHashMismatches": [],
+  "candidateRuntimeDifferencesFromHandoff": {
+    "edunex-b/server.js": "Inherited unchanged from current GitHub main: lesson duration validation.",
+    "edunex-b/package.json": "Merged independent npm scripts; runtime dependencies and dependency lock unchanged."
+  },
+  "existingRegressionEvidence": {
+    "path": "tmp/nex-release-handoff-20261114/final-regressions-verified.tap",
+    "sha256": "b055a30f51c542f6d8ea3a0b06bc6e28d8c2d58559d14960b03198918fa33171",
+    "passed": 438,
+    "failed": 0,
+    "rerunThisPreparation": false,
+    "coversNewUpstreamCommit": false
+  },
+  "sourceRestrictions": {
+    "usableChunks": 117,
+    "usableDocuments": 108,
+    "landingPageLessons": 11,
+    "ecommerceLessons": 13,
+    "realEstateTranscriptsMissing": 8,
+    "influencerLesson1": "quarantined; retained and excluded"
+  },
+  "checksThisPreparation": {
+    "secretPatternFindings": [],
+    "staticRelativeRequiresMissing": [],
+    "paidAICalls": 0,
+    "testSuiteRuns": 0,
+    "productionDBWrites": 0,
+    "push": false,
+    "deploy": false
+  },
+  "remainingBlockers": [
+    "Production AWS credentials return InvalidClientTokenId; SSM, current production catalog, Node runtime and MongoDB/Redis connectivity remain unverified."
+  ],
+  "limitations": [
+    "Original live QA delivered four cases using six provider attempts and failed; the remaining 17 were not rerun live. The 438 pass count is existing offline evidence.",
+    "The previous handoff archive predates the latest GitHub duration commit; use this branch for review, not the older archive as a byte-identical GitHub release.",
+    "QA gate/preparer require the original private evidence directory, maintained locally; no approval, credentials or attempt ledger is included."
+  ],
+  "excludedScope": [
+    "All appcopyai changes, including iOS hardware-keyboard development mode and mobile AI edits; this is the verified backend-only release.",
+    "Local AGENTS.md edits, historical HTML/reports, raw QA responses, private runtime/approval/accounting files.",
+    "Tests and replay scripts requiring untracked private historical QA evidence. They remain preserved locally."
+  ]
+}

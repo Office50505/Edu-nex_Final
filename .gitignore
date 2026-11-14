@@ -34,6 +34,7 @@ tmp/pdfs/generate_ios_build*_report.py
 
 # Approved course source PDFs are inputs, not generated reports
 !edunex-b/knowledge/*/*.pdf
+!edunex-b/knowledge/*/sources/*.pdf
 !edunex-b/course-knowledge/*/*.pdf
 
 # Local chatbot evaluation output and private authorization/runtime state

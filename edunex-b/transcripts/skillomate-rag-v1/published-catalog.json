@@ -1,0 +1,1094 @@
+{
+  "source": "existing isolated local QA database; read-only export",
+  "database": "skillomate_lba_final_qa_20261027",
+  "exportedAt": "2026-11-02T11:56:56.110Z",
+  "courses": [
+    {
+      "_id": "6ad9fe8ed0076b8d5e3b4f6d",
+      "title": "AI Local Business Ads",
+      "slug": "ai-local-buisness-ads",
+      "videos": [
+        {
+          "title": "AI LOCAL BUSINESS ADS",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-business-ads/lesson-04/lesson-01/v1/%20lesson%201%20edited%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 64,
+          "order": 1,
+          "_id": "6ad9fe8ed0076b8d5e3b4f63"
+        },
+        {
+          "title": "Business Brief with ChatGPT",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-business-ads/lesson-04/lesson-02/v1/lesson%202%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 80,
+          "order": 2,
+          "_id": "6ad9fe8ed0076b8d5e3b4f64"
+        },
+        {
+          "title": "Upgrade Shop Photos",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-business-ads/lesson-04/lesson-03/v1/LESSON%203%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 80,
+          "order": 3,
+          "_id": "6ad9fe8ed0076b8d5e3b4f65"
+        },
+        {
+          "title": "Menu and Food Photos",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-business-ads/lesson-04/lesson-04/v1/LESSON%204.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 74,
+          "order": 4,
+          "_id": "6ad9fe8ed0076b8d5e3b4f66"
+        },
+        {
+          "title": "Offer and Festival Posters",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-business-ads/lesson-04/lesson-05/v1/lesson%205%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 80,
+          "order": 5,
+          "_id": "6ad9fe8ed0076b8d5e3b4f67"
+        },
+        {
+          "title": "Shop Photos to Video",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-business-ads/lesson-04/lesson-06/v1/lesson%206%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 79,
+          "order": 6,
+          "_id": "6ad9fe8ed0076b8d5e3b4f68"
+        },
+        {
+          "title": "Hindi Voiceover Reel",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-business-ads/lesson-04/lesson-07/v1/lesson%207%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 80,
+          "order": 7,
+          "_id": "6ad9fe8ed0076b8d5e3b4f69"
+        },
+        {
+          "title": "Where and When to Post",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-business-ads/lesson-04/lesson-08/v1/LESSON%208%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 78,
+          "order": 8,
+          "_id": "6ad9fe8ed0076b8d5e3b4f6a"
+        },
+        {
+          "title": "Marketing as a Service",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-business-ads/lesson-04/lesson-09/v1/lesson%209%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 80,
+          "order": 9,
+          "_id": "6ad9fe8ed0076b8d5e3b4f6b"
+        },
+        {
+          "title": "Final Project",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-business-ads/lesson-04/lesson-10/v1/lesson%2010%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 0,
+          "order": 10,
+          "_id": "6ad9fe8ed0076b8d5e3b4f6c"
+        }
+      ],
+      "status": "published",
+      "publishedAt": "2026-10-22T12:16:14.669Z"
+    },
+    {
+      "_id": "6ae09ebee4ac0b60c08276bc",
+      "title": "AI Cartoon Series",
+      "slug": "ai-cartoon-series",
+      "videos": [
+        {
+          "title": "FOUNDATIONS",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-cartoon-videos-for-kids/lesson-05/lesson-01/v1/LESSON%201%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 64,
+          "order": 1,
+          "_id": "6ae09ebee4ac0b60c08276b4"
+        },
+        {
+          "title": "BUILD THE CHARACTER FOUNDATION",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-cartoon-videos-for-kids/lesson-05/lesson-02/v1/lesson%202%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 0,
+          "order": 2,
+          "_id": "6ae09ebee4ac0b60c08276b5"
+        },
+        {
+          "title": "DESIGN THE WORLD",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-cartoon-videos-for-kids/lesson-05/lesson-03/v1/lesson%203.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 84,
+          "order": 3,
+          "_id": "6ae09ebee4ac0b60c08276b6"
+        },
+        {
+          "title": "STORY AND SCENE PLANNING",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-cartoon-videos-for-kids/lesson-05/lesson-04/v1/LESSON%204%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 76,
+          "order": 4,
+          "_id": "6ae09ebee4ac0b60c08276b7"
+        },
+        {
+          "title": "PREPARE THE START FRAME",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-cartoon-videos-for-kids/lesson-05/lesson-05/v1/lesson%205.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 92,
+          "order": 5,
+          "_id": "6ae09ebee4ac0b60c08276b8"
+        },
+        {
+          "title": "PLAN THE FULL PRODUCTION",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-cartoon-videos-for-kids/lesson-05/lesson-06/v1/LESSON%206%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 0,
+          "order": 6,
+          "_id": "6ae09ebee4ac0b60c08276b9"
+        },
+        {
+          "title": "PLAN AND PRODUCE THE RHYME",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-cartoon-videos-for-kids/lesson-05/lesson-07/v1/lesson%207%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 0,
+          "order": 7,
+          "_id": "6ae09ebee4ac0b60c08276ba"
+        },
+        {
+          "title": "EDIT AND PACKAGE THE EPISODE",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-cartoon-videos-for-kids/lesson-05/lesson-08/v1/lesson%208.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 0,
+          "order": 8,
+          "_id": "6ae09ebee4ac0b60c08276bb"
+        }
+      ],
+      "status": "published",
+      "publishedAt": "2026-10-27T12:53:18.386Z"
+    },
+    {
+      "_id": "6ae1b4694e1af14d4adc9e2b",
+      "title": "Viral Hook Formula",
+      "slug": "viral-hook-formula",
+      "videos": [
+        {
+          "title": "HOOK FOUNDATIONS",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/viral-hook-formulas/lesson-6/lesson%201%20edited/v1/lesson%201%20edited.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 70,
+          "order": 1,
+          "_id": "6ae1b4694e1af14d4adc9e21"
+        },
+        {
+          "title": "CREATE A QUESTION WORTH ANSWERING",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/viral-hook-formulas/lesson-6/lesson%202/v1/lesson%202.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 55,
+          "order": 2,
+          "_id": "6ae1b4694e1af14d4adc9e22"
+        },
+        {
+          "title": "MAKE THE INTERRUPTION MEAN SOMETHING",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/viral-hook-formulas/lesson-6/lesson%203/v1/lesson%203.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 56,
+          "order": 3,
+          "_id": "6ae1b4694e1af14d4adc9e23"
+        },
+        {
+          "title": "UNDERSTAND THE FORMULA",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/viral-hook-formulas/lesson-6/lesoon%204%20/v1/lesoon%204%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 58,
+          "order": 4,
+          "_id": "6ae1b4694e1af14d4adc9e24"
+        },
+        {
+          "title": "FIND THE RIGHT QUESTION",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/viral-hook-formulas/lesson-6/lesson%205%20/v1/lesson%205%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 61,
+          "order": 5,
+          "_id": "6ae1b4694e1af14d4adc9e25"
+        },
+        {
+          "title": "CHOOSE THE TURNING POINT",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/viral-hook-formulas/lesson-6/LESSON%206%20/v1/LESSON%206%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 0,
+          "order": 6,
+          "_id": "6ae1b4694e1af14d4adc9e26"
+        },
+        {
+          "title": "UNDERSTAND THE VISUAL PROMISE",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/viral-hook-formulas/lesson-6/lesson%207%20/v1/lesson%207%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 62,
+          "order": 7,
+          "_id": "6ae1b4694e1af14d4adc9e27"
+        },
+        {
+          "title": "BUILD A USEFUL LIST",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/viral-hook-formulas/lesson-6/lesson%208%20/v1/lesson%208%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 67,
+          "order": 8,
+          "_id": "6ae1b4694e1af14d4adc9e28"
+        },
+        {
+          "title": "FIND THE RECOGNISABLE MOMENT",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/viral-hook-formulas/lesson-6/lesson%209%20/v1/lesson%209%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 61,
+          "order": 9,
+          "_id": "6ae1b4694e1af14d4adc9e29"
+        },
+        {
+          "title": "CHOOSE AND COMBINE YOUR APPROACH",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/viral-hook-formulas/lesson-6/lesson%2010%20/v1/lesson%2010%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 62,
+          "order": 10,
+          "_id": "6ae1b4694e1af14d4adc9e2a"
+        }
+      ],
+      "status": "published",
+      "publishedAt": "2026-10-28T08:38:01.829Z"
+    },
+    {
+      "_id": "6acf6a0c0fbf30bb42142d68",
+      "publishedAt": "2026-10-14T12:49:46.338Z",
+      "slug": "ai-product-photoshoot-ads",
+      "status": "published",
+      "title": "AI Product Photoshoot & Ads",
+      "videos": [
+        {
+          "title": "Course Introduction",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-product-shoot-and-videos/lesson-01/v1/lesson%201%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 86,
+          "order": 1,
+          "_id": "6acf6a0c0fbf30bb42142d60"
+        },
+        {
+          "title": "Phone Photos to Studio Photos",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-product-shoot-and-videos/lesson-02/v1/lesson%202%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 71.73,
+          "order": 2,
+          "_id": "6acf6a0c0fbf30bb42142d61"
+        },
+        {
+          "title": "Product Photography with an AI Model",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-product-shoot-and-videos/lesson-03/v1/LESSON%203%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 72,
+          "order": 3,
+          "_id": "6acf6a0c0fbf30bb42142d62"
+        },
+        {
+          "title": "Festive Shoots and Colour Variants",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-product-shoot-and-videos/lesson-04/v1/LESSON%204.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 72,
+          "order": 4,
+          "_id": "6acf6a0c0fbf30bb42142d63"
+        },
+        {
+          "title": "Planning Ads with ChatGPT",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-product-shoot-and-videos/lesson-05/v1/lesson%205%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 72,
+          "order": 5,
+          "_id": "6acf6a0c0fbf30bb42142d64"
+        },
+        {
+          "title": "Photo to Product Video",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-product-shoot-and-videos/lesson-06/v1/lesson%206%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 71,
+          "order": 6,
+          "_id": "6acf6a0c0fbf30bb42142d65"
+        },
+        {
+          "title": "UGC-Style Video",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-product-shoot-and-videos/lesson-07/v1/LESSON%207%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 72,
+          "order": 7,
+          "_id": "6acf6a0c0fbf30bb42142d66"
+        },
+        {
+          "title": "Final Workflow and Project",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-product-shoot-and-videos/lesson-08/v1/lesson%208%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 103,
+          "order": 8,
+          "_id": "6acf6a0c0fbf30bb42142d67"
+        }
+      ]
+    },
+    {
+      "_id": "6abe5bb2bced21d7211be185",
+      "publishedAt": "2026-10-09T09:48:46.912Z",
+      "slug": "ai-filmmaking-course",
+      "status": "published",
+      "title": "AI Filmmaking Course",
+      "videos": [
+        {
+          "title": "What Is AI Filmmaking?",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-filmmaking/lesson-02/lesson%201/v1/lesson%201.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 80,
+          "order": 1,
+          "_id": "6abe5bb2bced21d7211be17d"
+        },
+        {
+          "title": "Tools Setup",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-filmmaking/lesson-02/lesson-2-repaired/v2/lesson%202%20repaired%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 84,
+          "order": 2,
+          "_id": "6abe5bb2bced21d7211be17e"
+        },
+        {
+          "title": "The Complete Workflow",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-filmmaking/lesson-02/lesson%203%20fim%20making/v1/lesson%203%20fim%20making.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 120,
+          "order": 3,
+          "_id": "6abe5bb2bced21d7211be17f"
+        },
+        {
+          "title": "Idea, Emotion + Structure",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-filmmaking/lesson-02/LESSON%204%20FILMMAKING%20/v1/LESSON%204%20FILMMAKING%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 71,
+          "order": 4,
+          "_id": "6abe5bb2bced21d7211be180"
+        },
+        {
+          "title": "Generation Prompt + Character Sheet",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-filmmaking/lesson-02/lesson%205%20filmmaking%20/v1/lesson%205%20filmmaking%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 56,
+          "order": 5,
+          "_id": "6abe5bb2bced21d7211be181"
+        },
+        {
+          "title": "Generate the First Shot + Connect Shots",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-filmmaking/lesson-02/LESSON%206%20/v1/LESSON%206%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 91,
+          "order": 6,
+          "_id": "6abe5bb2bced21d7211be182"
+        },
+        {
+          "title": "Camera Movement",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-filmmaking/lesson-02/lesson%207%20/v1/lesson%207%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 90,
+          "order": 7,
+          "_id": "6abe5bb2bced21d7211be183"
+        },
+        {
+          "title": "Shot Types / Framing",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-filmmaking/lesson-02/lesson%208%20/v1/lesson%208%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 90,
+          "order": 8,
+          "_id": "6abe5bb2bced21d7211be184"
+        },
+        {
+          "title": "Emotion & Expression",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-filmmaking/lesson-02/lession9%20flim%20making/v1/lession9%20flim%20making.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 77,
+          "order": 9,
+          "_id": "6ac37dfa3051166d9a619196"
+        },
+        {
+          "title": "Lighting & Mood",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-filmmaking/lesson-02/Lession%2010%2C%20flim%20making/v1/Lession%2010%2C%20flim%20making.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 78,
+          "order": 10,
+          "_id": "6ac37dfa3051166d9a619197"
+        },
+        {
+          "title": "Realism Tricks",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-filmmaking/lesson-02/lession%2011%20flim%20maiking/v1/lession%2011%20flim%20maiking.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 69,
+          "order": 11,
+          "_id": "6ac37dfa3051166d9a619198"
+        },
+        {
+          "title": "B-roll & Cutaways",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-filmmaking/lesson-02/lesson%2012/v1/lesson%2012.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 69,
+          "order": 12,
+          "_id": "6ac37dfa3051166d9a619199"
+        },
+        {
+          "title": "Editing",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-filmmaking/lesson-02/lesson%2013%20/v1/lesson%2013%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 64,
+          "order": 13,
+          "_id": "6ac37dfa3051166d9a61919a"
+        },
+        {
+          "title": "Voiceover",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-filmmaking/lesson-02/lesson%2014th%20/v1/lesson%2014th%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 56,
+          "order": 14,
+          "_id": "6ac37dfa3051166d9a61919b"
+        },
+        {
+          "title": "Common Mistakes + Pro Tips",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-filmmaking/lesson-02/lesson%2015%20/v1/lesson%2015%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 75,
+          "order": 15,
+          "_id": "6ac37dfa3051166d9a61919c"
+        }
+      ]
+    },
+    {
+      "_id": "6aa51e9769c836f66ddd3be7",
+      "publishedAt": "2026-09-22T09:56:52.562Z",
+      "slug": "ai-influencer-course",
+      "status": "published",
+      "title": "AI Influencer Course",
+      "videos": [
+        {
+          "title": "Introduction",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/final%20intro%201_captioned/v1/final%20intro%201_captioned.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 78.13,
+          "order": 1,
+          "_id": "6aa51e9769c836f66ddd3bc5"
+        },
+        {
+          "title": "Tools Setup",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/FINAL%20LESSON%202%20TOOLS_captioned/v1/FINAL%20LESSON%202%20TOOLS_captioned.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 185,
+          "order": 2,
+          "_id": "6aa51e9769c836f66ddd3bc6"
+        },
+        {
+          "title": "Creating Your AI Influencer Character",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/lesson%203%20final_captioned/v1/lesson%203%20final_captioned.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 144,
+          "order": 3,
+          "_id": "6aa51e9769c836f66ddd3bc7"
+        },
+        {
+          "title": "Learning to Write Prompts Why Prompting Matters",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/lesson%204_captioned/v1/lesson%204_captioned.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 122,
+          "order": 4,
+          "_id": "6aa51e9769c836f66ddd3bc8"
+        },
+        {
+          "title": "Maintaining the Same Face Across Different Poses",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/LESSON%205%20FINAL_captioned/v1/LESSON%205%20FINAL_captioned.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 144,
+          "order": 5,
+          "_id": "6aa51e9769c836f66ddd3bc9"
+        },
+        {
+          "title": "Creating Different Outfit Styles",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/lesson%206%20final_captioned/v1/lesson%206%20final_captioned.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 143,
+          "order": 6,
+          "_id": "6aa51e9769c836f66ddd3bca"
+        },
+        {
+          "title": "Creating Different Locations",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/lesson%207%20final_captioned/v1/lesson%207%20final_captioned.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 176,
+          "order": 7,
+          "_id": "6aa51e9769c836f66ddd3bcb"
+        },
+        {
+          "title": "Making AI Images Look More Realistic Remove the Artificial AI Look",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/lesson%208%20final_captioned/v1/lesson%208%20final_captioned.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 123,
+          "order": 8,
+          "_id": "6aa51e9769c836f66ddd3bcc"
+        },
+        {
+          "title": "Fixing AI Photo Quality",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/lesson%209_captioned/v1/lesson%209_captioned.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 125.23,
+          "order": 9,
+          "_id": "6aa51e9769c836f66ddd3bcd"
+        },
+        {
+          "title": "Building a 30-Photo Content Bank Create Content in Batches",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/lesson%2010%20final%202%20module%20end_captioned/v1/lesson%2010%20final%202%20module%20end_captioned.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 245,
+          "order": 10,
+          "_id": "6aa51e9769c836f66ddd3bce"
+        },
+        {
+          "title": "Turning Photos into Videos",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/LESSON%2011%20FINAL%20VIDEO_captioned/v1/LESSON%2011%20FINAL%20VIDEO_captioned.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 182,
+          "order": 11,
+          "_id": "6aa51e9769c836f66ddd3bcf"
+        },
+        {
+          "title": "Creating Lip-Sync Videos",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/L12%20FINAL%20LESSON_captioned/v1/L12%20FINAL%20LESSON_captioned.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 164,
+          "order": 12,
+          "_id": "6aa51e9769c836f66ddd3bd0"
+        },
+        {
+          "title": "Creating a Consistent AI Voice",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/lesson%2013th%20final_captioned/v1/lesson%2013th%20final_captioned.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 184,
+          "order": 13,
+          "_id": "6aa51e9769c836f66ddd3bd1"
+        },
+        {
+          "title": "Reel Editing Basics in VN",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/14th%20lesson%20final_captioned/v1/14th%20lesson%20final_captioned.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 151,
+          "order": 14,
+          "_id": "6aa51e9769c836f66ddd3bd2"
+        },
+        {
+          "title": "Five Reel Formats",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/lesson%2015th%20final%20slowed_captioned/v1/lesson%2015th%20final%20slowed_captioned.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 224,
+          "order": 15,
+          "_id": "6aa51e9769c836f66ddd3bd3"
+        },
+        {
+          "title": "Professional Profile Setup Why Your Profile Matters",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/LESSON%2016%20FINAL_captioned/v1/LESSON%2016%20FINAL_captioned.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 146,
+          "order": 16,
+          "_id": "6aa51e9769c836f66ddd3bd4"
+        },
+        {
+          "title": "Posting Schedule, Captions & Hashtags",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/lesson%2017th%20final_captioned/v1/lesson%2017th%20final_captioned.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 115,
+          "order": 17,
+          "_id": "6aa51e9769c836f66ddd3bd5"
+        },
+        {
+          "title": "Understanding the Reels Algorithm How the Algorithm Thinks",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/lesson%2018th_captioned/v1/lesson%2018th_captioned.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 111,
+          "order": 18,
+          "_id": "6aa51e9769c836f66ddd3bd6"
+        },
+        {
+          "title": "Growing from 0 to 1,000 Followers Why 1,000 Followers Matters",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/LESSON%2019%20/v1/LESSON%2019%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 102,
+          "order": 19,
+          "_id": "6aa51e9769c836f66ddd3bd7"
+        },
+        {
+          "title": "Product Photography Basics",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/lesson%2020%20final_captioned/v1/lesson%2020%20final_captioned.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 120,
+          "order": 20,
+          "_id": "6aa51e9769c836f66ddd3bd8"
+        },
+        {
+          "title": "Creating Professional Studio Product Shots",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/21%20lesson%20final_captioned/v1/21%20lesson%20final_captioned.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 108,
+          "order": 21,
+          "_id": "6aa51e9769c836f66ddd3bd9"
+        },
+        {
+          "title": "Lifestyle and Platform-Ready Product Shots",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/LESSON%2022%20FINAL_captioned/v1/LESSON%2022%20FINAL_captioned.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 108,
+          "order": 22,
+          "_id": "6aa51e9769c836f66ddd3bda"
+        },
+        {
+          "title": "Fashion Try-On",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/lesson%2023_captioned/v1/lesson%2023_captioned.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 111,
+          "order": 23,
+          "_id": "6aa51e9769c836f66ddd3bdb"
+        },
+        {
+          "title": "Getting Your First Client",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/LESSON%2024/v1/LESSON%2024.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 82,
+          "order": 24,
+          "_id": "6aa51e9769c836f66ddd3bdc"
+        },
+        {
+          "title": "Pricing Your Product Shoots",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/lesoon%2025%20/v1/lesoon%2025%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 92,
+          "order": 25,
+          "_id": "6aa51e9769c836f66ddd3bdd"
+        },
+        {
+          "title": "Understanding UGC & Creating Your First UGC Video",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/lesson%2026th_captioned/v1/lesson%2026th_captioned.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 147,
+          "order": 26,
+          "_id": "6aa51e9769c836f66ddd3bde"
+        },
+        {
+          "title": "Building Your UGC Portfolio",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/lesson%2027th_captioned/v1/lesson%2027th_captioned.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 121.2,
+          "order": 27,
+          "_id": "6aa51e9769c836f66ddd3bdf"
+        },
+        {
+          "title": "Reaching Out to Brands",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/lesson%2028%20/v1/lesson%2028%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 100,
+          "order": 28,
+          "_id": "6aa51e9769c836f66ddd3be0"
+        },
+        {
+          "title": "Closing the Deal",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/lesson%2029%20/v1/lesson%2029%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 90,
+          "order": 29,
+          "_id": "6aa51e9769c836f66ddd3be1"
+        },
+        {
+          "title": "Working With Brands & Building Repeat Business",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/lesson%2030%20/v1/lesson%2030%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 100,
+          "order": 30,
+          "_id": "6aa51e9769c836f66ddd3be2"
+        },
+        {
+          "title": "Affiliate Marketing",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/LESSON%2031/v1/LESSON%2031.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 101,
+          "order": 31,
+          "_id": "6aa51e9769c836f66ddd3be3"
+        },
+        {
+          "title": "Creating Your Own Digital Product",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/LESSON%2032/v1/LESSON%2032.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 100,
+          "order": 32,
+          "_id": "6aa51e9769c836f66ddd3be4"
+        },
+        {
+          "title": "Building a Faceless Business Model",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/LESSON%2033/v1/LESSON%2033.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 99,
+          "order": 33,
+          "_id": "6aa51e9769c836f66ddd3be5"
+        },
+        {
+          "title": "Scaling With Multiple AI Influencers What Does Scaling Mean?",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/LESSON%2034%20/v1/LESSON%2034%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 101,
+          "order": 34,
+          "_id": "6aa51e9769c836f66ddd3be6"
+        }
+      ]
+    },
+    {
+      "_id": "6ae346f4152646ad4d6b98b7",
+      "title": "AI Real Estate Videos",
+      "slug": "ai-real-estate-videos",
+      "videos": [
+        {
+          "title": "Course Introduction",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/property-reel/lesson-7/lesson%201/v1/lesson%201.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 0,
+          "order": 1,
+          "_id": "6ae346f4152646ad4d6b98af"
+        },
+        {
+          "title": "Property Planning: Brief, Shot List",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/property-reel/lesson-7/lesson%202%20/v1/lesson%202%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 0,
+          "order": 2,
+          "_id": "6ae346f4152646ad4d6b98b0"
+        },
+        {
+          "title": "Virtual Staging",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/property-reel/lesson-7/lesson%203%20/v1/lesson%203%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 117,
+          "order": 3,
+          "_id": "6ae346f4152646ad4d6b98b1"
+        },
+        {
+          "title": "Lighting Upgrade: Day to Evening",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/property-reel/lesson-7/lesson%204/v1/lesson%204.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 0,
+          "order": 4,
+          "_id": "6ae346f4152646ad4d6b98b2"
+        },
+        {
+          "title": "Walkthrough Video",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/property-reel/lesson-7/lesson%205/v1/lesson%205.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 0,
+          "order": 5,
+          "_id": "6ae346f4152646ad4d6b98b3"
+        },
+        {
+          "title": "Cinematic Montage",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/property-reel/lesson-7/LESSON%206%20/v1/LESSON%206%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 0,
+          "order": 6,
+          "_id": "6ae346f4152646ad4d6b98b4"
+        },
+        {
+          "title": "Final Listing Reel",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/property-reel/lesson-7/lesson%207%20/v1/lesson%207%20.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 0,
+          "order": 7,
+          "_id": "6ae346f4152646ad4d6b98b5"
+        },
+        {
+          "title": "Turning the Workflow into a Service",
+          "sourceType": "aws_cloudfront",
+          "provider": "aws_cloudfront",
+          "videoUrl": "https://d2vntxz4x493rp.cloudfront.net/courses/property-reel/lesson-7/lesson%208/v1/lesson%208.m3u8",
+          "embedUrl": null,
+          "transcriptUrl": null,
+          "duration": 0,
+          "order": 8,
+          "_id": "6ae346f4152646ad4d6b98b6"
+        }
+      ],
+      "status": "published",
+      "publishedAt": "2026-10-29T13:15:32.368Z"
+    }
+  ],
+  "lessons": []
+}

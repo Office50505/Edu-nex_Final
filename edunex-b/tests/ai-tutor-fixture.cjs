@@ -44,6 +44,8 @@ function backend(options = {}) {
       if (name === './productTutorState') return require('../services/productTutorState');
       if (name === './aiProviderPrivacy') return require('../services/aiProviderPrivacy');
       if (name === './tutorProvider') return require('../services/tutorProvider');
+      if (name === './tutorReliability') return require('../services/tutorReliability');
+      if (name === './unifiedTutorKnowledge') return require('../services/unifiedTutorKnowledge');
       if (name === './selectedLessonSummary') return require('../services/selectedLessonSummary');
       if (name.endsWith('/tutorAvailability')) return require('../services/tutorAvailability');
       if (name === './productTutorResponse') return require('../services/productTutorResponse');
@@ -56,17 +58,26 @@ function backend(options = {}) {
         findOne: () => ({sort(){return this;},select(){return this;},lean:async()=>options.trialCourse||null}) };
       return { requireCompatibleAuth: () => () => {} };
     },
-    module: { exports: {} }, AbortSignal, process: { env: { FAL_KEY: options.noKey ? '' : 'test' } }, console,
+    module: { exports: {} }, AbortSignal, process: { env: { FAL_KEY: options.noKey ? '' : 'test',
+      ...(options.providerTokenLimit ? {NEX_AI_MAX_OUTPUT_TOKENS:String(options.providerTokenLimit)} : {}) } }, console: options.console || console,
     fetch: async (_, request) => {
       calls.push(JSON.parse(request.body));
       if (options.providerHook) await options.providerHook(calls.at(-1), calls.length);
       if (options.providerError) throw options.providerError;
       if (options.fail || options.failAt?.includes(calls.length)) throw new Error("Provider offline");
-      return { ok: true, headers: { get: () => 'application/json' }, json: async () => ({ choices: [{ message: { content: options.replies?.[calls.length-1] ?? options.reply ?? 'Example answer' } }] }) };
+      const saved = options.providerResponse ? await options.providerResponse(calls.at(-1), calls.length) : options.providerResponses?.[calls.length-1];
+      if ((options.providerResponses || options.providerResponse) && !saved) throw Object.assign(new Error('Offline saved inference evidence exhausted'), {code:'manual_qa_budget_exhausted'});
+      return { ok: true, status:200, headers: { get: () => 'application/json' }, json: async () => saved || ({ choices: [{ finish_reason:'stop', message: { content: options.replies?.[calls.length-1] ?? options.reply ?? 'Example answer' } }] }) };
     },
   };
   const serviceModule = { exports: {} };
   vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../services/aiTutorService.js'), 'utf8'), { ...sandbox, module: serviceModule });
+  // Historical domain/ownership fixtures exercise the scoped helper contract.
+  // Unified endpoint tests opt in explicitly; production routes always opt in.
+  if (!options.unifiedKnowledge) {
+    const build = serviceModule.exports.buildContext;
+    serviceModule.exports.buildContext = (user, course, message, history, config = {}) => build(user, course, message, history, { ...config, unifiedKnowledge: false });
+  }
   vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../routes/ai.js'), 'utf8'), sandbox);
   async function request(method, url, body = {}, authenticated = true) {
     let result;

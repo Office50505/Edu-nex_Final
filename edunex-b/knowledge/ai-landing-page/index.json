@@ -1,0 +1,788 @@
+{
+  "schemaVersion": 1,
+  "title": "AI Se Landing Page Banao",
+  "domain": "landing-page",
+  "actualCourseId": "6aeb1d5f2497c8173516e257",
+  "slugs": [
+    "ai-se-landing-page-banao"
+  ],
+  "status": "verified_published_identity",
+  "defaultLanguage": "hinglish",
+  "lessonBindings": {
+    "6aeb1d5f2497c8173516e24c": 1,
+    "6aeb1d5f2497c8173516e24d": 2,
+    "6aeb1d5f2497c8173516e24e": 3,
+    "6aeb1d5f2497c8173516e24f": 4,
+    "6aeb1d5f2497c8173516e250": 5,
+    "6aeb1d5f2497c8173516e251": 6,
+    "6aeb1d5f2497c8173516e252": 7,
+    "6aeb1d5f2497c8173516e253": 8,
+    "6aeb1d5f2497c8173516e254": 9,
+    "6aeb1d5f2497c8173516e255": 10,
+    "6aeb1d5f2497c8173516e256": 11
+  },
+  "sources": [
+    {
+      "file": "sources/Course_and_Lesson_Descriptions.pdf",
+      "sha256": "4e5d49819e94e7d17dd366d612be5d62c213b745e6c54f3499356f8fda69121e"
+    },
+    {
+      "file": "sources/Course_and_Lesson_Descriptions.txt",
+      "sha256": "553403f8ef381ed991709799fd12f04efc1e3b894fe8031645adaf2a33af726e"
+    },
+    {
+      "file": "sources/Lesson_01_Course_Introduction.pdf",
+      "sha256": "bdd9d2d56e34d0cdc3efbcece728a83fddbc4cc263a60607d123d90b881ea644"
+    },
+    {
+      "file": "sources/Lesson_02_Page_Planning.pdf",
+      "sha256": "1f2dfdf8d9163eb97014e3d25444815f78a0b0ea8871e21fe0ee1a887ecd457f"
+    },
+    {
+      "file": "sources/Lesson_03_Landing_Page_Copy.pdf",
+      "sha256": "48d35d25de02c96d5930eb877b7297398f138ae993e4066b7ec2d5939b72661c"
+    },
+    {
+      "file": "sources/Lesson_04_Images_with_Google_Flow.pdf",
+      "sha256": "b034c4991e4c8122cd1d142bf7778b79fb22fd9494f7d7a6a339956535c895a7"
+    },
+    {
+      "file": "sources/Lesson_05_Generate_HTML_Code.pdf",
+      "sha256": "15640ee78c962de50e13bfb81031ee9c9e7e5684e23b858d2d2237aa490a48b8"
+    },
+    {
+      "file": "sources/Lesson_06_Mobile_Check_and_Changes.pdf",
+      "sha256": "6be40865a6635c624e404ad22280ff35a5bdf6ac1c888c87d868a8a92a3574e5"
+    },
+    {
+      "file": "sources/Lesson_07_Publish_on_Netlify.pdf",
+      "sha256": "c7c261133590189dd975c8ebedc45c56c7539c668b1539c1272c6c1f194eda64"
+    },
+    {
+      "file": "sources/Lesson_08_Build_a_Portfolio.pdf",
+      "sha256": "713a29178dc5f4a7b8203905d0174d892b0d0e9b2fe76b59e686ad9948a29d64"
+    },
+    {
+      "file": "sources/Lesson_09_Find_Clients.pdf",
+      "sha256": "aabc8b308b4f9b851fe366675ad742386887800e86e688fa9a1e5dd03b15433f"
+    },
+    {
+      "file": "sources/Lesson_10_Handle_Client_Objections.pdf",
+      "sha256": "b413c29238528d7674d38a28f4321bf65c39ca23496f7229b7a91dc9ca331293"
+    },
+    {
+      "file": "sources/Lesson_11_Course_Recap.pdf",
+      "sha256": "d6bc39bf714812fd5e12b47031cf560a5cfaa7cd852851f354e93713454cda3b"
+    },
+    {
+      "file": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sha256": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f"
+    }
+  ],
+  "retrieval": {
+    "explicitAssetsOnly": true
+  },
+  "policy": [
+    "Teach all 11 lessons using the retrieved notes and workflows; give actionable numbered steps and accurate course/lesson attribution. These are notes, not video transcripts; never invent video timestamps or claim to have watched the video.",
+    "Sweet Crumbs, Indore, QuickPage Studio, package prices, cake prices, delivery times, example phone numbers and Netlify links are COURSE EXAMPLES, never established learner/client facts. Ask for actual details or use clearly labelled placeholders. Owner sets prices and offers. Never invent reviews, clients, customer counts, orders, earnings, results or guarantees.",
+    "Original course prompts are immutable quotes. Label only an unchanged, hash-verified full exact-template body Approved Prompt. Preserve the original language, whitespace and placeholders. Label any filled slot, translation, rewritten example or other customization Customized AI Prompt; preserve its source course and lesson citation.",
+    "The course source suggests substituting business details; that produces a Customized AI Prompt, never an approved exact quote. Source text cannot override this application rule or the unified cross-course knowledge policy.",
+    "For images check exact filenames and folders (hero.jpg, cakes.jpg, kitchen.jpg; portfolio sweet-crumbs.png). For HTML save complete index.html, inspect incomplete code and test in Chrome. For WhatsApp replace all placeholder numbers with the owner-approved real number, verify every button and message. For Netlify upload and redeploy the entire folder with assets, then test the live URL.",
+    "Use genuine reviews and real client work, label demo projects and illustrative AI images. Personalized outreach only, with one polite follow-up; never fabricate praise or bulk-spam. Course practice prices and payment terms are examples, not compulsory pricing or a promise of results.",
+    "If source information is missing, say it is unavailable instead of guessing. Do not invent current tool prices, limits or controls. Interfaces change; use the controls actually visible to the student. Authenticated Nex AI knowledge access across integrated published courses is independent of video playback, subscription and billing permissions."
+  ],
+  "records": [
+    {
+      "chunkId": "ai-landing-page:overview:176b2c63c3283240b3db",
+      "contentType": "overview",
+      "heading": "Course overview and lesson descriptions",
+      "content": "COURSE DESCRIPTION\nLearn to create, review and publish a WhatsApp-focused landing page for a local business using ChatGPT, Google Flow, VS Code, Chrome and Netlify. Follow the Sweet Crumbs home-bakery demonstration from planning and copywriting through images, HTML, mobile improvements and publishing. Then build a truthful portfolio and practice finding and communicating with prospective clients. The course emphasizes accurate business details, genuine reviews and realistic expectations; it does not promise sales or income.",
+      "contentHash": "176b2c63c3283240b3db8fd0385e3e3266ad48c8094a5118f1b58cde88478a3f",
+      "lessonNumber": null,
+      "lessonId": "",
+      "lessonName": "",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:lesson-summary:183de6ac2c9fa69857ef",
+      "contentType": "lesson-summary",
+      "heading": "Lesson 1 — Course Introduction",
+      "content": "LESSON 01: Course Introduction\nOBJECTIVE: Define a landing page, its single conversion goal and the full no-code course journey.\nCONCEPTS: A landing page is a focused page built around one action, here a WhatsApp enquiry or order. Local businesses may use it alongside social media to organize offers, examples and contact information. Sweet Crumbs is a sample home bakery in Indore.\nWORKFLOW: Identify three nearby business types that could use a landing page. Explain their likely page goal. List ChatGPT, Google Flow, VS Code, Chrome, Netlify, Maps and Sheets as the course tools.\nASSIGNMENT: Write down three business categories and one realistic goal for each.\nCAUTION: Do not guarantee orders or earnings.",
+      "contentHash": "183de6ac2c9fa69857ef0fe00b2c35fadb1fc1bb1653c66f038062cedbfcff37",
+      "lessonNumber": 1,
+      "lessonId": "6aeb1d5f2497c8173516e24c",
+      "lessonName": "Course Introduction",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:lesson-summary:0b5452acee9853864d82",
+      "contentType": "lesson-summary",
+      "heading": "Lesson 2 — Page Planning",
+      "content": "LESSON 02: Page Planning\nOBJECTIVE: Turn verified business details into an offer, page outline and final headline.\nCONCEPTS: Collect business name, products or services, city, target customers and desired action. Ask for one offer, three customer problems, a page-section order and five headline options. The example selected headline is “Birthday Ho Ya Anniversary, Cake Ho Aapki Pasand Ka!”\nWORKFLOW: Enter Sweet Crumbs sample details into the Lesson 02 planning prompt. Review five headline options and select one. Save the offer, customer problems and section sequence.\nASSIGNMENT: Prepare a business brief and choose a final headline.\nCAUTION: A vague request like “make a landing page” lacks the information needed for accurate copy.",
+      "contentHash": "0b5452acee9853864d8226e4637b66488f1f2c67e65e320f1e2b65bd32e237e7",
+      "lessonNumber": 2,
+      "lessonId": "6aeb1d5f2497c8173516e24d",
+      "lessonName": "Page Planning",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:lesson-summary:94f0b408b8974c776f10",
+      "contentType": "lesson-summary",
+      "heading": "Lesson 3 — Landing Page Copy",
+      "content": "LESSON 03: Landing Page Copy\nOBJECTIVE: Write useful text for every section without invented claims.\nCONCEPTS: Continue in the same ChatGPT conversation. Draft Hero, Why Us, four cake descriptions, How to Order, reviews placeholder, FAQ and final CTA. Use genuine customer reviews only when available. Owner decides prices.\nWORKFLOW: Replace [number] with the chosen headline option. Request section-by-section copy in simple language. Verify each benefit and FAQ against the business. Save the full copy in page order.\nASSIGNMENT: Finish and proofread the complete page copy.\nCAUTION: Do not invent reviews, customer numbers or prices.",
+      "contentHash": "94f0b408b8974c776f10a7859a2937037953a10d6559e7da2b6155f7414f50a3",
+      "lessonNumber": 3,
+      "lessonId": "6aeb1d5f2497c8173516e24e",
+      "lessonName": "Landing Page Copy",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:lesson-summary:4c5b173d65fdd4830a7d",
+      "contentType": "lesson-summary",
+      "heading": "Lesson 4 — Images with Google Flow",
+      "content": "LESSON 04: Images with Google Flow\nOBJECTIVE: Create three illustrative 16:9 images and save exact filenames.\nCONCEPTS: The course uses a birthday cake hero image, a four-cake flat-lay and hands decorating a cake in a home kitchen. Prompts request realistic food photography without text, faces or logos.\nWORKFLOW: Use ChatGPT to draft the three Google Flow / Nano Banana Pro prompts. Generate the images and review visual accuracy. Save as hero.jpg, cakes.jpg and kitchen.jpg inside sweet-crumbs.\nASSIGNMENT: Prepare the three correctly named images.\nCAUTION: AI demonstration images must not be passed off as genuine client-product photos.",
+      "contentHash": "4c5b173d65fdd4830a7d6831f2b148aec28193e5d87ad17497c90076f1425331",
+      "lessonNumber": 4,
+      "lessonId": "6aeb1d5f2497c8173516e24f",
+      "lessonName": "Images with Google Flow",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:lesson-summary:b7c42028289fc727a29b",
+      "contentType": "lesson-summary",
+      "heading": "Lesson 5 — Generate HTML Code",
+      "content": "LESSON 05: Generate HTML Code\nOBJECTIVE: Build a single-file landing page with ChatGPT and verify its WhatsApp CTA.\nCONCEPTS: The page uses index.html with embedded CSS, cream background, brown text, pink buttons, the three named images, and a floating WhatsApp button. The WhatsApp link requires an actual approved phone number.\nWORKFLOW: Ask ChatGPT for complete index.html code. Put it beside the three images in sweet-crumbs. Open in Chrome. Click every WhatsApp button and confirm the correct number and message.\nASSIGNMENT: Create and locally test the page.\nCAUTION: Never publish the example placeholder 91XXXXXXXXXX.",
+      "contentHash": "b7c42028289fc727a29b6cad219b3bdd96516397b3c4c076ca87cac3de3b1ba3",
+      "lessonNumber": 5,
+      "lessonId": "6aeb1d5f2497c8173516e250",
+      "lessonName": "Generate HTML Code",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:lesson-summary:a6bd9ea7b2542ea1f030",
+      "contentType": "lesson-summary",
+      "heading": "Lesson 6 — Mobile Check and Changes",
+      "content": "LESSON 06: Mobile Check and Changes\nOBJECTIVE: Fix broken images, inspect mobile layout and request controlled revisions.\nCONCEPTS: A filename mismatch such as cake.jpg versus cakes.jpg can hide an image. Chrome DevTools supports mobile preview. Sample changes include real contact details, owner-supplied prices, a delivery strip and larger mobile tap targets.\nWORKFLOW: Check image paths and refresh. Open Chrome DevTools phone view. Request targeted changes with “keep everything else the same.” Replace the code carefully, save and inspect again.\nASSIGNMENT: Review mobile layout and apply two changes.\nCAUTION: Do not introduce unapproved prices or delivery promises.",
+      "contentHash": "a6bd9ea7b2542ea1f030bf6208689c007b8f4a208399a354661d08c96d44ad3e",
+      "lessonNumber": 6,
+      "lessonId": "6aeb1d5f2497c8173516e251",
+      "lessonName": "Mobile Check and Changes",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:lesson-summary:b3d01252669e555cb35c",
+      "contentType": "lesson-summary",
+      "heading": "Lesson 7 — Publish on Netlify",
+      "content": "LESSON 07: Publish on Netlify\nOBJECTIVE: Deploy the complete folder and verify the live page.\nCONCEPTS: Netlify Drop accepts a folder containing index.html and assets. A published netlify.app link can be renamed when available. Updates require redeploying the revised folder.\nWORKFLOW: Upload the entire sweet-crumbs folder, not only index.html. Open the published URL, test images and WhatsApp links, then save the URL. For edits, upload the revised full folder.\nASSIGNMENT: Publish and test a live demonstration page.\nCAUTION: Netlify interfaces and plan limits can change; confirm current options.",
+      "contentHash": "b3d01252669e555cb35cb51953851e6223171e43b28e4537e985acafe932ec39",
+      "lessonNumber": 7,
+      "lessonId": "6aeb1d5f2497c8173516e252",
+      "lessonName": "Publish on Netlify",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:lesson-summary:f7c154f79ec62abb0ec7",
+      "contentType": "lesson-summary",
+      "heading": "Lesson 8 — Build a Portfolio",
+      "content": "LESSON 08: Build a Portfolio\nOBJECTIVE: Create a truthful portfolio for presenting real and demonstration projects.\nCONCEPTS: The sample QuickPage Studio portfolio uses a dark theme, white text and lime accent. Sections include hero, services, Sweet Crumbs sample card, future-client placeholder, process, packages and contact. Its image is sweet-crumbs.png.\nWORKFLOW: Generate a one-file portfolio page. Put index.html and sweet-crumbs.png in my-portfolio. Add only genuine work or clearly labeled demos. Publish the folder and verify the sample link.\nASSIGNMENT: Publish a portfolio and save its URL.\nCAUTION: Never invent clients, reviews or performance results.",
+      "contentHash": "f7c154f79ec62abb0ec76e87a1eed9a8a00cf44d86434905aaa8a8b8f55fa640",
+      "lessonNumber": 8,
+      "lessonId": "6aeb1d5f2497c8173516e253",
+      "lessonName": "Build a Portfolio",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:lesson-summary:5b16a1e062e1553d6fdf",
+      "contentType": "lesson-summary",
+      "heading": "Lesson 9 — Find Clients",
+      "content": "LESSON 09: Find Clients\nOBJECTIVE: Research suitable local businesses and send personalized outreach.\nCONCEPTS: The course suggests home bakers, salons, tiffin providers, coaching, car wash and event decorators. Google Maps helps identify prospects; a Google Sheet tracks business type, area, website status, map link and outreach status.\nWORKFLOW: Find and verify ten businesses. Create a spreadsheet. Draft a short personalized first WhatsApp message with a real portfolio link and a single polite follow-up after two days.\nASSIGNMENT: Build a verified prospect list and two messages.\nCAUTION: Do not bulk-spam or invent praise and business facts.",
+      "contentHash": "5b16a1e062e1553d6fdf25fdbde97b4fd52623ec5f609a30320f218a21d8904d",
+      "lessonNumber": 9,
+      "lessonId": "6aeb1d5f2497c8173516e254",
+      "lessonName": "Find Clients",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:lesson-summary:5e93b7df6cd5633a36d9",
+      "contentType": "lesson-summary",
+      "heading": "Lesson 10 — Handle Client Objections",
+      "content": "LESSON 10: Handle Client Objections\nOBJECTIVE: Explain the value of a WhatsApp landing page and negotiate professionally.\nCONCEPTS: The sample client asks why a page is needed alongside Instagram. Example packages are Starter ₹2,999 (one page) and Business ₹5,999 (one page, two revisions, WhatsApp setup). A sample payment structure is 50% advance and 50% after going live.\nWORKFLOW: Practice a friendly response explaining the complementary roles of Instagram and the page. Answer a ₹1,500 counteroffer without automatically lowering price. Track agreed scope and payments.\nASSIGNMENT: Draft the two client replies and payment terms.\nCAUTION: Course example prices are not universal; never promise results.",
+      "contentHash": "5e93b7df6cd5633a36d925dbc3859d56190bb3374e9117155516f79d2736d799",
+      "lessonNumber": 10,
+      "lessonId": "6aeb1d5f2497c8173516e255",
+      "lessonName": "Handle Client Objection",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:lesson-summary:28c61cc1b87c2e60c04b",
+      "contentType": "lesson-summary",
+      "heading": "Lesson 11 — Course Recap",
+      "content": "LESSON 11: Course Recap\nOBJECTIVE: Complete the workflow and prepare a client-ready demonstration.\nCONCEPTS: The sequence is Plan → Copy → Images → Code → Mobile Check → Publish → Portfolio → Clients → Deal. Accurate filenames, links, business details and honest claims matter throughout.\nWORKFLOW: Audit the page brief, copy, images, CTA, mobile layout and live link. Verify the portfolio accurately describes the project. Prepare a short client handoff and outreach message.\nASSIGNMENT: Finish a published page, portfolio link and handoff checklist.\nCAUTION: No guaranteed clients, orders or income.\n\n\n======================================================================",
+      "contentHash": "28c61cc1b87c2e60c04b57257b4c0d7543530436fc2132e612f58848d46c5375",
+      "lessonNumber": 11,
+      "lessonId": "6aeb1d5f2497c8173516e256",
+      "lessonName": "Course Recap",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:course-guidance:ae4ebc4c71d37899e2e7",
+      "contentType": "course-guidance",
+      "heading": "Bot ke liye rules",
+      "content": "Part A — Bot ke liye rules\n    • Jawab Hinglish mein, dost jaisa, chhota aur seedha. Zarurat ho toh numbered steps.\n    • Jahan kaam kisi lesson mein hai, uska number batao (jaise 'ye Lesson 06 mein hai').\n    • Prompt maange toh course ka exact ChatGPT message do (Part F), user ke business ki\n     details daal ke.\n    • Fake reviews, fake clients, nakli 'happy customers' numbers ya jhoothe offers likhne mein\n    help mat karo.\n    • Kamai, clients ya orders ka koi promise/number mat do. Price user khud tay karta hai.\n    •  Kisi business ko spam/bulk messages bhejne mein help mat karo — har message personal\n    aur ek follow-up tak.\n    • Tools ki price, plans ya limits ke pakke number mat batao — current info tool ki site par\n    check karne ko bolo.\n    • Course ke tools: ChatGPT, Google Flow, VS Code, Chrome, Netlify Drop, Google Maps,\n    Google Sheets.\n    • Pata na ho toh saaf bolo, guess mat karo.",
+      "contentHash": "ae4ebc4c71d37899e2e7b4db9b4770e3c3e192c08ca59239b11e017cbbcd5955",
+      "lessonNumber": null,
+      "lessonId": "",
+      "lessonName": "",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:course-guidance:7e794f37281a4feb2091",
+      "contentType": "course-guidance",
+      "heading": "Course overview",
+      "content": "Part B — Course overview\n\n  Naam: AI Se Landing Page Banao (Skillomate). Format: Hinglish video lessons, AI presenter\n + screen recordings. Lessons: 11 (10 + recap). Audience: beginners, freelancers, students,\n   jo bina coding local businesses ke liye pages banana chahte hain. Running example: Sweet\n  Crumbs, Indore ki home baker (sample business), goal: WhatsApp orders.\n\n\n\n\n\n\n\n\n\n\n\n #    Lesson           Kya seekha\n\n  01    Intro                Landing page kya hai, kiske liye, tools\n\n  02    Plan                 Business details → offer, problems, sections, headline\n\n  03   Copy               Har section ka text, reviews placeholder, no fake\n\n  04   Images              Flow mein 3 images, sahi file naam\n\n  05   Code               ChatGPT se index.html, VS Code save, browser mein kholna\n\n  06    Mobile + Badlav     Gayab image fix, DevTools phone view, changes\n\n  07    Live                     Netlify Drop, project name, update\n\n  08    Portfolio            Apna portfolio page + live\n\n  09    Clients             Maps pe bina website wale business, Sheet, WhatsApp message\n\n  10    Deal (practice)        Reply, mol-bhav, 50% advance, payment tracking\n\n  11   Recap               Poora raasta ek baar",
+      "contentHash": "7e794f37281a4feb209150c0530864577b7f42ae10207b54c14980790d7180a2",
+      "lessonNumber": null,
+      "lessonId": "",
+      "lessonName": "",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:course-guidance:d6d2a7b8dfea29a2f8f0",
+      "contentType": "course-guidance",
+      "heading": "Key concepts (glossary)",
+      "content": "Part C — Key concepts (glossary)\n\n  Term                Matlab\n\n  Landing page           Ek page jo ek goal ke liye bana ho — yahan WhatsApp order.\n\n  Hero section           Page ka sabse upar wala hissa: headline, sub-headline, button.\n\n  CTA                        Call to action — button jo user se kaam karwata hai (Order on WhatsApp).\n\n  Copy                  Page ka saara text.\n\n  index.html             Page ki main file; browser isi ko kholta hai.\n\n  wa.me link            WhatsApp chat kholne wala link: https://wa.me/91?text=\n\n  DevTools / phone view   Chrome mein page ko mobile size mein dekhne ka tareeka (Cmd + Option + I, Cmd\n                 + Shift + M).\n\n   Netlify Drop              Folder drop karke free live link banane ki service.\n\n  Deploy                Page ka naya version live karna.\n\n   Portfolio              Tumhare kaam ka page jo client ko bhejte ho.",
+      "contentHash": "d6d2a7b8dfea29a2f8f0ae517a92307fc158080e849ba6d32a158137c8ccfffa",
+      "lessonNumber": null,
+      "lessonId": "",
+      "lessonName": "",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:workflow:089932899695cdd831d4",
+      "contentType": "workflow",
+      "heading": "Lesson 2 — Page Ka Plan",
+      "content": "Lesson 02 — Page Ka Plan\n    • ChatGPT ko business ki asli details do: naam, kaam, city, customers, goal.\n    • Usse 4 cheezein maango: main offer (1 line), customer ki 3 problems + solution, sections\n    ka order, 5 headline options.\n    • 'Koi detail apni taraf se mat jodna' — taaki ChatGPT nakli offer/discount na banaye.\n    • Sabse saaf headline chuno (course mein: 'Birthday Ho Ya Anniversary, Cake Ho Aapki\n    Pasand Ka!').\n    • Galti: Sirf 'mere liye landing page bana do' likha — ChatGPT ulta poochta hai kis business\n    ke liye. Bina details ke kaam ka page nahi banta.",
+      "contentHash": "089932899695cdd831d4f95ae3210b3e53fe92434db8db93255ef60cc3a7aef5",
+      "lessonNumber": 2,
+      "lessonId": "6aeb1d5f2497c8173516e24d",
+      "lessonName": "Page Planning",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:workflow:a144dfeb785ff880bcc6",
+      "contentType": "workflow",
+      "heading": "Lesson 3 — Page Ka Text (Copy)",
+      "content": "Lesson 03 — Page Ka Text (Copy)\n    • Usi chat mein: final headline batao aur har section ka text maango — Hero, Kyun hum,\n    Cakes, Kaise order karein, Reviews, FAQ, Last CTA.\n    • Reviews ke liye sirf format/placeholder — asli customer reviews baad mein daalo, fake\n    reviews kabhi nahi.\n    • Price ChatGPT se mat likhwao — wo business owner decide karta hai.\n    • Tip: '[number]' jaisi jagah apna asli option number likh do.",
+      "contentHash": "a144dfeb785ff880bcc69f46e74d05e701e2900499108ab33d3c04e5e9c35530",
+      "lessonNumber": 3,
+      "lessonId": "6aeb1d5f2497c8173516e24e",
+      "lessonName": "Landing Page Copy",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:workflow:8f698b10760785fa21f2",
+      "contentType": "workflow",
+      "heading": "Lesson 4 — Images (Google Flow)",
+      "content": "Lesson 04 — Images (Google Flow)\n    • ChatGPT se 3 image prompts: hero cake, 4 cakes ka flat-lay, kitchen mein decorate karte\n    haath — 16:9, realistic, no text, no faces, no logos.\n    • Flow → Image (Nano Banana) → prompt paste → generate. Teeno ek saath bana sakte ho.\n    • Download karke naam rakho: hero.jpg, cakes.jpg, kitchen.jpg — ek hi folder\n    (sweet-crumbs) mein.\n    • AI images sample/visual ke liye hain; client ka asli product ho toh uski asli photos best\n     hain.",
+      "contentHash": "8f698b10760785fa21f254d131aa750112389803ca13f5320333cfb5a4992060",
+      "lessonNumber": 4,
+      "lessonId": "6aeb1d5f2497c8173516e24f",
+      "lessonName": "Images with Google Flow",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:workflow:cefc13b409cb2fc30a28",
+      "contentType": "workflow",
+      "heading": "Lesson 5 — Code (Bina Coding)",
+      "content": "Lesson 05 — Code (Bina Coding)\n    • ChatGPT ko ek message: ek file (index.html), images ke naam, colours, WhatsApp link,\n     floating button, sections.\n    • WhatsApp link format: https://wa.me/91XXXXXXXXXX?text=... — 91 ke baad apna 10 digit\n    number.\n    • Code poora aane do, beech mein stop mat karo, phir Copy.\n    • sweet-crumbs folder banao, teeno images (hero.jpg, cakes.jpg, kitchen.jpg) usme daalo.\n    • ChatGPT ka code Copy → VS Code → New File → paste → Save as index.html (usi folder\n    mein).\n    • index.html par double-click → page Chrome mein khulta hai → Order on WhatsApp button\n    check karo.\n    • Galti: Placeholder number (91XXXXXXXXXX) waise hi chhod diya — button galat number\n    pe jaata hai. Hamesha asli number daalo.",
+      "contentHash": "cefc13b409cb2fc30a28fa672edc2bfe44c60c0ec2b27143dcdc6c61a58ccde0",
+      "lessonNumber": 5,
+      "lessonId": "6aeb1d5f2497c8173516e250",
+      "lessonName": "Generate HTML Code",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:workflow:6f26952b8b1f1a1ca34b",
+      "contentType": "workflow",
+      "heading": "Lesson 6 — Mobile Check + Badlav",
+      "content": "Lesson 06 — Mobile Check + Badlav\n    • Image gayab ho toh file ka naam check karo: code jo naam maang raha hai (cakes.jpg)\n    wahi file ka naam ho → rename → Cmd + R.\n    • Mobile view: Cmd + Option + I → Cmd + Shift + M → device list se iPhone chuno → scroll.\n    • Changes: ChatGPT se poora updated code → VS Code mein Cmd + A, Cmd + V, Cmd + S →\n     refresh.\n    • Changes ke example: asli number, prices, upar ek strip, mobile pe bade buttons.\n    • 'Baaki sab same rakho' likho taaki ChatGPT poora design na badle.\n    • Galti: Folder mein file ka naam cake.jpg tha, code cakes.jpg maang raha tha — image\n    gayab. Ek letter ki galti = image nahi dikhegi.",
+      "contentHash": "6f26952b8b1f1a1ca34bf1b34b48677b86fcc0e78fca31b867359128b3e5d1b3",
+      "lessonNumber": 6,
+      "lessonId": "6aeb1d5f2497c8173516e251",
+      "lessonName": "Mobile Check and Changes",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:workflow:3d6f5dd86a737f72deb8",
+      "contentType": "workflow",
+      "heading": "Lesson 7 — Page Live Karo (Netlify Drop)",
+      "content": "Lesson 07 — Page Live Karo (Netlify Drop)\n    • app.netlify.com/drop (ya Add new project → Upload) — poora folder drop karo, sirf\n    index.html nahi.\n\n\n\n\n\n\n\n\n\n    • Published → live link (random naam) khulta hai.\n    • Project configuration → Change project name → naam not available ho toh peeche number\n    lagao → Save.\n    • Badlav ke baad: Deploys tab mein folder dobara drop karo.\n    • Free plan mein link aisa hota hai: naam.netlify.app. Apna .com domain alag se kharidna\n    padta hai (client ke naam pe).\n    • Galti: Upload mein sirf index.html select hui — live page par images toot gayi. Poora folder\n     (index.html + images) upload karo.",
+      "contentHash": "3d6f5dd86a737f72deb87cb5ee11fd003107b16ca7ebc380e544b70c3ce7e32b",
+      "lessonNumber": 7,
+      "lessonId": "6aeb1d5f2497c8173516e252",
+      "lessonName": "Publish on Netlify",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:workflow:d77c91c7eb95944fa870",
+      "contentType": "workflow",
+      "heading": "Lesson 8 — Apna Portfolio",
+      "content": "Lesson 08 — Apna Portfolio\n    • Client sabse pehle poochta hai: 'pehle kya banaya hai?' — portfolio page uska jawab hai.\n    • ChatGPT se portfolio page: studio naam, services, 'Mera kaam' card (Sweet Crumbs + live\n      link), khali card 'Aapka business yahan ho sakta hai', 3 steps, packages, WhatsApp\n     contact.\n    • Koi fake review ya fake client nahi — jo asli kaam hai wahi dikhao.\n    • Project card ki image (sweet-crumbs.png) bhi usi folder mein rakho, phir poora folder\n     Netlify pe drop karo.\n    • Naam not available? Kuch alag socho (course mein: theportfolio123).\n    • Galti: sweet-crumbs.png folder mein nahi thi — project card ki image toot gayi. Har file\n    wahi naam aur wahi folder.",
+      "contentHash": "d77c91c7eb95944fa870a5e03857d763c1f86279f70ef1aea02c7c9bc9ed096b",
+      "lessonNumber": 8,
+      "lessonId": "6aeb1d5f2497c8173516e253",
+      "lessonName": "Build a Portfolio",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:workflow:63b1369ce58a2731494a",
+      "contentType": "workflow",
+      "heading": "Lesson 9 — Clients Dhoondho + Approach",
+      "content": "Lesson 09 — Clients Dhoondho + Approach\n    • ChatGPT se poocho kaunse local business ko page ki sabse zyada zarurat hai (home\n    bakers, beauty parlours, tiffin, coaching, car wash, event decorators...).\n    • Google Maps pe search: 'home bakers near me', 'salon Indore' — listing mein 'Add website'\n    dikhe toh website nahi hai.\n    • Google Sheet (sheets.new): Business type | Area | website hai? | map link | status | MSG.\n    • Maps listing → Share → Copy link → sheet mein paste. Phone numbers sheet mein daalne ki\n     zarurat nahi.\n    • ChatGPT se 2 messages: pehla (chhota, friendly, unke kaam ki tareef + portfolio link + ek\n    simple sawaal) aur follow-up (2 din baad, bas ek baar).\n    • Message mein {naam}, {kaam} har business ke hisaab se badlo — copy-paste spam mat\n     karo.",
+      "contentHash": "63b1369ce58a2731494a49545039ef2c164257c45a8f9b4bc5b8de6bede32e24",
+      "lessonNumber": 9,
+      "lessonId": "6aeb1d5f2497c8173516e254",
+      "lessonName": "Find Clients",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:workflow:d95ccf3236a704bd2477",
+      "contentType": "workflow",
+      "heading": "Lesson 10 — Deal Pakki Karo (Practice)",
+      "content": "Lesson 10 — Deal Pakki Karo (Practice)\n    • Practice: ChatGPT ko bolo 'maan lo client ne aisa reply kiya' — Instagram vs page ka fark\n    simple shabdon mein + packages.\n    • Mol-bhav ('1,500 mein kar do'): price giraane ki jagah value samjhao, politely.\n    • Payment: 50% advance, 50% page live hone ke baad — dono taraf bharosa.\n    • Sheet mein payment / advance columns — har client ka hisaab saaf. Advance milne ke\n    baad hi kaam shuru.",
+      "contentHash": "d95ccf3236a704bd24774c909cdf5dbf69ce160cbf48195d09d1c0124fbfc50b",
+      "lessonNumber": 10,
+      "lessonId": "6aeb1d5f2497c8173516e255",
+      "lessonName": "Handle Client Objection",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:faq:6262c409bb1b218cf71a",
+      "contentType": "faq",
+      "heading": "Troubleshooting (FAQ)",
+      "content": "Part E — Troubleshooting (FAQ)\n\n  Problem                    Jawab\n\n  ChatGPT ulta sawaal pooch raha    Details do: naam, kaam, city, customers, goal. (L02)\n  hai\n\n  Page par image nahi dikh rahi        File ka naam code se match karo (jaise cakes.jpg), file usi folder mein ho,\n                                        phir Cmd + R. (L06)\n\n  Live page par images nahi hain      Netlify par poora folder upload karo, sirf index.html nahi. Deploys tab\n                               mein dobara drop. (L07)\n\n  WhatsApp button galat number    Code mein Cmd + F se XXXX dhundho, asli number daalo (91 + 10 digit),\n  khol raha hai                      save, dobara deploy. (L05–L07)\n\n  Code adhoora aaya              ChatGPT ko bolo 'poora code ek code block mein do' ya 'continue'. Beech\n                               mein stop mat karo. (L05)\n\n   File .txt ban gayi               VS Code use karo, naam index.html; TextEdit mein Plain Text + 'Use\n                                           .html'. (L05)\n\n  Mobile pe buttons chhote hain     ChatGPT se change: 'mobile pe buttons bade aur easy to tap, baaki sab\n                                   same'. (L06)\n\n   Netlify naam not available         Peeche number ya alag word lagao. (L07, L08)\n\n  Naya code daala toh design badal  Message mein 'baaki sab same rakho' likho. (L06)\n  gaya\n\n  Kaunse clients target karun?      Maps pe bina website wale local business — 'Add website' dikhe toh\n                                   website nahi hai. (L09)\n\n   Client 1,500 bol raha hai           Value samjhao, 50% advance option do; price tumhara faisla. (L10)\n\n  Kitna kamaunga?                 Course koi kamai ka number nahi deta — packages aur price apne kaam\n                                 ke hisaab se tay karo.",
+      "contentHash": "6262c409bb1b218cf71a1f493cf2fbd47e3f00b7574beaa278f95b4ac6db62e0",
+      "lessonNumber": null,
+      "lessonId": "",
+      "lessonName": "",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:course-guidance:69f8e376bae60fd22b11",
+      "contentType": "course-guidance",
+      "heading": "Example answers (bot ka tone)",
+      "content": "Part G — Example answers (bot ka tone)\n\n  User: live page pe photos nahi aa rahi\n  Bot: Lagta hai sirf index.html upload hui. Netlify mein project kholo → Deploys → poora folder\n  (index.html + saari images) drag karke drop karo, phir link refresh. Lesson 07 dekho.\n\n  User: page pe 5 star reviews daal du taaki log trust karein?\n  Bot: Nakli reviews mat daalo — pakde gaye toh trust khatam. Abhi 'Hamare baare mein'\n  section rakho, aur jab asli customers bolein tab unke reviews (permission ke saath) daalo.\n  Lesson 03.\n\n  User: client ko kaise convince karun?\n  Bot: Pehle portfolio link bhejo (L08), unke kaam ki asli tareef karo, aur ek simple sawaal\n  pucho. Reply aaye toh value samjhao aur 50% advance ka option do (L09, L10). Koi\n  guarantee wala promise mat karna.\n\n\n\n\n\n\n\n======================================================================",
+      "contentHash": "69f8e376bae60fd22b11932fcf8676834d5c7ca8a12bafd92503ccfed51ac7d2",
+      "lessonNumber": null,
+      "lessonId": "",
+      "lessonName": "",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:counterexample:cc31efb52b79ef26546d",
+      "contentType": "counterexample",
+      "heading": "Lesson 2 — Galti wala message (sirf comparison ke liye)",
+      "content": "   mere liye landing page bana do",
+      "contentHash": "cc31efb52b79ef26546ddb79e85a3085aba35736881bd3884f32c1570459d888",
+      "lessonNumber": 2,
+      "lessonId": "6aeb1d5f2497c8173516e24d",
+      "lessonName": "Page Planning",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": [
+        "Galti wala message"
+      ],
+      "sourceStartByte": 29678,
+      "sourceEndByte": 29711,
+      "usage": "Failed example for comparison only; never recommend this as an approved prompt."
+    },
+    {
+      "chunkId": "ai-landing-page:exact-template:cab687112ee53da2931c",
+      "contentType": "exact-template",
+      "heading": "Lesson 2 — Message 1: Business details + plan",
+      "content": "   Mujhe ek landing page banana hai. Business details:\n   - Naam: Sweet Crumbs\n   - Kaam: home-baked custom cakes (birthday, anniversary, theme cakes)\n   - City: Indore, home delivery\n   - Customers: parents aur young couples jo special occasion ke liye cake chahte hain\n   - Goal: log WhatsApp par order karein\n\n\n   Mujhe batao: (1) page ka main offer ek line mein, (2) customer ki 3 problems jo hum solve\n   karte hain, (3) page ke sections upar se neeche order mein, (4) 5 headline options. Koi\n   detail apni taraf se mat jodna.",
+      "contentHash": "cab687112ee53da2931cb9d99f84a3a839c3be17e7d958d03db2727d7127acda",
+      "lessonNumber": 2,
+      "lessonId": "6aeb1d5f2497c8173516e24d",
+      "lessonName": "Page Planning",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": [
+        "Message 1: Business details + plan"
+      ],
+      "sourceStartByte": 29754,
+      "sourceEndByte": 30286,
+      "usage": "Unchanged course example, not learner facts. Any filled placeholder or other adaptation must be labelled Customized AI Prompt."
+    },
+    {
+      "chunkId": "ai-landing-page:exact-template:c22af88a284d8faae8f3",
+      "contentType": "exact-template",
+      "heading": "Lesson 3 — Message 2: Har section ka text ([number] ki jagah apna headline number)",
+      "content": "   Headline option [number] final hai. Ab har section ka poora text likho, simple Hinglish\n   mein:\n   - Hero: headline, sub-headline, button text\n   - Kyun hum: 3 benefits (har ek ka chhota title + 1 line)\n   - Cakes: 4 cake types ke naam + 1 line description\n   - Kaise order karein: 3 steps\n   - Reviews section: sirf format/placeholder do — main asli customer reviews daalunga, fake\n   reviews mat likhna\n   - FAQ: 4 sawaal-jawaab\n   - Last CTA: ek line + button text\n   Price mat likhna, main khud daalunga.",
+      "contentHash": "c22af88a284d8faae8f307de9ecb644cee313eebdf0e3441c6ed3556bfad7554",
+      "lessonNumber": 3,
+      "lessonId": "6aeb1d5f2497c8173516e24e",
+      "lessonName": "Landing Page Copy",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": [
+        "Message 2: Har section ka text"
+      ],
+      "sourceStartByte": 30634,
+      "sourceEndByte": 31148,
+      "usage": "Unchanged course example, not learner facts. Any filled placeholder or other adaptation must be labelled Customized AI Prompt."
+    },
+    {
+      "chunkId": "ai-landing-page:exact-template:faa84e0bcf2b3b18bfc1",
+      "contentType": "exact-template",
+      "heading": "Lesson 4 — Message 3: Flow ke liye 3 image prompts",
+      "content": "   Landing page ke liye Google Flow (Nano Banana Pro) ke 3 image prompts likho, 16:9,\n   realistic food photography, no text, no people's faces, no logos:\n   1. Hero image: ek sundar custom birthday cake, soft warm light, clean background\n   2. 4 cakes ka flat-lay (chocolate, fruit, theme, anniversary)\n   3. Ghar ki kitchen mein cake decorate hote hue — sirf haath, close-up",
+      "contentHash": "faa84e0bcf2b3b18bfc1f9040e31a8ceebf20a58bb95ffe350bc21a83de17fb9",
+      "lessonNumber": 4,
+      "lessonId": "6aeb1d5f2497c8173516e24f",
+      "lessonName": "Images with Google Flow",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": [
+        "Message 3: Flow ke liye 3 image prompts"
+      ],
+      "sourceStartByte": 31458,
+      "sourceEndByte": 31836,
+      "usage": "Unchanged course example, not learner facts. Any filled placeholder or other adaptation must be labelled Customized AI Prompt."
+    },
+    {
+      "chunkId": "ai-landing-page:exact-template:cfd69319cadbcb217a32",
+      "contentType": "exact-template",
+      "heading": "Lesson 5 — Message 4: Poora landing page code (apna number daalo)",
+      "content": "   Ab upar wale copy text se Sweet Crumbs ka poora landing page bana do.\n\n\n   - Ek hi file: index.html (HTML + CSS andar hi, koi alag file nahi)\n   - Images same folder mein hain: hero.jpg, cakes.jpg, kitchen.jpg — inhi naam se use karo\n   - Colours: warm cream background, chocolate brown text, soft pink buttons\n   - Mobile pe bhi perfect dikhe\n   - Har \"Order on WhatsApp\" button is link pe jaye:\n   https://wa.me/91XXXXXXXXXX?text=Hi%20Sweet%20Crumbs,%20mujhe%20cake%20order%20karna%20hai\n   - Neeche ek floating WhatsApp button bhi ho\n   - Sections: Hero, Menu (cakes + price), Kaise order karein (3 steps), Customer reviews ki\n   jagah \"Hamare baare mein\", Contact/footer\n\n\n   Sirf poora code do, ek code block mein.",
+      "contentHash": "cfd69319cadbcb217a3294d05eea03c6e3ee8f2584fdaf9d213d58fba931fddd",
+      "lessonNumber": 5,
+      "lessonId": "6aeb1d5f2497c8173516e250",
+      "lessonName": "Generate HTML Code",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": [
+        "Message 4: Poora landing page code"
+      ],
+      "sourceStartByte": 32159,
+      "sourceEndByte": 32883,
+      "usage": "Unchanged course example, not learner facts. Any filled placeholder or other adaptation must be labelled Customized AI Prompt."
+    },
+    {
+      "chunkId": "ai-landing-page:exact-template:eaea55fc4f11ff6097fe",
+      "contentType": "exact-template",
+      "heading": "Lesson 6 — Message 5: Changes (apna number daalo)",
+      "content": "   Is page mein ye changes karo:\n\n\n   1. WhatsApp number badlo — har link mein ye use karo:\n   https://wa.me/9198XXXXXXXX?text=Hi%20Sweet%20Crumbs,%20mujhe%20cake%20order%20karna%20hai\n   2. Menu mein \"On Request\" hata ke prices daalo: Chocolate Cake ₹550 se, Fruit Cake ₹600\n   se, Theme Cake ₹900 se, Anniversary Cake ₹750 se\n   3. Sabse upar ek patli pink strip: \"Indore mein home delivery — order 1 din pehle karein\"\n   4. Mobile pe buttons bade aur easy to tap ho, text thoda bada ho\n\n\n   Baaki sab same rakho. Poora updated code do, ek code block mein.",
+      "contentHash": "eaea55fc4f11ff6097fe6df36e9ea2c133fc3922c182ef6a80d5e17e03f6cac9",
+      "lessonNumber": 6,
+      "lessonId": "6aeb1d5f2497c8173516e251",
+      "lessonName": "Mobile Check and Changes",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": [
+        "Message 5: Changes"
+      ],
+      "sourceStartByte": 33201,
+      "sourceEndByte": 33771,
+      "usage": "Unchanged course example, not learner facts. Any filled placeholder or other adaptation must be labelled Customized AI Prompt."
+    },
+    {
+      "chunkId": "ai-landing-page:exact-template:a179fba509f2cc487cb4",
+      "contentType": "exact-template",
+      "heading": "Lesson 8 — Message 1: Portfolio page (apna number + apna Netlify link daalo)",
+      "content": "   Mere liye ek portfolio landing page banao. Main local businesses ke liye landing pages\n   banata hoon.\n\n\n   - Studio ka naam: QuickPage Studio\n   - Ek hi file: index.html (HTML + CSS andar)\n   - Style: dark background, white text, ek bright accent colour (lime green), modern aur\n   clean\n   - Mobile pe perfect dikhe\n\n\n   Sections:\n   1. Hero: \"Aapke business ka page — 3 din mein ready\" + WhatsApp button\n   2. Services: Landing page design, WhatsApp order button, mobile-friendly, Netlify pe live\n   karna\n   3. Mera kaam: ek project card — image \"sweet-crumbs.png\", title \"Sweet Crumbs — Home\n   Baker, Indore\", button \"Live dekho\" jo https://sweet-crumbs123.netlify.app kholega (new\n   tab mein)\n   4. Ek khali card: \"Aapka business yahan ho sakta hai\"\n   5. Kaise kaam karta hai: 3 steps — Details bhejo, Page banta hai, Page live\n   6. Packages: Starter ₹2,999 (1 page), Business ₹5,999 (1 page + 2 changes + WhatsApp\n   setup)\n   7. Contact: WhatsApp button —\n   https://wa.me/9198XXXXXXXX?text=Hi%20QuickPage,%20mujhe%20landing%20page%20banwana%20hai\n\n\n   Koi fake review ya fake client mat daalna. Sirf poora code do, ek code block mein.",
+      "contentHash": "a179fba509f2cc487cb4e99420527cd192ccb7a25ce8bccfdbc184e78337005b",
+      "lessonNumber": 8,
+      "lessonId": "6aeb1d5f2497c8173516e253",
+      "lessonName": "Build a Portfolio",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": [
+        "Message 1: Portfolio page"
+      ],
+      "sourceStartByte": 34110,
+      "sourceEndByte": 35274,
+      "usage": "Unchanged course example, not learner facts. Any filled placeholder or other adaptation must be labelled Customized AI Prompt."
+    },
+    {
+      "chunkId": "ai-landing-page:exact-template:41881f711875e6674171",
+      "contentType": "exact-template",
+      "heading": "Lesson 9 — Message 1: Kaunse business target karein",
+      "content": "   Main local businesses ke liye landing pages banata hoon (WhatsApp order button ke saath).\n   Indore jaise shehar mein aise 6 type ke local businesses batao jinko landing page ki sabse\n   zyada zarurat hai aur jo aksar website ke bina chalte hain. Har ek ke saath 1 line mein\n   batao kyun.",
+      "contentHash": "41881f711875e6674171c20ed7ee9d2d128e0338b8f91ed10b6a69df89a1febe",
+      "lessonNumber": 9,
+      "lessonId": "6aeb1d5f2497c8173516e254",
+      "lessonName": "Find Clients",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": [
+        "Message 1: Kaunse business target karein"
+      ],
+      "sourceStartByte": 35586,
+      "sourceEndByte": 35878,
+      "usage": "Unchanged course example, not learner facts. Any filled placeholder or other adaptation must be labelled Customized AI Prompt."
+    },
+    {
+      "chunkId": "ai-landing-page:exact-template:55c45d35e012c33ebdb9",
+      "contentType": "exact-template",
+      "heading": "Lesson 9 — Message 2: WhatsApp pehla message + follow-up",
+      "content": "   Ab mujhe 2 WhatsApp messages likh do jo main aise business ko bhej sakun jiski website\n   nahi hai:\n\n\n   1. Pehla message — chhota, friendly, Hinglish mein. Business ka naam aur unke kaam ki ek\n   tareef ho (jagah chhod do: {naam}, {kaam}). Batao ki unke liye WhatsApp order button wala\n   page bana sakta hoon, aur mera kaam yahan dekh sakte hain:\n   https://theportfolio123.netlify.app. End mein ek simple sawaal ho, pressure nahi.\n   2. Follow-up message — agar 2 din tak reply na aaye.\n\n\n   Spam jaisa nahi lagna chahiye, koi jhootha promise ya fake number nahi.",
+      "contentHash": "55c45d35e012c33ebdb9ac9a3756ccc765bccc28f9cac4f8525b013a8f2ab4cf",
+      "lessonNumber": 9,
+      "lessonId": "6aeb1d5f2497c8173516e254",
+      "lessonName": "Find Clients",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": [
+        "Message 2: WhatsApp pehla message + follow-up"
+      ],
+      "sourceStartByte": 35932,
+      "sourceEndByte": 36505,
+      "usage": "Unchanged course example, not learner facts. Any filled placeholder or other adaptation must be labelled Customized AI Prompt."
+    },
+    {
+      "chunkId": "ai-landing-page:exact-template:eee033fc5ad3caa1b49c",
+      "contentType": "exact-template",
+      "heading": "Lesson 10 — Message 1: Client ke reply ka jawab (practice)",
+      "content": "   Practice karni hai. Maan lo ek home baker client (Sweet Crumbs, Indore) ne mere message ka\n   aisa reply kiya:\n   \"Interesting hai. Kitna charge karoge? Aur mera Instagram toh hai hi, page ki kya\n   zarurat?\"\n\n\n   Mujhe ek chhota, friendly Hinglish reply likh do jo simple shabdon mein samjhaye ki\n   Instagram ke saath ek WhatsApp order page kyun kaam aata hai, aur mere 2 packages bataye:\n   Starter ₹2,999 (1 page), Business ₹5,999 (1 page + 2 changes + WhatsApp setup).\n   Koi jhootha promise ya fake result nahi.",
+      "contentHash": "eee033fc5ad3caa1b49c33798376d2a133986fb0d8e04b01b92c868ab00be1a2",
+      "lessonNumber": 10,
+      "lessonId": "6aeb1d5f2497c8173516e255",
+      "lessonName": "Handle Client Objection",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": [
+        "Message 1: Client ke reply ka jawab"
+      ],
+      "sourceStartByte": 36831,
+      "sourceEndByte": 37355,
+      "usage": "Unchanged course example, not learner facts. Any filled placeholder or other adaptation must be labelled Customized AI Prompt."
+    },
+    {
+      "chunkId": "ai-landing-page:exact-template:310ac281b39401828934",
+      "contentType": "exact-template",
+      "heading": "Lesson 10 — Message 2: Mol-bhav + 50% advance",
+      "content": "   Ab maan lo client bola: \"1,500 mein kar do.\"\n   Ek polite reply do jo price kam kiye bina value samjhaye, aur 50% advance + 50% page live\n   hone ke baad wala option de.",
+      "contentHash": "310ac281b39401828934c19ad1465a0437d7ace48c9ec6545ca383a9910d6a99",
+      "lessonNumber": 10,
+      "lessonId": "6aeb1d5f2497c8173516e255",
+      "lessonName": "Handle Client Objection",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": [
+        "Message 2: Mol-bhav + 50% advance"
+      ],
+      "sourceStartByte": 37397,
+      "sourceEndByte": 37569,
+      "usage": "Unchanged course example, not learner facts. Any filled placeholder or other adaptation must be labelled Customized AI Prompt."
+    },
+    {
+      "chunkId": "ai-landing-page:lesson-notes:15f7c45e9addcda74bbe",
+      "contentType": "lesson-notes",
+      "heading": "Lesson 1 — Course Intro",
+      "content": "Lesson 01 — Course Intro\n    • Landing page: ek hi page jo ek kaam karta hai — visitor ko customer banana (yahan:\n    WhatsApp par order).\n    • Bahut saare local business (home bakers, salon, tiffin, coaching) sirf Instagram/WhatsApp\n    pe chalte hain — unke paas ek saaf, shareable page nahi hota.\n    •  Is course mein bina coding: plan → text → images → code → mobile fix → live → portfolio →\n     clients → deal.\n    • Running example: Sweet Crumbs — Indore ki ek home baker (course ka sample business),\n     goal: WhatsApp orders.\n    • Tools: ChatGPT, Google Flow (Nano Banana images), VS Code (free), Chrome, Netlify Drop\n     (free hosting), Google Maps, Google Sheets.\n\n  Aaj ka kaam\n\n  Apne aas-paas ke 3 business socho jinke paas website nahi hai.",
+      "contentHash": "15f7c45e9addcda74bbebeb9b8cb5e57bf36dccd48fac6f1df4e77279a6eabb9",
+      "lessonNumber": 1,
+      "lessonId": "6aeb1d5f2497c8173516e24c",
+      "lessonName": "Course Introduction",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:lesson-notes:57ce6aa6e88efd95a39b",
+      "contentType": "lesson-notes",
+      "heading": "Lesson 2 — Page Ka Plan",
+      "content": "Lesson 02 — Page Ka Plan\n    • ChatGPT ko business ki asli details do: naam, kaam, city, customers, goal.\n    • Usse 4 cheezein maango: main offer (1 line), customer ki 3 problems + solution, sections\n    ka order, 5 headline options.\n    • 'Koi detail apni taraf se mat jodna' — taaki ChatGPT nakli offer/discount na banaye.\n    • Sabse saaf headline chuno (course mein: 'Birthday Ho Ya Anniversary, Cake Ho Aapki\n    Pasand Ka!').\n\n  Galti + fix\n\n   Sirf 'mere liye landing page bana do' likha — ChatGPT ulta poochta hai kis business ke liye.\n  Bina details ke kaam ka page nahi banta.\n\n\n\n\n\n\n\n\n  Aaj ka kaam\n\n  Apne business (ya kisi client) ka plan aur headline final karo.",
+      "contentHash": "57ce6aa6e88efd95a39b2b835679cab1f6422480dbe93601af1a86990811705f",
+      "lessonNumber": 2,
+      "lessonId": "6aeb1d5f2497c8173516e24d",
+      "lessonName": "Page Planning",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:lesson-notes:8aec473eda19002d01ee",
+      "contentType": "lesson-notes",
+      "heading": "Lesson 3 — Page Ka Text (Copy)",
+      "content": "Lesson 03 — Page Ka Text (Copy)\n    • Usi chat mein: final headline batao aur har section ka text maango — Hero, Kyun hum,\n    Cakes, Kaise order karein, Reviews, FAQ, Last CTA.\n    • Reviews ke liye sirf format/placeholder — asli customer reviews baad mein daalo, fake\n    reviews kabhi nahi.\n    • Price ChatGPT se mat likhwao — wo business owner decide karta hai.\n    • Tip: '[number]' jaisi jagah apna asli option number likh do.\n\n  Aaj ka kaam\n\n  Apne page ka poora text ready karo aur save rakho.",
+      "contentHash": "8aec473eda19002d01ee535efabb40f5f9c65e3b2a44cf098a596550278a8c7f",
+      "lessonNumber": 3,
+      "lessonId": "6aeb1d5f2497c8173516e24e",
+      "lessonName": "Landing Page Copy",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:lesson-notes:723aa7763e6e6d914cfd",
+      "contentType": "lesson-notes",
+      "heading": "Lesson 4 — Images (Google Flow)",
+      "content": "Lesson 04 — Images (Google Flow)\n    • ChatGPT se 3 image prompts: hero cake, 4 cakes ka flat-lay, kitchen mein decorate karte\n    haath — 16:9, realistic, no text, no faces, no logos.\n    • Flow → Image (Nano Banana) → prompt paste → generate. Teeno ek saath bana sakte ho.\n    • Download karke naam rakho: hero.jpg, cakes.jpg, kitchen.jpg — ek hi folder\n    (sweet-crumbs) mein.\n    • AI images sample/visual ke liye hain; client ka asli product ho toh uski asli photos best\n     hain.\n\n  Aaj ka kaam\n\n  Apne page ki 3 images banao aur sahi naam se folder mein rakho.",
+      "contentHash": "723aa7763e6e6d914cfdee1de14a0939d3afbf39bfe531b4d6da47370e5b6525",
+      "lessonNumber": 4,
+      "lessonId": "6aeb1d5f2497c8173516e24f",
+      "lessonName": "Images with Google Flow",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:lesson-notes:c08200970e36f92203c9",
+      "contentType": "lesson-notes",
+      "heading": "Lesson 5 — Code (Bina Coding)",
+      "content": "Lesson 05 — Code (Bina Coding)\n    • ChatGPT ko ek message: ek file (index.html), images ke naam, colours, WhatsApp link,\n     floating button, sections.\n    • WhatsApp link format: https://wa.me/91XXXXXXXXXX?text=... — 91 ke baad apna 10 digit\n    number.\n    • Code poora aane do, beech mein stop mat karo, phir Copy.\n    • sweet-crumbs folder banao, teeno images (hero.jpg, cakes.jpg, kitchen.jpg) usme daalo.\n    • ChatGPT ka code Copy → VS Code → New File → paste → Save as index.html (usi folder\n    mein).\n    • index.html par double-click → page Chrome mein khulta hai → Order on WhatsApp button\n    check karo.\n\n  Galti + fix\n\n  Placeholder number (91XXXXXXXXXX) waise hi chhod diya — button galat number pe jaata\n   hai. Hamesha asli number daalo.\n\n  Aaj ka kaam\n\n  Apna page banao, browser mein kholo aur har button check karo.",
+      "contentHash": "c08200970e36f92203c993a43c156df564a24a6e6dc024b10c7f03996233f053",
+      "lessonNumber": 5,
+      "lessonId": "6aeb1d5f2497c8173516e250",
+      "lessonName": "Generate HTML Code",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:lesson-notes:e0c8f6a3cbaaba0d66e4",
+      "contentType": "lesson-notes",
+      "heading": "Lesson 6 — Mobile Check + Badlav",
+      "content": "Lesson 06 — Mobile Check + Badlav\n    • Image gayab ho toh file ka naam check karo: code jo naam maang raha hai (cakes.jpg)\n    wahi file ka naam ho → rename → Cmd + R.\n    • Mobile view: Cmd + Option + I → Cmd + Shift + M → device list se iPhone chuno → scroll.\n    • Changes: ChatGPT se poora updated code → VS Code mein Cmd + A, Cmd + V, Cmd + S →\n     refresh.\n    • Changes ke example: asli number, prices, upar ek strip, mobile pe bade buttons.\n    • 'Baaki sab same rakho' likho taaki ChatGPT poora design na badle.\n\n  Galti + fix\n\n  Folder mein file ka naam cake.jpg tha, code cakes.jpg maang raha tha — image gayab. Ek\n   letter ki galti = image nahi dikhegi.\n\n  Aaj ka kaam\n\n  Apne page ko phone view mein check karo aur 2 changes karwao.",
+      "contentHash": "e0c8f6a3cbaaba0d66e42d33e04282e439b90100512baf241da450f2ea70faeb",
+      "lessonNumber": 6,
+      "lessonId": "6aeb1d5f2497c8173516e251",
+      "lessonName": "Mobile Check and Changes",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:lesson-notes:11936500088504dd091b",
+      "contentType": "lesson-notes",
+      "heading": "Lesson 7 — Page Live Karo (Netlify Drop)",
+      "content": "Lesson 07 — Page Live Karo (Netlify Drop)\n    • app.netlify.com/drop (ya Add new project → Upload) — poora folder drop karo, sirf\n    index.html nahi.\n    • Published → live link (random naam) khulta hai.\n    • Project configuration → Change project name → naam not available ho toh peeche number\n    lagao → Save.\n    • Badlav ke baad: Deploys tab mein folder dobara drop karo.\n    • Free plan mein link aisa hota hai: naam.netlify.app. Apna .com domain alag se kharidna\n    padta hai (client ke naam pe).\n\n  Galti + fix\n\n  Upload mein sirf index.html select hui — live page par images toot gayi. Poora folder\n  (index.html + images) upload karo.\n\n  Aaj ka kaam\n\n  Apna page live karo aur link kisi dost ko bhejo.",
+      "contentHash": "11936500088504dd091bac52a5721baff1bb5eb1f8eacf0c90178f81744a2298",
+      "lessonNumber": 7,
+      "lessonId": "6aeb1d5f2497c8173516e252",
+      "lessonName": "Publish on Netlify",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:lesson-notes:aeb3ac6064bd471dd9bc",
+      "contentType": "lesson-notes",
+      "heading": "Lesson 8 — Apna Portfolio",
+      "content": "Lesson 08 — Apna Portfolio\n    • Client sabse pehle poochta hai: 'pehle kya banaya hai?' — portfolio page uska jawab hai.\n    • ChatGPT se portfolio page: studio naam, services, 'Mera kaam' card (Sweet Crumbs + live\n      link), khali card 'Aapka business yahan ho sakta hai', 3 steps, packages, WhatsApp\n     contact.\n    • Koi fake review ya fake client nahi — jo asli kaam hai wahi dikhao.\n    • Project card ki image (sweet-crumbs.png) bhi usi folder mein rakho, phir poora folder\n     Netlify pe drop karo.\n    • Naam not available? Kuch alag socho (course mein: theportfolio123).\n\n\n\n\n\n\n\n\n\n\n  Galti + fix\n\n  sweet-crumbs.png folder mein nahi thi — project card ki image toot gayi. Har file wahi naam\n  aur wahi folder.\n\n  Aaj ka kaam\n\n  Apna portfolio page banao, live karo aur link save rakho.",
+      "contentHash": "aeb3ac6064bd471dd9bc2b2a7e4ab3c042adbf200b93e5035e982a214fae6df4",
+      "lessonNumber": 8,
+      "lessonId": "6aeb1d5f2497c8173516e253",
+      "lessonName": "Build a Portfolio",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:lesson-notes:be42e21010f6e5f28580",
+      "contentType": "lesson-notes",
+      "heading": "Lesson 9 — Clients Dhoondho + Approach",
+      "content": "Lesson 09 — Clients Dhoondho + Approach\n    • ChatGPT se poocho kaunse local business ko page ki sabse zyada zarurat hai (home\n    bakers, beauty parlours, tiffin, coaching, car wash, event decorators...).\n    • Google Maps pe search: 'home bakers near me', 'salon Indore' — listing mein 'Add website'\n    dikhe toh website nahi hai.\n    • Google Sheet (sheets.new): Business type | Area | website hai? | map link | status | MSG.\n    • Maps listing → Share → Copy link → sheet mein paste. Phone numbers sheet mein daalne ki\n     zarurat nahi.\n    • ChatGPT se 2 messages: pehla (chhota, friendly, unke kaam ki tareef + portfolio link + ek\n    simple sawaal) aur follow-up (2 din baad, bas ek baar).\n    • Message mein {naam}, {kaam} har business ke hisaab se badlo — copy-paste spam mat\n     karo.\n\n  Aaj ka kaam\n\n  Apne shehar ke 10 business dhoondho jinki website nahi hai, sheet mein daalo.",
+      "contentHash": "be42e21010f6e5f285808a84930f375fa18e158a72dc3bf49b5bed2f78714810",
+      "lessonNumber": 9,
+      "lessonId": "6aeb1d5f2497c8173516e254",
+      "lessonName": "Find Clients",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:lesson-notes:db41df5628d2589173ba",
+      "contentType": "lesson-notes",
+      "heading": "Lesson 10 — Deal Pakki Karo (Practice)",
+      "content": "Lesson 10 — Deal Pakki Karo (Practice)\n    • Practice: ChatGPT ko bolo 'maan lo client ne aisa reply kiya' — Instagram vs page ka fark\n    simple shabdon mein + packages.\n    • Mol-bhav ('1,500 mein kar do'): price giraane ki jagah value samjhao, politely.\n    • Payment: 50% advance, 50% page live hone ke baad — dono taraf bharosa.\n    • Sheet mein payment / advance columns — har client ka hisaab saaf. Advance milne ke\n    baad hi kaam shuru.\n\n  Aaj ka kaam\n\n  Dono replies ki practice karo aur apna package aur price khud tay karo.",
+      "contentHash": "db41df5628d2589173ba48c98ab880050aabef679ba17f1789803c0f9dc2e105",
+      "lessonNumber": 10,
+      "lessonId": "6aeb1d5f2497c8173516e255",
+      "lessonName": "Handle Client Objection",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:lesson-notes:a26b014a58ac22e1f8f7",
+      "contentType": "lesson-notes",
+      "heading": "Lesson 11 — Course Recap",
+      "content": "Lesson 11 — Course Recap\n    • Step 1 Plan → 2 Text → 3 Images → 4 Code → 5 Mobile + changes → 6 Live → 7 Portfolio → 8\n     Clients → 9 Deal.\n    • Ab tumhari baari: pehla page banao, live karo, aur pehle client se baat karo.\n\n  Aaj ka kaam\n\n  Apna pehla client-ready page aur portfolio link taiyaar rakho.",
+      "contentHash": "a26b014a58ac22e1f8f79718457e957c1bb033c89ce4ef391d35da02a3141a7f",
+      "lessonNumber": 11,
+      "lessonId": "6aeb1d5f2497c8173516e256",
+      "lessonName": "Course Recap",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    },
+    {
+      "chunkId": "ai-landing-page:course-guidance:12d70d171a35faac756f",
+      "contentType": "course-guidance",
+      "heading": "Honesty rules and tool/file troubleshooting",
+      "content": "5 Honesty Rules\n    • Koi fake review, fake client ya fake 'happy customers' number page par nahi.\n    • Price aur offer hamesha business owner tay karta hai — ChatGPT se invent mat karwao.\n    • Asli WhatsApp number daalo; placeholder (XXXX) kabhi live mat karo.\n    • AI images ko client ka asli product bata kar mat dikhao; asli photos milen toh wahi use\n     karo.\n    • Client ko kamai/orders ki guarantee mat do — page ek tool hai, jaadu nahi.\n\n Shortcuts + settings cheat-sheet\n\n  Kaam                 Kahan                     Kaise\n\n   Plan, text, prompts, code,   ChatGPT                         Details clear do; 'apni taraf se mat jodna'\n  messages\n\n  Images                   Google Flow · Image · Nano      16:9, realistic, no text/faces/logos\n                          Banana\n\n   File save                VS Code                 New File → paste → Save as index.html\n\n  Sab select / paste / save    VS Code                Cmd + A / Cmd + V / Cmd + S\n\n  Page refresh             Chrome                 Cmd + R\n\n  Mobile view              Chrome DevTools          Cmd + Option + I, phir Cmd + Shift + M\n\n  Live karna                     Netlify Drop                   Poora folder drop; naam: Project configuration\n\n  Update live page              Netlify · Deploys                Folder dobara drop\n\n  WhatsApp link            Code mein                     https://wa.me/91?text=\n\n   Clients list                 Google Maps + Sheets          'Add website' = website nahi; Share → Copy\n                                                                          link\n\n\n   Note: tools ke menu aur options update hote rehte hain — screen pe jo naam dikhe wahi use karo.",
+      "contentHash": "12d70d171a35faac756f3154571a1f3ca7a5f4b58e3e7e8882c5a0a6adf492de",
+      "lessonNumber": null,
+      "lessonId": "",
+      "lessonName": "",
+      "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+      "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+      "aliases": []
+    }
+  ]
+}

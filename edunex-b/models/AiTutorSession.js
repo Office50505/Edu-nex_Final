@@ -9,6 +9,8 @@ const aiTutorSessionSchema = new mongoose.Schema({
   currentIntent: { type: String, default: '' },
   lastWorkflow: { type: String, default: '' },
   lastTemplateId: { type: String, default: '' },
+  // Server-owned per-course memory for one authenticated Nex AI conversation.
+  unifiedContext: { type: mongoose.Schema.Types.Mixed, default: null },
   courseContext: {
     courseId: {type:String,maxlength:120},
     conversationId: {type:String,maxlength:120},

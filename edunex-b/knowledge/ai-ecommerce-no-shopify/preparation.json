@@ -1,0 +1,19 @@
+{
+  "result": "FAIL_UNVERIFIED_PUBLISHED_OWNER",
+  "courseId": null,
+  "slug": null,
+  "publishedCatalogCoursesChecked": 8,
+  "matchingPublishedCourses": 0,
+  "catalogSnapshotHash": "c1406ec54fbccbc6c3b2d5bd02e967796814a8dffc197e105c6f623f070d0e4d",
+  "lessons": 13,
+  "mappedLessonIds": 0,
+  "chunks": 47,
+  "exactTemplates": 14,
+  "lessonNotes": 13,
+  "lessonWorkflows": 13,
+  "duplicateChunks": 0,
+  "sourceTxtHash": "f2416d2b7ab204d196ec8e762e73cfd777a19f33dfee8291c70e1153c9270744",
+  "paidCalls": 0,
+  "databaseWrites": 0,
+  "enabled": false
+}

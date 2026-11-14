@@ -118,6 +118,9 @@ function validateViralHookReply({reply,knowledge,templates=[]}) {
       const content=text;
       const roleText=content.replace(/^\s*(?:[-*•]\s*)?(?:\*\*)?(?:Hook|Payoff|Explanation|Correction)(?:\*\*)?\s*:\s*(?:\*\*)?\s*/iu,'').replace(/^[\s"“]+/u,'');
       if(!content.trim()||qualification.test(roleText))continue;
+      const creativeInstruction = /\b(?:camera|handheld|framing|lighting|composition|video length|out of frame|focus will be on|video will start|AI (?:influencer|model|presenter))\b/iu.test(content)
+        && !/\b(?:fixed|repaired|restored|recovered|successful|working perfectly|guarantee\w*)\b|\d+\s*%/iu.test(content);
+      if (creativeInstruction) continue;
       const factualContent=content.replace(/\b(?:the )?(?:lighting|camera|framing|composition)\s+(?:is|are)\s+\w+(?:ing|ed)\b/giu,'');
       const kinds=claimKinds(factualContent);if(!kinds.length || (!kinds.includes('guaranteed_result') && hasGrounding(content,evidence)))continue;
       for(const code of kinds)issues.push({code,text:content.trim(),start,end:start+text.length,repairable:true});

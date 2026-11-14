@@ -1,0 +1,1215 @@
+SKILLOMATE — AI SE LANDING PAGE BANAO
+NEX AI COURSE KNOWLEDGE SOURCE TEXT
+Source: 3 supplied course PDFs. No verified published course ID or transcript timestamps supplied.
+Do not interpret this pack as restricting access to other Skillomate courses.
+Never invent business facts, reviews, offers, results, contact numbers or prices. Distinguish sample business examples from verified clients.
+For exact course prompts, use the ORIGINAL ALL PROMPTS section below and retain its original language. Replace placeholders only with learner-supplied details.
+Do not claim to have seen a lesson video; these documents are notes and prompts, not video transcripts.
+
+COURSE DESCRIPTION
+Learn to create, review and publish a WhatsApp-focused landing page for a local business using ChatGPT, Google Flow, VS Code, Chrome and Netlify. Follow the Sweet Crumbs home-bakery demonstration from planning and copywriting through images, HTML, mobile improvements and publishing. Then build a truthful portfolio and practice finding and communicating with prospective clients. The course emphasizes accurate business details, genuine reviews and realistic expectations; it does not promise sales or income.
+
+LESSON INDEX AND ENGLISH KNOWLEDGE
+LESSON 01: Course Introduction
+OBJECTIVE: Define a landing page, its single conversion goal and the full no-code course journey.
+CONCEPTS: A landing page is a focused page built around one action, here a WhatsApp enquiry or order. Local businesses may use it alongside social media to organize offers, examples and contact information. Sweet Crumbs is a sample home bakery in Indore.
+WORKFLOW: Identify three nearby business types that could use a landing page. Explain their likely page goal. List ChatGPT, Google Flow, VS Code, Chrome, Netlify, Maps and Sheets as the course tools.
+ASSIGNMENT: Write down three business categories and one realistic goal for each.
+CAUTION: Do not guarantee orders or earnings.
+
+LESSON 02: Page Planning
+OBJECTIVE: Turn verified business details into an offer, page outline and final headline.
+CONCEPTS: Collect business name, products or services, city, target customers and desired action. Ask for one offer, three customer problems, a page-section order and five headline options. The example selected headline is “Birthday Ho Ya Anniversary, Cake Ho Aapki Pasand Ka!”
+WORKFLOW: Enter Sweet Crumbs sample details into the Lesson 02 planning prompt. Review five headline options and select one. Save the offer, customer problems and section sequence.
+ASSIGNMENT: Prepare a business brief and choose a final headline.
+CAUTION: A vague request like “make a landing page” lacks the information needed for accurate copy.
+
+LESSON 03: Landing Page Copy
+OBJECTIVE: Write useful text for every section without invented claims.
+CONCEPTS: Continue in the same ChatGPT conversation. Draft Hero, Why Us, four cake descriptions, How to Order, reviews placeholder, FAQ and final CTA. Use genuine customer reviews only when available. Owner decides prices.
+WORKFLOW: Replace [number] with the chosen headline option. Request section-by-section copy in simple language. Verify each benefit and FAQ against the business. Save the full copy in page order.
+ASSIGNMENT: Finish and proofread the complete page copy.
+CAUTION: Do not invent reviews, customer numbers or prices.
+
+LESSON 04: Images with Google Flow
+OBJECTIVE: Create three illustrative 16:9 images and save exact filenames.
+CONCEPTS: The course uses a birthday cake hero image, a four-cake flat-lay and hands decorating a cake in a home kitchen. Prompts request realistic food photography without text, faces or logos.
+WORKFLOW: Use ChatGPT to draft the three Google Flow / Nano Banana Pro prompts. Generate the images and review visual accuracy. Save as hero.jpg, cakes.jpg and kitchen.jpg inside sweet-crumbs.
+ASSIGNMENT: Prepare the three correctly named images.
+CAUTION: AI demonstration images must not be passed off as genuine client-product photos.
+
+LESSON 05: Generate HTML Code
+OBJECTIVE: Build a single-file landing page with ChatGPT and verify its WhatsApp CTA.
+CONCEPTS: The page uses index.html with embedded CSS, cream background, brown text, pink buttons, the three named images, and a floating WhatsApp button. The WhatsApp link requires an actual approved phone number.
+WORKFLOW: Ask ChatGPT for complete index.html code. Put it beside the three images in sweet-crumbs. Open in Chrome. Click every WhatsApp button and confirm the correct number and message.
+ASSIGNMENT: Create and locally test the page.
+CAUTION: Never publish the example placeholder 91XXXXXXXXXX.
+
+LESSON 06: Mobile Check and Changes
+OBJECTIVE: Fix broken images, inspect mobile layout and request controlled revisions.
+CONCEPTS: A filename mismatch such as cake.jpg versus cakes.jpg can hide an image. Chrome DevTools supports mobile preview. Sample changes include real contact details, owner-supplied prices, a delivery strip and larger mobile tap targets.
+WORKFLOW: Check image paths and refresh. Open Chrome DevTools phone view. Request targeted changes with “keep everything else the same.” Replace the code carefully, save and inspect again.
+ASSIGNMENT: Review mobile layout and apply two changes.
+CAUTION: Do not introduce unapproved prices or delivery promises.
+
+LESSON 07: Publish on Netlify
+OBJECTIVE: Deploy the complete folder and verify the live page.
+CONCEPTS: Netlify Drop accepts a folder containing index.html and assets. A published netlify.app link can be renamed when available. Updates require redeploying the revised folder.
+WORKFLOW: Upload the entire sweet-crumbs folder, not only index.html. Open the published URL, test images and WhatsApp links, then save the URL. For edits, upload the revised full folder.
+ASSIGNMENT: Publish and test a live demonstration page.
+CAUTION: Netlify interfaces and plan limits can change; confirm current options.
+
+LESSON 08: Build a Portfolio
+OBJECTIVE: Create a truthful portfolio for presenting real and demonstration projects.
+CONCEPTS: The sample QuickPage Studio portfolio uses a dark theme, white text and lime accent. Sections include hero, services, Sweet Crumbs sample card, future-client placeholder, process, packages and contact. Its image is sweet-crumbs.png.
+WORKFLOW: Generate a one-file portfolio page. Put index.html and sweet-crumbs.png in my-portfolio. Add only genuine work or clearly labeled demos. Publish the folder and verify the sample link.
+ASSIGNMENT: Publish a portfolio and save its URL.
+CAUTION: Never invent clients, reviews or performance results.
+
+LESSON 09: Find Clients
+OBJECTIVE: Research suitable local businesses and send personalized outreach.
+CONCEPTS: The course suggests home bakers, salons, tiffin providers, coaching, car wash and event decorators. Google Maps helps identify prospects; a Google Sheet tracks business type, area, website status, map link and outreach status.
+WORKFLOW: Find and verify ten businesses. Create a spreadsheet. Draft a short personalized first WhatsApp message with a real portfolio link and a single polite follow-up after two days.
+ASSIGNMENT: Build a verified prospect list and two messages.
+CAUTION: Do not bulk-spam or invent praise and business facts.
+
+LESSON 10: Handle Client Objections
+OBJECTIVE: Explain the value of a WhatsApp landing page and negotiate professionally.
+CONCEPTS: The sample client asks why a page is needed alongside Instagram. Example packages are Starter ₹2,999 (one page) and Business ₹5,999 (one page, two revisions, WhatsApp setup). A sample payment structure is 50% advance and 50% after going live.
+WORKFLOW: Practice a friendly response explaining the complementary roles of Instagram and the page. Answer a ₹1,500 counteroffer without automatically lowering price. Track agreed scope and payments.
+ASSIGNMENT: Draft the two client replies and payment terms.
+CAUTION: Course example prices are not universal; never promise results.
+
+LESSON 11: Course Recap
+OBJECTIVE: Complete the workflow and prepare a client-ready demonstration.
+CONCEPTS: The sequence is Plan → Copy → Images → Code → Mobile Check → Publish → Portfolio → Clients → Deal. Accurate filenames, links, business details and honest claims matter throughout.
+WORKFLOW: Audit the page brief, copy, images, CTA, mobile layout and live link. Verify the portfolio accurately describes the project. Prepare a short client handoff and outreach message.
+ASSIGNMENT: Finish a published page, portfolio link and handoff checklist.
+CAUTION: No guaranteed clients, orders or income.
+
+
+======================================================================
+ORIGINAL CHATBOT KNOWLEDGE BASE
+======================================================================
+--- SOURCE PAGE 1 ---
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+
+
+  SKILLOMATE · AI SE LANDING PAGE BANAO
+
+ Chatbot Knowledge Base
+
+  Nex AI (Skillomate app tutor) ko is course ke baare mein train karne ke liye — course
+  ki jaankari, workflows, galtiyan, troubleshooting, exact prompts aur jawab dene ke
+  rules.
+
+ Part A — Bot ke liye rules
+    • Jawab Hinglish mein, dost jaisa, chhota aur seedha. Zarurat ho toh numbered steps.
+    • Jahan kaam kisi lesson mein hai, uska number batao (jaise 'ye Lesson 06 mein hai').
+    • Prompt maange toh course ka exact ChatGPT message do (Part F), user ke business ki
+     details daal ke.
+    • Fake reviews, fake clients, nakli 'happy customers' numbers ya jhoothe offers likhne mein
+    help mat karo.
+    • Kamai, clients ya orders ka koi promise/number mat do. Price user khud tay karta hai.
+    •  Kisi business ko spam/bulk messages bhejne mein help mat karo — har message personal
+    aur ek follow-up tak.
+    • Tools ki price, plans ya limits ke pakke number mat batao — current info tool ki site par
+    check karne ko bolo.
+    • Course ke tools: ChatGPT, Google Flow, VS Code, Chrome, Netlify Drop, Google Maps,
+    Google Sheets.
+    • Pata na ho toh saaf bolo, guess mat karo.
+
+ Part B — Course overview
+
+  Naam: AI Se Landing Page Banao (Skillomate). Format: Hinglish video lessons, AI presenter
+ + screen recordings. Lessons: 11 (10 + recap). Audience: beginners, freelancers, students,
+   jo bina coding local businesses ke liye pages banana chahte hain. Running example: Sweet
+  Crumbs, Indore ki home baker (sample business), goal: WhatsApp orders.
+
+
+
+
+
+                                            AI Se Landing Page Banao  · Page 1
+
+--- SOURCE PAGE 2 ---
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+
+
+ #    Lesson           Kya seekha
+
+  01    Intro                Landing page kya hai, kiske liye, tools
+
+  02    Plan                 Business details → offer, problems, sections, headline
+
+  03   Copy               Har section ka text, reviews placeholder, no fake
+
+  04   Images              Flow mein 3 images, sahi file naam
+
+  05   Code               ChatGPT se index.html, VS Code save, browser mein kholna
+
+  06    Mobile + Badlav     Gayab image fix, DevTools phone view, changes
+
+  07    Live                     Netlify Drop, project name, update
+
+  08    Portfolio            Apna portfolio page + live
+
+  09    Clients             Maps pe bina website wale business, Sheet, WhatsApp message
+
+  10    Deal (practice)        Reply, mol-bhav, 50% advance, payment tracking
+
+  11   Recap               Poora raasta ek baar
+
+
+ Part C — Key concepts (glossary)
+
+  Term                Matlab
+
+  Landing page           Ek page jo ek goal ke liye bana ho — yahan WhatsApp order.
+
+  Hero section           Page ka sabse upar wala hissa: headline, sub-headline, button.
+
+  CTA                        Call to action — button jo user se kaam karwata hai (Order on WhatsApp).
+
+  Copy                  Page ka saara text.
+
+  index.html             Page ki main file; browser isi ko kholta hai.
+
+  wa.me link            WhatsApp chat kholne wala link: https://wa.me/91?text=
+
+  DevTools / phone view   Chrome mein page ko mobile size mein dekhne ka tareeka (Cmd + Option + I, Cmd
+                 + Shift + M).
+
+   Netlify Drop              Folder drop karke free live link banane ki service.
+
+  Deploy                Page ka naya version live karna.
+
+   Portfolio              Tumhare kaam ka page jo client ko bhejte ho.
+
+
+ Part D — Workflows (short)
+
+ Lesson 02 — Page Ka Plan
+    • ChatGPT ko business ki asli details do: naam, kaam, city, customers, goal.
+    • Usse 4 cheezein maango: main offer (1 line), customer ki 3 problems + solution, sections
+    ka order, 5 headline options.
+    • 'Koi detail apni taraf se mat jodna' — taaki ChatGPT nakli offer/discount na banaye.
+    • Sabse saaf headline chuno (course mein: 'Birthday Ho Ya Anniversary, Cake Ho Aapki
+    Pasand Ka!').
+    • Galti: Sirf 'mere liye landing page bana do' likha — ChatGPT ulta poochta hai kis business
+    ke liye. Bina details ke kaam ka page nahi banta.
+
+
+
+
+
+                                            AI Se Landing Page Banao  · Page 2
+
+--- SOURCE PAGE 3 ---
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+
+ Lesson 03 — Page Ka Text (Copy)
+    • Usi chat mein: final headline batao aur har section ka text maango — Hero, Kyun hum,
+    Cakes, Kaise order karein, Reviews, FAQ, Last CTA.
+    • Reviews ke liye sirf format/placeholder — asli customer reviews baad mein daalo, fake
+    reviews kabhi nahi.
+    • Price ChatGPT se mat likhwao — wo business owner decide karta hai.
+    • Tip: '[number]' jaisi jagah apna asli option number likh do.
+
+ Lesson 04 — Images (Google Flow)
+    • ChatGPT se 3 image prompts: hero cake, 4 cakes ka flat-lay, kitchen mein decorate karte
+    haath — 16:9, realistic, no text, no faces, no logos.
+    • Flow → Image (Nano Banana) → prompt paste → generate. Teeno ek saath bana sakte ho.
+    • Download karke naam rakho: hero.jpg, cakes.jpg, kitchen.jpg — ek hi folder
+    (sweet-crumbs) mein.
+    • AI images sample/visual ke liye hain; client ka asli product ho toh uski asli photos best
+     hain.
+
+ Lesson 05 — Code (Bina Coding)
+    • ChatGPT ko ek message: ek file (index.html), images ke naam, colours, WhatsApp link,
+     floating button, sections.
+    • WhatsApp link format: https://wa.me/91XXXXXXXXXX?text=... — 91 ke baad apna 10 digit
+    number.
+    • Code poora aane do, beech mein stop mat karo, phir Copy.
+    • sweet-crumbs folder banao, teeno images (hero.jpg, cakes.jpg, kitchen.jpg) usme daalo.
+    • ChatGPT ka code Copy → VS Code → New File → paste → Save as index.html (usi folder
+    mein).
+    • index.html par double-click → page Chrome mein khulta hai → Order on WhatsApp button
+    check karo.
+    • Galti: Placeholder number (91XXXXXXXXXX) waise hi chhod diya — button galat number
+    pe jaata hai. Hamesha asli number daalo.
+
+ Lesson 06 — Mobile Check + Badlav
+    • Image gayab ho toh file ka naam check karo: code jo naam maang raha hai (cakes.jpg)
+    wahi file ka naam ho → rename → Cmd + R.
+    • Mobile view: Cmd + Option + I → Cmd + Shift + M → device list se iPhone chuno → scroll.
+    • Changes: ChatGPT se poora updated code → VS Code mein Cmd + A, Cmd + V, Cmd + S →
+     refresh.
+    • Changes ke example: asli number, prices, upar ek strip, mobile pe bade buttons.
+    • 'Baaki sab same rakho' likho taaki ChatGPT poora design na badle.
+    • Galti: Folder mein file ka naam cake.jpg tha, code cakes.jpg maang raha tha — image
+    gayab. Ek letter ki galti = image nahi dikhegi.
+
+ Lesson 07 — Page Live Karo (Netlify Drop)
+    • app.netlify.com/drop (ya Add new project → Upload) — poora folder drop karo, sirf
+    index.html nahi.
+
+
+
+
+
+                                            AI Se Landing Page Banao  · Page 3
+
+--- SOURCE PAGE 4 ---
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+    • Published → live link (random naam) khulta hai.
+    • Project configuration → Change project name → naam not available ho toh peeche number
+    lagao → Save.
+    • Badlav ke baad: Deploys tab mein folder dobara drop karo.
+    • Free plan mein link aisa hota hai: naam.netlify.app. Apna .com domain alag se kharidna
+    padta hai (client ke naam pe).
+    • Galti: Upload mein sirf index.html select hui — live page par images toot gayi. Poora folder
+     (index.html + images) upload karo.
+
+ Lesson 08 — Apna Portfolio
+    • Client sabse pehle poochta hai: 'pehle kya banaya hai?' — portfolio page uska jawab hai.
+    • ChatGPT se portfolio page: studio naam, services, 'Mera kaam' card (Sweet Crumbs + live
+      link), khali card 'Aapka business yahan ho sakta hai', 3 steps, packages, WhatsApp
+     contact.
+    • Koi fake review ya fake client nahi — jo asli kaam hai wahi dikhao.
+    • Project card ki image (sweet-crumbs.png) bhi usi folder mein rakho, phir poora folder
+     Netlify pe drop karo.
+    • Naam not available? Kuch alag socho (course mein: theportfolio123).
+    • Galti: sweet-crumbs.png folder mein nahi thi — project card ki image toot gayi. Har file
+    wahi naam aur wahi folder.
+
+ Lesson 09 — Clients Dhoondho + Approach
+    • ChatGPT se poocho kaunse local business ko page ki sabse zyada zarurat hai (home
+    bakers, beauty parlours, tiffin, coaching, car wash, event decorators...).
+    • Google Maps pe search: 'home bakers near me', 'salon Indore' — listing mein 'Add website'
+    dikhe toh website nahi hai.
+    • Google Sheet (sheets.new): Business type | Area | website hai? | map link | status | MSG.
+    • Maps listing → Share → Copy link → sheet mein paste. Phone numbers sheet mein daalne ki
+     zarurat nahi.
+    • ChatGPT se 2 messages: pehla (chhota, friendly, unke kaam ki tareef + portfolio link + ek
+    simple sawaal) aur follow-up (2 din baad, bas ek baar).
+    • Message mein {naam}, {kaam} har business ke hisaab se badlo — copy-paste spam mat
+     karo.
+
+ Lesson 10 — Deal Pakki Karo (Practice)
+    • Practice: ChatGPT ko bolo 'maan lo client ne aisa reply kiya' — Instagram vs page ka fark
+    simple shabdon mein + packages.
+    • Mol-bhav ('1,500 mein kar do'): price giraane ki jagah value samjhao, politely.
+    • Payment: 50% advance, 50% page live hone ke baad — dono taraf bharosa.
+    • Sheet mein payment / advance columns — har client ka hisaab saaf. Advance milne ke
+    baad hi kaam shuru.
+
+
+
+
+
+                                            AI Se Landing Page Banao  · Page 4
+
+--- SOURCE PAGE 5 ---
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+ Part E — Troubleshooting (FAQ)
+
+  Problem                    Jawab
+
+  ChatGPT ulta sawaal pooch raha    Details do: naam, kaam, city, customers, goal. (L02)
+  hai
+
+  Page par image nahi dikh rahi        File ka naam code se match karo (jaise cakes.jpg), file usi folder mein ho,
+                                        phir Cmd + R. (L06)
+
+  Live page par images nahi hain      Netlify par poora folder upload karo, sirf index.html nahi. Deploys tab
+                               mein dobara drop. (L07)
+
+  WhatsApp button galat number    Code mein Cmd + F se XXXX dhundho, asli number daalo (91 + 10 digit),
+  khol raha hai                      save, dobara deploy. (L05–L07)
+
+  Code adhoora aaya              ChatGPT ko bolo 'poora code ek code block mein do' ya 'continue'. Beech
+                               mein stop mat karo. (L05)
+
+   File .txt ban gayi               VS Code use karo, naam index.html; TextEdit mein Plain Text + 'Use
+                                           .html'. (L05)
+
+  Mobile pe buttons chhote hain     ChatGPT se change: 'mobile pe buttons bade aur easy to tap, baaki sab
+                                   same'. (L06)
+
+   Netlify naam not available         Peeche number ya alag word lagao. (L07, L08)
+
+  Naya code daala toh design badal  Message mein 'baaki sab same rakho' likho. (L06)
+  gaya
+
+  Kaunse clients target karun?      Maps pe bina website wale local business — 'Add website' dikhe toh
+                                   website nahi hai. (L09)
+
+   Client 1,500 bol raha hai           Value samjhao, 50% advance option do; price tumhara faisla. (L10)
+
+  Kitna kamaunga?                 Course koi kamai ka number nahi deta — packages aur price apne kaam
+                                 ke hisaab se tay karo.
+
+
+ Part F — Saare ChatGPT messages (exact)
+
+  User ke business ki details daal ke do.
+
+  Lesson 02 · Galti wala message (sirf comparison ke liye)
+
+
+   mere liye landing page bana do
+
+
+
+  Lesson 02 · Message 1: Business details + plan
+
+
+   Mujhe ek landing page banana hai. Business details:
+   - Naam: Sweet Crumbs
+   - Kaam: home-baked custom cakes (birthday, anniversary, theme cakes)
+   - City: Indore, home delivery
+   - Customers: parents aur young couples jo special occasion ke liye cake chahte hain
+   - Goal: log WhatsApp par order karein
+
+
+   Mujhe batao: (1) page ka main offer ek line mein, (2) customer ki 3 problems jo hum solve
+   karte hain, (3) page ke sections upar se neeche order mein, (4) 5 headline options. Koi
+   detail apni taraf se mat jodna.
+
+
+
+
+
+                                            AI Se Landing Page Banao  · Page 5
+
+--- SOURCE PAGE 6 ---
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+
+
+  Lesson 03 · Message 2: Har section ka text ([number] ki jagah apna headline number)
+
+
+   Headline option [number] final hai. Ab har section ka poora text likho, simple Hinglish
+   mein:
+   - Hero: headline, sub-headline, button text
+   - Kyun hum: 3 benefits (har ek ka chhota title + 1 line)
+   - Cakes: 4 cake types ke naam + 1 line description
+   - Kaise order karein: 3 steps
+   - Reviews section: sirf format/placeholder do — main asli customer reviews daalunga, fake
+   reviews mat likhna
+   - FAQ: 4 sawaal-jawaab
+   - Last CTA: ek line + button text
+   Price mat likhna, main khud daalunga.
+
+
+
+  Lesson 04 · Message 3: Flow ke liye 3 image prompts
+
+
+   Landing page ke liye Google Flow (Nano Banana Pro) ke 3 image prompts likho, 16:9,
+   realistic food photography, no text, no people's faces, no logos:
+   1. Hero image: ek sundar custom birthday cake, soft warm light, clean background
+   2. 4 cakes ka flat-lay (chocolate, fruit, theme, anniversary)
+   3. Ghar ki kitchen mein cake decorate hote hue — sirf haath, close-up
+
+
+
+  Lesson 05 · Message 4: Poora landing page code (apna number daalo)
+
+
+   Ab upar wale copy text se Sweet Crumbs ka poora landing page bana do.
+
+
+   - Ek hi file: index.html (HTML + CSS andar hi, koi alag file nahi)
+   - Images same folder mein hain: hero.jpg, cakes.jpg, kitchen.jpg — inhi naam se use karo
+   - Colours: warm cream background, chocolate brown text, soft pink buttons
+   - Mobile pe bhi perfect dikhe
+   - Har "Order on WhatsApp" button is link pe jaye:
+   https://wa.me/91XXXXXXXXXX?text=Hi%20Sweet%20Crumbs,%20mujhe%20cake%20order%20karna%20hai
+   - Neeche ek floating WhatsApp button bhi ho
+   - Sections: Hero, Menu (cakes + price), Kaise order karein (3 steps), Customer reviews ki
+   jagah "Hamare baare mein", Contact/footer
+
+
+   Sirf poora code do, ek code block mein.
+
+
+
+  Lesson 06 · Message 5: Changes (apna number daalo)
+
+
+   Is page mein ye changes karo:
+
+
+   1. WhatsApp number badlo — har link mein ye use karo:
+   https://wa.me/9198XXXXXXXX?text=Hi%20Sweet%20Crumbs,%20mujhe%20cake%20order%20karna%20hai
+   2. Menu mein "On Request" hata ke prices daalo: Chocolate Cake ₹550 se, Fruit Cake ₹600
+   se, Theme Cake ₹900 se, Anniversary Cake ₹750 se
+   3. Sabse upar ek patli pink strip: "Indore mein home delivery — order 1 din pehle karein"
+   4. Mobile pe buttons bade aur easy to tap ho, text thoda bada ho
+
+
+   Baaki sab same rakho. Poora updated code do, ek code block mein.
+
+
+
+
+
+                                            AI Se Landing Page Banao  · Page 6
+
+--- SOURCE PAGE 7 ---
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+
+
+  Lesson 08 · Message 1: Portfolio page (apna number + apna Netlify link daalo)
+
+
+   Mere liye ek portfolio landing page banao. Main local businesses ke liye landing pages
+   banata hoon.
+
+
+   - Studio ka naam: QuickPage Studio
+   - Ek hi file: index.html (HTML + CSS andar)
+   - Style: dark background, white text, ek bright accent colour (lime green), modern aur
+   clean
+   - Mobile pe perfect dikhe
+
+
+   Sections:
+   1. Hero: "Aapke business ka page — 3 din mein ready" + WhatsApp button
+   2. Services: Landing page design, WhatsApp order button, mobile-friendly, Netlify pe live
+   karna
+   3. Mera kaam: ek project card — image "sweet-crumbs.png", title "Sweet Crumbs — Home
+   Baker, Indore", button "Live dekho" jo https://sweet-crumbs123.netlify.app kholega (new
+   tab mein)
+   4. Ek khali card: "Aapka business yahan ho sakta hai"
+   5. Kaise kaam karta hai: 3 steps — Details bhejo, Page banta hai, Page live
+   6. Packages: Starter ₹2,999 (1 page), Business ₹5,999 (1 page + 2 changes + WhatsApp
+   setup)
+   7. Contact: WhatsApp button —
+   https://wa.me/9198XXXXXXXX?text=Hi%20QuickPage,%20mujhe%20landing%20page%20banwana%20hai
+
+
+   Koi fake review ya fake client mat daalna. Sirf poora code do, ek code block mein.
+
+
+
+  Lesson 09 · Message 1: Kaunse business target karein
+
+
+   Main local businesses ke liye landing pages banata hoon (WhatsApp order button ke saath).
+   Indore jaise shehar mein aise 6 type ke local businesses batao jinko landing page ki sabse
+   zyada zarurat hai aur jo aksar website ke bina chalte hain. Har ek ke saath 1 line mein
+   batao kyun.
+
+
+
+  Lesson 09 · Message 2: WhatsApp pehla message + follow-up
+
+
+   Ab mujhe 2 WhatsApp messages likh do jo main aise business ko bhej sakun jiski website
+   nahi hai:
+
+
+   1. Pehla message — chhota, friendly, Hinglish mein. Business ka naam aur unke kaam ki ek
+   tareef ho (jagah chhod do: {naam}, {kaam}). Batao ki unke liye WhatsApp order button wala
+   page bana sakta hoon, aur mera kaam yahan dekh sakte hain:
+   https://theportfolio123.netlify.app. End mein ek simple sawaal ho, pressure nahi.
+   2. Follow-up message — agar 2 din tak reply na aaye.
+
+
+   Spam jaisa nahi lagna chahiye, koi jhootha promise ya fake number nahi.
+
+
+
+
+
+                                            AI Se Landing Page Banao  · Page 7
+
+--- SOURCE PAGE 8 ---
+SKILLOMATE                                                                   Chatbot Knowledge Base
+
+
+
+
+
+  Lesson 10 · Message 1: Client ke reply ka jawab (practice)
+
+
+   Practice karni hai. Maan lo ek home baker client (Sweet Crumbs, Indore) ne mere message ka
+   aisa reply kiya:
+   "Interesting hai. Kitna charge karoge? Aur mera Instagram toh hai hi, page ki kya
+   zarurat?"
+
+
+   Mujhe ek chhota, friendly Hinglish reply likh do jo simple shabdon mein samjhaye ki
+   Instagram ke saath ek WhatsApp order page kyun kaam aata hai, aur mere 2 packages bataye:
+   Starter ₹2,999 (1 page), Business ₹5,999 (1 page + 2 changes + WhatsApp setup).
+   Koi jhootha promise ya fake result nahi.
+
+
+
+  Lesson 10 · Message 2: Mol-bhav + 50% advance
+
+
+   Ab maan lo client bola: "1,500 mein kar do."
+   Ek polite reply do jo price kam kiye bina value samjhaye, aur 50% advance + 50% page live
+   hone ke baad wala option de.
+
+
+ 5 Honesty Rules
+    • Koi fake review, fake client ya fake 'happy customers' number page par nahi.
+    • Price aur offer hamesha business owner tay karta hai — ChatGPT se invent mat karwao.
+    • Asli WhatsApp number daalo; placeholder (XXXX) kabhi live mat karo.
+    • AI images ko client ka asli product bata kar mat dikhao; asli photos milen toh wahi use
+     karo.
+    • Client ko kamai/orders ki guarantee mat do — page ek tool hai, jaadu nahi.
+
+ Part G — Example answers (bot ka tone)
+
+  User: live page pe photos nahi aa rahi
+  Bot: Lagta hai sirf index.html upload hui. Netlify mein project kholo → Deploys → poora folder
+  (index.html + saari images) drag karke drop karo, phir link refresh. Lesson 07 dekho.
+
+  User: page pe 5 star reviews daal du taaki log trust karein?
+  Bot: Nakli reviews mat daalo — pakde gaye toh trust khatam. Abhi 'Hamare baare mein'
+  section rakho, aur jab asli customers bolein tab unke reviews (permission ke saath) daalo.
+  Lesson 03.
+
+  User: client ko kaise convince karun?
+  Bot: Pehle portfolio link bhejo (L08), unke kaam ki asli tareef karo, aur ek simple sawaal
+  pucho. Reply aaye toh value samjhao aur 50% advance ka option do (L09, L10). Koi
+  guarantee wala promise mat karna.
+
+
+
+
+
+                                            AI Se Landing Page Banao  · Page 8
+
+
+======================================================================
+ORIGINAL ALL PROMPTS — VERBATIM HINGLISH
+======================================================================
+--- SOURCE PAGE 1 ---
+SKILLOMATE                                                                                                            All Prompts
+
+
+
+
+
+  SKILLOMATE · AI SE LANDING PAGE BANAO
+
+ All Prompts (Recording)
+
+  Course ki recordings mein paste kiye gaye saare ChatGPT messages, exact. Jahan
+  XXXX ya [number] hai, wahan apni asli detail daalo.
+
+
+
+
+
+                                            AI Se Landing Page Banao  · Page 1
+
+--- SOURCE PAGE 2 ---
+SKILLOMATE                                                                                                            All Prompts
+
+
+
+ Lesson 02 — Page Ka Plan
+
+
+   Galti wala message (sirf comparison ke liye)
+
+
+   mere liye landing page bana do
+
+
+
+  Message 1: Business details + plan
+
+
+   Mujhe ek landing page banana hai. Business details:
+   - Naam: Sweet Crumbs
+   - Kaam: home-baked custom cakes (birthday, anniversary, theme cakes)
+   - City: Indore, home delivery
+   - Customers: parents aur young couples jo special occasion ke liye cake chahte hain
+   - Goal: log WhatsApp par order karein
+
+
+   Mujhe batao: (1) page ka main offer ek line mein, (2) customer ki 3 problems jo hum solve
+   karte hain, (3) page ke sections upar se neeche order mein, (4) 5 headline options. Koi
+   detail apni taraf se mat jodna.
+
+
+
+
+
+                                            AI Se Landing Page Banao  · Page 2
+
+--- SOURCE PAGE 3 ---
+SKILLOMATE                                                                                                            All Prompts
+
+
+
+ Lesson 03 — Page Ka Text
+
+
+  Message 2: Har section ka text ([number] ki jagah apna headline number)
+
+
+   Headline option [number] final hai. Ab har section ka poora text likho, simple Hinglish
+   mein:
+   - Hero: headline, sub-headline, button text
+   - Kyun hum: 3 benefits (har ek ka chhota title + 1 line)
+   - Cakes: 4 cake types ke naam + 1 line description
+   - Kaise order karein: 3 steps
+   - Reviews section: sirf format/placeholder do — main asli customer reviews daalunga, fake
+   reviews mat likhna
+   - FAQ: 4 sawaal-jawaab
+   - Last CTA: ek line + button text
+   Price mat likhna, main khud daalunga.
+
+
+
+
+
+                                            AI Se Landing Page Banao  · Page 3
+
+--- SOURCE PAGE 4 ---
+SKILLOMATE                                                                                                            All Prompts
+
+
+
+ Lesson 04 — Images
+
+
+  Message 3: Flow ke liye 3 image prompts
+
+
+   Landing page ke liye Google Flow (Nano Banana Pro) ke 3 image prompts likho, 16:9,
+   realistic food photography, no text, no people's faces, no logos:
+   1. Hero image: ek sundar custom birthday cake, soft warm light, clean background
+   2. 4 cakes ka flat-lay (chocolate, fruit, theme, anniversary)
+   3. Ghar ki kitchen mein cake decorate hote hue — sirf haath, close-up
+
+
+
+
+
+                                            AI Se Landing Page Banao  · Page 4
+
+--- SOURCE PAGE 5 ---
+SKILLOMATE                                                                                                            All Prompts
+
+
+
+ Lesson 05 — Code
+
+
+  Message 4: Poora landing page code (apna number daalo)
+
+
+   Ab upar wale copy text se Sweet Crumbs ka poora landing page bana do.
+
+
+   - Ek hi file: index.html (HTML + CSS andar hi, koi alag file nahi)
+   - Images same folder mein hain: hero.jpg, cakes.jpg, kitchen.jpg — inhi naam se use karo
+   - Colours: warm cream background, chocolate brown text, soft pink buttons
+   - Mobile pe bhi perfect dikhe
+   - Har "Order on WhatsApp" button is link pe jaye:
+   https://wa.me/91XXXXXXXXXX?text=Hi%20Sweet%20Crumbs,%20mujhe%20cake%20order%20karna%20hai
+   - Neeche ek floating WhatsApp button bhi ho
+   - Sections: Hero, Menu (cakes + price), Kaise order karein (3 steps), Customer reviews ki
+   jagah "Hamare baare mein", Contact/footer
+
+
+   Sirf poora code do, ek code block mein.
+
+
+
+
+
+                                            AI Se Landing Page Banao  · Page 5
+
+--- SOURCE PAGE 6 ---
+SKILLOMATE                                                                                                            All Prompts
+
+
+
+ Lesson 06 — Mobile + Badlav
+
+
+  Message 5: Changes (apna number daalo)
+
+
+   Is page mein ye changes karo:
+
+
+   1. WhatsApp number badlo — har link mein ye use karo:
+   https://wa.me/9198XXXXXXXX?text=Hi%20Sweet%20Crumbs,%20mujhe%20cake%20order%20karna%20hai
+   2. Menu mein "On Request" hata ke prices daalo: Chocolate Cake ₹550 se, Fruit Cake ₹600
+   se, Theme Cake ₹900 se, Anniversary Cake ₹750 se
+   3. Sabse upar ek patli pink strip: "Indore mein home delivery — order 1 din pehle karein"
+   4. Mobile pe buttons bade aur easy to tap ho, text thoda bada ho
+
+
+   Baaki sab same rakho. Poora updated code do, ek code block mein.
+
+
+
+
+
+                                            AI Se Landing Page Banao  · Page 6
+
+--- SOURCE PAGE 7 ---
+SKILLOMATE                                                                                                            All Prompts
+
+
+
+ Lesson 08 — Portfolio
+
+
+  Message 1: Portfolio page (apna number + apna Netlify link daalo)
+
+
+   Mere liye ek portfolio landing page banao. Main local businesses ke liye landing pages
+   banata hoon.
+
+
+   - Studio ka naam: QuickPage Studio
+   - Ek hi file: index.html (HTML + CSS andar)
+   - Style: dark background, white text, ek bright accent colour (lime green), modern aur
+   clean
+   - Mobile pe perfect dikhe
+
+
+   Sections:
+   1. Hero: "Aapke business ka page — 3 din mein ready" + WhatsApp button
+   2. Services: Landing page design, WhatsApp order button, mobile-friendly, Netlify pe live
+   karna
+   3. Mera kaam: ek project card — image "sweet-crumbs.png", title "Sweet Crumbs — Home
+   Baker, Indore", button "Live dekho" jo https://sweet-crumbs123.netlify.app kholega (new
+   tab mein)
+   4. Ek khali card: "Aapka business yahan ho sakta hai"
+   5. Kaise kaam karta hai: 3 steps — Details bhejo, Page banta hai, Page live
+   6. Packages: Starter ₹2,999 (1 page), Business ₹5,999 (1 page + 2 changes + WhatsApp
+   setup)
+   7. Contact: WhatsApp button —
+   https://wa.me/9198XXXXXXXX?text=Hi%20QuickPage,%20mujhe%20landing%20page%20banwana%20hai
+
+
+   Koi fake review ya fake client mat daalna. Sirf poora code do, ek code block mein.
+
+
+
+
+
+                                            AI Se Landing Page Banao  · Page 7
+
+--- SOURCE PAGE 8 ---
+SKILLOMATE                                                                                                            All Prompts
+
+
+
+ Lesson 09 — Clients
+
+
+  Message 1: Kaunse business target karein
+
+
+   Main local businesses ke liye landing pages banata hoon (WhatsApp order button ke saath).
+   Indore jaise shehar mein aise 6 type ke local businesses batao jinko landing page ki sabse
+   zyada zarurat hai aur jo aksar website ke bina chalte hain. Har ek ke saath 1 line mein
+   batao kyun.
+
+
+
+  Message 2: WhatsApp pehla message + follow-up
+
+
+   Ab mujhe 2 WhatsApp messages likh do jo main aise business ko bhej sakun jiski website
+   nahi hai:
+
+
+   1. Pehla message — chhota, friendly, Hinglish mein. Business ka naam aur unke kaam ki ek
+   tareef ho (jagah chhod do: {naam}, {kaam}). Batao ki unke liye WhatsApp order button wala
+   page bana sakta hoon, aur mera kaam yahan dekh sakte hain:
+   https://theportfolio123.netlify.app. End mein ek simple sawaal ho, pressure nahi.
+   2. Follow-up message — agar 2 din tak reply na aaye.
+
+
+   Spam jaisa nahi lagna chahiye, koi jhootha promise ya fake number nahi.
+
+
+
+
+
+                                            AI Se Landing Page Banao  · Page 8
+
+--- SOURCE PAGE 9 ---
+SKILLOMATE                                                                                                            All Prompts
+
+
+
+ Lesson 10 — Deal (Practice)
+
+
+  Message 1: Client ke reply ka jawab (practice)
+
+
+   Practice karni hai. Maan lo ek home baker client (Sweet Crumbs, Indore) ne mere message ka
+   aisa reply kiya:
+   "Interesting hai. Kitna charge karoge? Aur mera Instagram toh hai hi, page ki kya
+   zarurat?"
+
+
+   Mujhe ek chhota, friendly Hinglish reply likh do jo simple shabdon mein samjhaye ki
+   Instagram ke saath ek WhatsApp order page kyun kaam aata hai, aur mere 2 packages bataye:
+   Starter ₹2,999 (1 page), Business ₹5,999 (1 page + 2 changes + WhatsApp setup).
+   Koi jhootha promise ya fake result nahi.
+
+
+
+  Message 2: Mol-bhav + 50% advance
+
+
+   Ab maan lo client bola: "1,500 mein kar do."
+   Ek polite reply do jo price kam kiye bina value samjhaye, aur 50% advance + 50% page live
+   hone ke baad wala option de.
+
+
+ Lesson 07 — Netlify steps (koi ChatGPT message
+ nahi)
+    • app.netlify.com/drop (ya Add new project → Upload) — poora folder drop karo, sirf
+    index.html nahi.
+    • Published → live link (random naam) khulta hai.
+    • Project configuration → Change project name → naam not available ho toh peeche number
+    lagao → Save.
+    • Badlav ke baad: Deploys tab mein folder dobara drop karo.
+
+ File aur folder ka setup
+
+  Folder               Files (exact naam)                             Kab
+
+  sweet-crumbs         index.html, hero.jpg, cakes.jpg, kitchen.jpg                 L04–L07
+
+  my-portfolio           index.html, sweet-crumbs.png                           L08
+
+
+
+
+
+                                            AI Se Landing Page Banao  · Page 9
+
+
+======================================================================
+ORIGINAL COURSE NOTES
+======================================================================
+--- SOURCE PAGE 1 ---
+SKILLOMATE                                                                           Course Notes
+
+
+
+
+
+  SKILLOMATE · AI SE LANDING PAGE BANAO
+
+ Course Notes
+
+  Poore course ke notes — har lesson mein kya seekha, galti aur aaj ka kaam. Running
+  example: Sweet Crumbs, Indore ki home baker (sample business).
+
+ Course ka poora raasta
+
+  Plan → page ka text → images → code → mobile check + badlav → Netlify pe live → apna
+   portfolio → clients dhoondhna → deal pakki karna → recap.
+
+  Tools: ChatGPT (plan, text, image prompts, code, messages), Google Flow (Nano Banana
+  images), VS Code (file save), Chrome (page + mobile view), Netlify Drop (free live link),
+  Google Maps + Sheets (clients list).
+
+  Golden rule: har file ka sahi naam, sahi folder — aur page par sirf sach (asli number, asli
+  reviews, owner ka price).
+
+ Lesson 01 — Course Intro
+    • Landing page: ek hi page jo ek kaam karta hai — visitor ko customer banana (yahan:
+    WhatsApp par order).
+    • Bahut saare local business (home bakers, salon, tiffin, coaching) sirf Instagram/WhatsApp
+    pe chalte hain — unke paas ek saaf, shareable page nahi hota.
+    •  Is course mein bina coding: plan → text → images → code → mobile fix → live → portfolio →
+     clients → deal.
+    • Running example: Sweet Crumbs — Indore ki ek home baker (course ka sample business),
+     goal: WhatsApp orders.
+    • Tools: ChatGPT, Google Flow (Nano Banana images), VS Code (free), Chrome, Netlify Drop
+     (free hosting), Google Maps, Google Sheets.
+
+  Aaj ka kaam
+
+  Apne aas-paas ke 3 business socho jinke paas website nahi hai.
+
+ Lesson 02 — Page Ka Plan
+    • ChatGPT ko business ki asli details do: naam, kaam, city, customers, goal.
+    • Usse 4 cheezein maango: main offer (1 line), customer ki 3 problems + solution, sections
+    ka order, 5 headline options.
+    • 'Koi detail apni taraf se mat jodna' — taaki ChatGPT nakli offer/discount na banaye.
+    • Sabse saaf headline chuno (course mein: 'Birthday Ho Ya Anniversary, Cake Ho Aapki
+    Pasand Ka!').
+
+  Galti + fix
+
+   Sirf 'mere liye landing page bana do' likha — ChatGPT ulta poochta hai kis business ke liye.
+  Bina details ke kaam ka page nahi banta.
+
+
+
+                                            AI Se Landing Page Banao  · Page 1
+
+--- SOURCE PAGE 2 ---
+SKILLOMATE                                                                           Course Notes
+
+
+
+
+  Aaj ka kaam
+
+  Apne business (ya kisi client) ka plan aur headline final karo.
+
+ Lesson 03 — Page Ka Text (Copy)
+    • Usi chat mein: final headline batao aur har section ka text maango — Hero, Kyun hum,
+    Cakes, Kaise order karein, Reviews, FAQ, Last CTA.
+    • Reviews ke liye sirf format/placeholder — asli customer reviews baad mein daalo, fake
+    reviews kabhi nahi.
+    • Price ChatGPT se mat likhwao — wo business owner decide karta hai.
+    • Tip: '[number]' jaisi jagah apna asli option number likh do.
+
+  Aaj ka kaam
+
+  Apne page ka poora text ready karo aur save rakho.
+
+ Lesson 04 — Images (Google Flow)
+    • ChatGPT se 3 image prompts: hero cake, 4 cakes ka flat-lay, kitchen mein decorate karte
+    haath — 16:9, realistic, no text, no faces, no logos.
+    • Flow → Image (Nano Banana) → prompt paste → generate. Teeno ek saath bana sakte ho.
+    • Download karke naam rakho: hero.jpg, cakes.jpg, kitchen.jpg — ek hi folder
+    (sweet-crumbs) mein.
+    • AI images sample/visual ke liye hain; client ka asli product ho toh uski asli photos best
+     hain.
+
+  Aaj ka kaam
+
+  Apne page ki 3 images banao aur sahi naam se folder mein rakho.
+
+ Lesson 05 — Code (Bina Coding)
+    • ChatGPT ko ek message: ek file (index.html), images ke naam, colours, WhatsApp link,
+     floating button, sections.
+    • WhatsApp link format: https://wa.me/91XXXXXXXXXX?text=... — 91 ke baad apna 10 digit
+    number.
+    • Code poora aane do, beech mein stop mat karo, phir Copy.
+    • sweet-crumbs folder banao, teeno images (hero.jpg, cakes.jpg, kitchen.jpg) usme daalo.
+    • ChatGPT ka code Copy → VS Code → New File → paste → Save as index.html (usi folder
+    mein).
+    • index.html par double-click → page Chrome mein khulta hai → Order on WhatsApp button
+    check karo.
+
+  Galti + fix
+
+  Placeholder number (91XXXXXXXXXX) waise hi chhod diya — button galat number pe jaata
+   hai. Hamesha asli number daalo.
+
+  Aaj ka kaam
+
+  Apna page banao, browser mein kholo aur har button check karo.
+
+
+
+
+                                            AI Se Landing Page Banao  · Page 2
+
+--- SOURCE PAGE 3 ---
+SKILLOMATE                                                                           Course Notes
+
+
+
+ Lesson 06 — Mobile Check + Badlav
+    • Image gayab ho toh file ka naam check karo: code jo naam maang raha hai (cakes.jpg)
+    wahi file ka naam ho → rename → Cmd + R.
+    • Mobile view: Cmd + Option + I → Cmd + Shift + M → device list se iPhone chuno → scroll.
+    • Changes: ChatGPT se poora updated code → VS Code mein Cmd + A, Cmd + V, Cmd + S →
+     refresh.
+    • Changes ke example: asli number, prices, upar ek strip, mobile pe bade buttons.
+    • 'Baaki sab same rakho' likho taaki ChatGPT poora design na badle.
+
+  Galti + fix
+
+  Folder mein file ka naam cake.jpg tha, code cakes.jpg maang raha tha — image gayab. Ek
+   letter ki galti = image nahi dikhegi.
+
+  Aaj ka kaam
+
+  Apne page ko phone view mein check karo aur 2 changes karwao.
+
+ Lesson 07 — Page Live Karo (Netlify Drop)
+    • app.netlify.com/drop (ya Add new project → Upload) — poora folder drop karo, sirf
+    index.html nahi.
+    • Published → live link (random naam) khulta hai.
+    • Project configuration → Change project name → naam not available ho toh peeche number
+    lagao → Save.
+    • Badlav ke baad: Deploys tab mein folder dobara drop karo.
+    • Free plan mein link aisa hota hai: naam.netlify.app. Apna .com domain alag se kharidna
+    padta hai (client ke naam pe).
+
+  Galti + fix
+
+  Upload mein sirf index.html select hui — live page par images toot gayi. Poora folder
+  (index.html + images) upload karo.
+
+  Aaj ka kaam
+
+  Apna page live karo aur link kisi dost ko bhejo.
+
+ Lesson 08 — Apna Portfolio
+    • Client sabse pehle poochta hai: 'pehle kya banaya hai?' — portfolio page uska jawab hai.
+    • ChatGPT se portfolio page: studio naam, services, 'Mera kaam' card (Sweet Crumbs + live
+      link), khali card 'Aapka business yahan ho sakta hai', 3 steps, packages, WhatsApp
+     contact.
+    • Koi fake review ya fake client nahi — jo asli kaam hai wahi dikhao.
+    • Project card ki image (sweet-crumbs.png) bhi usi folder mein rakho, phir poora folder
+     Netlify pe drop karo.
+    • Naam not available? Kuch alag socho (course mein: theportfolio123).
+
+
+
+
+
+                                            AI Se Landing Page Banao  · Page 3
+
+--- SOURCE PAGE 4 ---
+SKILLOMATE                                                                           Course Notes
+
+
+
+
+  Galti + fix
+
+  sweet-crumbs.png folder mein nahi thi — project card ki image toot gayi. Har file wahi naam
+  aur wahi folder.
+
+  Aaj ka kaam
+
+  Apna portfolio page banao, live karo aur link save rakho.
+
+ Lesson 09 — Clients Dhoondho + Approach
+    • ChatGPT se poocho kaunse local business ko page ki sabse zyada zarurat hai (home
+    bakers, beauty parlours, tiffin, coaching, car wash, event decorators...).
+    • Google Maps pe search: 'home bakers near me', 'salon Indore' — listing mein 'Add website'
+    dikhe toh website nahi hai.
+    • Google Sheet (sheets.new): Business type | Area | website hai? | map link | status | MSG.
+    • Maps listing → Share → Copy link → sheet mein paste. Phone numbers sheet mein daalne ki
+     zarurat nahi.
+    • ChatGPT se 2 messages: pehla (chhota, friendly, unke kaam ki tareef + portfolio link + ek
+    simple sawaal) aur follow-up (2 din baad, bas ek baar).
+    • Message mein {naam}, {kaam} har business ke hisaab se badlo — copy-paste spam mat
+     karo.
+
+  Aaj ka kaam
+
+  Apne shehar ke 10 business dhoondho jinki website nahi hai, sheet mein daalo.
+
+ Lesson 10 — Deal Pakki Karo (Practice)
+    • Practice: ChatGPT ko bolo 'maan lo client ne aisa reply kiya' — Instagram vs page ka fark
+    simple shabdon mein + packages.
+    • Mol-bhav ('1,500 mein kar do'): price giraane ki jagah value samjhao, politely.
+    • Payment: 50% advance, 50% page live hone ke baad — dono taraf bharosa.
+    • Sheet mein payment / advance columns — har client ka hisaab saaf. Advance milne ke
+    baad hi kaam shuru.
+
+  Aaj ka kaam
+
+  Dono replies ki practice karo aur apna package aur price khud tay karo.
+
+ Lesson 11 — Course Recap
+    • Step 1 Plan → 2 Text → 3 Images → 4 Code → 5 Mobile + changes → 6 Live → 7 Portfolio → 8
+     Clients → 9 Deal.
+    • Ab tumhari baari: pehla page banao, live karo, aur pehle client se baat karo.
+
+  Aaj ka kaam
+
+  Apna pehla client-ready page aur portfolio link taiyaar rakho.
+
+
+
+
+
+                                            AI Se Landing Page Banao  · Page 4
+
+--- SOURCE PAGE 5 ---
+SKILLOMATE                                                                           Course Notes
+
+
+
+ 5 Honesty Rules
+    • Koi fake review, fake client ya fake 'happy customers' number page par nahi.
+    • Price aur offer hamesha business owner tay karta hai — ChatGPT se invent mat karwao.
+    • Asli WhatsApp number daalo; placeholder (XXXX) kabhi live mat karo.
+    • AI images ko client ka asli product bata kar mat dikhao; asli photos milen toh wahi use
+     karo.
+    • Client ko kamai/orders ki guarantee mat do — page ek tool hai, jaadu nahi.
+
+ Shortcuts + settings cheat-sheet
+
+  Kaam                 Kahan                     Kaise
+
+   Plan, text, prompts, code,   ChatGPT                         Details clear do; 'apni taraf se mat jodna'
+  messages
+
+  Images                   Google Flow · Image · Nano      16:9, realistic, no text/faces/logos
+                          Banana
+
+   File save                VS Code                 New File → paste → Save as index.html
+
+  Sab select / paste / save    VS Code                Cmd + A / Cmd + V / Cmd + S
+
+  Page refresh             Chrome                 Cmd + R
+
+  Mobile view              Chrome DevTools          Cmd + Option + I, phir Cmd + Shift + M
+
+  Live karna                     Netlify Drop                   Poora folder drop; naam: Project configuration
+
+  Update live page              Netlify · Deploys                Folder dobara drop
+
+  WhatsApp link            Code mein                     https://wa.me/91?text=
+
+   Clients list                 Google Maps + Sheets          'Add website' = website nahi; Share → Copy
+                                                                          link
+
+
+   Note: tools ke menu aur options update hote rehte hain — screen pe jo naam dikhe wahi use karo.
+
+
+
+
+
+                                            AI Se Landing Page Banao  · Page 5

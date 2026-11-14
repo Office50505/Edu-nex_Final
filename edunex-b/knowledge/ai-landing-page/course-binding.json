@@ -1,0 +1,114 @@
+{
+  "readOnlyCatalogLookup": true,
+  "productionWrites": false,
+  "verifiedAt": "2026-11-07T05:15:30.463Z",
+  "catalogSnapshotHash": "6ae0905fcaf7fb8ce59c8108be7b639e21520e052bac4ded25106c7ac2ceabf9",
+  "course": {
+    "_id": "6aeb1d5f2497c8173516e257",
+    "title": "AI Se Landing Page Banao",
+    "slug": "ai-se-landing-page-banao",
+    "status": "published",
+    "description": "Learn how to build professional, mobile-friendly landing pages for local businesses using AI, without any prior coding experience. This practical course covers everything from planning your website and writing content to generating images, creating website code, and publishing your page online. You'll also learn how to build a portfolio, find potential clients, and offer landing page development as a freelance service using ChatGPT, Google Flow, VS Code, and Netlify.",
+    "videos": [
+      {
+        "_id": "6aeb1d5f2497c8173516e24c",
+        "order": 1,
+        "title": "Course Introduction",
+        "description": "Discover what landing pages are, how they help local businesses attract enquiries and receive orders, and how AI simplifies website creation. Get introduced to the essential tools and understand the complete process of building and selling landing pages without coding experience.",
+        "notesHash": "d75900671a4565f779b0804990d28aecd33b2c0f43a9e53e3d7c124b2e9287f8",
+        "notesNormalizedHash": "1197f74e0ac70050182850d8830b139edd4ac4618dc1dd95bc028e5c68037a9c",
+        "sourcePdf": "Lesson_01_Course_Introduction.pdf"
+      },
+      {
+        "_id": "6aeb1d5f2497c8173516e24d",
+        "order": 2,
+        "title": "Page Planning",
+        "description": "Learn how to create a complete landing page plan using ChatGPT. Identify your target audience, define the business offer, understand customer problems, organize website sections, and develop effective headlines before starting the design process.",
+        "notesHash": "a5a34ccc6d9f43bd4abe5919903bc5f9e59975266c66856f04bbcae373b84244",
+        "notesNormalizedHash": "c6bf6b6c3898cad5e1bff0964f96a88df937f697887938bc5e7fdef87b551ba6",
+        "sourcePdf": "Lesson_02_Page_Planning.pdf"
+      },
+      {
+        "_id": "6aeb1d5f2497c8173516e24e",
+        "order": 3,
+        "title": "Landing Page Copy",
+        "description": "Learn how to generate professional website content using ChatGPT. Create engaging headlines, product descriptions, business benefits, frequently asked questions, ordering instructions, and effective call-to-action buttons that encourage visitors to contact the business.",
+        "notesHash": "e538b4e84a6ae10bd1b72555cff0ad9db1f384084246d2c4aae06b3c017921b2",
+        "notesNormalizedHash": "133680d9cce8524fd8e9316134e237a0107c9362d4a520dab45bc0fd5dbfb30f",
+        "sourcePdf": "Lesson_03_Landing_Page_Copy.pdf"
+      },
+      {
+        "_id": "6aeb1d5f2497c8173516e24f",
+        "order": 4,
+        "title": "Images with Google Flow",
+        "description": "Learn how to generate realistic and attractive website images using Google Flow and Nano Banana Pro. Create hero banners, product images, and supporting visuals using detailed AI prompts, and organize the generated images for your landing page.",
+        "notesHash": "139c3eb113ffb6a0a2c8505fc3ef17f06370ab302e3f8d78322985fc6881d936",
+        "notesNormalizedHash": "a82d208a029aec5b84a4dd7ceb9e73fdecb386b5172c4f65b17d07f001fd0694",
+        "sourcePdf": "Lesson_04_Images_with_Google_Flow.pdf"
+      },
+      {
+        "_id": "6aeb1d5f2497c8173516e250",
+        "order": 5,
+        "title": "Generate HTML Code",
+        "description": "Learn how to transform your website content and images into a fully functional landing page using ChatGPT. Generate HTML and CSS code, organize your files in VS Code, integrate WhatsApp ordering buttons, and preview your website in a browser without manually writing code.",
+        "notesHash": "16185a92f6d852c3ebb11f72598c799c95475735bb5bdc15fccfcd233107e293",
+        "notesNormalizedHash": "e7076f580a74dfa15e683bc816b9cb6b4137be2961dc7ec2b3f67c3898ac9e1e",
+        "sourcePdf": "Lesson_05_Generate_HTML_Code.pdf"
+      },
+      {
+        "_id": "6aeb1d5f2497c8173516e251",
+        "order": 6,
+        "title": "Mobile Check and Changes",
+        "description": "Learn how to test, improve, and update your landing page for mobile devices. Fix missing images, adjust text and button sizes, update business information, and use Chrome DevTools to ensure your website works smoothly across different screen sizes.",
+        "notesHash": "6ded01281a308a74d2fe1a0942b3159e4067473fc0f1bac5b525fafa45dcff36",
+        "notesNormalizedHash": "7bc30101e8a8fd2f850fadef2754f0494ae521bebedf573cdac6f0ba3bc83551",
+        "sourcePdf": "Lesson_06_Mobile_Check_and_Changes.pdf"
+      },
+      {
+        "_id": "6aeb1d5f2497c8173516e252",
+        "order": 7,
+        "title": "Publish on Netlify",
+        "description": "Learn how to publish your completed landing page using Netlify. Upload your website files, generate a shareable live link, customize your project name, and update your website whenever you make changes to its content or design.",
+        "notesHash": "fdf8532401bab0117cc6be551321afdcda1f86486f8c6b5c15e8a15c38c17da6",
+        "notesNormalizedHash": "0a468642276a3c368fe1fd90dfa4094d3c1c6aebc960c7c9de77ed3668b7ec59",
+        "sourcePdf": "Lesson_07_Publish_on_Netlify.pdf"
+      },
+      {
+        "_id": "6aeb1d5f2497c8173516e253",
+        "order": 8,
+        "title": "Build a Portfolio",
+        "description": "Learn how to create a professional portfolio website to showcase your landing page projects. Present your services, display completed work, explain your packages, and add WhatsApp contact options to help potential clients explore your skills and reach out.",
+        "notesHash": "26c44f513b24363f986a0d01f42e8408cef5937c1ebca92fd02dee893cbe379d",
+        "notesNormalizedHash": "f4c89e9bb6258518f1fd751e187db118eceed2dd402ac6a0e0aa5ae0a345ad53",
+        "sourcePdf": "Lesson_08_Build_a_Portfolio.pdf"
+      },
+      {
+        "_id": "6aeb1d5f2497c8173516e254",
+        "order": 9,
+        "title": "Find Clients",
+        "description": "Learn how to identify local businesses that could benefit from having a landing page. Use Google Maps to research potential clients, organize business information in Google Sheets, and create personalized WhatsApp outreach messages to introduce your services professionally.",
+        "notesHash": "e4ce1dcf6ded633caca9631bd78196750b7166c83b5639c45e6c4f123c84180f",
+        "notesNormalizedHash": "995f83062143784ca560e64192e655580736da12ac410284af1afa6f7a13ed71",
+        "sourcePdf": "Lesson_09_Find_Clients.pdf"
+      },
+      {
+        "_id": "6aeb1d5f2497c8173516e255",
+        "order": 10,
+        "title": "Handle Client Objection",
+        "description": "Learn how to respond to client enquiries, explain the value of your landing page services, and handle common objections. Practice professional price negotiations, present service packages confidently, and understand how to structure advance payments and project agreements.",
+        "notesHash": "0aee0fd636065309f76f683d548fb1832c95940cc0f300b7f514425ef2eb316d",
+        "notesNormalizedHash": "88e838c932aaafe46e9e8bc748bc86a9ba7c38c73da2f72b41a39f5f5ebf5cc5",
+        "sourcePdf": "Lesson_10_Handle_Client_Objections.pdf"
+      },
+      {
+        "_id": "6aeb1d5f2497c8173516e256",
+        "order": 11,
+        "title": "Course Recap",
+        "description": "Review the complete landing page development process, from planning and AI-generated content to website creation, publishing, portfolio building, and client outreach. Bring your new skills together and prepare to create your first client-ready landing page and start approaching potential customers.",
+        "notesHash": "c6b759bdc04bc102dce25262f22798e52cadd3edd2ecf377fce82d18f4e0d789",
+        "notesNormalizedHash": "4703069259dede33d41688ca87bbaa72f8a1b94dd9f058bc2991241a0d6b2400",
+        "sourcePdf": "Lesson_11_Course_Recap.pdf"
+      }
+    ]
+  }
+}

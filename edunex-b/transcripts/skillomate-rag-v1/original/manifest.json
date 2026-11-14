@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-11-02T11:19:15.732070+00:00",
+  "source_output_root": "/Users/ayankhan/skillomate-video-extraction/skillomate-output",
+  "document_count": 85,
+  "chunk_count": 95,
+  "skipped_lessons": [],
+  "hinglish_rendered_fallback_lessons": [
+    "AI-Business-Ads/Lesson-01",
+    "AI-Business-Ads/Lesson-02",
+    "AI-Business-Ads/Lesson-03"
+  ],
+  "chunking": {
+    "max_source_characters": 1800,
+    "overlap_segments": 1,
+    "boundary": "trusted transcript segment"
+  },
+  "embedding_status": "not_generated",
+  "recommended_embedding_field": "retrieval_text",
+  "files": [
+    "documents.jsonl",
+    "chunks.jsonl",
+    "README.md"
+  ]
+}

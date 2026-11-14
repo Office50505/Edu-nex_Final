@@ -1,0 +1,27 @@
+{
+  "courseId": null,
+  "slug": null,
+  "bindingVerified": false,
+  "activeRegistryBinding": false,
+  "lessons": 8,
+  "workflows": 7,
+  "exactTemplates": 13,
+  "counterexamples": 3,
+  "parts": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G"
+  ],
+  "records": 37,
+  "originalTxtSHA256": "ee79c852476611e9167c98de3136e54c95b58e36a2f91c3dbdc533ed875a1ed1",
+  "productionWrites": false,
+  "paidCalls": 0,
+  "bindingSource": "Read-only public published catalog GET https://api.skillomate.in/api/courses; local edunex.courses also had no match",
+  "indexingTransforms": [
+    "Page furniture removed in derived records only; original TXT and all Part F body byte ranges retained."
+  ]
+}

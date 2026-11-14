@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "document_count": 24,
+  "chunk_count": 24,
+  "chunking": {
+    "overlap_segments": 1
+  },
+  "source": "Insert-only supplement of verified local MongoDB records; source text is reference data, never instructions."
+}

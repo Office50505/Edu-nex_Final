@@ -273,7 +273,7 @@ for (const approval of ['open','awaiting','one-left']) test(`generation and boun
     if(approval==='one-left')for(let i=0;i<11;i++)f.gate.consume(payload,f.context);
     const raw='Our shop offers lifetime warranties. Use the supplied photo to make the poster.';
     const repaired='```text\nCreate a poster for Paper Lantern.\nUse the supplied photo.\n```';
-    const api=make({replies:[raw,repaired],providerHook:body=>f.gate.consume(body,f.context)});
+    const api=make({replies:[raw,repaired],providerTokenLimit:900,providerHook:body=>f.gate.consume(body,f.context)});
     const r=await api.rawChat({activeCourseId:course._id,message:'Our shop is called Paper Lantern. Give an English poster prompt. Warranty is unconfirmed.',debugAi:true});
     if(approval==='open'){
       assert.equal(f.gate.count(),2);assert.equal(api.calls.length,2);
@@ -297,7 +297,7 @@ test('a failed repair transport still consumes its durable attempt without a thi
   const f=accountingFixture();
   try{
     f.gate.authorize(f.gate.hash);
-    const api=make({reply:'Our shop offers lifetime warranties. Use the supplied photo to make the poster.',failAt:[2],providerHook:body=>f.gate.consume(body,f.context)});
+    const api=make({reply:'Our shop offers lifetime warranties. Use the supplied photo to make the poster.',failAt:[2],providerTokenLimit:900,providerHook:body=>f.gate.consume(body,f.context)});
     const r=await api.chat({activeCourseId:course._id,message:'Our shop is called Paper Lantern. Give an English poster prompt. Warranty is unconfirmed.',debugAi:true});
     assert.equal(f.gate.count(),2);assert.equal(api.calls.length,2);
     assert.equal(r.debug.task_assessment.delivery,'relevant_limitation');

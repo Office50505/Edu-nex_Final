@@ -5,7 +5,9 @@ const { draftProductAd, missingProductDeliverables } = require('./productTutorTa
 const { productResponseSelection, productResponseLanguage:tutorLanguage,productCopyIntent,productRequestPlan,productCourseDomain } = require('./productTutorIntent');
 
 function explanationLanguageMatches(reply, language, knownProduct = '') {
-  let prose = String(reply).replace(/```[\s\S]*?```/g, '').replace(/[“"][^”"\n]+[”"]/g, '');
+  // A clipped spoken quote is still dialogue, not the explanation language.
+  // Completion is checked separately by the provider adapter.
+  let prose = String(reply).replace(/```[\s\S]*?(?:```|$)/g, '').replace(/[“"][^”"\n]*(?:[”"]|$)/gm, '');
   // A supplied proper name can keep its original script across language switches.
   // It cannot by itself establish the requested explanation language.
   if (knownProduct) prose = prose.split(knownProduct).join('');
@@ -183,7 +185,7 @@ function resolveProductTutorReply({ message, history = [], knowledge }) {
     hindi: 'बचे हुए कोष्ठकों में अपनी जानकारी भरें; कोई विवरण गढ़ा नहीं गया है।',
     hinglish: 'Bache hue brackets mein apni details bharo; maine koi details invent nahi ki hain.',
   }[language] : '';
-  return { reply: `${template.heading}\n\n\`\`\`text\n${body}\n\`\`\`${note ? `\n\n${note}` : ''}`, templateId: template.chunkId, policy: 'exact_template' };
+  return { reply: `${body===template.content?'Approved Prompt':'Customized AI Prompt'} — ${template.heading}\n\n\`\`\`text\n${body}\n\`\`\`${note ? `\n\n${note}` : ''}`, templateId: template.chunkId, policy: 'exact_template' };
 }
 
 function productTutorReply(input){

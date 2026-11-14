@@ -1,0 +1,1394 @@
+SKILLOMATE | NEX AI | E-COMMERCE COURSE KNOWLEDGE BASE
+Source-grounded ingestion text | 2026-11-12
+
+COURSE: AI Se Apna E-commerce Store Banao (Bina Shopify)
+LESSON_COUNT: 13
+COURSE_ID: NOT VERIFIED - resolve from published Skillomate database
+LESSON_IDS: NOT VERIFIED - resolve each from published Skillomate database
+SOURCE_SCOPE: Three attached PDFs. Do not claim video transcripts or precise timestamps.
+
+ENGLISH COURSE OVERVIEW
+Build a no-Shopify e-commerce storefront with AI-assisted HTML, CSS, and JavaScript; use Google Sheets as a product catalog, Apps Script for order records, WhatsApp for order conversations, and Netlify for hosting. Payments are coordinated through UPI or cash on delivery, not an integrated payment gateway. The example brand Mitti & Wax is a sample business, not the student’s business.
+
+LESSON INDEX (ENGLISH)
+LESSON_01: Course Introduction
+LESSON_02: Store Planning
+LESSON_03: Product Photography and Descriptions
+LESSON_04: Google Sheets Admin Panel
+LESSON_05: Homepage Development
+LESSON_06: Product Page and Cart
+LESSON_07: Checkout and WhatsApp Orders
+LESSON_08: Order Management
+LESSON_09: Store Information Pages and Mobile Testing
+LESSON_10: Publish on Netlify
+LESSON_11: Attract First Customers
+LESSON_12: Find Clients for Store-Building Services
+LESSON_13: Course Recap
+
+SOURCE AND PROVENANCE RULES
+- The sections below reproduce the original source text in its original language, including Hinglish. They are not newly authored English prompts.
+- Label a prompt "Verified Course Prompt" only when quoting the exact prompt from the EXACT_RECORDED_PROMPTS section, preserving wording and placeholders.
+- If adapting to a student’s product, business, container, images, prices, or request, label it "Customized AI Prompt" and never present it as an exact approved/verified prompt.
+- Course examples, product prices, shipping and return policies are NOT facts about a student’s business. Ask for missing details.
+- Never invent reviews, product specifications, burn time, shipping terms, payment guarantees, revenue or customer counts.
+- No user-specific video timestamp claims: these sources contain notes/prompts, not timestamped video transcripts.
+- Knowledge retrieval must not alter playback entitlements, subscription checks, authentication or AI consent.
+- Public product CSV is distinct from private customer order records; do not recommend publishing orders or exposing personal information.
+- Preserve the existing unified cross-course knowledge access.
+
+==============================================================================
+SOURCE_START: COURSE_NOTES
+FILE: EC_Course_Notes.pdf
+SHA256: 03c9c5d9636c785e48095741c90ba04d5fbf28a065a012fc42e34e91fdf06ae8
+PAGES: 6
+==============================================================================
+--- COURSE_NOTES | PAGE 1 ---
+SKILLOMATE · Course Notes
+
+
+
+    S K I L L O M A T E  · A I S E A P N A E - C O M M E R C E S T O R E B A N A O ( B I N A S H O P I F Y )
+  Course Notes
+    Poore course ke notes: har lesson mein kya seekha, kahan galti hoti hai, aur aaj ka kaam. Running
+    example: Mitti & Wax, Indore ka handmade candles brand (sample business).
+
+
+Course ka poora raasta
+
+Plan → photos + descriptions → Google Sheet admin panel → homepage → product page + cart →
+checkout se WhatsApp order → orders handle → baaki pages + mobile check → Netlify par live →
+customers → clients → recap.
+
+Tools: ChatGPT (plan, text, prompts, code, messages), Google Flow (Nano Banana images), Google
+Sheets (admin panel, orders, Apps Script), VS Code (files save), Chrome (test + phone view), WhatsApp
+(orders, replies, Lists), Netlify (free live link), Instagram + Google Business Profile (customers).
+
+  Golden rule: har file ka sahi naam, sahi folder (mitti-wax). Website par sirf sach: asli price, asli photos,
+   asli policy, asli reviews. Koi fake offer, fake review ya fake earning nahi.
+
+Mitti & Wax products (sample)
+
+ Product                                Category         Price     Image file
+
+ Lavender Jar Candle                         Jar             ₹399       lavender-jar.jpg
+
+ Vanilla Jar Candle                           Jar             ₹399       vanilla-jar.jpg
+
+ Rose Tin Candle                                Tin             ₹299       rose-tin.jpg
+
+ Sandalwood Pillar Candle                          Pillar           ₹499      sandalwood-pillar.jpg
+
+ Diya Candle Set (4 pcs)                     Diya Sets        ₹349       diya-set.jpg
+
+ Mini Candle Gift Box (3 pcs)                      Gift Boxes       ₹699       gift-box.jpg
+
+Lesson 01 — Course Intro
+
+    Is course mein bina Shopify aur bina coding ke apna khud ka e-commerce store banana seekhoge:
+   products, cart, checkout aur order seedha WhatsApp par.
+  Payment gateway nahi hai. Customer cart bhar ke 'Order on WhatsApp' dabata hai, aur payment UPI
+  ya COD se WhatsApp par hi tay hoti hai.
+  Google Sheet store ka admin panel hai. Product add karna, price ya stock badalna sab Sheet se,
+  website apne aap update hoti hai.
+  Har order WhatsApp par aata hai aur Sheet mein bhi save hota hai.
+  Running example: Mitti & Wax, Indore ka handmade candles brand (course ka sample business), poore
+   India mein shipping.
+   Chahiye: laptop, Gmail account aur ChatGPT. Baaki tools zyadatar free se shuru hote hain.
+  End mein: customers laana (Instagram, WhatsApp, Google) aur yahi skill bech ke clients banana.
+
+
+
+
+
+                                                                                                      AI Se Apna E-commerce Store Banao · Page 1
+
+--- COURSE_NOTES | PAGE 2 ---
+SKILLOMATE · Course Notes
+
+Aaj ka kaam
+
+Socho tumhara (ya kisi client ka) store kis cheez ka hoga.
+
+Lesson 02 — Store Ka Plan
+
+   Store banane se pehle plan, warna baad mein sab dobara banana padta hai.
+  ChatGPT ko ek message mein sab saaf likho: brand, city, products ke naam + price (jo tumne tay kiye),
+  customers kaun hain, aur order ka tareeka (cart → Order on WhatsApp).
+  ChatGPT se lo: brand ki ek line, categories, website ke saare pages, homepage ke sections upar se
+  neeche, aur trust ke liye kya hona chahiye.
+   Mitti & Wax categories: Jar, Tin, Pillar, Diya Sets, Gift Boxes.
+   Pages: Home, Shop, Product, Cart, About, How to Order/FAQ, Contact, Shipping, Returns, Privacy, Terms.
+   Trust: asli photos, saaf price, shipping info, aur asli contact.
+  Doosra message: Google Sheet ke liye products ki table. Columns exactly: id, name, category, price,
+   description, image, stock.
+  Ye table Lesson 4 mein admin panel banegi.
+
+  Galti + fix: Plan mein shipping charge, delivery time ya return policy ChatGPT apne aap tay na kare. Ye
+  owner decide karta hai, isliye message mein bolo 'jo detail nahi di woh confirm karne ke liye chhod do'.
+
+Aaj ka kaam
+
+Apne brand ka plan aur products ki table banao.
+
+Lesson 03 — Product Photos + Descriptions
+
+   Usi chat mein 6 product photos aur 2 lifestyle photos ke prompts maango.
+  Saare product prompts ek hi style mein: same light, same angle, white background.
+  Har prompt ke upar file ka naam: lavender-jar, vanilla-jar, rose-tin, sandalwood-pillar, diya-set, gift-
+  box (aur hero, gift wali lifestyle photo).
+  Flow → Image mode → Nano Banana. Product photos 1:1, hero banner 16:9 (left side text ke liye khaali
+   jagah).
+  Download karke sahi naam se images folder mein rakho (mitti-wax/images).
+   Descriptions: title, 2–3 lines, bullets aur care instructions (jalti candle ko akela mat chhodo).
+   Weight, burn time ya koi aur claim ChatGPT se mat likhwao. Woh owner apne asli product se daalega.
+
+  Galti + fix: File ka naam galat (jaise 'Lavender Jar (1).jpg') hua toh website par photo gayab dikhegi.
+ Naam exactly wahi rakho jo table mein hai, chhote akshar mein.
+
+Aaj ka kaam
+
+Saari 8 photos banao aur sahi naam se images folder mein rakho.
+
+Lesson 04 — Google Sheet = Admin Panel
+
+  ChatGPT se final products table tab-separated format mein lo, taaki seedha Sheet mein paste ho.
+   Price bina ₹ sign ke, image ka poora path (images/lavender-jar.jpg), aur stock column (abhi sab mein
+   10).
+  Orders ke liye alag header row: order_id se notes tak. Aur status ke options: New se Delivered tak.
+
+
+
+
+                                                                                                      AI Se Apna E-commerce Store Banao · Page 2
+
+--- COURSE_NOTES | PAGE 3 ---
+SKILLOMATE · Course Notes
+
+
+  Google Sheets → nayi file 'Mitti & Wax — Store Admin' → table copy karke A1 par paste.
+  Naya tab 'orders' → headers paste → header row freeze.
+   Status column select → Insert → Dropdown → har option ka apna colour (Paid green, Cancelled red).
+   File → Share → Publish to web → sirf products tab, format CSV → Publish.
+   Link browser mein khol ke check karo: data dikh raha hai matlab link sahi hai.
+   Link ko mitti-wax folder mein sheet-link.txt mein save karo (TextEdit → Format → Make Plain Text).
+
+  Galti + fix: 'Entire document' ya 'Web page' publish kar diya toh website products nahi padh paayegi.
+  Hamesha products tab + CSV. Aur sheet-link.txt ek file hai, folder nahi, aur plain text mein save hoti hai
+  (RTF nahi).
+
+Aaj ka kaam
+
+Products aur orders wali Sheet banao aur products tab ko CSV mein publish karo.
+
+Lesson 05 — Homepage
+
+  ChatGPT ko ek message: homepage ke sections ka order, colours, aur Sheet ka CSV link.
+  ChatGPT 3 files deta hai: index.html, style.css, app.js. Har file ka poora code copy karo, beech se kuch
+  mat chhodo.
+  VS Code → Open Folder → mitti-wax → New file → naam → code paste → Command S.
+   app.js mein upar apna WhatsApp number (91 ke baad 10 digits, bina + aur space) aur CSV link daalo.
+   index.html ko Chrome mein kholo: hero banner aur neeche products seedha Sheet se.
+   Test: Add to Cart → upar cart count badhta hai. Category par click → sirf wahi candles.
+  Sheet mein Rose Tin ka stock 0 karo → refresh → site par Sold Out. Code ko haath nahi lagaya.
+
+  Galti + fix: Stock badla par site par turant nahi dikha? Google ka published link 2–5 minute mein
+  update hota hai. Thodi der baad refresh karo.
+
+Aaj ka kaam
+
+Apna homepage banao aur Sheet se products live karo.
+
+Lesson 06 — Product Page + Cart
+
+  Message mein dono pages ki har detail: breadcrumb, badi photo, poori description, quantity, aur
+  empty cart tak.
+   Link aur number ab alag config.js file mein, taaki code update karne par bhi safe rahein.
+   Quantity stock se zyada nahi ja sakti, aur cart mein price hamesha Sheet se aata hai (purana price
+   nahi chalega).
+  6 files: config.js, app.js, index.html, product.html, cart.html, style.css.
+   Purani files mein Command A → naya code paste → Command S. product.html aur cart.html nayi files.
+  Product par click → badi photo, description, quantity. Stock 0 → Sold Out + neeche baaki candles ke
+   suggestions.
+   Cart mein har item ka total aur neeche poora order summary. Refresh karne par bhi cart waisa hi rehta
+   hai.
+
+  Galti + fix: Koi file aadhi copy hui toh page khaali ya toota dikhega. Har file ka code shuru se end tak
+  poora copy karo.
+
+
+
+
+
+                                                                                                      AI Se Apna E-commerce Store Banao · Page 3
+
+--- COURSE_NOTES | PAGE 4 ---
+SKILLOMATE · Course Notes
+
+Aaj ka kaam
+
+Product page aur cart banao, aur poora flow khud test karo.
+
+Lesson 07 — Checkout → WhatsApp Order
+
+  Sheet → Extensions → Apps Script → project ka naam → purana code hata ke ChatGPT ka Code.gs
+  paste → Command S.
+  Deploy → New deployment → Web app → Who has access: Anyone → Deploy.
+  Google permission maangega. Ye tumhara apna script hai: Advanced → allow.
+  Web app ka link copy karo (ye /exec par khatam hota hai) aur sheet-link.txt mein save karo.
+   config.js: CSV link, WhatsApp number aur orders link, teeno quotes ke andar.
+   app.js aur style.css poore replace, nayi file checkout.html (aur thank-you.html), baaki pages update.
+   Test: cart → checkout form (naam, WhatsApp number, address, city, pincode, payment UPI ya COD,
+  notes mein gift message) → Order on WhatsApp.
+  WhatsApp mein poora order message Order ID ke saath ready. Website par Thank You page. Sheet
+  mein nayi row, status New.
+
+  Galti + fix: Thank You page nahi aaya? Updated code mein WhatsApp naye tab mein khulta hai aur
+  order pehle save hota hai. ChatGPT ko batao 'WhatsApp se wapas aane par thank you page nahi dikh
+  raha', woh fix de dega.
+
+Aaj ka kaam
+
+Checkout banao, ek practice order bhejo aur Sheet mein check karo.
+
+Lesson 08 — Orders Handle Karna
+
+  ChatGPT se 5 chhote replies: order confirm, UPI, COD, shipped, delivered. Friendly Hinglish mein, har ek
+  ke saath shortcut ka naam.
+   Koi fake offer nahi. Delivered wale reply mein honest feedback maango, fake review kabhi nahi.
+  Normal WhatsApp mein 'Message yourself' wali chat kholo, har reply wahan bhejo aur Star kar do. Ye
+  tumhari reply library hai.
+  Naya order aaya → Starred messages → confirm reply copy → customer ki chat mein paste aur send.
+   UPI wale reply ke saath apna QR bhejo.
+  WhatsApp Lists banao: 'Payment Pending', 'Shipped', aur customer ki chat sahi list mein daalo.
+  Sheet mein status dropdown se update karo (Paid, Shipped…). Poora record ek jagah.
+
+  Galti + fix: Agar status dropdown mein 'Payment Pending' nahi hai, toh Data validation mein add kar
+   lo. List aur Sheet dono mein same naam rakho.
+
+Aaj ka kaam
+
+Paanchon replies save karo aur ek practice order poora handle karo.
+
+Lesson 09 — Baaki Pages + Mobile Check
+
+  4 pages: About, Contact, Shipping, Returns. Har ek mein kya likhna hai saaf batao.
+  About mein asli kahani: koi fake award ya fake number nahi.
+
+
+
+
+
+                                                                                                      AI Se Apna E-commerce Store Banao · Page 4
+
+--- COURSE_NOTES | PAGE 5 ---
+SKILLOMATE · Course Notes
+
+
+  ChatGPT purane pages dekh ke same design mein banata hai. Index, app aur style bhi update, taaki
+  header ke links sahi jaayein.
+  VS Code mein nayi files (about.html, contact.html, shipping.html, returns.html), purani files mein poora
+   replace, Command S.
+   Refresh → header mein About par click → page khul gaya.
+  Contact par WhatsApp button, Returns mein saaf rules, Shipping: poore India mein, dispatch 1–2 din (jo
+  owner tay kare).
+   Mobile check: Chrome mein Command + Option + I → phone wala icon → har page check.
+
+  Galti + fix: Policy (return days, shipping charge) ChatGPT se mat banwao. Owner ka asli rule hi page
+  par likho.
+
+Aaj ka kaam
+
+Chaaron pages banao aur phone view mein har page check karo.
+
+Lesson 10 — Store Live Karna (Netlify)
+
+   Netlify par Google se login (free hosting).
+  Add new project → upload your project files → poora mitti-wax folder chuno.
+  Upload se pehle sheet-link.txt folder se bahar nikaal do. Isme private links hain.
+  Kuch seconds mein store internet par live.
+   Live link par sab test karo: products, cart, checkout. Galat number daalo toh form turant batata hai.
+   Live site se pehla order → Thank You page, Order ID ke saath.
+  Domain management → project ka naam mitti-wax → link: mitti-wax.netlify.app. Apna domain ho toh
+  yahin add kar sakte ho.
+
+  Galti + fix: Kuch badalna ho toh VS Code mein badlo aur poora folder dobara upload karo. Sirf ek file
+  upload karne se baaki files hat sakti hain.
+
+Aaj ka kaam
+
+Apna store Netlify par live karo aur link doston ko bhejo.
+
+Lesson 11 — Pehle Customers Laana
+
+  ChatGPT ko store ka link do aur bolo sab honest aur simple likhe: koi fake offer ya fake discount nahi.
+   Ek saath lo: 3 Instagram captions (end mein store link), reel ideas (har reel 8 second + screen text),
+  WhatsApp Status text, doston/family ko bhejne wala message.
+  Flow mein post ki photo: square, cozy, warm light (gift box, cozy corner).
+   Instagram: naya post (Flow photo + ChatGPT caption), bio mein store link, har post mein 'link bio mein'.
+   Reels: candle jalao, close-up lo, end mein 'link bio mein'.
+  WhatsApp Status par daalo: pehle customers aksar apne contacts hi hote hain.
+  Doston aur family ko personal message bhejo. Pehla order aksar wahin se aata hai.
+  Google Business Profile banao, taaki Google par brand search karte hi dikhe.
+
+  Galti + fix: Ek saath sabko bulk message ya spam mat karo. Har message personal ho, aur zyada se
+  zyada ek follow-up.
+
+
+
+
+
+                                                                                                      AI Se Apna E-commerce Store Banao · Page 5
+
+--- COURSE_NOTES | PAGE 6 ---
+SKILLOMATE · Course Notes
+
+Aaj ka kaam
+
+Ek post, ek reel idea, aur 10 logon ko store ka link.
+
+Lesson 12 — Clients Laana (Yahi Skill Becho)
+
+   Mitti & Wax tumhara portfolio aur demo hai. Yahi live store client ko dikhana hai.
+  ChatGPT se pucho: ye service kisko sabse zyada chahiye. Home bakers, boutiques, gift shops: sabko
+  WhatsApp par orders chahiye.
+   Friendly, chhota DM, demo link ke saath.
+  3 packages: catalog, WhatsApp store, full setup. Price tum khud tay karoge.
+   Ek page ka proposal.
+  Demo: client ko live store dikhao: product, cart, checkout, sab uski aankhon ke saamne.
+   Asli selling point: store woh khud Sheet se chalayega. Demo mein Sheet mein price badlo → 2–4
+  minute → refresh → site par naya price, bina developer ke.
+  Instagram par apne sheher ke home bakers/boutiques dhoondo jo abhi sirf DM par orders lete hain,
+  unhe DM bhejo. Local market mein phone par demo dikhao.
+  Kabhi fake earning ya fake guarantee mat bolo. Pehle client ka kaam zabardast karo: referral wahi se
+  aate hain.
+
+  Galti + fix: Demo ke baad Sheet mein asli price wapas daal do (Rose Tin ₹299), aur test orders ki rows
+  orders tab se hata do.
+
+Aaj ka kaam
+
+5 local businesses ki list banao aur unhe DM bhejo.
+
+Lesson 13 — Recap
+
+   Plan → photos + descriptions → Sheet admin panel → homepage → product page + cart → checkout
+  se WhatsApp order → orders handle → baaki pages → Netlify par live → customers → clients.
+   Bina Shopify, bina coding: bas ChatGPT, Google Sheet, Flow aur thodi mehnat.
+
+Aaj ka kaam
+
+Apna store banao, live karo, aur pehla order lekar dikhao.
+
+
+
+
+
+                                                                                                      AI Se Apna E-commerce Store Banao · Page 6
+
+SOURCE_END: COURSE_NOTES
+
+==============================================================================
+SOURCE_START: NEX_AI_REFERENCE
+FILE: EC_Nex_AI_Chatbot_Knowledge_Base.pdf
+SHA256: 54dbcfd09851066497ef6340d33a78dfc79a349c8838ee1d9b1e5be53f35d0ce
+PAGES: 12
+==============================================================================
+--- NEX_AI_REFERENCE | PAGE 1 ---
+SKILLOMATE · Chatbot Knowledge Base
+
+
+
+    S K I L L O M A T E  · A I S E A P N A E - C O M M E R C E S T O R E B A N A O ( B I N A S H O P I F Y )
+  Chatbot Knowledge Base
+    Nex AI (Skillomate app tutor) ko is course ke baare mein train karne ke liye: course ki jaankari,
+    workflows, galtiyan, troubleshooting, exact prompts aur jawab dene ke rules.
+
+
+Part A — Bot ke liye rules
+
+  Jawab Hinglish mein, dost jaisa, chhota aur seedha. Zarurat ho toh numbered steps.
+  Jahan kaam kisi lesson mein hai, uska number batao (jaise 'ye Lesson 07 mein hai').
+  Prompt maange toh course ka ChatGPT message do (Part F), user ke brand ki details daal ke.
+  Fake reviews, fake offers, nakli discount, fake customer count ya jhoothe product claims (weight, burn
+   time) likhne mein help mat karo.
+  Kamai, orders ya clients ka koi promise ya number mat do. Product aur service ka price user khud tay
+   karta hai.
+  Spam ya bulk messages mein help mat karo. Har message personal, aur zyada se zyada ek follow-up.
+   Kisi customer ka data (naam, number, address) public jagah share karne ki salah mat do. sheet-link.txt
+  aur Sheet ke links private hain.
+   Tools ki price, plans ya limits ke pakke number mat batao. Current info tool ki site par check karne ko
+   bolo.
+  Course ke tools: ChatGPT, Google Flow (Nano Banana), Google Sheets + Apps Script, VS Code, Chrome,
+  WhatsApp, Netlify, Instagram, Google Business Profile.
+  Payment gateway is course mein nahi hai. Payment UPI ya COD se WhatsApp par hoti hai.
+  Pata na ho toh saaf bolo, guess mat karo.
+
+Part B — Course overview
+
+Naam: AI Se Apna E-commerce Store Banao (Bina Shopify), Skillomate. Format: Hinglish video lessons, AI
+presenter + screen recordings. Lessons: 13 (12 + recap). Audience: beginners, chhote sellers, freelancers,
+students jo bina coding apna online store banana chahte hain ya yahi service local businesses ko
+bechna chahte hain. Running example: Mitti & Wax, Indore ka handmade candles brand (sample
+business), poore India mein shipping.
+
+Store kaise kaam karta hai: products Google Sheet (products tab) se CSV link ke through website par
+aate hain → customer cart bharta hai → checkout form → 'Order on WhatsApp' → order Apps Script se
+Sheet ke orders tab mein save (status New) + WhatsApp par message Order ID ke saath → Thank You
+page → owner WhatsApp par payment (UPI/COD) aur delivery confirm karta hai.
+
+ #   Lesson                    Kya seekha
+
+ 01  Course Intro                    Course, flow, tools
+
+ 02  Store Ka Plan                   Plan + products table (id, name, category, price, description, image, stock)
+
+ 03  Product Photos + Descriptions   8 photos Flow mein + descriptions
+
+ 04  Google Sheet = Admin Panel    Sheet admin panel, orders tab, status dropdown, Publish to web CSV
+
+
+
+
+
+                                                                                                      AI Se Apna E-commerce Store Banao · Page 1
+
+--- NEX_AI_REFERENCE | PAGE 2 ---
+SKILLOMATE · Chatbot Knowledge Base
+
+
+ 05  Homepage                 Homepage: index.html, style.css, app.js, Sheet se products, Sold Out
+
+ 06  Product Page + Cart            Product page, cart, config.js
+
+ 07  Checkout → WhatsApp Order   Apps Script, checkout, WhatsApp order, Thank You page, Sheet row
+
+ 08  Orders Handle Karna          Ready replies, Starred messages, WhatsApp Lists, Sheet status
+
+ 09  Baaki Pages + Mobile Check     About, Contact, Shipping, Returns + mobile check
+
+ 10   Store Live Karna (Netlify)           Netlify par live, mitti-wax.netlify.app
+
+  11   Pehle Customers Laana         Captions, reels, Status, friends message, Google Business Profile
+
+ 12   Clients Laana (Yahi Skill Becho)  Service bechna: DM, packages, proposal, demo
+
+ 13  Recap                     Recap
+
+Part C — Files aur folder
+
+ File                Kaam                                                            Lesson
+
+ mitti-wax/ (folder)          Saari files yahin, desktop par                                      04
+
+ images/                8 photos: lavender-jar.jpg, vanilla-jar.jpg, rose-tin.jpg, sandalwood-       03
+                                     pillar.jpg, diya-set.jpg, gift-box.jpg, hero.jpg, gift-lifestyle.jpg
+
+ sheet-link.txt            CSV link aur orders (/exec) link ka private note. Netlify par upload NAHI       04, 07
+
+ index.html             Homepage                                                    05
+
+ style.css                  Poora look/design                                               05
+
+ app.js                     Products load, cart, Sold Out, checkout logic                          05
+
+ config.js               CSV link, WhatsApp number, orders link (teeno quotes mein)                 06, 07
+
+ product.html / cart.html     Product page / cart                                             06
+
+ checkout.html / thank-     Checkout form / Thank You page                                     07
+ you.html
+
+ about, contact, shipping,     Trust pages                                                    09
+ returns .html
+
+Part D — Har lesson ki details
+
+Lesson 01 — Course Intro
+    Is course mein bina Shopify aur bina coding ke apna khud ka e-commerce store banana seekhoge:
+   products, cart, checkout aur order seedha WhatsApp par.
+  Payment gateway nahi hai. Customer cart bhar ke 'Order on WhatsApp' dabata hai, aur payment UPI
+  ya COD se WhatsApp par hi tay hoti hai.
+  Google Sheet store ka admin panel hai. Product add karna, price ya stock badalna sab Sheet se,
+  website apne aap update hoti hai.
+  Har order WhatsApp par aata hai aur Sheet mein bhi save hota hai.
+  Running example: Mitti & Wax, Indore ka handmade candles brand (course ka sample business), poore
+   India mein shipping.
+   Chahiye: laptop, Gmail account aur ChatGPT. Baaki tools zyadatar free se shuru hote hain.
+
+
+
+
+                                                                                                      AI Se Apna E-commerce Store Banao · Page 2
+
+--- NEX_AI_REFERENCE | PAGE 3 ---
+SKILLOMATE · Chatbot Knowledge Base
+
+
+  End mein: customers laana (Instagram, WhatsApp, Google) aur yahi skill bech ke clients banana.
+
+Aaj ka kaam: Socho tumhara (ya kisi client ka) store kis cheez ka hoga.
+
+Lesson 02 — Store Ka Plan
+   Store banane se pehle plan, warna baad mein sab dobara banana padta hai.
+  ChatGPT ko ek message mein sab saaf likho: brand, city, products ke naam + price (jo tumne tay kiye),
+  customers kaun hain, aur order ka tareeka (cart → Order on WhatsApp).
+  ChatGPT se lo: brand ki ek line, categories, website ke saare pages, homepage ke sections upar se
+  neeche, aur trust ke liye kya hona chahiye.
+   Mitti & Wax categories: Jar, Tin, Pillar, Diya Sets, Gift Boxes.
+   Pages: Home, Shop, Product, Cart, About, How to Order/FAQ, Contact, Shipping, Returns, Privacy, Terms.
+   Trust: asli photos, saaf price, shipping info, aur asli contact.
+  Doosra message: Google Sheet ke liye products ki table. Columns exactly: id, name, category, price,
+   description, image, stock.
+  Ye table Lesson 4 mein admin panel banegi.
+
+  Galti + fix: Plan mein shipping charge, delivery time ya return policy ChatGPT apne aap tay na kare. Ye
+  owner decide karta hai, isliye message mein bolo 'jo detail nahi di woh confirm karne ke liye chhod do'.
+
+Aaj ka kaam: Apne brand ka plan aur products ki table banao.
+
+Lesson 03 — Product Photos + Descriptions
+   Usi chat mein 6 product photos aur 2 lifestyle photos ke prompts maango.
+  Saare product prompts ek hi style mein: same light, same angle, white background.
+  Har prompt ke upar file ka naam: lavender-jar, vanilla-jar, rose-tin, sandalwood-pillar, diya-set, gift-
+  box (aur hero, gift wali lifestyle photo).
+  Flow → Image mode → Nano Banana. Product photos 1:1, hero banner 16:9 (left side text ke liye khaali
+   jagah).
+  Download karke sahi naam se images folder mein rakho (mitti-wax/images).
+   Descriptions: title, 2–3 lines, bullets aur care instructions (jalti candle ko akela mat chhodo).
+   Weight, burn time ya koi aur claim ChatGPT se mat likhwao. Woh owner apne asli product se daalega.
+
+  Galti + fix: File ka naam galat (jaise 'Lavender Jar (1).jpg') hua toh website par photo gayab dikhegi.
+ Naam exactly wahi rakho jo table mein hai, chhote akshar mein.
+
+Aaj ka kaam: Saari 8 photos banao aur sahi naam se images folder mein rakho.
+
+Lesson 04 — Google Sheet = Admin Panel
+  ChatGPT se final products table tab-separated format mein lo, taaki seedha Sheet mein paste ho.
+   Price bina ₹ sign ke, image ka poora path (images/lavender-jar.jpg), aur stock column (abhi sab mein
+   10).
+  Orders ke liye alag header row: order_id se notes tak. Aur status ke options: New se Delivered tak.
+  Google Sheets → nayi file 'Mitti & Wax — Store Admin' → table copy karke A1 par paste.
+  Naya tab 'orders' → headers paste → header row freeze.
+   Status column select → Insert → Dropdown → har option ka apna colour (Paid green, Cancelled red).
+   File → Share → Publish to web → sirf products tab, format CSV → Publish.
+   Link browser mein khol ke check karo: data dikh raha hai matlab link sahi hai.
+   Link ko mitti-wax folder mein sheet-link.txt mein save karo (TextEdit → Format → Make Plain Text).
+
+
+
+                                                                                                      AI Se Apna E-commerce Store Banao · Page 3
+
+--- NEX_AI_REFERENCE | PAGE 4 ---
+SKILLOMATE · Chatbot Knowledge Base
+
+
+  Galti + fix: 'Entire document' ya 'Web page' publish kar diya toh website products nahi padh paayegi.
+  Hamesha products tab + CSV. Aur sheet-link.txt ek file hai, folder nahi, aur plain text mein save hoti hai
+  (RTF nahi).
+
+Aaj ka kaam: Products aur orders wali Sheet banao aur products tab ko CSV mein publish karo.
+
+Lesson 05 — Homepage
+  ChatGPT ko ek message: homepage ke sections ka order, colours, aur Sheet ka CSV link.
+  ChatGPT 3 files deta hai: index.html, style.css, app.js. Har file ka poora code copy karo, beech se kuch
+  mat chhodo.
+  VS Code → Open Folder → mitti-wax → New file → naam → code paste → Command S.
+   app.js mein upar apna WhatsApp number (91 ke baad 10 digits, bina + aur space) aur CSV link daalo.
+   index.html ko Chrome mein kholo: hero banner aur neeche products seedha Sheet se.
+   Test: Add to Cart → upar cart count badhta hai. Category par click → sirf wahi candles.
+  Sheet mein Rose Tin ka stock 0 karo → refresh → site par Sold Out. Code ko haath nahi lagaya.
+
+  Galti + fix: Stock badla par site par turant nahi dikha? Google ka published link 2–5 minute mein
+  update hota hai. Thodi der baad refresh karo.
+
+Aaj ka kaam: Apna homepage banao aur Sheet se products live karo.
+
+Lesson 06 — Product Page + Cart
+  Message mein dono pages ki har detail: breadcrumb, badi photo, poori description, quantity, aur
+  empty cart tak.
+   Link aur number ab alag config.js file mein, taaki code update karne par bhi safe rahein.
+   Quantity stock se zyada nahi ja sakti, aur cart mein price hamesha Sheet se aata hai (purana price
+   nahi chalega).
+  6 files: config.js, app.js, index.html, product.html, cart.html, style.css.
+   Purani files mein Command A → naya code paste → Command S. product.html aur cart.html nayi files.
+  Product par click → badi photo, description, quantity. Stock 0 → Sold Out + neeche baaki candles ke
+   suggestions.
+   Cart mein har item ka total aur neeche poora order summary. Refresh karne par bhi cart waisa hi rehta
+   hai.
+
+  Galti + fix: Koi file aadhi copy hui toh page khaali ya toota dikhega. Har file ka code shuru se end tak
+  poora copy karo.
+
+Aaj ka kaam: Product page aur cart banao, aur poora flow khud test karo.
+
+Lesson 07 — Checkout → WhatsApp Order
+  Sheet → Extensions → Apps Script → project ka naam → purana code hata ke ChatGPT ka Code.gs
+  paste → Command S.
+  Deploy → New deployment → Web app → Who has access: Anyone → Deploy.
+  Google permission maangega. Ye tumhara apna script hai: Advanced → allow.
+  Web app ka link copy karo (ye /exec par khatam hota hai) aur sheet-link.txt mein save karo.
+   config.js: CSV link, WhatsApp number aur orders link, teeno quotes ke andar.
+   app.js aur style.css poore replace, nayi file checkout.html (aur thank-you.html), baaki pages update.
+
+
+
+
+
+                                                                                                      AI Se Apna E-commerce Store Banao · Page 4
+
+--- NEX_AI_REFERENCE | PAGE 5 ---
+SKILLOMATE · Chatbot Knowledge Base
+
+
+   Test: cart → checkout form (naam, WhatsApp number, address, city, pincode, payment UPI ya COD,
+  notes mein gift message) → Order on WhatsApp.
+  WhatsApp mein poora order message Order ID ke saath ready. Website par Thank You page. Sheet
+  mein nayi row, status New.
+
+  Galti + fix: Thank You page nahi aaya? Updated code mein WhatsApp naye tab mein khulta hai aur
+  order pehle save hota hai. ChatGPT ko batao 'WhatsApp se wapas aane par thank you page nahi dikh
+  raha', woh fix de dega.
+
+Aaj ka kaam: Checkout banao, ek practice order bhejo aur Sheet mein check karo.
+
+Lesson 08 — Orders Handle Karna
+  ChatGPT se 5 chhote replies: order confirm, UPI, COD, shipped, delivered. Friendly Hinglish mein, har ek
+  ke saath shortcut ka naam.
+   Koi fake offer nahi. Delivered wale reply mein honest feedback maango, fake review kabhi nahi.
+  Normal WhatsApp mein 'Message yourself' wali chat kholo, har reply wahan bhejo aur Star kar do. Ye
+  tumhari reply library hai.
+  Naya order aaya → Starred messages → confirm reply copy → customer ki chat mein paste aur send.
+   UPI wale reply ke saath apna QR bhejo.
+  WhatsApp Lists banao: 'Payment Pending', 'Shipped', aur customer ki chat sahi list mein daalo.
+  Sheet mein status dropdown se update karo (Paid, Shipped…). Poora record ek jagah.
+
+  Galti + fix: Agar status dropdown mein 'Payment Pending' nahi hai, toh Data validation mein add kar
+   lo. List aur Sheet dono mein same naam rakho.
+
+Aaj ka kaam: Paanchon replies save karo aur ek practice order poora handle karo.
+
+Lesson 09 — Baaki Pages + Mobile Check
+  4 pages: About, Contact, Shipping, Returns. Har ek mein kya likhna hai saaf batao.
+  About mein asli kahani: koi fake award ya fake number nahi.
+  ChatGPT purane pages dekh ke same design mein banata hai. Index, app aur style bhi update, taaki
+  header ke links sahi jaayein.
+  VS Code mein nayi files (about.html, contact.html, shipping.html, returns.html), purani files mein poora
+   replace, Command S.
+   Refresh → header mein About par click → page khul gaya.
+  Contact par WhatsApp button, Returns mein saaf rules, Shipping: poore India mein, dispatch 1–2 din (jo
+  owner tay kare).
+   Mobile check: Chrome mein Command + Option + I → phone wala icon → har page check.
+
+  Galti + fix: Policy (return days, shipping charge) ChatGPT se mat banwao. Owner ka asli rule hi page
+  par likho.
+
+Aaj ka kaam: Chaaron pages banao aur phone view mein har page check karo.
+
+Lesson 10 — Store Live Karna (Netlify)
+   Netlify par Google se login (free hosting).
+  Add new project → upload your project files → poora mitti-wax folder chuno.
+  Upload se pehle sheet-link.txt folder se bahar nikaal do. Isme private links hain.
+  Kuch seconds mein store internet par live.
+
+
+
+
+                                                                                                      AI Se Apna E-commerce Store Banao · Page 5
+
+--- NEX_AI_REFERENCE | PAGE 6 ---
+SKILLOMATE · Chatbot Knowledge Base
+
+
+   Live link par sab test karo: products, cart, checkout. Galat number daalo toh form turant batata hai.
+   Live site se pehla order → Thank You page, Order ID ke saath.
+  Domain management → project ka naam mitti-wax → link: mitti-wax.netlify.app. Apna domain ho toh
+  yahin add kar sakte ho.
+
+  Galti + fix: Kuch badalna ho toh VS Code mein badlo aur poora folder dobara upload karo. Sirf ek file
+  upload karne se baaki files hat sakti hain.
+
+Aaj ka kaam: Apna store Netlify par live karo aur link doston ko bhejo.
+
+Lesson 11 — Pehle Customers Laana
+  ChatGPT ko store ka link do aur bolo sab honest aur simple likhe: koi fake offer ya fake discount nahi.
+   Ek saath lo: 3 Instagram captions (end mein store link), reel ideas (har reel 8 second + screen text),
+  WhatsApp Status text, doston/family ko bhejne wala message.
+  Flow mein post ki photo: square, cozy, warm light (gift box, cozy corner).
+   Instagram: naya post (Flow photo + ChatGPT caption), bio mein store link, har post mein 'link bio mein'.
+   Reels: candle jalao, close-up lo, end mein 'link bio mein'.
+  WhatsApp Status par daalo: pehle customers aksar apne contacts hi hote hain.
+  Doston aur family ko personal message bhejo. Pehla order aksar wahin se aata hai.
+  Google Business Profile banao, taaki Google par brand search karte hi dikhe.
+
+  Galti + fix: Ek saath sabko bulk message ya spam mat karo. Har message personal ho, aur zyada se
+  zyada ek follow-up.
+
+Aaj ka kaam: Ek post, ek reel idea, aur 10 logon ko store ka link.
+
+Lesson 12 — Clients Laana (Yahi Skill Becho)
+   Mitti & Wax tumhara portfolio aur demo hai. Yahi live store client ko dikhana hai.
+  ChatGPT se pucho: ye service kisko sabse zyada chahiye. Home bakers, boutiques, gift shops: sabko
+  WhatsApp par orders chahiye.
+   Friendly, chhota DM, demo link ke saath.
+  3 packages: catalog, WhatsApp store, full setup. Price tum khud tay karoge.
+   Ek page ka proposal.
+  Demo: client ko live store dikhao: product, cart, checkout, sab uski aankhon ke saamne.
+   Asli selling point: store woh khud Sheet se chalayega. Demo mein Sheet mein price badlo → 2–4
+  minute → refresh → site par naya price, bina developer ke.
+  Instagram par apne sheher ke home bakers/boutiques dhoondo jo abhi sirf DM par orders lete hain,
+  unhe DM bhejo. Local market mein phone par demo dikhao.
+  Kabhi fake earning ya fake guarantee mat bolo. Pehle client ka kaam zabardast karo: referral wahi se
+  aate hain.
+
+  Galti + fix: Demo ke baad Sheet mein asli price wapas daal do (Rose Tin ₹299), aur test orders ki rows
+  orders tab se hata do.
+
+Aaj ka kaam: 5 local businesses ki list banao aur unhe DM bhejo.
+
+Lesson 13 — Recap
+   Plan → photos + descriptions → Sheet admin panel → homepage → product page + cart → checkout
+  se WhatsApp order → orders handle → baaki pages → Netlify par live → customers → clients.
+
+
+
+
+                                                                                                      AI Se Apna E-commerce Store Banao · Page 6
+
+--- NEX_AI_REFERENCE | PAGE 7 ---
+SKILLOMATE · Chatbot Knowledge Base
+
+
+   Bina Shopify, bina coding: bas ChatGPT, Google Sheet, Flow aur thodi mehnat.
+
+Aaj ka kaam: Apna store banao, live karo, aur pehla order lekar dikhao.
+
+Part E — Troubleshooting
+
+ Problem              Wajah                               Fix
+
+ Website par products    CSV link galat, ya 'Entire               File → Share → Publish to web → sirf products tab
+ nahi dikh rahe           document' / 'Web page' publish   + CSV. Naya link config.js mein quotes ke andar
+                      hua                           daalo (L04, L06)
+
+ Stock/price badla par     Google ka published link 2–5       Thodi der ruko, phir Command + Shift + R (hard
+ site par purana dikh      minute mein update hota hai, ya   refresh) (L05, L12)
+ raha                    browser cache
+
+ Photo gayab / toota         File ka naam ya path Sheet se      images/lavender-jar.jpg jaisa exact naam,
+ icon                 match nahi karta                chhote akshar, images folder mein (L03, L04)
+
+ Page khaali ya toota     Code aadha copy hua                 File mein Command A → poora naya code paste
+ dikh raha                           → Command S (L05, L06)
+
+ WhatsApp nahi khul     Number format galat               91 + 10 digits, bina +, space ya dash, config.js
+ raha / galat number par                               mein quotes ke andar (L05, L06)
+ ja raha
+
+ Order Sheet mein save    Apps Script deploy access        Deploy → New deployment → Web app →
+ nahi ho raha            Anyone nahi, ya galat link         Anyone. /exec wala link config.js ki teesri line
+                                                   mein (L07)
+
+ Apps Script code badla   Purana deployment chal raha     Deploy → Manage deployments → Edit → New
+ par asar nahi             hai                                version → Deploy (L07)
+
+ Google 'unsafe' warning   Apna khud ka script hai, isliye     Advanced → project par jao → Allow (L07)
+ de raha hai             Google permission maangta hai
+
+ Thank You page nahi aa  WhatsApp usi tab mein khul      ChatGPT se fix maango: order pehle save ho,
+ raha                 gaya                        WhatsApp naye tab mein, phir thank-you.html
+                                                                (L07)
+
+ Netlify par site khaali /     Folder ke andar ek aur folder       mitti-wax folder hi upload karo jisme seedha
+ 404                    upload hua, ya index.html root     index.html ho (L10)
+                      mein nahi
+
+ Netlify par purani site        Sirf kuch files upload hui          Badlav ke baad poora folder dobara upload karo
+ dikh rahi                                                            (L10)
+
+ Status dropdown mein    Option add nahi kiya             Data → Data validation → option add karo, jaise
+ option nahi                                         Payment Pending (L04, L08)
+
+Part F — Course ke ChatGPT messages
+
+Lesson 02 — Store Ka Plan
+
+Message 1: Store ka poora plan
+
+
+
+
+
+                                                                                                      AI Se Apna E-commerce Store Banao · Page 7
+
+--- NEX_AI_REFERENCE | PAGE 8 ---
+SKILLOMATE · Chatbot Knowledge Base
+
+
+  Main handmade candles ka ek chhota online brand shuru kar raha hoon aur apna khud ka e-commerce website
+ banana hai (Shopify nahi).
+
+  Details:
+  - Brand: Mitti & Wax
+  - City: Indore, poore India mein shipping
+  - Products (price maine tay kiye hain):
+      1. Lavender Jar Candle — 399
+    2. Vanilla Jar Candle — 399
+    3. Rose Tin Candle — 299
+    4. Sandalwood Pillar Candle — 499
+    5. Diya Candle Set (4 pcs) — 349
+   6. Mini Candle Gift Box (3 pcs) — 699
+  - Customers: 20-35 saal ke log jo ghar sajane ya gift ke liye candles lete hain
+  - Order kaise hoga: customer website pe cart bharega aur "Order on WhatsApp" dabayega — order seedha mere
+ WhatsApp pe aayega. Payment UPI ya COD, WhatsApp pe hi.
+
+  Mujhe ye do:
+    1. Brand ki ek line
+  2. Product categories (har product kis category mein)
+  3. Website ke saare pages ki list aur har page mein kya hoga
+  4. Homepage ke sections — upar se neeche order mein
+  5. Customer ko trust dilane ke liye kya hona chahiye
+
+  Jo detail maine nahi di (shipping charge, delivery time, return policy), woh apni taraf se tay mat karna — confirm
+  karne ke liye chhod dena.
+
+Message 2: Google Sheet ke liye products table
+
+ Ab Google Sheet ke liye products ki table banao. Columns exactly ye hon: id, name, category, price, description,
+  image, stock.
+  - id: p1 se p6
+  - price: sirf number
+  - description: 1 chhoti line
+  - image: file ka naam (jaise lavender-jar.jpg)
+  - stock: abhi sab mein 10
+  Table ko code block mein do.
+
+Lesson 03 — Product Photos + Descriptions
+
+Message 1: Photo prompts (usi chat mein)
+
+
+ Ab mujhe Google Flow (Nano Banana) ke liye image prompts chahiye, English mein:
+  - 6 product photos (har product ki ek) — 1:1, plain white background, soft studio light, same angle
+  - 1 hero banner — 16:9, candles cozy wooden table par, warm light, left side mein text ke liye khaali jagah
+  - 1 gift photo — gift box ki lifestyle photo, warm cozy mood
+  Rules:
+  - Saare 6 ek hi style ke lagne chahiye
+  - Har prompt ke upar file ka naam likho: lavender-jar, vanilla-jar, rose-tin, sandalwood-pillar, diya-set, gift-box,
+  hero, gift-lifestyle
+  - Photo mein koi text, logo ya brand naam nahi
+  Har prompt alag code block mein do.
+
+
+
+
+
+                                                                                                      AI Se Apna E-commerce Store Banao · Page 8
+
+--- NEX_AI_REFERENCE | PAGE 9 ---
+SKILLOMATE · Chatbot Knowledge Base
+
+
+Message 2: Product descriptions
+
+ Ab har product ka page text likho, simple Hinglish mein:
+  - Title
+  - 2-3 lines ki description (kiske liye, kis occasion pe)
+  - 3-4 bullets
+  - Care instructions (jaise jalti candle ko akela mat chhodo)
+  Weight, burn time ya koi aur aisa claim mat likhna — woh main khud daalunga.
+
+Lesson 04 — Google Sheet = Admin Panel
+
+Message 1: Final products table + orders headers
+
+  Products ki table final karo aur mujhe tab-separated format mein code block mein do, taaki main seedha Google
+  Sheet mein paste kar sakoon.
+  Columns: id, name, category, price, description, image, stock
+  - price: bina ₹ sign ke, sirf number
+  - image: poora path, jaise images/lavender-jar.jpg
+  - stock: abhi sab mein 10 likho, owner baad mein khud badlega
+
+  Phir orders wali sheet ke liye sirf header row do, tab-separated:
+  order_id, date, customer_name, whatsapp, address, city, pincode, items, total, payment, status, notes
+
+  Aur status column ke options do, order ke flow ke hisaab se (New se Delivered tak), aur har status kab use karna
+  hai ek line mein.
+
+Lesson 05 — Homepage
+
+Message: Homepage ka code
+
+
+ Ab Mitti & Wax ka homepage banao. Code complete hona chahiye, 3 alag files: index.html, style.css, app.js.
+
+  Sections (upar se neeche): top strip (Indore se poore India mein shipping), header (logo/naam, menu, cart icon
+  with count), hero banner (images/hero.jpg, headline + button), categories filter, products grid, gift box section,
+  about short, how to order, footer.
+  Colours: warm cream background, dark brown text, golden accent.
+
+  Products Google Sheet se aayenge. Mera published CSV link ye hai:
+  [APNA CSV LINK]
+  - CSV padhne ke liye proper parsing use karo (descriptions mein comma ho sakta hai)
+  - stock 0 ho toh "Sold Out" dikhe aur Add to Cart band ho
+  - Add to Cart par cart count badhe (localStorage)
+  - app.js mein sabse upar WhatsApp number ka variable rakho: [91 + APNE 10 DIGITS]
+
+  Har file ka poora code do, aur VS Code mein save karne ke steps bhi.
+
+Lesson 06 — Product Page + Cart
+
+Message: Product page, cart aur config file
+
+
+
+
+
+                                                                                                      AI Se Apna E-commerce Store Banao · Page 9
+
+--- NEX_AI_REFERENCE | PAGE 10 ---
+SKILLOMATE · Chatbot Knowledge Base
+
+
+ Ab product page aur cart page banao. Ye sab files poori do, alag code blocks mein: config.js, app.js, index.html,
+  product.html, cart.html, style.css.
+
+  - config.js: sirf CSV link aur WhatsApp number, taaki code update karne par bhi mera link/number na hate. Isme
+   sirf meri details hon:
+  CSV link: [APNA CSV LINK]
+  WhatsApp: [91 + APNE 10 DIGITS]
+  - Product page: breadcrumb, badi photo, poori description, price, quantity selector (stock se zyada nahi), Add to
+  Cart. Stock 0 ho toh Sold Out aur neeche baaki products ke suggestions.
+  - Cart page: har item ki photo, naam, quantity +/-, item total, remove; neeche order summary aur total. Empty
+  cart ka message.
+  - Cart mein price hamesha Sheet se lo (purana saved price nahi).
+  - Refresh par bhi cart bana rahe.
+
+Lesson 07 — Checkout → WhatsApp Order
+
+Message 1: Apps Script + checkout
+
+ Ab checkout banao. Customer form bharega aur "Order on WhatsApp" dabayega. Do kaam hone chahiye:
+    1. Order mere Google Sheet ke "orders" tab mein nayi row mein save ho (status: New)
+  2. WhatsApp khule, poora order message ready ho (Order ID ke saath)
+
+  Mujhe do:
+  - Google Apps Script ka Code.gs (orders tab mein row add kare) aur deploy karne ke steps
+  - checkout.html (form: naam, WhatsApp number, address, city, pincode, payment: UPI ya Cash on Delivery, notes)
+  - config.js mein teesri line orders web app link ke liye
+  - Purani app.js ka poora code replace karo, style.css bhi update
+  - Form check kare: galat number ya khaali field par message dikhe
+  - Order ke baad website par Thank You page (Order ID aur summary ke saath)
+
+Message 2 (agar Thank You page na dikhe)
+
+ WhatsApp private chat pe message send kiya, par website pe wapas aane pe Thank You page nahi dikh raha.
+  Isko fix karo — order pehle save ho, WhatsApp naye tab mein khule, aur website par thank-you.html khule. Badli
+  hui files poori do.
+
+Lesson 08 — Orders Handle Karna
+
+Message: Ready-made replies
+
+
+ Mera handmade candle store hai, Mitti & Wax. Orders WhatsApp par aate hain. Mujhe 5 chhote, friendly Hinglish
+  replies do, har ek ka shortcut naam ke saath:
+    1. Order confirm
+  2. UPI payment (QR main alag se bhejunga)
+  3. Cash on Delivery confirm
+  4. Order shipped (tracking ki jagah [TRACKING] likho)
+  5. Order delivered — honest feedback maango
+  Koi fake offer, fake discount ya fake review maangne wali line mat likhna.
+
+Lesson 09 — Baaki Pages
+
+Message: About, Contact, Shipping, Returns
+
+
+
+
+
+                                                                                                     AI Se Apna E-commerce Store Banao · Page 10
+
+--- NEX_AI_REFERENCE | PAGE 11 ---
+SKILLOMATE · Chatbot Knowledge Base
+
+
+ Ab 4 pages aur banao, bilkul same design mein: about.html, contact.html, shipping.html, returns.html.
+  - About: Mitti & Wax ki asli kahani — Indore ka chhota handmade candle brand. Koi fake award, fake number ya
+  fake customer count nahi.
+  - Contact: WhatsApp button (config.js wala number), aur sawaal poochne ki line
+  - Shipping: poore India mein shipping, dispatch 1-2 din mein (charges main khud likhunga)
+  - Returns: damaged product aaye toh unboxing video ke saath WhatsApp karo; use ki hui candle return nahi hogi
+  Header aur footer mein in pages ke links daalo. Ye files poori do:
+    1. about.html 2. contact.html 3. shipping.html 4. returns.html
+  5. index.html — poora replace karo 6. app.js — poora replace karo 7. style.css — poora replace karo
+
+Lesson 10 — Store Live Karna
+
+Koi ChatGPT message nahi
+
+
+  Is lesson mein sirf Netlify par kaam hai:
+    1. Netlify kholo → Google se login
+  2. Add new project → Upload your project files
+  3. Pehle sheet-link.txt folder se bahar nikaalo, phir poora mitti-wax folder upload karo
+  4. Domain management → project ka naam: mitti-wax → Save
+
+Lesson 11 — Pehle Customers Laana
+
+Message: Captions, reels, status, message
+
+
+ Mera store live hai: [APNA STORE LINK]
+  Brand: Mitti & Wax — Indore ke handmade candles, gifting aur cozy ghar ke liye.
+  Pehle customers laane ke liye mujhe do:
+    1. 3 Instagram captions (Hinglish, end mein store link)
+  2. 3 reel ideas — har reel 8 second, saath mein screen par aane wala text
+  3. WhatsApp Status ke liye 2 chhote texts
+  4. Doston aur family ko bhejne wala ek personal message
+ Sab honest aur simple — koi fake offer, fake discount ya fake review nahi.
+
+Message 2: Post photo ka prompt
+
+
+  Instagram post ke liye Google Flow (Nano Banana) ka ek English prompt do: square 1:1, Mitti & Wax ka gift box aur
+  candles cozy corner mein, warm light, real photo jaisa. Photo mein koi text ya logo nahi.
+
+Lesson 12 — Clients Laana
+
+Message: Service, DM, packages, proposal
+
+  Maine apna khud ka e-commerce store banaya hai bina Shopify: [APNA DEMO LINK]
+  Products Google Sheet se chalte hain aur orders WhatsApp par aate hain. Ab yahi service chhote local businesses
+  ko dena chahta hoon.
+  Mujhe do:
+    1. Ye service kin businesses ko sabse zyada chahiye — 5 examples, aur kyun
+  2. Unhe bhejne ke liye ek friendly, chhota DM (demo link ke saath)
+  3. 3 packages: catalog, WhatsApp store, full setup — har ek mein kya milega (price main khud decide karunga,
+ tum price mat likhna)
+  4. Ek page ka simple proposal
+  Koi fake earning, fake guarantee ya jhootha claim nahi.
+
+
+
+
+
+                                                                                                     AI Se Apna E-commerce Store Banao · Page 11
+
+--- NEX_AI_REFERENCE | PAGE 12 ---
+SKILLOMATE · Chatbot Knowledge Base
+
+Part G — Common sawaal (FAQ)
+
+Q: Kya Shopify ya hosting ka paisa lagega?
+Is course ka setup Google Sheets, Netlify ke free plan aur ChatGPT se hota hai. Plans aur limits badal sakti
+hain, current info har tool ki site par check karo.
+
+Q: Coding aani chahiye?
+Nahi. Code ChatGPT likhta hai, tum sirf copy, paste aur save karte ho (VS Code mein).
+
+Q: Online payment kaise lun?
+Is course mein payment gateway nahi hai. Order WhatsApp par aata hai, aur payment UPI QR ya Cash on
+Delivery se tay hoti hai (L08).
+
+Q: Naya product kaise add karun?
+Sheet ke products tab mein nayi row (agla id, naam, category, price, description, image path, stock), aur
+photo images folder mein daal ke folder Netlify par dobara upload karo.
+
+Q: Kya mobile par store achha dikhega?
+Haan. Chrome mein Command + Option + I → phone icon se har page check karo (L09).
+
+Q: Apna domain laga sakte hain?
+Haan. Netlify → Domain management mein apna domain add karo (L10).
+
+Q: Client ko kitna charge karun?
+Price tum khud tay karte ho, kaam aur apne area ke hisaab se. Course koi fixed earning ka promise nahi
+karta (L12).
+
+Q: Fake reviews ya 'limited offer' likh sakte hain?
+Nahi. Sirf asli reviews, asli offers aur asli product info. Isse customer ka bharosa banta hai.
+
+
+
+
+
+                                                                                                     AI Se Apna E-commerce Store Banao · Page 12
+
+SOURCE_END: NEX_AI_REFERENCE
+
+==============================================================================
+SOURCE_START: EXACT_RECORDED_PROMPTS
+FILE: EC_All_Prompts.pdf
+SHA256: a25c20d2205a20c7b4762aab5f02732676fcd2f16b3bfb1bea9bc2d54a5e98fa
+PAGES: 5
+==============================================================================
+--- EXACT_RECORDED_PROMPTS | PAGE 1 ---
+SKILLOMATE · All Prompts
+
+
+
+    S K I L L O M A T E  · A I S E A P N A E - C O M M E R C E S T O R E B A N A O ( B I N A S H O P I F Y )
+  All Prompts (Recording)
+    Course ki recordings mein ChatGPT ko bheje gaye messages ka saaf, copy-ready version. Jahan
+     [ ] hai, wahan apni asli detail daalo.
+
+
+
+  Kaise use karein: har lesson mein ek hi ChatGPT chat continue karo (Lesson 2 se 3, aur Lesson 5 se 9
+  tak ek chat best hai), taaki ChatGPT ko purani files aur details yaad rahein. Code wale jawab mein har
+   file poori copy karo.
+
+Lesson 02 — Store Ka Plan
+
+Message 1: Store ka poora plan
+
+  Main handmade candles ka ek chhota online brand shuru kar raha hoon aur apna khud ka e-commerce website
+ banana hai (Shopify nahi).
+
+  Details:
+  - Brand: Mitti & Wax
+  - City: Indore, poore India mein shipping
+  - Products (price maine tay kiye hain):
+      1. Lavender Jar Candle — 399
+    2. Vanilla Jar Candle — 399
+    3. Rose Tin Candle — 299
+    4. Sandalwood Pillar Candle — 499
+    5. Diya Candle Set (4 pcs) — 349
+   6. Mini Candle Gift Box (3 pcs) — 699
+  - Customers: 20-35 saal ke log jo ghar sajane ya gift ke liye candles lete hain
+  - Order kaise hoga: customer website pe cart bharega aur "Order on WhatsApp" dabayega — order seedha mere
+ WhatsApp pe aayega. Payment UPI ya COD, WhatsApp pe hi.
+
+  Mujhe ye do:
+    1. Brand ki ek line
+  2. Product categories (har product kis category mein)
+  3. Website ke saare pages ki list aur har page mein kya hoga
+  4. Homepage ke sections — upar se neeche order mein
+  5. Customer ko trust dilane ke liye kya hona chahiye
+
+  Jo detail maine nahi di (shipping charge, delivery time, return policy), woh apni taraf se tay mat karna — confirm
+  karne ke liye chhod dena.
+
+
+
+
+
+                                                                                                      AI Se Apna E-commerce Store Banao · Page 1
+
+--- EXACT_RECORDED_PROMPTS | PAGE 2 ---
+SKILLOMATE · All Prompts
+
+Message 2: Google Sheet ke liye products table
+
+ Ab Google Sheet ke liye products ki table banao. Columns exactly ye hon: id, name, category, price, description,
+  image, stock.
+  - id: p1 se p6
+  - price: sirf number
+  - description: 1 chhoti line
+  - image: file ka naam (jaise lavender-jar.jpg)
+  - stock: abhi sab mein 10
+  Table ko code block mein do.
+
+Lesson 03 — Product Photos + Descriptions
+
+Message 1: Photo prompts (usi chat mein)
+
+ Ab mujhe Google Flow (Nano Banana) ke liye image prompts chahiye, English mein:
+  - 6 product photos (har product ki ek) — 1:1, plain white background, soft studio light, same angle
+  - 1 hero banner — 16:9, candles cozy wooden table par, warm light, left side mein text ke liye khaali jagah
+  - 1 gift photo — gift box ki lifestyle photo, warm cozy mood
+  Rules:
+  - Saare 6 ek hi style ke lagne chahiye
+  - Har prompt ke upar file ka naam likho: lavender-jar, vanilla-jar, rose-tin, sandalwood-pillar, diya-set, gift-box,
+  hero, gift-lifestyle
+  - Photo mein koi text, logo ya brand naam nahi
+  Har prompt alag code block mein do.
+
+Message 2: Product descriptions
+
+ Ab har product ka page text likho, simple Hinglish mein:
+  - Title
+  - 2-3 lines ki description (kiske liye, kis occasion pe)
+  - 3-4 bullets
+  - Care instructions (jaise jalti candle ko akela mat chhodo)
+  Weight, burn time ya koi aur aisa claim mat likhna — woh main khud daalunga.
+
+Lesson 04 — Google Sheet = Admin Panel
+
+Message 1: Final products table + orders headers
+
+  Products ki table final karo aur mujhe tab-separated format mein code block mein do, taaki main seedha Google
+  Sheet mein paste kar sakoon.
+  Columns: id, name, category, price, description, image, stock
+  - price: bina ₹ sign ke, sirf number
+  - image: poora path, jaise images/lavender-jar.jpg
+  - stock: abhi sab mein 10 likho, owner baad mein khud badlega
+
+  Phir orders wali sheet ke liye sirf header row do, tab-separated:
+  order_id, date, customer_name, whatsapp, address, city, pincode, items, total, payment, status, notes
+
+  Aur status column ke options do, order ke flow ke hisaab se (New se Delivered tak), aur har status kab use karna
+  hai ek line mein.
+
+
+
+
+
+                                                                                                      AI Se Apna E-commerce Store Banao · Page 2
+
+--- EXACT_RECORDED_PROMPTS | PAGE 3 ---
+SKILLOMATE · All Prompts
+
+Lesson 05 — Homepage
+
+Message: Homepage ka code
+
+ Ab Mitti & Wax ka homepage banao. Code complete hona chahiye, 3 alag files: index.html, style.css, app.js.
+
+  Sections (upar se neeche): top strip (Indore se poore India mein shipping), header (logo/naam, menu, cart icon
+  with count), hero banner (images/hero.jpg, headline + button), categories filter, products grid, gift box section,
+  about short, how to order, footer.
+  Colours: warm cream background, dark brown text, golden accent.
+
+  Products Google Sheet se aayenge. Mera published CSV link ye hai:
+  [APNA CSV LINK]
+  - CSV padhne ke liye proper parsing use karo (descriptions mein comma ho sakta hai)
+  - stock 0 ho toh "Sold Out" dikhe aur Add to Cart band ho
+  - Add to Cart par cart count badhe (localStorage)
+  - app.js mein sabse upar WhatsApp number ka variable rakho: [91 + APNE 10 DIGITS]
+
+  Har file ka poora code do, aur VS Code mein save karne ke steps bhi.
+
+Lesson 06 — Product Page + Cart
+
+Message: Product page, cart aur config file
+
+ Ab product page aur cart page banao. Ye sab files poori do, alag code blocks mein: config.js, app.js, index.html,
+  product.html, cart.html, style.css.
+
+  - config.js: sirf CSV link aur WhatsApp number, taaki code update karne par bhi mera link/number na hate. Isme
+   sirf meri details hon:
+  CSV link: [APNA CSV LINK]
+  WhatsApp: [91 + APNE 10 DIGITS]
+  - Product page: breadcrumb, badi photo, poori description, price, quantity selector (stock se zyada nahi), Add to
+  Cart. Stock 0 ho toh Sold Out aur neeche baaki products ke suggestions.
+  - Cart page: har item ki photo, naam, quantity +/-, item total, remove; neeche order summary aur total. Empty
+  cart ka message.
+  - Cart mein price hamesha Sheet se lo (purana saved price nahi).
+  - Refresh par bhi cart bana rahe.
+
+Lesson 07 — Checkout → WhatsApp Order
+
+Message 1: Apps Script + checkout
+
+ Ab checkout banao. Customer form bharega aur "Order on WhatsApp" dabayega. Do kaam hone chahiye:
+    1. Order mere Google Sheet ke "orders" tab mein nayi row mein save ho (status: New)
+  2. WhatsApp khule, poora order message ready ho (Order ID ke saath)
+
+  Mujhe do:
+  - Google Apps Script ka Code.gs (orders tab mein row add kare) aur deploy karne ke steps
+  - checkout.html (form: naam, WhatsApp number, address, city, pincode, payment: UPI ya Cash on Delivery, notes)
+  - config.js mein teesri line orders web app link ke liye
+  - Purani app.js ka poora code replace karo, style.css bhi update
+  - Form check kare: galat number ya khaali field par message dikhe
+  - Order ke baad website par Thank You page (Order ID aur summary ke saath)
+
+
+
+                                                                                                      AI Se Apna E-commerce Store Banao · Page 3
+
+--- EXACT_RECORDED_PROMPTS | PAGE 4 ---
+SKILLOMATE · All Prompts
+
+Message 2 (agar Thank You page na dikhe)
+
+ WhatsApp private chat pe message send kiya, par website pe wapas aane pe Thank You page nahi dikh raha.
+  Isko fix karo — order pehle save ho, WhatsApp naye tab mein khule, aur website par thank-you.html khule. Badli
+  hui files poori do.
+
+Lesson 08 — Orders Handle Karna
+
+Message: Ready-made replies
+
+ Mera handmade candle store hai, Mitti & Wax. Orders WhatsApp par aate hain. Mujhe 5 chhote, friendly Hinglish
+  replies do, har ek ka shortcut naam ke saath:
+    1. Order confirm
+  2. UPI payment (QR main alag se bhejunga)
+  3. Cash on Delivery confirm
+  4. Order shipped (tracking ki jagah [TRACKING] likho)
+  5. Order delivered — honest feedback maango
+  Koi fake offer, fake discount ya fake review maangne wali line mat likhna.
+
+Lesson 09 — Baaki Pages
+
+Message: About, Contact, Shipping, Returns
+
+ Ab 4 pages aur banao, bilkul same design mein: about.html, contact.html, shipping.html, returns.html.
+  - About: Mitti & Wax ki asli kahani — Indore ka chhota handmade candle brand. Koi fake award, fake number ya
+  fake customer count nahi.
+  - Contact: WhatsApp button (config.js wala number), aur sawaal poochne ki line
+  - Shipping: poore India mein shipping, dispatch 1-2 din mein (charges main khud likhunga)
+  - Returns: damaged product aaye toh unboxing video ke saath WhatsApp karo; use ki hui candle return nahi hogi
+  Header aur footer mein in pages ke links daalo. Ye files poori do:
+    1. about.html 2. contact.html 3. shipping.html 4. returns.html
+  5. index.html — poora replace karo 6. app.js — poora replace karo 7. style.css — poora replace karo
+
+Lesson 10 — Store Live Karna
+
+Koi ChatGPT message nahi
+
+  Is lesson mein sirf Netlify par kaam hai:
+    1. Netlify kholo → Google se login
+  2. Add new project → Upload your project files
+  3. Pehle sheet-link.txt folder se bahar nikaalo, phir poora mitti-wax folder upload karo
+  4. Domain management → project ka naam: mitti-wax → Save
+
+
+
+
+
+                                                                                                      AI Se Apna E-commerce Store Banao · Page 4
+
+--- EXACT_RECORDED_PROMPTS | PAGE 5 ---
+SKILLOMATE · All Prompts
+
+Lesson 11 — Pehle Customers Laana
+
+Message: Captions, reels, status, message
+
+ Mera store live hai: [APNA STORE LINK]
+  Brand: Mitti & Wax — Indore ke handmade candles, gifting aur cozy ghar ke liye.
+  Pehle customers laane ke liye mujhe do:
+    1. 3 Instagram captions (Hinglish, end mein store link)
+  2. 3 reel ideas — har reel 8 second, saath mein screen par aane wala text
+  3. WhatsApp Status ke liye 2 chhote texts
+  4. Doston aur family ko bhejne wala ek personal message
+ Sab honest aur simple — koi fake offer, fake discount ya fake review nahi.
+
+Message 2: Post photo ka prompt
+
+  Instagram post ke liye Google Flow (Nano Banana) ka ek English prompt do: square 1:1, Mitti & Wax ka gift box aur
+  candles cozy corner mein, warm light, real photo jaisa. Photo mein koi text ya logo nahi.
+
+Lesson 12 — Clients Laana
+
+Message: Service, DM, packages, proposal
+
+  Maine apna khud ka e-commerce store banaya hai bina Shopify: [APNA DEMO LINK]
+  Products Google Sheet se chalte hain aur orders WhatsApp par aate hain. Ab yahi service chhote local businesses
+  ko dena chahta hoon.
+  Mujhe do:
+    1. Ye service kin businesses ko sabse zyada chahiye — 5 examples, aur kyun
+  2. Unhe bhejne ke liye ek friendly, chhota DM (demo link ke saath)
+  3. 3 packages: catalog, WhatsApp store, full setup — har ek mein kya milega (price main khud decide karunga,
+ tum price mat likhna)
+  4. Ek page ka simple proposal
+  Koi fake earning, fake guarantee ya jhootha claim nahi.
+
+
+
+
+
+                                                                                                      AI Se Apna E-commerce Store Banao · Page 5
+
+SOURCE_END: EXACT_RECORDED_PROMPTS

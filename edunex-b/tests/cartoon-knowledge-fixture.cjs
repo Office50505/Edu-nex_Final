@@ -22,7 +22,7 @@ const packModule = load('services/courseKnowledgePacks.js', {
   'node:fs': { ...fs, readFileSync(file, ...args) {
     if (String(file) === path.join(root, 'knowledge/course-packs.json')) {
       return JSON.stringify(JSON.parse(fs.readFileSync(file)).map(entry =>
-        entry.dir === 'ai-cartoon-series' ? { ...entry, enabled: true } : entry));
+        entry.dir === 'ai-cartoon-series' ? { ...entry, binding: undefined, enabled: true } : entry));
     }
     if (String(file) === path.join(root, 'knowledge/ai-cartoon-series/index.json')) {
       return JSON.stringify({ ...staged, actualCourseId: owner, slugs: [slug] });

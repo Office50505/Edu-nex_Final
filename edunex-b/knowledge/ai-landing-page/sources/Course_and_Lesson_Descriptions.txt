@@ -1,0 +1,31 @@
+COURSE: AI Se Landing Page Banao
+
+COURSE DESCRIPTION
+
+Learn to create, review and publish a WhatsApp-focused landing page for a local business using ChatGPT, Google Flow, VS Code, Chrome and Netlify. Follow the Sweet Crumbs home-bakery demonstration from planning and copywriting through images, HTML, mobile improvements and publishing. Then build a truthful portfolio and practice finding and communicating with prospective clients. The course emphasizes accurate business details, genuine reviews and realistic expectations; it does not promise sales or income.
+
+
+
+LESSON DESCRIPTIONS
+
+Lesson 01 — Course Introduction: Define a landing page, its single conversion goal and the full no-code course journey.
+
+Lesson 02 — Page Planning: Turn verified business details into an offer, page outline and final headline.
+
+Lesson 03 — Landing Page Copy: Write useful text for every section without invented claims.
+
+Lesson 04 — Images with Google Flow: Create three illustrative 16:9 images and save exact filenames.
+
+Lesson 05 — Generate HTML Code: Build a single-file landing page with ChatGPT and verify its WhatsApp CTA.
+
+Lesson 06 — Mobile Check and Changes: Fix broken images, inspect mobile layout and request controlled revisions.
+
+Lesson 07 — Publish on Netlify: Deploy the complete folder and verify the live page.
+
+Lesson 08 — Build a Portfolio: Create a truthful portfolio for presenting real and demonstration projects.
+
+Lesson 09 — Find Clients: Research suitable local businesses and send personalized outreach.
+
+Lesson 10 — Handle Client Objections: Explain the value of a WhatsApp landing page and negotiate professionally.
+
+Lesson 11 — Course Recap: Complete the workflow and prepare a client-ready demonstration.

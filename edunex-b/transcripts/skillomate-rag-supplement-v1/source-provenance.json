@@ -1,0 +1,512 @@
+{
+  "snapshotSHA256": "bb5c252d7437ccbd0950bc04c239fe0f730b75524260b9008117613e419a60c3",
+  "catalogSHA256": "19cb0dc83853f5d3f2b23aa44daabd587f43fb1a30eede208d532f896234a9cd",
+  "documents": [
+    {
+      "id": "E-Commerce:Lesson-01",
+      "rawHash": "e4863b1a2c3bc0be1f01ea54c264d464f22db7fe064c2d2bc76b535f3926bbb9",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "E-Commerce:Lesson-02",
+      "rawHash": "071cd0306c8773446b45785311f2efcd1d692ae56f56a497eb5adc3ffed3833c",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "E-Commerce:Lesson-03",
+      "rawHash": "a1eee395146e1ef4ed1b0f368a0a4e17420969a32f128e567dbcb509be863ff3",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "E-Commerce:Lesson-04",
+      "rawHash": "3f3c001837d78f1640a9b731a843eb1d7e338797db39ec0a170f4d91ebc5d17b",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "E-Commerce:Lesson-05",
+      "rawHash": "9f74250360c659b1a8bfa0d16fb8a729a11ace20b790596dafcebb22f63c8c48",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "E-Commerce:Lesson-06",
+      "rawHash": "793aee544501904bc4137c029649768dcbdad914b9f42bf5c15228573297b44a",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "E-Commerce:Lesson-07",
+      "rawHash": "60629d2a4dde256b843ba222c14490356c26616aa522e38f5a1bdb25075e1c56",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "E-Commerce:Lesson-08",
+      "rawHash": "2eac9af22eab8422127d377ec56e278c109f3d25203d672a4552282ef21b13a5",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "E-Commerce:Lesson-09",
+      "rawHash": "5c2650d3bd8f0fd89873bb9e9b9ca934e76d66d8ee9cc2f812628c153fb83ebb",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "E-Commerce:Lesson-10",
+      "rawHash": "7f15bacdefa033aa2d30ad43291f02a49560663eb3fca9244f7b28891e83c7f5",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "E-Commerce:Lesson-11",
+      "rawHash": "440a4b978918edb698c6ee742472851ae94772ecf64f830e17dbb81bd0beb9c2",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "E-Commerce:Lesson-12",
+      "rawHash": "569ccbb8cffece32fb14a2e4bea53c751b44210c088945d7fa4fe0f1d69f8139",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "E-Commerce:Lesson-13",
+      "rawHash": "6e649e7701887ac21b0454e172ef15376aca33b447dc63d8db29c07c4bc1f0a0",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "Landing-Page:Lesson-01",
+      "rawHash": "821e653240176cc25c0516c4beac993ae787edde533931c711b88baf26ea1578",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "Landing-Page:Lesson-02",
+      "rawHash": "3e2d65c5f04b3c86b198751d53b8703584b6581532c01e332f44ab67cb3ecab0",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "Landing-Page:Lesson-03",
+      "rawHash": "ca0d4c47550103801584f20ff144b6f009840228dfb9a2446ff2236c5ade4d15",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "Landing-Page:Lesson-04",
+      "rawHash": "9c57cbc9160b8ad582cb0a64f0221451aec2c4b3c0b071034c852bed90432331",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "Landing-Page:Lesson-05",
+      "rawHash": "fcac777067d056e7b48b9450541365ddb950cd3d451211e58c5f7fde705b16da",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "Landing-Page:Lesson-06",
+      "rawHash": "4e3ad9eda23ac342377e2ea7b2abe2fd2005fccede0238eed0c3a11b02ceb34c",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "Landing-Page:Lesson-07",
+      "rawHash": "2fdbdb4f47b2b944e686cb856f2238e39c9650f5249c3e8f4cc460b3b59bf347",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "Landing-Page:Lesson-08",
+      "rawHash": "9a662cec79d8c3514de50eac6d9736374d4cb2d678cd0acb0af66336eb2f1afa",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "Landing-Page:Lesson-09",
+      "rawHash": "e80b127fa714695b235a48d9da5c92cd6ef6fa4d409e0c79e628180d5c90acf0",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "Landing-Page:Lesson-10",
+      "rawHash": "9451e668ad8869fc973a36fe870404363e36f55dcf76623282483f7a69f8d381",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "Landing-Page:Lesson-11",
+      "rawHash": "017349d131c320bb42d0412401f7fc91d2c620c69b56f9a0ed51c9af5fac1802",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    }
+  ],
+  "chunks": [
+    {
+      "id": "E-Commerce:Lesson-01:chunk-0001",
+      "rawHash": "d478725dab414a053f9f6e7e7268639e5032186426bde82a73add77f4db9be7f",
+      "contentHash": "94f478f32092f9931f13a1a418cc6dcce4888434e4a2176229cdc3d5bb317ab7",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "E-Commerce:Lesson-02:chunk-0001",
+      "rawHash": "f7a27337b32c083dcac2de150be4ffc389cfa9c6634dba6b40864507398e7b64",
+      "contentHash": "7282587e4d5ca997f1e65d9f5a888f14315257bb199fdb64a34991220c036ccd",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "E-Commerce:Lesson-03:chunk-0001",
+      "rawHash": "8f66134ad54970ea1d6645e6c06e6daadc0c622e9bb6a17fb8ed8d74d73e2b2c",
+      "contentHash": "0bc0afeda7f1b8effd8065598e65a0dc6c6af42a4c9655cdc7ff9a236959336d",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "E-Commerce:Lesson-04:chunk-0001",
+      "rawHash": "3b046b5e172bc772365bd4c3c4c88de2691b7d7fbc32b6764ed6ac0f273bf718",
+      "contentHash": "7910852c4f446da3fa3d752085e0ac784a6cf225ef702da233f1f022547fd952",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "E-Commerce:Lesson-05:chunk-0001",
+      "rawHash": "42f8b5bff574ced65f2af59c579b10f7e87272c44e0785995639b0eb7a9885a2",
+      "contentHash": "d415a58b3b1b1395f6f32153b3a1dde138bfce8c1aa912d8b30b0e48a23ff15a",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "E-Commerce:Lesson-06:chunk-0001",
+      "rawHash": "9a17877d9e531fd9f4d4389da447a2e17027ec9ab67f9fa8eb8acbcaad322564",
+      "contentHash": "3811a540626e7f561ab0bcbb555727756c42361eb36b55d054cd1ab7a688e85a",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "E-Commerce:Lesson-07:chunk-0001",
+      "rawHash": "af0d7eb194888544dfe49367a91b98ef0903f3b8b72743db6bee92a60b2d20fc",
+      "contentHash": "0dab2c2e034cf494070aa4f8c792cf9da4c7b5a8af4f8f006a43a42b6045c9ae",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "E-Commerce:Lesson-08:chunk-0001",
+      "rawHash": "496c44289cce0a84f5e1de7bbb6755aa4d62f1ff9a6bdbd15c49f0422452163c",
+      "contentHash": "236c6eb7e0eacf2fc339b1015afa7ca1dcbe6954206ec18054f23ec1cf52004a",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "E-Commerce:Lesson-09:chunk-0001",
+      "rawHash": "fbc5572697f4bd394012363e4d2abf5651233a22d895e39be78c9c727785b5d9",
+      "contentHash": "ba48b175cb075aee98a31167721262202e9e1f4794bf73f87a8681971b5f38af",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "E-Commerce:Lesson-10:chunk-0001",
+      "rawHash": "e2906893839f5a80487165077cbe21765b9a7d48416b0c0a181efb6bc9ccb283",
+      "contentHash": "f520d4e5b41a96ea25df57a683e49819fae31d65fee8646f623e1309121b06a9",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "E-Commerce:Lesson-11:chunk-0001",
+      "rawHash": "52a7b5d2e507be9bd93010505343c9a7db547de4911eddd19507d6f922390c84",
+      "contentHash": "5ec88cdde917fdac9ba182040f940843d315596c7b1c1b1557f21bcc8a231386",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "E-Commerce:Lesson-12:chunk-0001",
+      "rawHash": "3d55e4e6109fb018ea6aa47f44637a803a204f10ea5ee95e4ef50d74f6704905",
+      "contentHash": "7356b7536c19d244c1a75aa08b012cfe1ceab4018fa5c3a896e39e9532c78e09",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "E-Commerce:Lesson-13:chunk-0001",
+      "rawHash": "c562ff1e428dfe1281d680c251ded5fc1c82224d50e14aed638d3750820fcada",
+      "contentHash": "07dc44b1b7669d3d19989490c2cca30f2f24a35af47fc61cd7abb421d50b8b13",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "Landing-Page:Lesson-01:chunk-0001",
+      "rawHash": "fcc8740f67cc89a553ab89dbde671c71dcb57c45dc84b986cbfb07743ae72cf9",
+      "contentHash": "672787f83055fcc2ae89de957449982df41ab2bc9a4ed739132805ebafb340a5",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "Landing-Page:Lesson-02:chunk-0001",
+      "rawHash": "dcd952fd6a32b0ddd511a9699e2e0d5ce1b550a03c670a244e7022338b67e856",
+      "contentHash": "b250f9c26f6a633d962eef698b3cb38a00021058582a2fbad732034f6824f3ec",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "Landing-Page:Lesson-03:chunk-0001",
+      "rawHash": "20294261a23694d5132a526dbf8be7f600430c202a8c466c94ed857bb588751b",
+      "contentHash": "80ce30da3b4d66d1ded019e89b8032679716520b38410e19838b451ba65c8dd6",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "Landing-Page:Lesson-04:chunk-0001",
+      "rawHash": "89dd982cc60355d7bab61f0d4204edccf6ab2df25a5843b41c29ebe72b1da9db",
+      "contentHash": "b3e2addc7eef22a03773df0b922def87aed15a375d8f5b72475c728b8fad6675",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "Landing-Page:Lesson-05:chunk-0001",
+      "rawHash": "03454e48bdac3592b912f2e4708da5eee6f5157de97a3990e451bee6e4dcb313",
+      "contentHash": "c19f5c6b2b396915af436210c07f0851a99e45753fe6d46f5082d2b2c9993008",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "Landing-Page:Lesson-06:chunk-0001",
+      "rawHash": "5eefaddf49fca35448f73f82186af0040aca8691c1a535717aaa3e3e5303c903",
+      "contentHash": "b3720fcba8ef530d6aaa9af38f936eab1ba481083d9955da817e8c0eba12739c",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "Landing-Page:Lesson-07:chunk-0001",
+      "rawHash": "41b608964161fa3a81065b16a9480809e1421fcbd22426883aabdf4dc2f5303b",
+      "contentHash": "6c67ec02df742d426966e7740599ba491e55757a259e04362e7db3c6cd02e853",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "Landing-Page:Lesson-08:chunk-0001",
+      "rawHash": "e9e0a5fa4ed766f5bb1496b0e14e4eb35a331e6ef3e08c15c4c0a0a592f43924",
+      "contentHash": "8da28873d49ff4b026263ede6097f73fab9b66e18b1df5e7e0973c596721a204",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "Landing-Page:Lesson-09:chunk-0001",
+      "rawHash": "4cb4c51f91f3ef13f4462ce72b6f89af0e8c353645eb319bd69b0982e452462d",
+      "contentHash": "c50d5f40a35409a137fb76a4bf0b04cbdc3dfdf46ddf3c02166a60210f158e7f",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "Landing-Page:Lesson-10:chunk-0001",
+      "rawHash": "de383357ee475cc14ac501aefd2c2291a5279425bf466b378b51268cc21b073c",
+      "contentHash": "4f26bec294448d2ddc50cd270144980b44c03a595f01af89628bf70c571d6298",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    },
+    {
+      "id": "Landing-Page:Lesson-11:chunk-0001",
+      "rawHash": "f6c132e3b5bb097799e241f5b1a044eb1ece4e970b30a88314208d9244a36e97",
+      "contentHash": "5d5c743caa2781020298d8889b2f361276dac9d33fe55eab424112bbe16dcdda",
+      "sourceHashes": {
+        "manifest.json": "b6df22c736ce270e0022af1b71bc4806a1682ae35fe878489cd7e5ecb0c419e3",
+        "documents.jsonl": "cf288b9368d3bdfbb2350064b48aff04b4ef10525716848db34a1882fdd6f832",
+        "chunks.jsonl": "efc17727e2cda3eba472f580e89df743f1a19c9193f10bd2975e215c9f65b851",
+        "README.md": "9db32a0ad0610721855143b464b54f6409446445f13c043a85e579431752b7bd"
+      }
+    }
+  ]
+}

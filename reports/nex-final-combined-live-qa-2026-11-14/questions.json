@@ -1,0 +1,1109 @@
+{
+  "schemaVersion": 1,
+  "questionCount": 21,
+  "courseQuestions": 18,
+  "crossCourseQuestions": 3,
+  "questions": [
+    {
+      "id": "BUS-1",
+      "number": 1,
+      "kind": "course",
+      "courseLabel": "AI Local Business Ads",
+      "courseId": "6ad9fe8ed0076b8d5e3b4f6d",
+      "courseSlug": "ai-local-buisness-ads",
+      "lessonId": "6ad9fe8ed0076b8d5e3b4f66",
+      "lessonNumber": 4,
+      "lessonName": "Menu and Food Photos",
+      "conversationGroup": "BUS",
+      "stage": 1,
+      "question": "Mera delivery-only cloud kitchen hai. Combo mein Maggi aur chai hain, fries nahi. Is Menu and Food Photos lesson ke 00:00:37 wale available transcript chunk se batao: dish mein kya same rakhna hai aur presentation mein kya badal sakta hai? Correct course, lesson aur chunk range cite karo; exact spoken-event timing invent mat karo.",
+      "historyPolicy": "Fresh approved local QA conversation, empty actual history",
+      "sourceExpectations": {
+        "transcriptDocuments": [
+          "AI-Business-Ads:Lesson-04"
+        ],
+        "transcriptChunks": [
+          {
+            "id": "AI-Business-Ads:Lesson-04:chunk-0001",
+            "contentSha256": "b3fe000775a10363ddf53f6a49608d7b8fb9e236250d290d90e0ce8feab99518",
+            "rawSha256": "278e90fcab373905fd73022291e0c103486d861fa0b51d90ec9048f9586057d0",
+            "startSeconds": 2,
+            "endSeconds": 72.8
+          }
+        ],
+        "timestampProbeSeconds": 37,
+        "exactPrompt": null,
+        "missingTranscriptExpected": false,
+        "notesPackDisabled": false,
+        "courseKnowledgeIntegrated": true,
+        "eligibleTranscriptDocuments": [
+          "AI-Business-Ads:Lesson-04"
+        ],
+        "requiredTranscriptDocuments": [
+          "AI-Business-Ads:Lesson-04"
+        ],
+        "transcriptRequirement": "Timestamped explanations and instructor-speech claims require transcript evidence. Other explanation/creative requests may cite correctly labelled notes; eligible transcript documents are not mandatory for every follow-up."
+      },
+      "checks": [
+        "source accuracy",
+        "source attribution",
+        "notes versus transcript",
+        "chunk timestamp grounding"
+      ]
+    },
+    {
+      "id": "BUS-2",
+      "number": 2,
+      "kind": "course",
+      "courseLabel": "AI Local Business Ads",
+      "courseId": "6ad9fe8ed0076b8d5e3b4f6d",
+      "courseSlug": "ai-local-buisness-ads",
+      "lessonId": "6ad9fe8ed0076b8d5e3b4f66",
+      "lessonNumber": 4,
+      "lessonName": "Menu and Food Photos",
+      "conversationGroup": "BUS",
+      "stage": 2,
+      "question": "Correction: cafe ya dine-in nahi, delivery-only cloud kitchen hai. Combo aur no-fries condition retain karo. Is lesson ka original approved Dish re-shoot prompt poora unchanged copy karo, placeholders bhi same. Phir meri situation ke liye alag Customized AI Prompt do; plate, packing, price ya contact details invent mat karo.",
+      "historyPolicy": "Same player and conversation; exact previous user turn plus actual delivered assistant answer. Never invent assistant history.",
+      "sourceExpectations": {
+        "transcriptDocuments": [
+          "AI-Business-Ads:Lesson-04"
+        ],
+        "transcriptChunks": [
+          {
+            "id": "AI-Business-Ads:Lesson-04:chunk-0001",
+            "contentSha256": "b3fe000775a10363ddf53f6a49608d7b8fb9e236250d290d90e0ce8feab99518",
+            "rawSha256": "278e90fcab373905fd73022291e0c103486d861fa0b51d90ec9048f9586057d0",
+            "startSeconds": 2,
+            "endSeconds": 72.8
+          }
+        ],
+        "timestampProbeSeconds": null,
+        "exactPrompt": {
+          "chunkId": "ai-local-business-ads:exact-template:041",
+          "heading": "Lesson 04 — Dish re-shoot",
+          "content": "Use this phone photo only as a reference for what our dish looks like. Now re-shoot this\nsame dish from scratch as a professional food photographer would, for our menu and\nInstagram.\nThe dish: [describe it exactly — e.g. one normal single portion of masala Maggi on a round\nsteel plate with a steel fork] — exactly the ingredients you see in the reference, nothing\nextra.\nThe new shot:\n- Freshly plated, hot and glossy, with light natural steam rising\n- Soft warm window light from the left, gentle shadows, rich appetising colours\n- 45-degree food angle, close-up, shallow depth of field, sharp focus on the food\n- Set on a clean warm wooden table, softly blurred cosy background\nDo NOT add cheese, vegetables, coriander, egg or any garnish that is not in the reference.\nSame portion size, not bigger. No text, no people. Must look like a real DSLR food photo,\nnot AI.",
+          "contentType": "exact-template",
+          "lessonNumber": 4,
+          "lessonId": "lesson_4",
+          "lessonName": "Lesson 04 — Dish re-shoot",
+          "sourceDocument": "approved-prompts.txt",
+          "contentHash": "07393c50bc169d1f13f1935ebf74c7cfa62310d9e5ca6dcc27c98cfb42a530a1",
+          "aliases": [
+            "Dish re-shoot"
+          ],
+          "placeholders": [
+            "[describe it exactly — e.g. one normal single portion of masala Maggi on a round\nsteel plate with a steel fork]"
+          ],
+          "sourceHash": "0f65dffce29aeeb6ba0f9046c499540adf31bfc87093ff77fdfadf8198212e58",
+          "body": "Use this phone photo only as a reference for what our dish looks like. Now re-shoot this\nsame dish from scratch as a professional food photographer would, for our menu and\nInstagram.\nThe dish: [describe it exactly — e.g. one normal single portion of masala Maggi on a round\nsteel plate with a steel fork] — exactly the ingredients you see in the reference, nothing\nextra.\nThe new shot:\n- Freshly plated, hot and glossy, with light natural steam rising\n- Soft warm window light from the left, gentle shadows, rich appetising colours\n- 45-degree food angle, close-up, shallow depth of field, sharp focus on the food\n- Set on a clean warm wooden table, softly blurred cosy background\nDo NOT add cheese, vegetables, coriander, egg or any garnish that is not in the reference.\nSame portion size, not bigger. No text, no people. Must look like a real DSLR food photo,\nnot AI.",
+          "bodyHash": "07393c50bc169d1f13f1935ebf74c7cfa62310d9e5ca6dcc27c98cfb42a530a1",
+          "bytes": 873
+        },
+        "missingTranscriptExpected": false,
+        "notesPackDisabled": false,
+        "courseKnowledgeIntegrated": true,
+        "eligibleTranscriptDocuments": [
+          "AI-Business-Ads:Lesson-04"
+        ],
+        "requiredTranscriptDocuments": [],
+        "transcriptRequirement": "Timestamped explanations and instructor-speech claims require transcript evidence. Other explanation/creative requests may cite correctly labelled notes; eligible transcript documents are not mandatory for every follow-up."
+      },
+      "checks": [
+        "source accuracy",
+        "source attribution",
+        "notes versus transcript",
+        "real memory",
+        "correction retained",
+        "exact prompt bytes"
+      ]
+    },
+    {
+      "id": "INF-1",
+      "number": 3,
+      "kind": "course",
+      "courseLabel": "AI Influencer",
+      "courseId": "6aa51e9769c836f66ddd3be7",
+      "courseSlug": "ai-influencer-course",
+      "lessonId": "6aa51e9769c836f66ddd3bc9",
+      "lessonNumber": 5,
+      "lessonName": "Maintaining the Same Face Across Different Poses",
+      "conversationGroup": "INF",
+      "stage": 1,
+      "question": "Meri fictional adult AI presenter Naina blue kurta pehenti hai. Is face-consistency lesson ke 00:01:09 wale transcript chunk se reference-image aur same-face workflow explain karo, correct course/lesson/chunk citation ke saath. Result guarantee mat karo.",
+      "historyPolicy": "Fresh approved local QA conversation, empty actual history",
+      "sourceExpectations": {
+        "transcriptDocuments": [
+          "AI-Influencer:Lesson-05"
+        ],
+        "transcriptChunks": [
+          {
+            "id": "AI-Influencer:Lesson-05:chunk-0001",
+            "contentSha256": "5db641c43715cd92178bd457d47c4c71f0b37fc1491dde4a3144401c0dc74482",
+            "rawSha256": "30052b22a3703d7c0be52f7faae26eca0981ba701cdebd5b2211970527797fcf",
+            "startSeconds": 0.4,
+            "endSeconds": 139
+          },
+          {
+            "id": "AI-Influencer:Lesson-05:chunk-0002",
+            "contentSha256": "96f63e28ef593f452b6857a09b5ee6cde7eba6e0a1a5069eab7ba1a2b824b0bf",
+            "rawSha256": "544ab07f3b73afbcd3163c03d44e141294471e6a16927c1630911b9bbdd8dc4a",
+            "startSeconds": 119.4,
+            "endSeconds": 142.8
+          }
+        ],
+        "timestampProbeSeconds": 69,
+        "exactPrompt": null,
+        "missingTranscriptExpected": false,
+        "notesPackDisabled": false,
+        "courseKnowledgeIntegrated": true,
+        "eligibleTranscriptDocuments": [
+          "AI-Influencer:Lesson-05"
+        ],
+        "requiredTranscriptDocuments": [
+          "AI-Influencer:Lesson-05"
+        ],
+        "transcriptRequirement": "Timestamped explanations and instructor-speech claims require transcript evidence. Other explanation/creative requests may cite correctly labelled notes; eligible transcript documents are not mandatory for every follow-up."
+      },
+      "checks": [
+        "source accuracy",
+        "source attribution",
+        "notes versus transcript",
+        "chunk timestamp grounding"
+      ]
+    },
+    {
+      "id": "INF-2",
+      "number": 4,
+      "kind": "course",
+      "courseLabel": "AI Influencer",
+      "courseId": "6aa51e9769c836f66ddd3be7",
+      "courseSlug": "ai-influencer-course",
+      "lessonId": "6aa51e9769c836f66ddd3bc9",
+      "lessonNumber": 5,
+      "lessonName": "Maintaining the Same Face Across Different Poses",
+      "conversationGroup": "INF",
+      "stage": 2,
+      "question": "Correction: Naina ka kurta green hai, blue nahi. Naam aur same-face requirement retain karke do poses ke customized drafts do; face replacement nahi. Notes aur transcript attribution alag rakho. Quarantined Influencer Lesson 1 ko evidence mat banao.",
+      "historyPolicy": "Same player and conversation; exact previous user turn plus actual delivered assistant answer. Never invent assistant history.",
+      "sourceExpectations": {
+        "transcriptDocuments": [
+          "AI-Influencer:Lesson-05"
+        ],
+        "transcriptChunks": [
+          {
+            "id": "AI-Influencer:Lesson-05:chunk-0001",
+            "contentSha256": "5db641c43715cd92178bd457d47c4c71f0b37fc1491dde4a3144401c0dc74482",
+            "rawSha256": "30052b22a3703d7c0be52f7faae26eca0981ba701cdebd5b2211970527797fcf",
+            "startSeconds": 0.4,
+            "endSeconds": 139
+          },
+          {
+            "id": "AI-Influencer:Lesson-05:chunk-0002",
+            "contentSha256": "96f63e28ef593f452b6857a09b5ee6cde7eba6e0a1a5069eab7ba1a2b824b0bf",
+            "rawSha256": "544ab07f3b73afbcd3163c03d44e141294471e6a16927c1630911b9bbdd8dc4a",
+            "startSeconds": 119.4,
+            "endSeconds": 142.8
+          }
+        ],
+        "timestampProbeSeconds": null,
+        "exactPrompt": null,
+        "missingTranscriptExpected": false,
+        "notesPackDisabled": false,
+        "courseKnowledgeIntegrated": true,
+        "eligibleTranscriptDocuments": [
+          "AI-Influencer:Lesson-05"
+        ],
+        "requiredTranscriptDocuments": [],
+        "transcriptRequirement": "Timestamped explanations and instructor-speech claims require transcript evidence. Other explanation/creative requests may cite correctly labelled notes; eligible transcript documents are not mandatory for every follow-up."
+      },
+      "checks": [
+        "source accuracy",
+        "source attribution",
+        "notes versus transcript",
+        "real memory",
+        "correction retained"
+      ]
+    },
+    {
+      "id": "FILM-1",
+      "number": 5,
+      "kind": "course",
+      "courseLabel": "AI Filmmaking",
+      "courseId": "6abe5bb2bced21d7211be185",
+      "courseSlug": "ai-filmmaking-course",
+      "lessonId": "6abe5bb2bced21d7211be183",
+      "lessonNumber": 7,
+      "lessonName": "Camera Movement",
+      "conversationGroup": "FILM",
+      "stage": 1,
+      "question": "Meri scene ek shaant chai stall ki hai; actor add mat karna. Is Camera Movement lesson ke 00:00:44 wale available transcript chunk se movement choices samjhao. Correct course, lesson aur chunk range cite karo; movement ka exact start second assume mat karo.",
+      "historyPolicy": "Fresh approved local QA conversation, empty actual history",
+      "sourceExpectations": {
+        "transcriptDocuments": [
+          "AI-Filmmaking:Lesson-07"
+        ],
+        "transcriptChunks": [
+          {
+            "id": "AI-Filmmaking:Lesson-07:chunk-0001",
+            "contentSha256": "bdd92058859bc42a0cd5d667258419b10ef4c261c69df195e514b6dfef00bcbf",
+            "rawSha256": "71466dbc375b5085405ba56cdf48a3921631788c2aa13f03dfface3aaee316c3",
+            "startSeconds": 0.1,
+            "endSeconds": 89.8
+          }
+        ],
+        "timestampProbeSeconds": 44,
+        "exactPrompt": null,
+        "missingTranscriptExpected": false,
+        "notesPackDisabled": false,
+        "courseKnowledgeIntegrated": true,
+        "eligibleTranscriptDocuments": [
+          "AI-Filmmaking:Lesson-07"
+        ],
+        "requiredTranscriptDocuments": [
+          "AI-Filmmaking:Lesson-07"
+        ],
+        "transcriptRequirement": "Timestamped explanations and instructor-speech claims require transcript evidence. Other explanation/creative requests may cite correctly labelled notes; eligible transcript documents are not mandatory for every follow-up."
+      },
+      "checks": [
+        "source accuracy",
+        "source attribution",
+        "notes versus transcript",
+        "chunk timestamp grounding"
+      ]
+    },
+    {
+      "id": "FILM-2",
+      "number": 6,
+      "kind": "course",
+      "courseLabel": "AI Filmmaking",
+      "courseId": "6abe5bb2bced21d7211be185",
+      "courseSlug": "ai-filmmaking-course",
+      "lessonId": "6abe5bb2bced21d7211be183",
+      "lessonNumber": 7,
+      "lessonName": "Camera Movement",
+      "conversationGroup": "FILM",
+      "stage": 2,
+      "question": "Correction: camera bilkul locked rahega—no pan, no zoom, no orbit. Usi chai-stall scene aur no-actor condition ko retain karke customized 5-second shot prompt do. Yeh duration meri choice hai, instructor ka timestamp ya rule mat bolo.",
+      "historyPolicy": "Same player and conversation; exact previous user turn plus actual delivered assistant answer. Never invent assistant history.",
+      "sourceExpectations": {
+        "transcriptDocuments": [
+          "AI-Filmmaking:Lesson-07"
+        ],
+        "transcriptChunks": [
+          {
+            "id": "AI-Filmmaking:Lesson-07:chunk-0001",
+            "contentSha256": "bdd92058859bc42a0cd5d667258419b10ef4c261c69df195e514b6dfef00bcbf",
+            "rawSha256": "71466dbc375b5085405ba56cdf48a3921631788c2aa13f03dfface3aaee316c3",
+            "startSeconds": 0.1,
+            "endSeconds": 89.8
+          }
+        ],
+        "timestampProbeSeconds": null,
+        "exactPrompt": null,
+        "missingTranscriptExpected": false,
+        "notesPackDisabled": false,
+        "courseKnowledgeIntegrated": true,
+        "eligibleTranscriptDocuments": [
+          "AI-Filmmaking:Lesson-07"
+        ],
+        "requiredTranscriptDocuments": [],
+        "transcriptRequirement": "Timestamped explanations and instructor-speech claims require transcript evidence. Other explanation/creative requests may cite correctly labelled notes; eligible transcript documents are not mandatory for every follow-up."
+      },
+      "checks": [
+        "source accuracy",
+        "source attribution",
+        "notes versus transcript",
+        "real memory",
+        "correction retained"
+      ]
+    },
+    {
+      "id": "PROD-1",
+      "number": 7,
+      "kind": "course",
+      "courseLabel": "AI Product Photoshoot & Ads",
+      "courseId": "6acf6a0c0fbf30bb42142d68",
+      "courseSlug": "ai-product-photoshoot-ads",
+      "lessonId": "6acf6a0c0fbf30bb42142d61",
+      "lessonNumber": 2,
+      "lessonName": "Phone Photos to Studio Photos",
+      "conversationGroup": "PROD",
+      "stage": 1,
+      "question": "Mera product blue labelled jar hai; dimensions nahi di hain. Is lesson ka original approved L02 White Studio prompt unchanged copy karo, placeholders bhi same. Notes prompt ko instructor quotation mat bolo. 00:00:40 wale transcript chunk se do practical checks bhi do, correct source citation ke saath.",
+      "historyPolicy": "Fresh approved local QA conversation, empty actual history",
+      "sourceExpectations": {
+        "transcriptDocuments": [
+          "AI-Product-Shoot-and-Videos:Lesson-02"
+        ],
+        "transcriptChunks": [
+          {
+            "id": "AI-Product-Shoot-and-Videos:Lesson-02:chunk-0001",
+            "contentSha256": "a88c708e3b2c4ab0b3f46d98d7ad9f5910a1441718f1b4a1e1b690489574fcba",
+            "rawSha256": "b1e6c07b27057bee4e00eee2a1429ea3f33e80a6ccaa518b68c0d3b692f8cadf",
+            "startSeconds": 9.2,
+            "endSeconds": 70.8
+          }
+        ],
+        "timestampProbeSeconds": 40,
+        "exactPrompt": {
+          "heading": "L02 White Studio",
+          "content": "Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.",
+          "contentType": "exact-template",
+          "lessonNumber": 2,
+          "lessonId": "lesson_2",
+          "lessonName": "L02 White Studio",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l02-white-studio",
+          "contentHash": "72fe6514bb03cf07250f440c8a4084fc7bd5243c1a8f5fd7a17f5759e500252a",
+          "sourceHash": "96471b6991c3724f9b8315fc7b3d1bb73b409eb0272517432cbfdd98882127df",
+          "sourceDocument": "training.txt",
+          "chunkStart": 0,
+          "body": "Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.",
+          "bodyHash": "72fe6514bb03cf07250f440c8a4084fc7bd5243c1a8f5fd7a17f5759e500252a",
+          "bytes": 340
+        },
+        "missingTranscriptExpected": false,
+        "notesPackDisabled": false,
+        "courseKnowledgeIntegrated": true,
+        "eligibleTranscriptDocuments": [
+          "AI-Product-Shoot-and-Videos:Lesson-02"
+        ],
+        "requiredTranscriptDocuments": [
+          "AI-Product-Shoot-and-Videos:Lesson-02"
+        ],
+        "transcriptRequirement": "Timestamped explanations and instructor-speech claims require transcript evidence. Other explanation/creative requests may cite correctly labelled notes; eligible transcript documents are not mandatory for every follow-up."
+      },
+      "checks": [
+        "source accuracy",
+        "source attribution",
+        "notes versus transcript",
+        "exact prompt bytes",
+        "chunk timestamp grounding"
+      ]
+    },
+    {
+      "id": "PROD-2",
+      "number": 8,
+      "kind": "course",
+      "courseLabel": "AI Product Photoshoot & Ads",
+      "courseId": "6acf6a0c0fbf30bb42142d68",
+      "courseSlug": "ai-product-photoshoot-ads",
+      "lessonId": "6acf6a0c0fbf30bb42142d61",
+      "lessonNumber": 2,
+      "lessonName": "Phone Photos to Studio Photos",
+      "conversationGroup": "PROD",
+      "stage": 2,
+      "question": "Correction: product stainless-steel lunchbox hai, jar nahi. White background aur no-invented-dimensions condition retain karke customized draft do. Kya references se exact design aur perfect fingers har attempt mein guaranteed hain? Sirf available evidence se answer do; notes aur instructor speech ko distinguish karo.",
+      "historyPolicy": "Same player and conversation; exact previous user turn plus actual delivered assistant answer. Never invent assistant history.",
+      "sourceExpectations": {
+        "transcriptDocuments": [
+          "AI-Product-Shoot-and-Videos:Lesson-02"
+        ],
+        "transcriptChunks": [
+          {
+            "id": "AI-Product-Shoot-and-Videos:Lesson-02:chunk-0001",
+            "contentSha256": "a88c708e3b2c4ab0b3f46d98d7ad9f5910a1441718f1b4a1e1b690489574fcba",
+            "rawSha256": "b1e6c07b27057bee4e00eee2a1429ea3f33e80a6ccaa518b68c0d3b692f8cadf",
+            "startSeconds": 9.2,
+            "endSeconds": 70.8
+          }
+        ],
+        "timestampProbeSeconds": null,
+        "exactPrompt": null,
+        "missingTranscriptExpected": false,
+        "notesPackDisabled": false,
+        "courseKnowledgeIntegrated": true,
+        "eligibleTranscriptDocuments": [
+          "AI-Product-Shoot-and-Videos:Lesson-02"
+        ],
+        "requiredTranscriptDocuments": [],
+        "transcriptRequirement": "Timestamped explanations and instructor-speech claims require transcript evidence. Other explanation/creative requests may cite correctly labelled notes; eligible transcript documents are not mandatory for every follow-up."
+      },
+      "checks": [
+        "source accuracy",
+        "source attribution",
+        "notes versus transcript",
+        "real memory",
+        "correction retained"
+      ]
+    },
+    {
+      "id": "CART-1",
+      "number": 9,
+      "kind": "course",
+      "courseLabel": "AI Cartoon Series",
+      "courseId": "6ae09ebee4ac0b60c08276bc",
+      "courseSlug": "ai-cartoon-series",
+      "lessonId": "6ae09ebee4ac0b60c08276b5",
+      "lessonNumber": 2,
+      "lessonName": "BUILD THE CHARACTER FOUNDATION",
+      "conversationGroup": "CART",
+      "stage": 1,
+      "question": "Meri cartoon story mein Mili ek bachchi hai aur Tara ek dog hai; extra sidekick mat add karna. Lesson 2 ka original Step 1 Character design prompt unchanged copy karo. 00:00:42 wale transcript chunk se character-sheet process explain karo. Exact notes prompt aur transcript citation alag rakho.",
+      "historyPolicy": "Fresh approved local QA conversation, empty actual history",
+      "sourceExpectations": {
+        "transcriptDocuments": [
+          "AI-Cartoon-Videos-for-Kids:Lesson-02"
+        ],
+        "transcriptChunks": [
+          {
+            "id": "AI-Cartoon-Videos-for-Kids:Lesson-02:chunk-0001",
+            "contentSha256": "85e7dd43238d03667d12ccd0306088cdb1881bfee3d8e094cb4d75b819b7f6b3",
+            "rawSha256": "306ff58853614cd5cc06628edbc22118b6b0f7c0199ed2065eb9d2e6892bc8c6",
+            "startSeconds": 1.6,
+            "endSeconds": 83.5
+          }
+        ],
+        "timestampProbeSeconds": 42,
+        "exactPrompt": {
+          "chunkId": "ai-cartoon-series:exact-template:017",
+          "heading": "Lesson 02 — Step 1: Character design",
+          "content": "I'm making a short animated cartoon series for Indian kids aged 3–8. Help me design the\ntwo main characters.\n1) [Character 1 — e.g. Golu, a 6-year-old Indian boy who lives in a small mohalla in an\nIndian city]\n2) [Character 2 — e.g. Chiku, Golu's pet squirrel and best friend]\nFor each character give me: personality in 3 words, one funny habit or catchphrase in\nsimple Hindi, a simple outfit/look with exact colours, and face and body details. Keep the\nlook simple so AI can repeat it every time — plain clothes, no logos, no patterns, no text\non clothes.",
+          "contentType": "exact-template",
+          "lessonNumber": 2,
+          "lessonId": "lesson_2",
+          "lessonName": "Lesson 02 — Step 1: Character design",
+          "sourceDocument": "approved-prompts.txt",
+          "contentHash": "50c4eca47a178a67ec1517529d496f6ff920f8ecda2f412bcab8389c863f0489",
+          "sourceHash": "1a35c8c0c1ba6473e3f0d684bcc9cf53a6a07c6423830e0d3b0bd7c072330e75",
+          "aliases": [
+            "Lesson 02 Step 1: Character design"
+          ],
+          "searchTerms": "",
+          "body": "I'm making a short animated cartoon series for Indian kids aged 3–8. Help me design the\ntwo main characters.\n1) [Character 1 — e.g. Golu, a 6-year-old Indian boy who lives in a small mohalla in an\nIndian city]\n2) [Character 2 — e.g. Chiku, Golu's pet squirrel and best friend]\nFor each character give me: personality in 3 words, one funny habit or catchphrase in\nsimple Hindi, a simple outfit/look with exact colours, and face and body details. Keep the\nlook simple so AI can repeat it every time — plain clothes, no logos, no patterns, no text\non clothes.",
+          "bodyHash": "50c4eca47a178a67ec1517529d496f6ff920f8ecda2f412bcab8389c863f0489",
+          "bytes": 564
+        },
+        "missingTranscriptExpected": false,
+        "notesPackDisabled": false,
+        "courseKnowledgeIntegrated": true,
+        "eligibleTranscriptDocuments": [
+          "AI-Cartoon-Videos-for-Kids:Lesson-02"
+        ],
+        "requiredTranscriptDocuments": [
+          "AI-Cartoon-Videos-for-Kids:Lesson-02"
+        ],
+        "transcriptRequirement": "Timestamped explanations and instructor-speech claims require transcript evidence. Other explanation/creative requests may cite correctly labelled notes; eligible transcript documents are not mandatory for every follow-up."
+      },
+      "checks": [
+        "source accuracy",
+        "source attribution",
+        "notes versus transcript",
+        "exact prompt bytes",
+        "chunk timestamp grounding"
+      ]
+    },
+    {
+      "id": "CART-2",
+      "number": 10,
+      "kind": "course",
+      "courseLabel": "AI Cartoon Series",
+      "courseId": "6ae09ebee4ac0b60c08276bc",
+      "courseSlug": "ai-cartoon-series",
+      "lessonId": "6ae09ebee4ac0b60c08276b5",
+      "lessonNumber": 2,
+      "lessonName": "BUILD THE CHARACTER FOUNDATION",
+      "conversationGroup": "CART",
+      "stage": 2,
+      "question": "Correction: Tara dog nahi, rabbit hai. Mili aur no-extra-sidekick condition retain karo. Dono characters ka customized test-scene draft do aur source-backed identity checks batao. Customized body ko approved course prompt label mat karo.",
+      "historyPolicy": "Same player and conversation; exact previous user turn plus actual delivered assistant answer. Never invent assistant history.",
+      "sourceExpectations": {
+        "transcriptDocuments": [
+          "AI-Cartoon-Videos-for-Kids:Lesson-02"
+        ],
+        "transcriptChunks": [
+          {
+            "id": "AI-Cartoon-Videos-for-Kids:Lesson-02:chunk-0001",
+            "contentSha256": "85e7dd43238d03667d12ccd0306088cdb1881bfee3d8e094cb4d75b819b7f6b3",
+            "rawSha256": "306ff58853614cd5cc06628edbc22118b6b0f7c0199ed2065eb9d2e6892bc8c6",
+            "startSeconds": 1.6,
+            "endSeconds": 83.5
+          }
+        ],
+        "timestampProbeSeconds": null,
+        "exactPrompt": null,
+        "missingTranscriptExpected": false,
+        "notesPackDisabled": false,
+        "courseKnowledgeIntegrated": true,
+        "eligibleTranscriptDocuments": [
+          "AI-Cartoon-Videos-for-Kids:Lesson-02"
+        ],
+        "requiredTranscriptDocuments": [],
+        "transcriptRequirement": "Timestamped explanations and instructor-speech claims require transcript evidence. Other explanation/creative requests may cite correctly labelled notes; eligible transcript documents are not mandatory for every follow-up."
+      },
+      "checks": [
+        "source accuracy",
+        "source attribution",
+        "notes versus transcript",
+        "real memory",
+        "correction retained"
+      ]
+    },
+    {
+      "id": "VIR-1",
+      "number": 11,
+      "kind": "course",
+      "courseLabel": "Viral Hook Formula",
+      "courseId": "6ae1b4694e1af14d4adc9e2b",
+      "courseSlug": "viral-hook-formula",
+      "lessonId": "6ae1b4694e1af14d4adc9e2a",
+      "lessonNumber": 10,
+      "lessonName": "CHOOSE AND COMBINE YOUR APPROACH",
+      "conversationGroup": "VIR",
+      "stage": 1,
+      "question": "Mera handmade candles ka store hai. Lesson 10 ka original Hooks likhwane ka message prompt unchanged copy karo. 00:00:30 wale transcript chunk se hooks compare karne ka process explain karo; correct course/lesson/chunk cite karo. Fake reviews, views ya sales guarantees mat do.",
+      "historyPolicy": "Fresh approved local QA conversation, empty actual history",
+      "sourceExpectations": {
+        "transcriptDocuments": [
+          "Viral-Hook-Formulas:Lesson-10"
+        ],
+        "transcriptChunks": [
+          {
+            "id": "Viral-Hook-Formulas:Lesson-10:chunk-0001",
+            "contentSha256": "1ec66788abbda510e41999f8b06bf6a82d646b54bad223c235ea0fb0398ed39d",
+            "rawSha256": "c5a44a3c69b9097289bb7c39f33ab1804a4ac9dd1eb43a34851d36df7c37e473",
+            "startSeconds": 0.46,
+            "endSeconds": 59.82
+          }
+        ],
+        "timestampProbeSeconds": 30,
+        "exactPrompt": {
+          "chunkId": "viral-hook-formula:exact-template:025",
+          "heading": "Lesson 10 — Hooks likhwane ka message",
+          "content": "  Mera niche: [niche, jaise home cooking]\n  Meri audience: [kaun, jaise 18–30 saal ke hostel students]\n  Reel ka topic: [topic]\n  Hook type: [curiosity / pattern interrupt / bold / question / story / visual / list / POV]\n\n  Is topic ke liye is hook type ke 10 alag hooks likho. Har hook 1–2 lines ka ho, Hinglish\n  mein, jaise dost bolta hai. Hook jhootha promise na kare — jo bole, reel mein deliver ho\n  sake. Har hook ke saath pehle frame mein kya dikhe, woh bhi ek line mein likho.",
+          "contentType": "exact-template",
+          "lessonNumber": 10,
+          "lessonId": "lesson_10",
+          "lessonName": "Lesson 10 — Hooks likhwane ka message",
+          "sourceDocument": "training.txt",
+          "sourceHash": "940c2aeac8fd7b73966a7aad2081202cec9e3b8c26c1d2b5b4c9b210cb395708",
+          "contentHash": "681398ec0efaf17afdf739052dc3bab6e395269292d7642c6e76848db9f084b9",
+          "aliases": [
+            "hook writing message",
+            "hooks generation message",
+            "hooks likhwane ka message",
+            "first Part F template"
+          ],
+          "sourceStartByte": 11153,
+          "sourceEndByte": 11644,
+          "body": "  Mera niche: [niche, jaise home cooking]\n  Meri audience: [kaun, jaise 18–30 saal ke hostel students]\n  Reel ka topic: [topic]\n  Hook type: [curiosity / pattern interrupt / bold / question / story / visual / list / POV]\n\n  Is topic ke liye is hook type ke 10 alag hooks likho. Har hook 1–2 lines ka ho, Hinglish\n  mein, jaise dost bolta hai. Hook jhootha promise na kare — jo bole, reel mein deliver ho\n  sake. Har hook ke saath pehle frame mein kya dikhe, woh bhi ek line mein likho.",
+          "bodyHash": "681398ec0efaf17afdf739052dc3bab6e395269292d7642c6e76848db9f084b9",
+          "bytes": 491
+        },
+        "missingTranscriptExpected": false,
+        "notesPackDisabled": false,
+        "courseKnowledgeIntegrated": true,
+        "eligibleTranscriptDocuments": [
+          "Viral-Hook-Formulas:Lesson-10"
+        ],
+        "requiredTranscriptDocuments": [
+          "Viral-Hook-Formulas:Lesson-10"
+        ],
+        "transcriptRequirement": "Timestamped explanations and instructor-speech claims require transcript evidence. Other explanation/creative requests may cite correctly labelled notes; eligible transcript documents are not mandatory for every follow-up."
+      },
+      "checks": [
+        "source accuracy",
+        "source attribution",
+        "notes versus transcript",
+        "exact prompt bytes",
+        "chunk timestamp grounding"
+      ]
+    },
+    {
+      "id": "VIR-2",
+      "number": 12,
+      "kind": "course",
+      "courseLabel": "Viral Hook Formula",
+      "courseId": "6ae1b4694e1af14d4adc9e2b",
+      "courseSlug": "viral-hook-formula",
+      "lessonId": "6ae1b4694e1af14d4adc9e2a",
+      "lessonNumber": 10,
+      "lessonName": "CHOOSE AND COMBINE YOUR APPROACH",
+      "conversationGroup": "VIR",
+      "stage": 2,
+      "question": "Correction: main candles nahi, ceramic mugs bechta hoon. Small-store context aur no-fake-reviews condition retain karo. Ek curiosity hook aur ek useful-list hook customize karke difference samjhao. Inko customized examples bolo; approved prompt ya guaranteed results mat bolo.",
+      "historyPolicy": "Same player and conversation; exact previous user turn plus actual delivered assistant answer. Never invent assistant history.",
+      "sourceExpectations": {
+        "transcriptDocuments": [
+          "Viral-Hook-Formulas:Lesson-10"
+        ],
+        "transcriptChunks": [
+          {
+            "id": "Viral-Hook-Formulas:Lesson-10:chunk-0001",
+            "contentSha256": "1ec66788abbda510e41999f8b06bf6a82d646b54bad223c235ea0fb0398ed39d",
+            "rawSha256": "c5a44a3c69b9097289bb7c39f33ab1804a4ac9dd1eb43a34851d36df7c37e473",
+            "startSeconds": 0.46,
+            "endSeconds": 59.82
+          }
+        ],
+        "timestampProbeSeconds": null,
+        "exactPrompt": null,
+        "missingTranscriptExpected": false,
+        "notesPackDisabled": false,
+        "courseKnowledgeIntegrated": true,
+        "eligibleTranscriptDocuments": [
+          "Viral-Hook-Formulas:Lesson-10"
+        ],
+        "requiredTranscriptDocuments": [],
+        "transcriptRequirement": "Timestamped explanations and instructor-speech claims require transcript evidence. Other explanation/creative requests may cite correctly labelled notes; eligible transcript documents are not mandatory for every follow-up."
+      },
+      "checks": [
+        "source accuracy",
+        "source attribution",
+        "notes versus transcript",
+        "real memory",
+        "correction retained"
+      ]
+    },
+    {
+      "id": "RE-1",
+      "number": 13,
+      "kind": "course",
+      "courseLabel": "AI Real Estate Videos",
+      "courseId": "6ae346f4152646ad4d6b98b7",
+      "courseSlug": "ai-real-estate-videos",
+      "lessonId": "6ae346f4152646ad4d6b98b1",
+      "lessonNumber": 3,
+      "lessonName": "Virtual Staging",
+      "conversationGroup": "RE",
+      "stage": 1,
+      "question": "Meri property 2BHK hai, photos abhi nahi di. Kya is course ka verified Room Lock prompt accessible notes mein available hai? Sirf verified accessible source ho to unchanged quote karo aur notes label do; warna clearly unavailable bolo. Layout, room sizes, windows ya furniture invent mat karo.",
+      "historyPolicy": "Fresh approved local QA conversation, empty actual history",
+      "sourceExpectations": {
+        "transcriptDocuments": [],
+        "transcriptChunks": [],
+        "timestampProbeSeconds": null,
+        "exactPrompt": null,
+        "missingTranscriptExpected": true,
+        "notesPackDisabled": true,
+        "courseKnowledgeIntegrated": false,
+        "eligibleTranscriptDocuments": [],
+        "requiredTranscriptDocuments": [],
+        "transcriptRequirement": "Timestamped explanations and instructor-speech claims require transcript evidence. Other explanation/creative requests may cite correctly labelled notes; eligible transcript documents are not mandatory for every follow-up."
+      },
+      "checks": [
+        "source accuracy",
+        "source attribution",
+        "notes versus transcript",
+        "honest missing evidence limitation"
+      ]
+    },
+    {
+      "id": "RE-2",
+      "number": 14,
+      "kind": "course",
+      "courseLabel": "AI Real Estate Videos",
+      "courseId": "6ae346f4152646ad4d6b98b7",
+      "courseSlug": "ai-real-estate-videos",
+      "lessonId": "6ae346f4152646ad4d6b98b1",
+      "lessonNumber": 3,
+      "lessonName": "Virtual Staging",
+      "conversationGroup": "RE",
+      "stage": 2,
+      "question": "Correction: property 3BHK hai, 2BHK nahi; photos abhi bhi nahi di. Is lesson mein 00:30 par instructor ne exactly kya kaha? Real Estate transcript available nahi hai to cannot verify bolo; quote, timestamp ya citation invent mat karo. Accessible notes ya clearly labelled general guidance alag de sakte ho.",
+      "historyPolicy": "Same player and conversation; exact previous user turn plus actual delivered assistant answer. Never invent assistant history.",
+      "sourceExpectations": {
+        "transcriptDocuments": [],
+        "transcriptChunks": [],
+        "timestampProbeSeconds": null,
+        "exactPrompt": null,
+        "missingTranscriptExpected": true,
+        "notesPackDisabled": true,
+        "courseKnowledgeIntegrated": false,
+        "eligibleTranscriptDocuments": [],
+        "requiredTranscriptDocuments": [],
+        "transcriptRequirement": "Timestamped explanations and instructor-speech claims require transcript evidence. Other explanation/creative requests may cite correctly labelled notes; eligible transcript documents are not mandatory for every follow-up."
+      },
+      "checks": [
+        "source accuracy",
+        "source attribution",
+        "notes versus transcript",
+        "real memory",
+        "correction retained",
+        "honest missing evidence limitation"
+      ]
+    },
+    {
+      "id": "LP-1",
+      "number": 15,
+      "kind": "course",
+      "courseLabel": "AI Landing Page",
+      "courseId": "6aeb1d5f2497c8173516e257",
+      "courseSlug": "ai-se-landing-page-banao",
+      "lessonId": "6aeb1d5f2497c8173516e250",
+      "lessonNumber": 5,
+      "lessonName": "Generate HTML Code",
+      "conversationGroup": "LP",
+      "stage": 1,
+      "question": "Mera business Neel Yoga hai; phone number nahi diya. Lesson 5 ka original Message 4 poora landing page code wala approved prompt unchanged copy karo, placeholders bhi same. Notes source label do. 00:00:49 wale transcript chunk se workflow ka source-backed explanation bhi do.",
+      "historyPolicy": "Fresh approved local QA conversation, empty actual history",
+      "sourceExpectations": {
+        "transcriptDocuments": [
+          "Landing-Page:Lesson-05"
+        ],
+        "transcriptChunks": [
+          {
+            "id": "Landing-Page:Lesson-05:chunk-0001",
+            "contentSha256": "716f115a9aa0a9677b0d5fdb5f78e9994c455873a94dec5fca66d95bc0ece1c0",
+            "rawSha256": "03454e48bdac3592b912f2e4708da5eee6f5157de97a3990e451bee6e4dcb313",
+            "startSeconds": 1.08,
+            "endSeconds": 97.12
+          }
+        ],
+        "timestampProbeSeconds": 49,
+        "exactPrompt": {
+          "chunkId": "ai-landing-page:exact-template:cfd69319cadbcb217a32",
+          "contentType": "exact-template",
+          "heading": "Lesson 5 — Message 4: Poora landing page code (apna number daalo)",
+          "content": "   Ab upar wale copy text se Sweet Crumbs ka poora landing page bana do.\n\n\n   - Ek hi file: index.html (HTML + CSS andar hi, koi alag file nahi)\n   - Images same folder mein hain: hero.jpg, cakes.jpg, kitchen.jpg — inhi naam se use karo\n   - Colours: warm cream background, chocolate brown text, soft pink buttons\n   - Mobile pe bhi perfect dikhe\n   - Har \"Order on WhatsApp\" button is link pe jaye:\n   https://wa.me/91XXXXXXXXXX?text=Hi%20Sweet%20Crumbs,%20mujhe%20cake%20order%20karna%20hai\n   - Neeche ek floating WhatsApp button bhi ho\n   - Sections: Hero, Menu (cakes + price), Kaise order karein (3 steps), Customer reviews ki\n   jagah \"Hamare baare mein\", Contact/footer\n\n\n   Sirf poora code do, ek code block mein.",
+          "contentHash": "cfd69319cadbcb217a3294d05eea03c6e3ee8f2584fdaf9d213d58fba931fddd",
+          "lessonNumber": 5,
+          "lessonId": "6aeb1d5f2497c8173516e250",
+          "lessonName": "Generate HTML Code",
+          "sourceDocument": "sources/Nex_AI_Landing_Page_Knowledge_Base.txt",
+          "sourceHash": "1cd956d3753b51f0f6d51117da0a8d233b9629fa09c81c5d9247f4a1e7edf71f",
+          "aliases": [
+            "Message 4: Poora landing page code"
+          ],
+          "sourceStartByte": 32159,
+          "sourceEndByte": 32883,
+          "usage": "Unchanged course example, not learner facts. Any filled placeholder or other adaptation must be labelled Customized AI Prompt.",
+          "body": "   Ab upar wale copy text se Sweet Crumbs ka poora landing page bana do.\n\n\n   - Ek hi file: index.html (HTML + CSS andar hi, koi alag file nahi)\n   - Images same folder mein hain: hero.jpg, cakes.jpg, kitchen.jpg — inhi naam se use karo\n   - Colours: warm cream background, chocolate brown text, soft pink buttons\n   - Mobile pe bhi perfect dikhe\n   - Har \"Order on WhatsApp\" button is link pe jaye:\n   https://wa.me/91XXXXXXXXXX?text=Hi%20Sweet%20Crumbs,%20mujhe%20cake%20order%20karna%20hai\n   - Neeche ek floating WhatsApp button bhi ho\n   - Sections: Hero, Menu (cakes + price), Kaise order karein (3 steps), Customer reviews ki\n   jagah \"Hamare baare mein\", Contact/footer\n\n\n   Sirf poora code do, ek code block mein.",
+          "bodyHash": "cfd69319cadbcb217a3294d05eea03c6e3ee8f2584fdaf9d213d58fba931fddd",
+          "bytes": 724
+        },
+        "missingTranscriptExpected": false,
+        "notesPackDisabled": false,
+        "courseKnowledgeIntegrated": true,
+        "eligibleTranscriptDocuments": [
+          "Landing-Page:Lesson-05"
+        ],
+        "requiredTranscriptDocuments": [
+          "Landing-Page:Lesson-05"
+        ],
+        "transcriptRequirement": "Timestamped explanations and instructor-speech claims require transcript evidence. Other explanation/creative requests may cite correctly labelled notes; eligible transcript documents are not mandatory for every follow-up."
+      },
+      "checks": [
+        "source accuracy",
+        "source attribution",
+        "notes versus transcript",
+        "exact prompt bytes",
+        "chunk timestamp grounding"
+      ]
+    },
+    {
+      "id": "LP-2",
+      "number": 16,
+      "kind": "course",
+      "courseLabel": "AI Landing Page",
+      "courseId": "6aeb1d5f2497c8173516e257",
+      "courseSlug": "ai-se-landing-page-banao",
+      "lessonId": "6aeb1d5f2497c8173516e250",
+      "lessonNumber": 5,
+      "lessonName": "Generate HTML Code",
+      "conversationGroup": "LP",
+      "stage": 2,
+      "question": "Correction: business Neel Wellness hai aur nutrition coaching karta hai, yoga nahi. Phone number abhi bhi missing hai. Website task retain karke HTML generation aur next mobile-check step ki customized guidance do. Qualifications, testimonials, contact number ya exact spoken-event timing invent mat karo.",
+      "historyPolicy": "Same player and conversation; exact previous user turn plus actual delivered assistant answer. Never invent assistant history.",
+      "sourceExpectations": {
+        "transcriptDocuments": [
+          "Landing-Page:Lesson-05"
+        ],
+        "transcriptChunks": [
+          {
+            "id": "Landing-Page:Lesson-05:chunk-0001",
+            "contentSha256": "716f115a9aa0a9677b0d5fdb5f78e9994c455873a94dec5fca66d95bc0ece1c0",
+            "rawSha256": "03454e48bdac3592b912f2e4708da5eee6f5157de97a3990e451bee6e4dcb313",
+            "startSeconds": 1.08,
+            "endSeconds": 97.12
+          }
+        ],
+        "timestampProbeSeconds": null,
+        "exactPrompt": null,
+        "missingTranscriptExpected": false,
+        "notesPackDisabled": false,
+        "courseKnowledgeIntegrated": true,
+        "eligibleTranscriptDocuments": [
+          "Landing-Page:Lesson-05"
+        ],
+        "requiredTranscriptDocuments": [],
+        "transcriptRequirement": "Timestamped explanations and instructor-speech claims require transcript evidence. Other explanation/creative requests may cite correctly labelled notes; eligible transcript documents are not mandatory for every follow-up."
+      },
+      "checks": [
+        "source accuracy",
+        "source attribution",
+        "notes versus transcript",
+        "real memory",
+        "correction retained"
+      ]
+    },
+    {
+      "id": "EC-1",
+      "number": 17,
+      "kind": "course",
+      "courseLabel": "AI E-commerce",
+      "courseId": "6af7f53ff9112a360fa5a8b0",
+      "courseSlug": "making-an-commerce-platform-with-ai",
+      "lessonId": "6af7f53ff9112a360fa5a8a9",
+      "lessonNumber": 7,
+      "lessonName": "Checkout and WhatsApp Orders",
+      "conversationGroup": "EC",
+      "stage": 1,
+      "question": "Mera Dhara naam ka candles store hai; Shopify use nahi karna. Is checkout lesson ke 00:01:34 wale transcript chunk se WhatsApp order aur Google Sheets workflow explain karo. Product catalogue public ho sakta hai, customer orders private rehne chahiye. Correct course/lesson/chunk cite karo.",
+      "historyPolicy": "Fresh approved local QA conversation, empty actual history",
+      "sourceExpectations": {
+        "transcriptDocuments": [
+          "E-Commerce:Lesson-07"
+        ],
+        "transcriptChunks": [
+          {
+            "id": "E-Commerce:Lesson-07:chunk-0001",
+            "contentSha256": "c5b8a1eb969e5f62348e88d19e2ba1170f3093b30be2bde9a2130703471e3754",
+            "rawSha256": "af0d7eb194888544dfe49367a91b98ef0903f3b8b72743db6bee92a60b2d20fc",
+            "startSeconds": 1.8,
+            "endSeconds": 186.72
+          }
+        ],
+        "timestampProbeSeconds": 94,
+        "exactPrompt": null,
+        "missingTranscriptExpected": false,
+        "notesPackDisabled": false,
+        "courseKnowledgeIntegrated": true,
+        "eligibleTranscriptDocuments": [
+          "E-Commerce:Lesson-07"
+        ],
+        "requiredTranscriptDocuments": [
+          "E-Commerce:Lesson-07"
+        ],
+        "transcriptRequirement": "Timestamped explanations and instructor-speech claims require transcript evidence. Other explanation/creative requests may cite correctly labelled notes; eligible transcript documents are not mandatory for every follow-up."
+      },
+      "checks": [
+        "source accuracy",
+        "source attribution",
+        "notes versus transcript",
+        "chunk timestamp grounding"
+      ]
+    },
+    {
+      "id": "EC-2",
+      "number": 18,
+      "kind": "course",
+      "courseLabel": "AI E-commerce",
+      "courseId": "6af7f53ff9112a360fa5a8b0",
+      "courseSlug": "making-an-commerce-platform-with-ai",
+      "lessonId": "6af7f53ff9112a360fa5a8a9",
+      "lessonNumber": 7,
+      "lessonName": "Checkout and WhatsApp Orders",
+      "conversationGroup": "EC",
+      "stage": 2,
+      "question": "Correction: Dhara ceramic mugs bechta hai, candles nahi. No-Shopify aur private-orders requirements retain karo. Is lesson ka original Apps Script + checkout Message 1 prompt unchanged copy karo. Phir meri situation ke liye alag Customized AI Prompt do; sample prices, contacts ya reviews ko mere facts mat banao.",
+      "historyPolicy": "Same player and conversation; exact previous user turn plus actual delivered assistant answer. Never invent assistant history.",
+      "sourceExpectations": {
+        "transcriptDocuments": [
+          "E-Commerce:Lesson-07"
+        ],
+        "transcriptChunks": [
+          {
+            "id": "E-Commerce:Lesson-07:chunk-0001",
+            "contentSha256": "c5b8a1eb969e5f62348e88d19e2ba1170f3093b30be2bde9a2130703471e3754",
+            "rawSha256": "af0d7eb194888544dfe49367a91b98ef0903f3b8b72743db6bee92a60b2d20fc",
+            "startSeconds": 1.8,
+            "endSeconds": 186.72
+          }
+        ],
+        "timestampProbeSeconds": null,
+        "exactPrompt": {
+          "chunkId": "ai-ecommerce-no-shopify:exact-template:3dee75a5206328304d3d",
+          "contentType": "exact-template",
+          "heading": "Lesson 7 — Message 1: Apps Script + checkout",
+          "content": " Ab checkout banao. Customer form bharega aur \"Order on WhatsApp\" dabayega. Do kaam hone chahiye:\n    1. Order mere Google Sheet ke \"orders\" tab mein nayi row mein save ho (status: New)\n  2. WhatsApp khule, poora order message ready ho (Order ID ke saath)\n\n  Mujhe do:\n  - Google Apps Script ka Code.gs (orders tab mein row add kare) aur deploy karne ke steps\n  - checkout.html (form: naam, WhatsApp number, address, city, pincode, payment: UPI ya Cash on Delivery, notes)\n  - config.js mein teesri line orders web app link ke liye\n  - Purani app.js ka poora code replace karo, style.css bhi update\n  - Form check kare: galat number ya khaali field par message dikhe\n  - Order ke baad website par Thank You page (Order ID aur summary ke saath)",
+          "contentHash": "3dee75a5206328304d3dc85355ce61188a7a9497352170aa89d5273edeb1af99",
+          "lessonNumber": 7,
+          "lessonId": "",
+          "lessonName": "",
+          "sourceDocument": "EC_All_Prompts.pdf",
+          "sourceHash": "f2416d2b7ab204d196ec8e762e73cfd777a19f33dfee8291c70e1153c9270744",
+          "ingestionDocument": "sources/Skillomate_Ecommerce_Nex_AI_Knowledge_Base.txt",
+          "aliases": [
+            "Message 1: Apps Script + checkout"
+          ],
+          "sourceStartByte": 58856,
+          "sourceEndByte": 59599,
+          "usage": "Verified Course Prompt only when quoted unchanged. Any adaptation must be labelled Customized AI Prompt.",
+          "body": " Ab checkout banao. Customer form bharega aur \"Order on WhatsApp\" dabayega. Do kaam hone chahiye:\n    1. Order mere Google Sheet ke \"orders\" tab mein nayi row mein save ho (status: New)\n  2. WhatsApp khule, poora order message ready ho (Order ID ke saath)\n\n  Mujhe do:\n  - Google Apps Script ka Code.gs (orders tab mein row add kare) aur deploy karne ke steps\n  - checkout.html (form: naam, WhatsApp number, address, city, pincode, payment: UPI ya Cash on Delivery, notes)\n  - config.js mein teesri line orders web app link ke liye\n  - Purani app.js ka poora code replace karo, style.css bhi update\n  - Form check kare: galat number ya khaali field par message dikhe\n  - Order ke baad website par Thank You page (Order ID aur summary ke saath)",
+          "bodyHash": "3dee75a5206328304d3dc85355ce61188a7a9497352170aa89d5273edeb1af99",
+          "bytes": 743
+        },
+        "missingTranscriptExpected": false,
+        "notesPackDisabled": false,
+        "courseKnowledgeIntegrated": true,
+        "eligibleTranscriptDocuments": [
+          "E-Commerce:Lesson-07"
+        ],
+        "requiredTranscriptDocuments": [],
+        "transcriptRequirement": "Timestamped explanations and instructor-speech claims require transcript evidence. Other explanation/creative requests may cite correctly labelled notes; eligible transcript documents are not mandatory for every follow-up."
+      },
+      "checks": [
+        "source accuracy",
+        "source attribution",
+        "notes versus transcript",
+        "real memory",
+        "correction retained",
+        "exact prompt bytes"
+      ]
+    },
+    {
+      "id": "X-1",
+      "number": 19,
+      "kind": "cross_course",
+      "courseLabel": "Cross-course",
+      "courseId": "6ad9fe8ed0076b8d5e3b4f6d",
+      "courseSlug": "ai-local-buisness-ads",
+      "lessonId": "6ad9fe8ed0076b8d5e3b4f66",
+      "lessonNumber": 4,
+      "lessonName": "Menu and Food Photos",
+      "conversationGroup": "CROSS",
+      "stage": 1,
+      "question": "Mera delivery-only cloud kitchen hai, combo Maggi aur chai hai, fries nahi. AI Local Business Ads Lesson 4 ka food-photo workflow aur AI Product Photoshoot & Ads Lesson 2 ka reference/product-sheet idea combine karke practical preparation steps do. Unchanged course prompts aur customized drafts alag label karo; packing, plate size, prices ya contacts invent mat karo.",
+      "historyPolicy": "Fresh separate CROSS conversation, empty actual history",
+      "sourceExpectations": {
+        "transcriptDocuments": [
+          "AI-Business-Ads:Lesson-04",
+          "AI-Product-Shoot-and-Videos:Lesson-02"
+        ],
+        "transcriptChunks": [
+          {
+            "id": "AI-Business-Ads:Lesson-04:chunk-0001",
+            "contentSha256": "b3fe000775a10363ddf53f6a49608d7b8fb9e236250d290d90e0ce8feab99518",
+            "startSeconds": 2,
+            "endSeconds": 72.8,
+            "rawSha256": "278e90fcab373905fd73022291e0c103486d861fa0b51d90ec9048f9586057d0"
+          },
+          {
+            "id": "AI-Product-Shoot-and-Videos:Lesson-02:chunk-0001",
+            "contentSha256": "a88c708e3b2c4ab0b3f46d98d7ad9f5910a1441718f1b4a1e1b690489574fcba",
+            "startSeconds": 9.2,
+            "endSeconds": 70.8,
+            "rawSha256": "b1e6c07b27057bee4e00eee2a1429ea3f33e80a6ccaa518b68c0d3b692f8cadf"
+          }
+        ],
+        "eligibleTranscriptDocuments": [
+          "AI-Business-Ads:Lesson-04",
+          "AI-Product-Shoot-and-Videos:Lesson-02"
+        ],
+        "requiredTranscriptDocuments": [],
+        "transcriptRequirement": "Timestamped explanations and instructor-speech claims require transcript evidence. Other explanation/creative requests may cite correctly labelled notes; eligible transcript documents are not mandatory for every follow-up."
+      },
+      "checks": [
+        "cross-course accuracy",
+        "citations",
+        "notes/transcript attribution",
+        "exact versus customized provenance",
+        "real memory",
+        "corrections and negations"
+      ]
+    },
+    {
+      "id": "X-2",
+      "number": 20,
+      "kind": "cross_course",
+      "courseLabel": "Cross-course",
+      "courseId": "6ad9fe8ed0076b8d5e3b4f6d",
+      "courseSlug": "ai-local-buisness-ads",
+      "lessonId": "6ad9fe8ed0076b8d5e3b4f66",
+      "lessonNumber": 4,
+      "lessonName": "Menu and Food Photos",
+      "conversationGroup": "CROSS",
+      "stage": 2,
+      "question": "Usi cloud-kitchen brief ko retain karo. AI Landing Page Lesson 5 aur E-Commerce Lesson 7 compare karke batao: landing page kab enough hai aur checkout/order flow kab chahiye? Public products aur private customer orders separate rakho. Dono courses ki source attribution alag do; notes ko video speech ya invented timestamps mat bolo.",
+      "historyPolicy": "Same Android Business Lesson 4 player and CROSS conversation; exact actual preceding exchanges, no drafted assistant history.",
+      "sourceExpectations": {
+        "transcriptDocuments": [
+          "Landing-Page:Lesson-05",
+          "E-Commerce:Lesson-07"
+        ],
+        "transcriptChunks": [
+          {
+            "id": "E-Commerce:Lesson-07:chunk-0001",
+            "contentSha256": "c5b8a1eb969e5f62348e88d19e2ba1170f3093b30be2bde9a2130703471e3754",
+            "startSeconds": 1.8,
+            "endSeconds": 186.72,
+            "rawSha256": "af0d7eb194888544dfe49367a91b98ef0903f3b8b72743db6bee92a60b2d20fc"
+          },
+          {
+            "id": "Landing-Page:Lesson-05:chunk-0001",
+            "contentSha256": "716f115a9aa0a9677b0d5fdb5f78e9994c455873a94dec5fca66d95bc0ece1c0",
+            "startSeconds": 1.08,
+            "endSeconds": 97.12,
+            "rawSha256": "03454e48bdac3592b912f2e4708da5eee6f5157de97a3990e451bee6e4dcb313"
+          }
+        ],
+        "eligibleTranscriptDocuments": [
+          "Landing-Page:Lesson-05",
+          "E-Commerce:Lesson-07"
+        ],
+        "requiredTranscriptDocuments": [],
+        "transcriptRequirement": "Timestamped explanations and instructor-speech claims require transcript evidence. Other explanation/creative requests may cite correctly labelled notes; eligible transcript documents are not mandatory for every follow-up."
+      },
+      "checks": [
+        "cross-course accuracy",
+        "citations",
+        "notes/transcript attribution",
+        "exact versus customized provenance",
+        "real memory",
+        "corrections and negations"
+      ]
+    },
+    {
+      "id": "X-3",
+      "number": 21,
+      "kind": "cross_course",
+      "courseLabel": "Cross-course",
+      "courseId": "6ad9fe8ed0076b8d5e3b4f6d",
+      "courseSlug": "ai-local-buisness-ads",
+      "lessonId": "6ad9fe8ed0076b8d5e3b4f66",
+      "lessonNumber": 4,
+      "lessonName": "Menu and Food Photos",
+      "conversationGroup": "CROSS",
+      "stage": 3,
+      "question": "Correction: ab delivery nahi, pickup-only cloud kitchen hai. Pichhle combo, no-fries aur website/order discussion retain karo. Viral Hook Formula Lesson 2 aur AI Filmmaking Lesson 7 use karke short promotional shot idea do: locked camera, no pan, no zoom, no extra actors. Hamari duration ko instructor ka rule aur views/sales ko guaranteed mat bolo. Dono sources alag cite karo.",
+      "historyPolicy": "Same Android Business Lesson 4 player and CROSS conversation; exact actual preceding exchanges, no drafted assistant history.",
+      "sourceExpectations": {
+        "transcriptDocuments": [
+          "Viral-Hook-Formulas:Lesson-02",
+          "AI-Filmmaking:Lesson-07"
+        ],
+        "transcriptChunks": [
+          {
+            "id": "AI-Filmmaking:Lesson-07:chunk-0001",
+            "contentSha256": "bdd92058859bc42a0cd5d667258419b10ef4c261c69df195e514b6dfef00bcbf",
+            "startSeconds": 0.1,
+            "endSeconds": 89.8,
+            "rawSha256": "71466dbc375b5085405ba56cdf48a3921631788c2aa13f03dfface3aaee316c3"
+          },
+          {
+            "id": "Viral-Hook-Formulas:Lesson-02:chunk-0001",
+            "contentSha256": "2692739180abd14a168533e2b7da105abedd9cde945b13caf414a6cfaf7d5c7f",
+            "startSeconds": 1.02,
+            "endSeconds": 53.9,
+            "rawSha256": "7daed6c82a87a5d56972087a81d73f800529956e42880b302ce5080524d494c5"
+          }
+        ],
+        "eligibleTranscriptDocuments": [
+          "Viral-Hook-Formulas:Lesson-02",
+          "AI-Filmmaking:Lesson-07"
+        ],
+        "requiredTranscriptDocuments": [],
+        "transcriptRequirement": "Timestamped explanations and instructor-speech claims require transcript evidence. Other explanation/creative requests may cite correctly labelled notes; eligible transcript documents are not mandatory for every follow-up."
+      },
+      "checks": [
+        "cross-course accuracy",
+        "citations",
+        "notes/transcript attribution",
+        "exact versus customized provenance",
+        "real memory",
+        "corrections and negations"
+      ]
+    }
+  ]
+}

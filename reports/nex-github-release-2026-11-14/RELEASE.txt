@@ -1,0 +1,19 @@
+SKILLOMATE NEX AI — GITHUB RELEASE PREPARATION
+
+Local preparation: PASS. Production readiness: BLOCKED.
+
+Scope: backend-only verified Nex AI fixes, nine-course knowledge, original transcript packs and additive 24-chunk supplement, offline preflight, insert-only preparation tools, QA approval/resume gate sources and portable regression sources. No existing knowledge or transcript was replaced. Real Estate's eight missing transcripts and quarantined Influencer Lesson 1 remain explicit.
+
+The release is based on current GitHub main a52c455b3b38d39c4fa1775c64ee3cec8eb9b00e. Its lesson-duration changes are retained. Only package.json needed a content merge: both sets of npm scripts remain and dependencies/lock are unchanged. No migration was executed.
+
+Existing evidence: 438/438 focused offline checks; all 21 prepared cases checked offline (19 answers and 2 expected limitations). No tests were repeated. This does not establish a new live-model PASS or test the newer upstream duration changes. Original live QA used six attempts and failed; 17 live cases remain unexecuted.
+
+Production access: read-only AWS STS returned InvalidClientTokenId. The existing SSM/MongoDB production preflight was not run without valid authorization. Production config/catalog/connectivity/runtime remain unverified. Provider calls and database writes: zero.
+
+Production must use the complete packaged file fallback with NEX_TRANSCRIPT_MONGODB_URI absent/empty in host and SSM, Node >=20.19.0, existing provider model google/gemini-2.5-flash and existing consent/configuration. Preserve all primary DB/auth/payment/video secrets. Do not start a server or migration as part of readiness.
+
+QA gate sources retain the aggregate 30-attempt limit, including the original six attempts, and require a new 60-minute source-bound approval. No approval, live history, private credential or ledger is part of this release. Preserve the original local QA directory to resume.
+
+FILES.txt is the exact release delta relative to the parent. VERIFICATION.json records evidence, exclusions and blockers. Changes to mobile, unrelated development settings and historical/private QA material are excluded and preserved in the original checkout.
+
+No push or deployment is authorized by this preparation. Production release is blocked until an authorized operator completes the read-only production preflight. The previous source archive predates the latest upstream commit and is not byte-identical to this branch.

@@ -17,11 +17,13 @@ const api = options => backend({ courses: [local, other], user: learner, knowled
 const digest = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const normalize = value => String(value).replace(/\s+/gu, ' ').trim();
 
-test('unverified course stays inactive and cannot bind by guessed alias/title', () => {
+test('approved staged index remains immutable while verified registration binds the published owner', () => {
   assert.equal(staged.actualCourseId, null);
   assert.equal(staged.slugs.length, 0);
-  assert.equal(require('../services/tutorKnowledge').COURSE_PACKS.some(p => p.dir === 'ai-cartoon-series'), false);
-  assert.equal(require('../services/tutorKnowledge').packFor({ slug: 'ai-cartoon-series', title: staged.title }), undefined);
+  const registered = require('../services/tutorKnowledge').COURSE_PACKS.find(p => p.dir === 'ai-cartoon-series');
+  assert.equal(registered.actualCourseId, '6ae09ebee4ac0b60c08276bc');
+  assert.deepEqual(registered.slugs, ['ai-cartoon-series']);
+  assert.equal(require('../services/tutorKnowledge').isIntegratedCourse({ slug: 'ai-cartoon-series', title: staged.title }), false);
 });
 
 test('prepared evaluation freezes exactly 15 questions and two complete two-turn conversations', () => {

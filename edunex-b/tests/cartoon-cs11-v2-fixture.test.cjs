@@ -15,6 +15,10 @@ test('versioned CS-11 cases bind to the existing eight-lesson fixture without a 
   t.after(() => fs.rmSync(report, { recursive: true, force: true }));
   fs.copyFileSync(path.join(root, 'reports/cartoon-series-cs11-v2/test_cases_frozen.sha256'),
     path.join(report, 'test_cases_frozen.sha256'));
+  const approval = path.join(root, 'reports/cartoon-series-cs11-v2/provider_approval.json');
+  const approvalBefore = fs.existsSync(approval) ? fs.readFileSync(approval, 'utf8') : null;
+  const packs = require('../services/courseKnowledgePacks').COURSE_PACKS;
+  const publishedBefore = JSON.stringify(packs.filter(p => p.dir === 'ai-cartoon-series'));
   const f = prepareCartoonFixture({ packKey: 'ai-cartoon-series',
     report,
     casesPath: path.join(root, 'scripts/eval/cartoon-series-fast15-cases-v2.json') });
@@ -31,4 +35,6 @@ test('versioned CS-11 cases bind to the existing eight-lesson fixture without a 
   assert.equal(f.fixture.production_course_id, null);
   assert.equal(f.fixture.playback_verified, false);
   assert.equal(fs.existsSync(path.join(report, 'provider_approval.json')), false);
+  assert.equal(fs.existsSync(approval) ? fs.readFileSync(approval, 'utf8') : null, approvalBefore);
+  assert.equal(JSON.stringify(packs.filter(p => p.dir === 'ai-cartoon-series' && p !== f.pack)), publishedBefore);
 });

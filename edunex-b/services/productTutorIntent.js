@@ -11,7 +11,7 @@ function productCopyIntent(message) {
   && /\b(?:create|draft|generate|write|make|likho|banao)\b|लिख|बनाओ|बनाइए/i.test(request)
   && !/\b(?:copy|paste|reproduce|verbatim|approved)\b|मूल|असली/i.test(request);
  const educational=/\b(?:explain|why|meaning|useful|difference|compare|what does|samjhao)\b|समझा|क्यों|अर्थ/i.test(request);
- const raw=/\b(?:placeholders? (?:included|unchanged)|leave.{0,35}placeholders?.{0,20}unchanged|(?:all|every|square.bracket|bracketed).{0,35}(?:slots?|placeholders?|brackets?).{0,30}(?:visible|provided|unchanged)|do not fill|retain.{0,20}brackets?|keep.{0,20}brackets?)\b|खाली स्थान सहित|उदाहरण और सभी खाली|कोष्ठक.{0,15}(?:सहित|रखें)/iu.test(text);
+ const raw=/\b(?:prompts?|templates?|source|body|wording)\s+(?:(?:poora|full|completely|bilkul)\s+)?(?:unchanged|verbatim|as[- ]is)\b|\b(?:placeholders? (?:included|unchanged)|leave.{0,35}placeholders?.{0,20}unchanged|(?:all|every|square.bracket|bracketed).{0,35}(?:slots?|placeholders?|brackets?).{0,30}(?:visible|provided|unchanged)|do not fill|retain.{0,20}brackets?|keep.{0,20}brackets?)\b|खाली स्थान सहित|उदाहरण और सभी खाली|कोष्ठक.{0,15}(?:सहित|रखें)/iu.test(text);
  return {request,sourceCopy,complete,copyAction,generation,educational,raw};
 }
 function productIntentSignals(message) {

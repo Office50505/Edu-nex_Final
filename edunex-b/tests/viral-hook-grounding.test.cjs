@@ -136,7 +136,7 @@ test('viral accounting still rejects a session from another workspace',()=>{
 });
 test('generation plus one grounding repair debit the same existing attempt gate',async()=>{
  const f=offlineGate();try{f.gate.authorize(f.gate.hash);
- const api=make({replies:[saved[1].raw,clean2],providerHook:payload=>f.gate.consume(payload,f.context)});
+ const api=make({replies:[saved[1].raw,clean2],providerTokenLimit:900,providerHook:payload=>f.gate.consume(payload,f.context)});
  const r=await api.chat({activeCourseId:course._id,message:saved[1].question,history:saved[1].history});
  assert.equal(r.answer,clean2);assert.equal(f.gate.count(),2);assert.equal(f.gate.status().remainingProviderAttempts,2);
  }finally{f.cleanup()}
@@ -144,7 +144,7 @@ test('generation plus one grounding repair debit the same existing attempt gate'
 test('budget-blocked repair is not retried and unsafe original is not delivered',async()=>{
  const f=offlineGate();try{f.gate.authorize(f.gate.hash);
  const payload={model:f.gate.frozen.model,max_tokens:900,messages:[{role:'system',content:'Offline'}]};for(let i=0;i<3;i++)f.gate.consume(payload,f.context);
- const api=make({reply:saved[1].raw,providerHook:p=>f.gate.consume(p,f.context)});
+ const api=make({reply:saved[1].raw,providerTokenLimit:900,providerHook:p=>f.gate.consume(p,f.context)});
  const r=await api.chat({activeCourseId:course._id,message:saved[1].question,history:saved[1].history,debugAi:true});
  assert.equal(api.calls.length,2);assert.equal(f.gate.count(),4);assert.equal(r.outcome.correctionStatus,'manual_qa_budget_exhausted');assert.equal(r.outcome.correctionDelivered,false);
  assert.doesNotMatch(r.answer,/perfect working|chal toh raha|90%/);assert.match(r.answer,/Curiosity Gap Hook/);
@@ -152,7 +152,7 @@ test('budget-blocked repair is not retried and unsafe original is not delivered'
 });
 test('missing approval blocks generation without using any attempts',async()=>{
  const f=offlineGate();try{
- const api=make({reply:saved[1].raw,providerHook:p=>f.gate.consume(p,f.context)});
+ const api=make({reply:saved[1].raw,providerTokenLimit:900,providerHook:p=>f.gate.consume(p,f.context)});
  const r=await api.rawChat({activeCourseId:course._id,message:saved[1].question,history:saved[1].history});
  assert.equal(r.statusCode,503);assert.equal(f.gate.count(),0);assert.equal(api.calls.length,1);
  }finally{f.cleanup()}

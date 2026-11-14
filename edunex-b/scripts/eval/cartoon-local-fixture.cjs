@@ -11,7 +11,9 @@ const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 function prepareCartoonFixture({ packKey, registrationPath, report, casesPath }) {
   if (packKey !== 'ai-cartoon-series' || registrationPath) throw Error('Cartoon fixture mode cannot use production/registered metadata.');
   const productionPacks = require('../../services/courseKnowledgePacks').COURSE_PACKS;
-  if (productionPacks.some(p => p.dir === packKey)) throw Error('Expected the unbound staged Cartoon pack.');
+  // A verified registry binding can coexist with this process-local synthetic
+  // owner. The raw approved index must still be unbound, checked below; never
+  // replace the registered pack or reuse its published alias in the fixture.
   const dir = path.join(root, 'knowledge', packKey);
   const staged = JSON.parse(fs.readFileSync(path.join(dir, 'index.json')));
   if (staged.actualCourseId || staged.slugs.length || staged.domain !== 'cartoon-series') throw Error('Refusing to override a published course binding.');

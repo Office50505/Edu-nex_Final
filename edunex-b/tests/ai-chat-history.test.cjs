@@ -39,8 +39,10 @@ function backend(options = {}) {
       if (name.includes('/models/User')) return { updateOne: async () => ({}) };
       if (name.includes('tutorKnowledge')) return require('../services/tutorKnowledge');
       if (name === './productTutorState') return require('../services/productTutorState');
+      if (name === './tutorReliability') return require('../services/tutorReliability');
       if (name === './aiProviderPrivacy') return require('../services/aiProviderPrivacy');
       if (name === './tutorProvider') return require('../services/tutorProvider');
+      if (name === './unifiedTutorKnowledge') return require('../services/unifiedTutorKnowledge');
       if (name === './selectedLessonSummary') return require('../services/selectedLessonSummary');
       if (name.endsWith('/tutorAvailability')) return require('../services/tutorAvailability');
       if (name === './productTutorResponse') return require('../services/productTutorResponse');
@@ -61,6 +63,10 @@ function backend(options = {}) {
   };
   const serviceModule = { exports: {} };
   vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../services/aiTutorService.js'), 'utf8'), { ...sandbox, module: serviceModule });
+  // These historical memory/privacy cases retain the scoped-helper contract;
+  // unified endpoint behavior is exercised explicitly in unified-tutor.test.cjs.
+  const scopedBuild = serviceModule.exports.buildContext;
+  serviceModule.exports.buildContext = (user, course, message, history, config = {}) => scopedBuild(user, course, message, history, { ...config, unifiedKnowledge: false });
   vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../routes/ai.js'), 'utf8'), sandbox);
   async function request(method, url, body = {}, authenticated = true) {
     let result;

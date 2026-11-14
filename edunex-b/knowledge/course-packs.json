@@ -6,11 +6,63 @@
   {
     "dir": "ai-cartoon-series",
     "index": "index.json",
-    "enabled": false,
-    "reason": "Awaiting verified published course ID and slug; never attach by title or a guessed alias."
+    "enabled": true,
+    "binding": {
+      "courseId": "6ae09ebee4ac0b60c08276bc",
+      "slug": "ai-cartoon-series",
+      "status": "published",
+      "verifiedFrom": "Read-only published catalog and preserved course-metadata snapshot, reverified 2026-10-29",
+      "lessonBindings": {
+        "6ae09ebee4ac0b60c08276b4": 1,
+        "6ae09ebee4ac0b60c08276b5": 2,
+        "6ae09ebee4ac0b60c08276b6": 3,
+        "6ae09ebee4ac0b60c08276b7": 4,
+        "6ae09ebee4ac0b60c08276b8": 5,
+        "6ae09ebee4ac0b60c08276b9": 6,
+        "6ae09ebee4ac0b60c08276ba": 7,
+        "6ae09ebee4ac0b60c08276bb": 8
+      }
+    }
   },
   {
     "dir": "viral-hook-formula",
     "index": "index.json"
+  },
+  {
+    "dir": "ai-real-estate-videos",
+    "index": "index.json",
+    "enabled": false,
+    "reason": "Published course ID and slug not found in the verified catalog. Knowledge and adapter are locally prepared; never attach by title or guessed identifiers."
+  },
+  {
+    "dir": "ai-landing-page",
+    "index": "index.json",
+    "enabled": true
+  },
+  {
+    "dir": "ai-ecommerce-no-shopify",
+    "index": "index.json",
+    "enabled": true,
+    "binding": {
+      "courseId": "6af7f53ff9112a360fa5a8b0",
+      "slug": "making-an-commerce-platform-with-ai",
+      "status": "published",
+      "verifiedFrom": "Read-only published catalog and exact transcript media URLs verified 2026-11-14; catalog SHA-256 19cb0dc83853f5d3f2b23aa44daabd587f43fb1a30eede208d532f896234a9cd",
+      "lessonBindings": {
+        "6af7f53ff9112a360fa5a8a3": 1,
+        "6af7f53ff9112a360fa5a8a4": 2,
+        "6af7f53ff9112a360fa5a8a5": 3,
+        "6af7f53ff9112a360fa5a8a6": 4,
+        "6af7f53ff9112a360fa5a8a7": 5,
+        "6af7f53ff9112a360fa5a8a8": 6,
+        "6af7f53ff9112a360fa5a8a9": 7,
+        "6af7f53ff9112a360fa5a8aa": 8,
+        "6af7f53ff9112a360fa5a8ab": 9,
+        "6af7f53ff9112a360fa5a8ac": 10,
+        "6af7f53ff9112a360fa5a8ad": 11,
+        "6af7f53ff9112a360fa5a8ae": 12,
+        "6af7f53ff9112a360fa5a8af": 13
+      }
+    }
   }
 ]

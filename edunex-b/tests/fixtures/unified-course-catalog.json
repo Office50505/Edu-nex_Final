@@ -1,0 +1,429 @@
+{
+  "source": "Read-only public catalog https://api.skillomate.in/api/courses",
+  "verifiedAt": "2026-10-29T10:45:49.424Z",
+  "productionWrites": false,
+  "courses": [
+    {
+      "_id": "6ae1b4694e1af14d4adc9e2b",
+      "title": "Viral Hook Formula",
+      "slug": "viral-hook-formula",
+      "status": "published",
+      "description": "Learn how to create clear, compelling openings for Instagram Reels and YouTube Shorts. Viral Hook Formula introduces eight practical approaches: curiosity gaps, pattern interrupts, bold statements, questions, stories, visuals, numbered lists and relatable POV scenes.\n\nAcross ten lessons, you will learn to write stronger first lines, plan effective opening visuals and connect every hook to a meaningful payoff. Practical examples and assignments help you choose the right approach for your audience, communicate your topic quickly and deliver the value your opening promises. You will also explore how to combine hook styles, use ChatGPT to develop relevant options and compare different openings to improve your content.\n\nDesigned for creators, small business owners and students, the course concludes with a practical project: creating eight original reels, one for each hook type, using a repeatable process for planning, reviewing and refining your ideas.",
+      "videos": [
+        {
+          "_id": "6ae1b4694e1af14d4adc9e21",
+          "title": "HOOK FOUNDATIONS",
+          "order": 1
+        },
+        {
+          "_id": "6ae1b4694e1af14d4adc9e22",
+          "title": "CREATE A QUESTION WORTH ANSWERING",
+          "order": 2
+        },
+        {
+          "_id": "6ae1b4694e1af14d4adc9e23",
+          "title": "MAKE THE INTERRUPTION MEAN SOMETHING",
+          "order": 3
+        },
+        {
+          "_id": "6ae1b4694e1af14d4adc9e24",
+          "title": "UNDERSTAND THE FORMULA",
+          "order": 4
+        },
+        {
+          "_id": "6ae1b4694e1af14d4adc9e25",
+          "title": "FIND THE RIGHT QUESTION",
+          "order": 5
+        },
+        {
+          "_id": "6ae1b4694e1af14d4adc9e26",
+          "title": "CHOOSE THE TURNING POINT",
+          "order": 6
+        },
+        {
+          "_id": "6ae1b4694e1af14d4adc9e27",
+          "title": "UNDERSTAND THE VISUAL PROMISE",
+          "order": 7
+        },
+        {
+          "_id": "6ae1b4694e1af14d4adc9e28",
+          "title": "BUILD A USEFUL LIST",
+          "order": 8
+        },
+        {
+          "_id": "6ae1b4694e1af14d4adc9e29",
+          "title": "FIND THE RECOGNISABLE MOMENT",
+          "order": 9
+        },
+        {
+          "_id": "6ae1b4694e1af14d4adc9e2a",
+          "title": "CHOOSE AND COMBINE YOUR APPROACH",
+          "order": 10
+        }
+      ]
+    },
+    {
+      "_id": "6ae09ebee4ac0b60c08276bc",
+      "title": "AI Cartoon Series",
+      "slug": "ai-cartoon-series",
+      "status": "published",
+      "description": "Learn how to create an original children’s cartoon series using ChatGPT, Google Flow and CapCut. This practical course takes you from your first idea to a complete animated episode, using Golu and Chiku as a running example.\n\nYou will develop distinctive characters, create reusable reference sheets and locations, write engaging stories for young audiences, and organise them into simple scenes. Step-by-step lessons explain how to generate start frames, animate short clips, plan character voices and maintain continuity across an episode. You will also produce an original rhyme video and learn practical ways to correct common visual and audio issues.\n\nThe course concludes with editing, thumbnail design, publishing preparation and a plan for future episodes. Designed for parents, teachers and aspiring creators, it requires no prior drawing or animation experience and focuses on building a clear, repeatable production workflow.",
+      "videos": [
+        {
+          "_id": "6ae09ebee4ac0b60c08276b4",
+          "title": "FOUNDATIONS",
+          "order": 1
+        },
+        {
+          "_id": "6ae09ebee4ac0b60c08276b5",
+          "title": "BUILD THE CHARACTER FOUNDATION",
+          "order": 2
+        },
+        {
+          "_id": "6ae09ebee4ac0b60c08276b6",
+          "title": "DESIGN THE WORLD",
+          "order": 3
+        },
+        {
+          "_id": "6ae09ebee4ac0b60c08276b7",
+          "title": "STORY AND SCENE PLANNING",
+          "order": 4
+        },
+        {
+          "_id": "6ae09ebee4ac0b60c08276b8",
+          "title": "PREPARE THE START FRAME",
+          "order": 5
+        },
+        {
+          "_id": "6ae09ebee4ac0b60c08276b9",
+          "title": "PLAN THE FULL PRODUCTION",
+          "order": 6
+        },
+        {
+          "_id": "6ae09ebee4ac0b60c08276ba",
+          "title": "PLAN AND PRODUCE THE RHYME",
+          "order": 7
+        },
+        {
+          "_id": "6ae09ebee4ac0b60c08276bb",
+          "title": "EDIT AND PACKAGE THE EPISODE",
+          "order": 8
+        }
+      ]
+    },
+    {
+      "_id": "6ad9fe8ed0076b8d5e3b4f6d",
+      "title": "AI Local Business Ads",
+      "slug": "ai-local-buisness-ads",
+      "status": "published",
+      "description": "AI Local Business Ads\nProfessional course description\nAI Local Business Ads is a practical, beginner-friendly course designed to help small business owners and\naspiring local content creators produce honest, effective marketing assets using accessible AI tools. Through\nten focused lessons, learners move from understanding a business and its customers to creating polished\nshop and menu photography, offer and festival posters, short promotional videos, Hindi voiceover reels and\nmanageable publishing plans.\nThe course demonstrates how ChatGPT supports business briefs, writing and planning; how Google Flow can\nassist with image and video creation; how CapCut brings clips together; and how ElevenLabs can provide an\noptional text-to-speech workflow. It also introduces the fundamentals of offering this work as a service to\nneighborhood businesses.\nWhat learners will gain\nBuild a reusable business brief with customer segments, advertising angles and a content calendar.\nImprove real shop, food and product photos while preserving their authentic appearance.\nCreate promotional posters using exact, approved wording and verified prices.\nProduce short vertical reels and natural Hindi voiceovers.\nPrepare platform-specific content for Instagram, WhatsApp and Google Business Profile.\nPackage creative services, collect client requirements and manage approvals.\nWho this course is for\nOwners of cafes, salons, bakeries, neighborhood stores and other local businesses.\nBeginners interested in creating AI-assisted marketing content for nearby shops.\nContent creators seeking a practical, ethical workflow for small-business clients.",
+      "videos": [
+        {
+          "_id": "6ad9fe8ed0076b8d5e3b4f63",
+          "title": "AI LOCAL BUSINESS ADS",
+          "order": 1
+        },
+        {
+          "_id": "6ad9fe8ed0076b8d5e3b4f64",
+          "title": "Business Brief with ChatGPT",
+          "order": 2
+        },
+        {
+          "_id": "6ad9fe8ed0076b8d5e3b4f65",
+          "title": "Upgrade Shop Photos",
+          "order": 3
+        },
+        {
+          "_id": "6ad9fe8ed0076b8d5e3b4f66",
+          "title": "Menu and Food Photos",
+          "order": 4
+        },
+        {
+          "_id": "6ad9fe8ed0076b8d5e3b4f67",
+          "title": "Offer and Festival Posters",
+          "order": 5
+        },
+        {
+          "_id": "6ad9fe8ed0076b8d5e3b4f68",
+          "title": "Shop Photos to Video",
+          "order": 6
+        },
+        {
+          "_id": "6ad9fe8ed0076b8d5e3b4f69",
+          "title": "Hindi Voiceover Reel",
+          "order": 7
+        },
+        {
+          "_id": "6ad9fe8ed0076b8d5e3b4f6a",
+          "title": "Where and When to Post",
+          "order": 8
+        },
+        {
+          "_id": "6ad9fe8ed0076b8d5e3b4f6b",
+          "title": "Marketing as a Service",
+          "order": 9
+        },
+        {
+          "_id": "6ad9fe8ed0076b8d5e3b4f6c",
+          "title": "Final Project",
+          "order": 10
+        }
+      ]
+    },
+    {
+      "_id": "6acf6a0c0fbf30bb42142d68",
+      "title": "AI Product Photoshoot & Ads",
+      "slug": "ai-product-photoshoot-ads",
+      "status": "published",
+      "description": "**AI Product Photoshoot & Ads**\n\nLearn how to transform ordinary product photos into professional AI-generated visuals and engaging advertisements. This practical course covers studio photography, AI model shoots, festive product images, colour variations, cinematic product videos, and UGC-style ads.\n\nUsing **Google Flow, Nano Banana Pro, and ChatGPT**, you'll learn to create compelling marketing content, develop ad scripts, and build a complete product advertisement without expensive photography equipment.\n\nPerfect for beginners, content creators, freelancers, and e-commerce business owners looking to enhance their product marketing with AI.",
+      "videos": [
+        {
+          "_id": "6acf6a0c0fbf30bb42142d60",
+          "title": "Course Introduction"
+        },
+        {
+          "_id": "6acf6a0c0fbf30bb42142d61",
+          "title": "Phone Photos to Studio Photos"
+        },
+        {
+          "_id": "6acf6a0c0fbf30bb42142d62",
+          "title": "Product Photography with an AI Model"
+        },
+        {
+          "_id": "6acf6a0c0fbf30bb42142d63",
+          "title": "Festive Shoots and Colour Variants"
+        },
+        {
+          "_id": "6acf6a0c0fbf30bb42142d64",
+          "title": "Planning Ads with ChatGPT"
+        },
+        {
+          "_id": "6acf6a0c0fbf30bb42142d65",
+          "title": "Photo to Product Video"
+        },
+        {
+          "_id": "6acf6a0c0fbf30bb42142d66",
+          "title": "UGC-Style Video"
+        },
+        {
+          "_id": "6acf6a0c0fbf30bb42142d67",
+          "title": "Final Workflow and Project"
+        }
+      ]
+    },
+    {
+      "_id": "6abe5bb2bced21d7211be185",
+      "title": "AI Filmmaking Course",
+      "slug": "ai-filmmaking-course",
+      "status": "published",
+      "description": "AI Filmmaking: From Imagination to Screen\nGo beyond generating videos. Learn to tell stories that connect.\nTurn your creative ideas into cinematic visuals with Skillomate’s AI Filmmaking course. Designed for beginners, this practical course introduces you to storytelling and AI-powered filmmaking—without requiring previous filmmaking experience, a physical camera, or live actors. \nAcross eight focused lessons, learn to shape an idea into a compelling story, build character-reference sheets, and turn your creative direction into shot-by-shot prompts. Use ChatGPT to develop your narrative and plan your visuals, then bring those plans to life in Google Flow. Practise generating takes, selecting stronger results, and connecting shots while maintaining character and scene continuity\nDiscover how to give every shot a purpose. Explore eight camera-movement approaches and six framing techniques, learning how to use them to build tension, reveal a setting, highlight emotion, or draw viewers into a character’s perspective. The focus is not simply on how a shot looks, but on what it communicates. \nFollow a clear filmmaking framework—Story → Characters → Shots → Sound → Editing—and understand where voiceover and editing fit into the process, with introductions to ElevenLabs and CapCut. Practical exercises and ready-to-use prompts support your learning as you build a foundation in story development, character creation, and cinematic shot generation.",
+      "videos": [
+        {
+          "_id": "6abe5bb2bced21d7211be17d",
+          "title": "What Is AI Filmmaking?"
+        },
+        {
+          "_id": "6abe5bb2bced21d7211be17e",
+          "title": "Tools Setup"
+        },
+        {
+          "_id": "6abe5bb2bced21d7211be17f",
+          "title": "The Complete Workflow"
+        },
+        {
+          "_id": "6abe5bb2bced21d7211be180",
+          "title": "Idea, Emotion + Structure"
+        },
+        {
+          "_id": "6abe5bb2bced21d7211be181",
+          "title": "Generation Prompt + Character Sheet"
+        },
+        {
+          "_id": "6abe5bb2bced21d7211be182",
+          "title": "Generate the First Shot + Connect Shots"
+        },
+        {
+          "_id": "6abe5bb2bced21d7211be183",
+          "title": "Camera Movement"
+        },
+        {
+          "_id": "6abe5bb2bced21d7211be184",
+          "title": "Shot Types / Framing"
+        },
+        {
+          "_id": "6ac37dfa3051166d9a619196",
+          "title": "Emotion & Expression"
+        },
+        {
+          "_id": "6ac37dfa3051166d9a619197",
+          "title": "Lighting & Mood"
+        },
+        {
+          "_id": "6ac37dfa3051166d9a619198",
+          "title": "Realism Tricks"
+        },
+        {
+          "_id": "6ac37dfa3051166d9a619199",
+          "title": "B-roll & Cutaways"
+        },
+        {
+          "_id": "6ac37dfa3051166d9a61919a",
+          "title": "Editing"
+        },
+        {
+          "_id": "6ac37dfa3051166d9a61919b",
+          "title": "Voiceover"
+        },
+        {
+          "_id": "6ac37dfa3051166d9a61919c",
+          "title": "Common Mistakes + Pro Tips"
+        }
+      ]
+    },
+    {
+      "_id": "6aa51e9769c836f66ddd3be7",
+      "title": "AI Influencer Course",
+      "slug": "ai-influencer-course",
+      "status": "published",
+      "description": "## AI Influencer Mastery\n\nLearn how to **create, grow, and monetize your own AI influencer** from scratch with a practical, step-by-step system.\n\nAcross **34 focused lessons**, you’ll learn how to build a consistent AI character, generate realistic photos and videos, create talking and lip-sync content, edit professional Reels, and develop a strong social media presence.\n\nYou’ll also explore real-world applications including **AI product photography, fashion try-ons, UGC videos, brand collaborations, client outreach, pricing, portfolio building, affiliate marketing, and digital products**.\n\nDesigned for beginners, creators, freelancers, and business owners, the course focuses on practical execution without requiring coding, professional cameras, or advanced editing skills.\n\n**By the end, you’ll have a complete AI creator system—from your first character to content, clients, and monetization opportunities.**",
+      "videos": [
+        {
+          "_id": "6aa51e9769c836f66ddd3bc5",
+          "title": "Introduction"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3bc6",
+          "title": "Tools Setup"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3bc7",
+          "title": "Creating Your AI Influencer Character"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3bc8",
+          "title": "Learning to Write Prompts Why Prompting Matters"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3bc9",
+          "title": "Maintaining the Same Face Across Different Poses"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3bca",
+          "title": "Creating Different Outfit Styles"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3bcb",
+          "title": "Creating Different Locations"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3bcc",
+          "title": "Making AI Images Look More Realistic Remove the Artificial AI Look"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3bcd",
+          "title": "Fixing AI Photo Quality"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3bce",
+          "title": "Building a 30-Photo Content Bank Create Content in Batches"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3bcf",
+          "title": "Turning Photos into Videos"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3bd0",
+          "title": "Creating Lip-Sync Videos"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3bd1",
+          "title": "Creating a Consistent AI Voice"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3bd2",
+          "title": "Reel Editing Basics in VN"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3bd3",
+          "title": "Five Reel Formats"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3bd4",
+          "title": "Professional Profile Setup Why Your Profile Matters"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3bd5",
+          "title": "Posting Schedule, Captions & Hashtags"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3bd6",
+          "title": "Understanding the Reels Algorithm How the Algorithm Thinks"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3bd7",
+          "title": "Growing from 0 to 1,000 Followers Why 1,000 Followers Matters"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3bd8",
+          "title": "Product Photography Basics"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3bd9",
+          "title": "Creating Professional Studio Product Shots"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3bda",
+          "title": "Lifestyle and Platform-Ready Product Shots"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3bdb",
+          "title": "Fashion Try-On"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3bdc",
+          "title": "Getting Your First Client"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3bdd",
+          "title": "Pricing Your Product Shoots"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3bde",
+          "title": "Understanding UGC & Creating Your First UGC Video"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3bdf",
+          "title": "Building Your UGC Portfolio"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3be0",
+          "title": "Reaching Out to Brands"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3be1",
+          "title": "Closing the Deal"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3be2",
+          "title": "Working With Brands & Building Repeat Business"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3be3",
+          "title": "Affiliate Marketing"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3be4",
+          "title": "Creating Your Own Digital Product"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3be5",
+          "title": "Building a Faceless Business Model"
+        },
+        {
+          "_id": "6aa51e9769c836f66ddd3be6",
+          "title": "Scaling With Multiple AI Influencers What Does Scaling Mean?"
+        }
+      ]
+    }
+  ]
+}
