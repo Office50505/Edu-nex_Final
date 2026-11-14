@@ -88,6 +88,29 @@ it('loads a separate notes URL for each lesson',async()=>{
  expect(await screen.findByDisplayValue('https://notes.example/lesson-one')).toBeTruthy();
  expect(screen.getByLabelText('Lesson notes URL')).toBeTruthy();
 });
+it('detects a missing duration before saving a published course',async()=>{
+ window.history.replaceState({},'', '/admin/upload?courseId=course-one');
+ const course={_id:'course-one',title:'Course',slug:'course',description:'Description',category:{_id:'category-one'},status:'published',videos:[{_id:'lesson-one',provider:'aws_cloudfront',title:'Lesson',duration:0,videoUrl:'https://cdn.example/lesson.m3u8'}]};
+ let submitted;
+ mocks.request.mockImplementation(async(path,options={})=>{
+  if(path==='/api/categories')return [{_id:'category-one',name:'AI'}];
+  if(path==='/api/admin/video-providers')return {cloudFrontHost:'cdn.example'};
+  if(path==='/api/admin/video-metadata')return {duration:91.25,message:'Duration detected.'};
+  if(path==='/api/admin/courses/course-one' && options.method==='PATCH'){
+   submitted=JSON.parse(options.body);
+   return {...course,title:submitted.title,videos:submitted.videos};
+  }
+  if(path==='/api/admin/courses/course-one')return course;
+  throw new Error(`Unexpected request: ${path}`);
+ });
+ render(<AdminUploadPage/>);
+ const title=await screen.findByDisplayValue('Course');
+ fireEvent.change(title,{target:{value:'Updated course'}});
+ fireEvent.click(screen.getByRole('button',{name:'Save changes'}));
+ await waitFor(()=>expect(submitted).toBeTruthy());
+ expect(mocks.request).toHaveBeenCalledWith('/api/admin/video-metadata',expect.objectContaining({method:'POST'}),expect.anything());
+ expect(submitted.videos[0].duration).toBe(91.25);
+});
 it('saves pending lesson notes from the sticky editor action',async()=>{
  window.history.replaceState({},'', '/admin/upload?courseId=course-one');
  const course={_id:'course-one',title:'Course',slug:'course',description:'Description',category:{_id:'category-one'},status:'published',videos:[{_id:'lesson-one',provider:'aws_cloudfront',title:'Lesson',notes:'Old',duration:60,videoUrl:'https://cdn.example/lesson.m3u8'}]};

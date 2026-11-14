@@ -29,6 +29,7 @@
     "test:phonepe-legacy": "node --test tests/phonepe-multi-instance.test.cjs",
     "audit:phonepe-cleanup": "node scripts/audit-phonepe-cleanup.cjs",
     "migration:flag-underage": "node scripts/flag-underage-accounts.cjs",
+    "migration:video-durations": "node scripts/backfill-video-durations.cjs",
     "cleanup:phonepe": "node scripts/cleanup-phonepe.cjs",
     "test:certification": "node --test tests/certification.test.cjs",
     "test:thumbnail-storage": "node --test tests/thumbnail-cdn.test.cjs",

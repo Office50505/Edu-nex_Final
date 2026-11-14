@@ -1,6 +1,6 @@
-import { inferProvider, videoError, CLOUDFRONT_HOST } from "./videoForm.js";
+import { inferProvider, videoError, importLessons, CLOUDFRONT_HOST } from "./videoForm.js";
 import { VideoPreview } from "./VideoPreview.jsx";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AdminShell, Message } from "./AdminShell.jsx";
 import { adminJson, adminRequest, adminRoutes, errorMessage, formatNumber, requireAdmin, slugify } from "./adminApi.js";
 import "./pdf-extraction.css";
@@ -186,7 +186,28 @@ function lessonEditKey(video, index) {
   return String(video?._id || video?.key || `lesson-${index}`);
 }
 
+function applyMetadataResults(videos, results) {
+  return videos.map((video) => {
+    const checked = results.find(({ lesson }) => (
+      video.key === lesson.key
+      && video.videoUrl === lesson.videoUrl
+      && video.provider === lesson.provider
+    ));
+    if (!checked) return video;
+
+    const canReplaceDuration = !checked.error
+      && String(video.duration) === String(checked.lesson.duration);
+    return {
+      ...video,
+      duration: canReplaceDuration ? String(checked.duration) : video.duration,
+      metadataMessage: checked.message,
+      metadataError: checked.error,
+    };
+  });
+}
+
 export function AdminUploadPage() {
+  const [bulk, setBulk] = useState("");
   const [preview, setPreview] = useState(null);
   const [cloudHost, setCloudHost] = useState(CLOUDFRONT_HOST);
   useEffect(() => { adminJson('/api/admin/video-providers').then(data => setCloudHost(data.cloudFrontHost)).catch(() => {}); }, []);
@@ -194,6 +215,87 @@ export function AdminUploadPage() {
     setPreview(null);
     setHasUnsavedChanges(true);
     setForm(current => { const videos=[...current.videos]; const next=index+offset; if(next<0||next>=videos.length)return current; [videos[index],videos[next]]=[videos[next],videos[index]];return {...current,videos}; });
+  }
+  const checkingRef = useRef(false);
+  const mountedRef = useRef(true);
+  const [checking, setChecking] = useState(false);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
+  }, []);
+
+  async function inspectLessons(lessons) {
+    let cursor = 0;
+    const results = [];
+    async function worker() {
+      while (cursor < lessons.length && mountedRef.current) {
+        const lesson = lessons[cursor++];
+        try {
+          const error = videoError(lesson, cloudHost);
+          if (error) throw new Error(error);
+          const metadata = await adminJson('/api/admin/video-metadata', {
+            method: 'POST',
+            body: JSON.stringify(lesson),
+          }, `Could not detect the duration for ${lesson.title || 'this lesson'}.`);
+          const duration = Number(metadata.duration);
+          if (!Number.isFinite(duration) || duration <= 0) throw new Error('The video provider did not return a valid duration.');
+          results.push({ lesson, duration, message: metadata.message || `Duration detected: ${duration} seconds.`, error: false });
+        } catch (error) {
+          results.push({ lesson, message: error.message || 'Duration could not be detected.', error: true });
+        }
+      }
+    }
+    await Promise.all(Array.from({ length: Math.min(3, lessons.length) }, worker));
+    return results;
+  }
+
+  async function checkLessons(lessons, { announce = true } = {}) {
+    if (checkingRef.current || !lessons.length) return null;
+    checkingRef.current = true;
+    setChecking(true);
+    try {
+      const results = await inspectLessons(lessons);
+      if (!mountedRef.current) return null;
+      const succeeded = results.filter((result) => !result.error).length;
+      const failed = results.length - succeeded;
+      setForm((current) => ({ ...current, videos: applyMetadataResults(current.videos, results) }));
+      if (succeeded) setHasUnsavedChanges(true);
+      if (announce) {
+        setMessageType(failed ? 'error' : 'success');
+        setMessage(failed
+          ? `${succeeded} duration${succeeded === 1 ? '' : 's'} detected; ${failed} lesson${failed === 1 ? '' : 's'} need attention.`
+          : `${succeeded} lesson duration${succeeded === 1 ? '' : 's'} detected.`);
+      }
+      return results;
+    } finally {
+      checkingRef.current = false;
+      if (mountedRef.current) setChecking(false);
+    }
+  }
+
+  function importBulk() {
+    try {
+      const imported = importLessons(bulk);
+      for (const lesson of imported) {
+        const error = videoError(lesson, cloudHost);
+        if (error) throw new Error(`${lesson.title}: ${error}`);
+      }
+      const existing = form.videos.filter((video) => video.title || video.videoUrl);
+      if (existing.length + imported.length > 500) throw new Error('A course can contain at most 500 lessons.');
+      if (imported.some((lesson) => existing.some((video) => video.videoUrl === lesson.videoUrl))) {
+        throw new Error('One of these URLs is already in the course. Remove it from the import first.');
+      }
+      const lessons = imported.map((video, index) => ({ ...makeVideo(index), ...video }));
+      setForm((current) => ({ ...current, videos: [...current.videos.filter((video) => video.title || video.videoUrl), ...lessons] }));
+      setHasUnsavedChanges(true);
+      setBulk('');
+      setMessage('Lessons imported. Checking durations; review the generated titles and preview playback.');
+      setMessageType('success');
+      void checkLessons(lessons);
+    } catch (error) {
+      setMessage(error.message || 'Lessons could not be imported.');
+      setMessageType('error');
+    }
   }
   const [extractingNotesIndex, setExtractingNotesIndex] = useState(null);
   const [notesExtraction, setNotesExtraction] = useState(null);
@@ -379,7 +481,12 @@ export function AdminUploadPage() {
     }
     setForm((current) => ({
       ...current,
-      videos: current.videos.map((video, videoIndex) => videoIndex === index ? { ...video, [field]: value, ...(['videoUrl','provider'].includes(field) ? {duration:'',metadataMessage:'',metadataError:false} : {}) } : video),
+      videos: current.videos.map((video, videoIndex) => videoIndex === index ? {
+        ...video,
+        [field]: value,
+        ...(['videoUrl','provider'].includes(field) ? {duration:'',metadataMessage:'',metadataError:false} : {}),
+        ...(field === 'duration' ? { metadataMessage: value ? 'Duration entered manually.' : '', metadataError: false } : {}),
+      } : video),
     }));
   }
 
@@ -621,6 +728,32 @@ export function AdminUploadPage() {
     }
     const invalid = form.videos.map((video,index)=>({index,error:videoError(video,cloudHost)})).find(item=>item.error);
     if(invalid){setMessageType('error');setMessage(`Lesson ${invalid.index+1}: ${invalid.error}`);return;}
+    let videosForSubmit = form.videos;
+    const missingDurations = form.status === 'published'
+      ? videosForSubmit.filter((video) => !Number.isFinite(Number(video.duration)) || Number(video.duration) <= 0)
+      : [];
+    if (missingDurations.length) {
+      setSubmitting(true);
+      setMessageType('success');
+      setMessage(`Detecting ${missingDurations.length} missing lesson duration${missingDurations.length === 1 ? '' : 's'}…`);
+      const results = await checkLessons(missingDurations, { announce: false });
+      if (!results) {
+        setSubmitting(false);
+        setMessageType('error');
+        setMessage('Duration detection is already running. Wait for it to finish, then save again.');
+        return;
+      }
+      videosForSubmit = applyMetadataResults(form.videos, results);
+      const unresolved = videosForSubmit
+        .map((video, index) => ({ video, index }))
+        .filter(({ video }) => !Number.isFinite(Number(video.duration)) || Number(video.duration) <= 0);
+      if (unresolved.length) {
+        setSubmitting(false);
+        setMessageType('error');
+        setMessage(`Could not publish because lesson ${unresolved.map(({ index }) => index + 1).join(', ')} still ${unresolved.length === 1 ? 'has' : 'have'} no duration. Check the lesson message or enter the duration manually.`);
+        return;
+      }
+    }
     const payload = {
       title: form.title.trim(),
       slug: form.slug.trim(),
@@ -629,7 +762,7 @@ export function AdminUploadPage() {
       status: form.status,
       thumbnailUrl: normalizeThumbnailUrl(form.thumbnailUrl),
       thumbnailVerticalUrl: normalizeThumbnailUrl(form.thumbnailVerticalUrl),
-      videos: form.videos.map((video, index) => ({
+      videos: videosForSubmit.map((video, index) => ({
         _id: video._id, provider: video.provider, youtubeId: video.youtubeId, transcriptUrl: video.transcriptUrl, order: index + 1,
         title: video.title.trim() || `Video ${index + 1}`,
         topic: video.topic.trim(),
@@ -771,6 +904,14 @@ export function AdminUploadPage() {
 
           <div className="course-publish-panel" id="videos">
             <div className="publish-panel-head"><div><h2>Videos</h2><p>Add permanent video references, arrange lessons, and preview before publishing.</p></div><span>{formatNumber(form.videos.length)} {form.videos.length === 1 ? "video" : "videos"}</span></div>
+            <div className="field">
+              <label htmlFor="bulkLessons">Paste lesson URLs</label>
+              <textarea id="bulkLessons" value={bulk} onChange={(event) => setBulk(event.target.value)} placeholder={'https://d2vntxz4x493rp.cloudfront.net/Course/01_Introduction/master.m3u8\nhttps://d2vntxz4x493rp.cloudfront.net/Course/02_Next_Lesson/master.m3u8'} />
+              <button type="button" className="secondary-button" disabled={checking || !bulk.trim()} onClick={importBulk}>Import &amp; detect durations</button>
+            </div>
+            <p>One URL per line. Titles and numbering come from filenames or lesson folders; numbered title + URL imports still work.</p>
+            <button type="button" className="secondary-button" disabled={checking} onClick={() => checkLessons(form.videos)}>{checking ? 'Checking video details…' : 'Detect all durations / retry checks'}</button>
+            <p role="status">{checking ? 'You can keep editing while checks run.' : 'Publishing automatically detects missing durations. Preview lessons separately to verify picture and sound.'}</p>
             {preview ? <VideoPreview key={preview.key} video={preview} onClose={()=>setPreview(null)}/> : null}
             <div className="video-editor">
               {form.videos.map((video, index) => (
@@ -803,6 +944,7 @@ export function AdminUploadPage() {
                     <div className="field"><label htmlFor={`videoProvider${index}`}>Video provider</label><select id={`videoProvider${index}`} value={video.provider} onChange={e=>updateVideo(index,'provider',e.target.value)}><option value="aws_cloudfront">AWS CloudFront</option><option value="bunny_stream">Bunny Stream</option>{video.provider==='youtube'?<option value="youtube">YouTube (existing)</option>:null}</select></div>
                     <div className="field"><label htmlFor={`videoTitle${index}`}>Title</label><input id={`videoTitle${index}`} value={video.title} required onChange={(event) => updateVideo(index, "title", event.target.value)} /></div>
                     <div className="field span-2"><label htmlFor={`videoUrl${index}`}>Permanent video URL</label><input id={`videoUrl${index}`} type="text" required={video.provider!=="youtube"} spellCheck={false} placeholder={video.provider==="aws_cloudfront"?`https://${cloudHost}/Course/Lesson/master.m3u8`:"https://player.mediadelivery.net/embed/..."} value={video.videoUrl} onChange={(event) => updateVideo(index, "videoUrl", event.target.value)} /></div>
+                    <div className="field"><label htmlFor={`videoDuration${index}`}>Duration (seconds)</label><input id={`videoDuration${index}`} type="number" min="0.001" step="0.001" inputMode="decimal" placeholder="Detected automatically" value={video.duration} onChange={(event) => updateVideo(index, "duration", event.target.value)} /></div>
                   </div>
                   <div className="field lesson-notes-field">
                     <div className="lesson-notes-heading">
@@ -822,7 +964,7 @@ export function AdminUploadPage() {
                       {lessonNotesStatus[lessonEditKey(video, index)] ? <span className={`lesson-notes-save-status is-${lessonNotesStatus[lessonEditKey(video, index)].type}`} role={lessonNotesStatus[lessonEditKey(video, index)].type === "error" ? "alert" : "status"}>{lessonNotesStatus[lessonEditKey(video, index)].message}</span> : null}
                     </div>
                   </div>
-                  <p role="status">{video.metadataMessage || 'Uses course thumbnails and notes unless you add lesson-specific overrides. Duration can be detected automatically.'}</p>
+                  <p role={video.metadataError ? 'alert' : 'status'}>{video.metadataMessage || 'Uses course thumbnails and notes unless you add lesson-specific overrides. Duration can be detected automatically.'}</p>
                   <details className="lesson-advanced"><summary>Advanced · optional lesson overrides</summary><div className="form-grid">
                     <div className="field"><label htmlFor={`videoNotesUrl${index}`}>Lesson notes URL</label><input id={`videoNotesUrl${index}`} type="url" placeholder="https://..." value={video.notesUrl} onChange={(event) => updateVideo(index, "notesUrl", event.target.value)} /></div>
                     <div className="field"><label htmlFor={`videoTopic${index}`}>Topic</label><input id={`videoTopic${index}`} maxLength={80} placeholder="e.g. Prompt Engineering" value={video.topic} onChange={(event) => updateVideo(index, "topic", event.target.value)} /></div>

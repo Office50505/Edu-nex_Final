@@ -1063,6 +1063,16 @@ function sanitizeCourseVideos(rawVideos, existingVideos = []) {
   });
 }
 
+function assertPublishedVideoDurations(status, videos) {
+  if (status !== 'published') return;
+  const missingIndex = (Array.isArray(videos) ? videos : []).findIndex((video) => (
+    !Number.isFinite(Number(video?.duration)) || Number(video.duration) <= 0
+  ));
+  if (missingIndex >= 0) {
+    throw new Error(`Lesson ${missingIndex + 1}: Duration must be detected or entered before publishing.`);
+  }
+}
+
 function applyCourseThumbnailToVideos(videos, courseThumbnail, courseThumbnailUrl, courseThumbnailVerticalUrl) {
   const sharedThumbnailUrl = sanitizeOptionalUrl(courseThumbnailUrl);
   const sharedThumbnailVerticalUrl = sanitizeOptionalUrl(courseThumbnailVerticalUrl);
@@ -4094,6 +4104,7 @@ app.post('/api/courses', protectAdmin, async (req, res) => {
     }
 
     const sanitizedVideos = sanitizeCourseVideos(req.body.videos);
+    assertPublishedVideoDurations(req.body.status || 'draft', sanitizedVideos);
 
     if (!sanitizedVideos) {
       return res.status(400).json({ error: 'Every lesson must include a valid permanent video reference' });
@@ -4358,6 +4369,11 @@ app.patch('/api/admin/courses/:id', protectAdmin, async (req, res) => {
         Object.prototype.hasOwnProperty.call(updates, 'thumbnailVerticalUrl') ? updates.thumbnailVerticalUrl : existingCourse.thumbnailVerticalUrl
       );
     }
+
+    assertPublishedVideoDurations(
+      Object.prototype.hasOwnProperty.call(updates, 'status') ? updates.status : existingCourse.status,
+      updates.videos || existingCourse.videos
+    );
 
     const course = await Course.findById(req.params.id);
     if (!course) return res.status(404).json({ error: 'Course not found' });
