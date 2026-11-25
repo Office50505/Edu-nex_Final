@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D3B4A100C0DE202600000001 /* SkillomateNativeTabBar.m in Sources */ = {isa = PBXBuildFile; fileRef = D3B4A100C0DE202600000002 /* SkillomateNativeTabBar.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
 		4D758D511ED6FEC1E49FD7EA /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 9B39A0DF88D7D7A6A6280C74 /* PrivacyInfo.xcprivacy */; };
@@ -18,6 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		D3B4A100C0DE202600000002 /* SkillomateNativeTabBar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = SkillomateNativeTabBar.m; path = ProtectedVideo/SkillomateNativeTabBar.m; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Skillomate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Skillomate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = ProtectedVideo/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ProtectedVideo/Info.plist; sourceTree = "<group>"; };
@@ -51,6 +53,7 @@
 			children = (
 				BB2F792B24A3F905000567C9 /* Supporting */,
 				F11748412D0307B40044C1D9 /* AppDelegate.swift */,
+				D3B4A100C0DE202600000002 /* SkillomateNativeTabBar.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
@@ -347,6 +350,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
+				D3B4A100C0DE202600000001 /* SkillomateNativeTabBar.m in Sources */,
 				B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */,
 				777F3375F4C648A99188E234 /* noop-file.swift in Sources */,
 			);

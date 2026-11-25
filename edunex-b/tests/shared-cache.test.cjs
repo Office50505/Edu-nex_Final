@@ -109,6 +109,7 @@ async function withCacheService({ nodeEnv, redisUrl, prefix = 'skillomate:test',
 function loadPublicReadHandlers(service, sourceRows) {
   const handlers = {};
   let sourceReads = 0;
+  let selectedCourseProjection = '';
   function Category(body) {
     this.save = async () => ({ _id: 'new-category', ...body });
   }
@@ -144,7 +145,7 @@ function loadPublicReadHandlers(service, sourceRows) {
     serverSource.indexOf("app.post('/api/courses',")
   );
   const courseQuery = {
-    select() { return this; },
+    select(projection) { selectedCourseProjection = projection; return this; },
     populate() { return this; },
     sort() { return this; },
     limit() { return this; },
@@ -166,7 +167,7 @@ function loadPublicReadHandlers(service, sourceRows) {
     isLocalThumbnailUrl: () => false,
   });
 
-  return { handlers, sourceReads: () => sourceReads };
+  return { handlers, selectedCourseProjection: () => selectedCourseProjection, sourceReads: () => sourceReads };
 }
 
 function responseRecorder() {
@@ -227,6 +228,28 @@ test('Phase 3 shared cache policy', async (t) => {
       assert.equal(hit.headers['X-Public-Read-Cache'], 'hit');
       assert.equal(hit.body[0].name, 'Marketing');
       assert.equal(sourceReads(), 1, 'the Redis hit must not query MongoDB again');
+    });
+  });
+
+  await t.test('mobile summary catalogue omits lesson previews and selects only lesson IDs for counts', async () => {
+    const fake = createFakeRedis();
+    await withCacheService({ nodeEnv: 'development', redisUrl: undefined, fake }, async (service) => {
+      const rows = {
+        categories: [],
+        courses: [{
+          _id: 'course-1',
+          title: 'Fast catalogue',
+          videos: [{ _id: 'lesson-1', title: 'Large preview' }, { _id: 'lesson-2', title: 'Large preview 2' }],
+        }],
+      };
+      const { handlers, selectedCourseProjection } = loadPublicReadHandlers(service, rows);
+      const response = responseRecorder();
+      await handlers.courses({ query: { summary: '1' } }, response);
+
+      assert.equal(response.body[0].videos, undefined);
+      assert.equal(response.body[0].lessonCount, 2);
+      assert.match(selectedCourseProjection(), /videos\._id/);
+      assert.doesNotMatch(selectedCourseProjection(), /videos\.title/);
     });
   });
 

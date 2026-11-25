@@ -3543,15 +3543,19 @@ app.get('/api/courses/checkout-summary', async (req, res) => {
 
 app.get('/api/courses', async (req, res) => {
   try {
-    const cacheKey = 'courses:published:list:v11';
+    const summaryOnly = req.query?.summary === '1';
+    const cacheKey = `courses:published:list:v12:${summaryOnly ? 'summary' : 'full'}`;
     const cached = await getCachedPublicRead(cacheKey);
     if (cached) {
       setPublicReadCacheHeaders(res, true);
       return res.json(cached);
     }
 
+    const courseProjection = summaryOnly
+      ? 'title slug description category thumbnail.mimeType thumbnailHorizontal.mimeType thumbnailVertical.mimeType thumbnailUrl thumbnailVerticalUrl averageRating totalWishlisted totalStarted totalCompleted completionRate publishedAt createdAt videos._id'
+      : 'title slug description category thumbnail.mimeType thumbnailHorizontal.mimeType thumbnailVertical.mimeType thumbnailUrl thumbnailVerticalUrl averageRating totalWishlisted totalStarted totalCompleted completionRate publishedAt createdAt videos._id videos.title videos.thumbnail.mimeType videos.thumbnailUrl videos.thumbnailVerticalUrl';
     const courseDocuments = await Course.find({ status: 'published' })
-      .select('title slug description category thumbnail.mimeType thumbnailHorizontal.mimeType thumbnailVertical.mimeType thumbnailUrl thumbnailVerticalUrl averageRating totalWishlisted totalStarted totalCompleted completionRate publishedAt createdAt videos._id videos.title videos.thumbnail.mimeType videos.thumbnailUrl videos.thumbnailVerticalUrl')
+      .select(courseProjection)
       .populate('category', 'name slug isActive')
       .sort({ publishedAt: -1, createdAt: -1 })
       .limit(100)
@@ -3585,7 +3589,14 @@ app.get('/api/courses', async (req, res) => {
       delete course.thumbnail;
       delete course.thumbnailHorizontal;
       delete course.thumbnailVertical;
-      return { ...course, thumbnailUrl, thumbnailVerticalUrl, videos: previewVideos, lessonCount, videoCount: lessonCount };
+      return {
+        ...course,
+        thumbnailUrl,
+        thumbnailVerticalUrl,
+        ...(summaryOnly ? {} : { videos: previewVideos }),
+        lessonCount,
+        videoCount: lessonCount,
+      };
     });
 
     await setCachedPublicRead(cacheKey, courses);

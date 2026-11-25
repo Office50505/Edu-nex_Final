@@ -33,10 +33,13 @@ const { deleteProfileImage, uploadProfileImage } = require('../services/profileI
 const { createDownloadGrantService, normalizeGuid } = require('../services/downloadGrantService');
 const { pipeDownloadBody } = require('../services/downloadStream');
 const { sensitiveRateLimit } = require('../middleware/sensitiveRateLimit');
+const { getCacheBackend, getJsonCache, setJsonCache } = require('../services/cacheService');
 
 const router = express.Router();
 const { handleTutorChat } = require('./ai');
 const downloadGrants = createDownloadGrantService();
+const PUBLIC_READ_CACHE_NAMESPACE = 'public-read';
+const TOP_COURSES_CACHE_TTL_SECONDS = 60;
 
 function asyncHandler(handler) {
   return async (req, res) => {
@@ -215,7 +218,16 @@ router.get(
   '/courses/top',
   asyncHandler(async (req, res) => {
     const limit = Math.min(Math.max(Number(req.query.limit || 6), 1), 24);
-    res.json(await topCourses(limit));
+    const cacheKey = `courses:top:v2:${limit}`;
+    const cached = await getJsonCache(PUBLIC_READ_CACHE_NAMESPACE, cacheKey);
+    res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+    res.set('X-Public-Read-Cache', cached ? 'hit' : 'miss');
+    res.set('X-Cache-Backend', getCacheBackend());
+    if (cached) return res.json(cached);
+
+    const courses = await topCourses(limit);
+    await setJsonCache(PUBLIC_READ_CACHE_NAMESPACE, cacheKey, courses, TOP_COURSES_CACHE_TTL_SECONDS);
+    res.json(courses);
   })
 );
 

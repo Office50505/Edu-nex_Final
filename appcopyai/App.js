@@ -12,12 +12,47 @@ import {
 import { hasActivePremiumEntitlement } from "./services/subscriptions";
 import { useAppleSubscriptions } from "./services/useAppleSubscriptions";
 import { useGooglePlaySubscriptions } from "./services/useGooglePlaySubscriptions";
+import { LiquidTabCapsule, LensTabVisual } from "./LiquidNavLens";
+import { NativeBottomNav, hasNativeLiquidTabs } from "./NativeBottomNav";
+const { createCapsuleMotion, resistNavSlot, releaseNavSlot } = require("./capsuleMotion");
+const {
+  clampBackSwipe,
+  shouldCaptureBackSwipe,
+  shouldCompleteBackSwipe,
+  resolveRouteOrigin,
+} = require("./routeMotion");
+import {
+  ALL_COURSES_CACHE_KEY,
+  TOP_COURSES_CACHE_KEY,
+  peekCatalogCache,
+  readCatalogCache,
+  requestCatalogOnce,
+  writeCatalogCache,
+} from "./catalogCache";
+const { PRODUCTION_CATALOG_FALLBACK } = require("./productionCatalogFallback");
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useWindowDimensions } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { BlurView } from "expo-blur";
+import PagerView from "react-native-pager-view";
+import Reanimated, {
+  cancelAnimation as cancelUiAnimation,
+  useAnimatedStyle,
+  useEvent,
+  useHandler,
+  useReducedMotion,
+  useSharedValue,
+  withSpring as withUiSpring,
+  withTiming as withUiTiming,
+} from "react-native-reanimated";
+import {
+  SafeAreaProvider,
+  SafeAreaView as SafeAreaContextView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import {
   ActivityIndicator,
   AccessibilityInfo,
@@ -38,7 +73,6 @@ import {
   Platform,
   Pressable,
   RefreshControl,
-  SafeAreaView,
   ScrollView,
   Share,
   StatusBar,
@@ -66,6 +100,45 @@ import {
   resolveLessonNumbers,
   sortLessons,
 } from "./homeContentConfig";
+
+const {
+  clampRootTabProgress,
+  isPagerProgressSampleValid,
+  isPagerSelectionValid,
+  mapNavSlotToPagerProgress,
+  mapPagerProgressToNavSlot,
+} = require("./rootTabMotion");
+
+const AnimatedPagerView = Reanimated.createAnimatedComponent(PagerView);
+
+function SafeAreaView({ edges = ["top", "left", "right"], style, ...props }) {
+  const insets = useSafeAreaInsets();
+  const screenHeight = Dimensions.get("window").height;
+  const needsTopInset = Platform.OS === "ios" && edges.includes("top");
+  const minimumPortraitTopInset = screenHeight >= 700 ? 50 : 0;
+  const topCorrection = needsTopInset
+    ? Math.max(0, minimumPortraitTopInset - Math.max(0, Number(insets.top) || 0))
+    : 0;
+  return (
+    <SafeAreaContextView
+      edges={edges}
+      style={[style, topCorrection > 0 && { paddingTop: topCorrection }]}
+      {...props}
+    />
+  );
+}
+
+function useNativePagerScrollHandler(handlers, dependencies = []) {
+  const { context, doDependenciesDiffer } = useHandler(handlers, dependencies);
+  return useEvent(
+    event => {
+      "worklet";
+      if (event.eventName?.endsWith("onPageScroll")) handlers.onPageScroll?.(event, context);
+    },
+    ["onPageScroll"],
+    doDependenciesDiffer,
+  );
+}
 
 const PLAYER_ORIGIN = "https://protected-video.local";
 
@@ -237,7 +310,7 @@ const DEMO_AVATARS = Array.from({ length: 15 }, (_, index) => ({
   id: `a${index + 1}`,
   label: `Profile avatar ${index + 1}`,
 }));
-const HOME_FALLBACK_COURSES = [];
+const HOME_FALLBACK_COURSES = PRODUCTION_CATALOG_FALLBACK;
 const ANDROID_CLIPPED_SUBVIEWS = Platform.OS === "android";
 const ROOT_TAB_SWIPE_ENABLED = true;
 const ROOT_TAB_CHROME_ENABLED = Platform.OS !== "android";
@@ -277,7 +350,7 @@ function getGoogleDriveFileId(url) {
   return pathMatch?.[1] || queryMatch?.[1] || "";
 }
 
-function normalizeThumbnailUrl(url, width = 1600) {
+function normalizeThumbnailUrl(url, width = 720) {
   const value = String(url || "").trim();
   if (!value) return "";
 
@@ -287,17 +360,23 @@ function normalizeThumbnailUrl(url, width = 1600) {
   return `https://drive.google.com/thumbnail?id=${encodeURIComponent(driveFileId)}&sz=w${width}`;
 }
 
-function getThumbnailUrlCandidates(url, width = 1600) {
+function getThumbnailUrlCandidates(url, width = 720) {
   const rawUrl = String(url || "").trim();
   if (!rawUrl) return [];
 
   const normalizedUrl = normalizeThumbnailUrl(rawUrl, width);
-  const candidates = [normalizedUrl];
   const imageHost = getImageHost(normalizedUrl).toLowerCase();
   const apiHost = getImageHost(API_BASE).toLowerCase();
+  const candidates = [];
 
   if (/^https?:\/\//i.test(normalizedUrl) && API_BASE && imageHost && imageHost !== apiHost) {
-    candidates.push(`${API_BASE}/api/image-proxy?url=${encodeURIComponent(normalizedUrl)}`);
+    const optimizedProxy = `${API_BASE}/api/image-proxy?url=${encodeURIComponent(normalizedUrl)}&w=${width}&q=72`;
+    const alreadyOptimizedHost = /(?:^|\.)(?:b-cdn\.net|cloudfront\.net|skillomate\.in|drive\.google\.com)$/.test(imageHost);
+    if (!alreadyOptimizedHost) candidates.push(optimizedProxy);
+    candidates.push(normalizedUrl);
+    if (alreadyOptimizedHost) candidates.push(optimizedProxy);
+  } else {
+    candidates.push(normalizedUrl);
   }
   if (rawUrl !== normalizedUrl) candidates.push(rawUrl);
 
@@ -319,10 +398,6 @@ function traceImageFailure({ screen, courseId, imageUrl, fallbackUsed }) {
 
 function PosterImage({ course, index = 0, vertical = true, style }) {
   const fallbackTitle = course?.title || "Skillomate";
-  const localSource = (vertical ? course?.thumbnailVerticalAsset : course?.thumbnailAsset)
-    || course?.thumbnailAsset
-    || null;
-  const imageCourse = course ? { ...course, thumbnailAsset: localSource } : course;
 
   return (
     <View style={[StyleSheet.absoluteFill, style]}>
@@ -330,7 +405,7 @@ function PosterImage({ course, index = 0, vertical = true, style }) {
         <Ionicons name="play-circle-outline" size={28} color={C.primary} />
         <Text style={s.artworkFallbackText} numberOfLines={2}>{fallbackTitle}</Text>
       </View>
-      {imageCourse ? <CourseThumbnailImage course={imageCourse} preferVertical={vertical} /> : null}
+      {course ? <CourseThumbnailImage course={course} preferVertical={vertical} /> : null}
     </View>
   );
 }
@@ -413,7 +488,7 @@ function HorizontalRail({ data, renderItem, contentContainerStyle, keyExtractor 
       maxToRenderPerBatch={4}
       windowSize={5}
       updateCellsBatchingPeriod={40}
-      removeClippedSubviews={ANDROID_CLIPPED_SUBVIEWS}
+      removeClippedSubviews={false}
       keyboardShouldPersistTaps="handled"
       directionalLockEnabled
       decelerationRate="fast"
@@ -481,7 +556,7 @@ const HOLD_SPEED_DELAY_MS = 140;
 const HOLD_SPEED_SYNC_MS = 120;
 const PLAYER_CHROME_FADE_IN_MS = 170;
 const PLAYER_CHROME_FADE_OUT_MS = 260;
-const PLAYER_CHROME_AUTO_HIDE_MS = 2000;
+const PLAYER_CHROME_AUTO_HIDE_MS = 2800;
 const AUTO_QUALITY_LABEL = "Auto";
 const FALLBACK_QUALITY_OPTIONS = ["144p", "240p", "360p", "480p", "720p", "1080p"];
 const VIDEO_COMPLETE_THRESHOLD = 0.9;
@@ -797,6 +872,43 @@ async function fetchApiJson(path, fallback = null, signal, headers = {}) {
   }
 }
 
+function courseArray(data) {
+  return (Array.isArray(data) ? data : data?.courses || []).filter(course => course && !course.isMock);
+}
+
+async function fetchCourseCatalog(cacheKey, path, options = {}) {
+  const cached = peekCatalogCache(cacheKey);
+  const maxCacheAgeMs = Number(options.maxCacheAgeMs || 0);
+  if (cached && maxCacheAgeMs > 0 && Date.now() - cached.savedAt <= maxCacheAgeMs) {
+    prefetchCourseThumbnails(cached.courses);
+    return cached.courses;
+  }
+  return requestCatalogOnce(cacheKey, async () => {
+    const cacheHeaders = { "Cache-Control": "no-cache", Pragma: "no-cache" };
+    let courses = [];
+    try {
+      courses = courseArray(await fetchApiJson(path, [], undefined, cacheHeaders));
+      if (!courses.length) {
+        const separator = path.includes("?") ? "&" : "?";
+        courses = courseArray(await fetchApiJson(
+          `${path}${separator}refresh=${Date.now()}`,
+          [],
+          undefined,
+          cacheHeaders,
+        ));
+      }
+    } catch (error) {
+      if (cached?.courses?.length) return cached.courses;
+      return PRODUCTION_CATALOG_FALLBACK;
+    }
+    if (!courses.length && cached?.courses?.length) return cached.courses;
+    if (!courses.length) return PRODUCTION_CATALOG_FALLBACK;
+    await writeCatalogCache(AsyncStorage, cacheKey, courses);
+    prefetchCourseThumbnails(courses);
+    return courses;
+  });
+}
+
 async function postApiJson(paths, body) {
   const candidates = Array.isArray(paths) ? paths : [paths];
   let last = null;
@@ -976,7 +1088,18 @@ const PLAYER_CSS = `
   .shield{position:absolute;inset:0;z-index:2;background:transparent}
 `;
 const EMBED_PLAYER_POLL_MS = Platform.OS === "android" ? 1000 : 500;
-const VIDEO_TIME_UPDATE_INTERVAL = Platform.OS === "android" ? 1.25 : 1;
+const VIDEO_TIME_UPDATE_INTERVAL = 0.5;
+const NATIVE_VIDEO_BUFFER_OPTIONS = Platform.OS === "android"
+  ? {
+      preferredForwardBufferDuration: 45,
+      minBufferForPlayback: 2.5,
+      maxBufferBytes: 0,
+      prioritizeTimeOverSizeThreshold: true,
+    }
+  : {
+      preferredForwardBufferDuration: 45,
+      waitsToMinimizeStalling: true,
+    };
 
 function buildYoutubePlayerHtml(videoId, origin) {
   return `<!DOCTYPE html><html><head>
@@ -1435,8 +1558,12 @@ function sourceUri(source) {
 function videoSourceFromUri(uri) {
   const value = String(uri || "").trim();
   if (!value) return null;
-  const source = { uri: value };
-  if (/\.m3u8(?:[?#]|$)/i.test(value)) source.contentType = "hls";
+  const isHls = /\.m3u8(?:[?#]|$)/i.test(value);
+  const source = {
+    uri: value,
+    useCaching: /(?:^|\.)b-cdn\.net(?:\/|$)/i.test(value) && (Platform.OS === "android" || !isHls),
+  };
+  if (isHls) source.contentType = "hls";
   return source;
 }
 
@@ -1743,6 +1870,61 @@ function isPlayableVideo(video) {
   return !!(video?.playbackRequired || video?.hlsUrl || video?.playlistUrl || video?.streamUrl || video?.embedUrl || video?.videoUrl || video?.bunnyGuid || video?.bunnyVideoId || video?.youtubeId || video?.videoId);
 }
 
+const COURSE_PLAYLIST_CACHE_TTL_MS = 10 * 60 * 1000;
+const COURSE_PLAYLIST_CACHE_MAX_ENTRIES = 24;
+const coursePlaylistCache = new Map();
+const coursePlaylistRequests = new Map();
+
+function hasPlayableCourseVideos(course) {
+  const videos = Array.isArray(course?.videos) ? course.videos : [];
+  return videos.length > 0 && videos.every(isPlayableVideo);
+}
+
+function coursePlaylistCacheKey(user, courseId) {
+  return `${user?._id || user?.id || "user"}:${user?.sessionId || "session"}:${courseId || "course"}`;
+}
+
+function readCoursePlaylistCache(user, courseId, now = Date.now()) {
+  const key = coursePlaylistCacheKey(user, courseId);
+  const cached = coursePlaylistCache.get(key);
+  if (!cached || now - cached.savedAt > COURSE_PLAYLIST_CACHE_TTL_MS) {
+    if (cached) coursePlaylistCache.delete(key);
+    return null;
+  }
+  coursePlaylistCache.delete(key);
+  coursePlaylistCache.set(key, cached);
+  return cached.videos;
+}
+
+function writeCoursePlaylistCache(user, courseId, videos, now = Date.now()) {
+  if (!courseId || !Array.isArray(videos) || !videos.length) return videos || [];
+  const key = coursePlaylistCacheKey(user, courseId);
+  coursePlaylistCache.delete(key);
+  coursePlaylistCache.set(key, { videos, savedAt: now });
+  while (coursePlaylistCache.size > COURSE_PLAYLIST_CACHE_MAX_ENTRIES) {
+    coursePlaylistCache.delete(coursePlaylistCache.keys().next().value);
+  }
+  return videos;
+}
+
+async function requestCoursePlaylist(session, user, courseId, options = {}) {
+  if (!courseId) throw new Error("Course unavailable.");
+  const key = coursePlaylistCacheKey(user, courseId);
+  if (!options.forceRefresh) {
+    const cached = readCoursePlaylistCache(user, courseId);
+    if (cached) return cached;
+    const pending = coursePlaylistRequests.get(key);
+    if (pending) return pending;
+  }
+  const request = session.requestJson(`/api/courses/${encodeURIComponent(courseId)}/videos`)
+    .then(data => writeCoursePlaylistCache(user, courseId, Array.isArray(data?.videos) ? data.videos : []))
+    .finally(() => {
+      if (coursePlaylistRequests.get(key) === request) coursePlaylistRequests.delete(key);
+    });
+  coursePlaylistRequests.set(key, request);
+  return request;
+}
+
 function getBunnyGuid(video) {
   if (video?.bunnyGuid) return String(video.bunnyGuid);
   if (video?.bunnyVideoId) return String(video.bunnyVideoId);
@@ -1847,6 +2029,20 @@ function getLessonThumbnailUrl(lesson, course) {
   return getCourseThumbnailUri(course, false) || "";
 }
 
+function prefetchHomeCourseThumbnails(course, limit = 8) {
+  if (!course) return;
+  prefetchCourseThumbnails([course], 1);
+  const lessonUrls = (Array.isArray(course.videos) ? course.videos : [])
+    .slice(0, limit)
+    .map(lesson => getLessonThumbnailUrl(lesson, course))
+    .filter(Boolean);
+  for (const url of lessonUrls) {
+    if (prefetchedThumbnailUrls.has(url)) continue;
+    prefetchedThumbnailUrls.add(url);
+    Image.prefetch(url).catch(() => prefetchedThumbnailUrls.delete(url));
+  }
+}
+
 function getDownloadFailureMessage(error, status) {
   const statusCode = Number(status || 0);
   const message = String(error?.message || error || "").toLowerCase();
@@ -1916,15 +2112,15 @@ function progressFromLearningStatus(status, previous = {}) {
   };
 }
 
-function getCourseThumbnailUri(course, preferVertical = false) {
-  return getCourseThumbnailUris(course, preferVertical)[0] || null;
+function getCourseThumbnailUri(course, preferVertical = false, width = 720) {
+  return getCourseThumbnailUris(course, preferVertical, width)[0] || null;
 }
 
-function getCourseThumbnailUris(course, preferVertical = false) {
+function getCourseThumbnailUris(course, preferVertical = false, width = 720) {
   const urls = preferVertical
     ? [course?.thumbnailVerticalUrl, course?.thumbnailUrl]
     : [course?.thumbnailUrl, course?.thumbnailVerticalUrl];
-  return [...new Set(urls.flatMap(url => getThumbnailUrlCandidates(url)))];
+  return [...new Set(urls.flatMap(url => getThumbnailUrlCandidates(url, width)))];
 }
 
 function getCourseThumbnailAsset(course, preferVertical = false) {
@@ -1937,8 +2133,39 @@ function getCourseThumbnailAsset(course, preferVertical = false) {
 
 function getCourseThumbnailSource(course, preferVertical = false, uriIndex = 0) {
   const uris = getCourseThumbnailUris(course, preferVertical);
-  if (uris[uriIndex]) return { uri: uris[uriIndex] };
+  if (uris[uriIndex]) return { uri: uris[uriIndex], cache: "force-cache" };
   return getCourseThumbnailAsset(course, preferVertical);
+}
+
+const prefetchedThumbnailUrls = new Set();
+const loadedThumbnailUrls = new Set();
+const resolvedCourseThumbnailUrls = new Map();
+
+function courseThumbnailCacheKey(course, preferVertical) {
+  const courseId = course?._id || course?.id || course?.slug || course?.title || "course";
+  return `${courseId}:${preferVertical ? "vertical" : "landscape"}`;
+}
+
+function thumbnailCandidateIndex(candidates, rememberedUrl) {
+  if (!rememberedUrl) return 0;
+  const rememberedIndex = candidates.indexOf(rememberedUrl);
+  return rememberedIndex >= 0 ? rememberedIndex : 0;
+}
+
+function prefetchCourseThumbnails(courses, limit = 8) {
+  const urls = (Array.isArray(courses) ? courses : [])
+    .slice(0, limit)
+    .map(course => getCourseThumbnailUri(course, false, 720))
+    .filter(Boolean);
+  for (const url of urls) {
+    if (prefetchedThumbnailUrls.has(url)) continue;
+    prefetchedThumbnailUrls.add(url);
+    Image.prefetch(url).catch(() => prefetchedThumbnailUrls.delete(url));
+  }
+  if (prefetchedThumbnailUrls.size > 128) {
+    const oldest = prefetchedThumbnailUrls.values().next().value;
+    prefetchedThumbnailUrls.delete(oldest);
+  }
 }
 
 // ── Shared Components ─────────────────────────────────────────────────────────
@@ -1952,31 +2179,49 @@ function ThumbnailBrandBadge({ large = false }) {
   );
 }
 
-function CourseThumbnailImage({ course, preferVertical = false }) {
-  const uris = useMemo(
-    () => getCourseThumbnailUris(course, preferVertical),
-    [course?._id, course?.thumbnailUrl, course?.thumbnailVerticalUrl, preferVertical]
-  );
+function CourseThumbnailImageComponent({ course, preferVertical = false }) {
+  const thumbnailKey = courseThumbnailCacheKey(course, preferVertical);
+  const uris = useMemo(() => {
+    const candidates = getCourseThumbnailUris(course, preferVertical, 720);
+    const rememberedUrl = resolvedCourseThumbnailUrls.get(thumbnailKey);
+    return rememberedUrl && !candidates.includes(rememberedUrl)
+      ? [rememberedUrl, ...candidates]
+      : candidates;
+  }, [course?._id, course?.id, course?.slug, course?.title, course?.thumbnailUrl, course?.thumbnailVerticalUrl, preferVertical, thumbnailKey]);
   const asset = getCourseThumbnailAsset(course, preferVertical);
-  const [uriIndex, setUriIndex] = useState(0);
+  const [uriIndex, setUriIndex] = useState(() => (
+    thumbnailCandidateIndex(uris, resolvedCourseThumbnailUrls.get(thumbnailKey))
+  ));
 
   useEffect(() => {
-    setUriIndex(0);
-  }, [uris.join("|"), course?._id, preferVertical]);
+    setUriIndex(thumbnailCandidateIndex(uris, resolvedCourseThumbnailUrls.get(thumbnailKey)));
+  }, [uris.join("|"), thumbnailKey]);
 
-  const source = uris[uriIndex] ? { uri: uris[uriIndex] } : asset;
+  const resolvedUrl = uris[uriIndex] || "";
+  const source = useMemo(
+    () => resolvedUrl ? { uri: resolvedUrl, cache: "force-cache" } : asset,
+    [asset, resolvedUrl]
+  );
   if (!source) return null;
 
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill}>
       <Image
-        key={uris[uriIndex] || course?._id || "asset"}
         source={source}
         style={StyleSheet.absoluteFill}
         resizeMode="cover"
+        fadeDuration={0}
+        progressiveRenderingEnabled
+        resizeMethod="resize"
         accessibilityIgnoresInvertColors
+        onLoad={() => {
+          if (!resolvedUrl) return;
+          loadedThumbnailUrls.add(resolvedUrl);
+          resolvedCourseThumbnailUrls.set(thumbnailKey, resolvedUrl);
+        }}
         onError={() => {
-          const failedUrl = uris[uriIndex];
+          const failedUrl = resolvedUrl;
+          if (failedUrl) loadedThumbnailUrls.delete(failedUrl);
           traceImageFailure({
             screen: preferVertical ? "CourseThumbnail.vertical" : "CourseThumbnail.landscape",
             courseId: course?._id || course?.id,
@@ -1991,25 +2236,45 @@ function CourseThumbnailImage({ course, preferVertical = false }) {
   );
 }
 
-function RemoteThumbnailImage({ imageUrl, screen, courseId, borderRadius = 8 }) {
-  const candidates = useMemo(() => getThumbnailUrlCandidates(imageUrl, 1000), [imageUrl]);
-  const [candidateIndex, setCandidateIndex] = useState(0);
+const CourseThumbnailImage = React.memo(CourseThumbnailImageComponent, (previous, next) => (
+  previous.preferVertical === next.preferVertical
+  && previous.course?._id === next.course?._id
+  && previous.course?.id === next.course?.id
+  && previous.course?.thumbnailUrl === next.course?.thumbnailUrl
+  && previous.course?.thumbnailVerticalUrl === next.course?.thumbnailVerticalUrl
+  && previous.course?.thumbnailAsset === next.course?.thumbnailAsset
+  && previous.course?.thumbnailVerticalAsset === next.course?.thumbnailVerticalAsset
+));
+
+function RemoteThumbnailImageComponent({ imageUrl, screen, courseId, borderRadius = 8 }) {
+  const candidates = useMemo(() => getThumbnailUrlCandidates(imageUrl, 720), [imageUrl]);
+  const [candidateIndex, setCandidateIndex] = useState(() => (
+    thumbnailCandidateIndex(candidates, candidates.find(url => loadedThumbnailUrls.has(url)))
+  ));
 
   useEffect(() => {
-    setCandidateIndex(0);
+    setCandidateIndex(thumbnailCandidateIndex(candidates, candidates.find(url => loadedThumbnailUrls.has(url))));
   }, [candidates.join("|")]);
 
   const resolvedUrl = candidates[candidateIndex];
-  if (!resolvedUrl) return null;
+  const source = useMemo(
+    () => resolvedUrl ? { uri: resolvedUrl, cache: "force-cache" } : null,
+    [resolvedUrl]
+  );
+  if (!source) return null;
 
   return (
     <Image
-      key={resolvedUrl}
-      source={{ uri: resolvedUrl }}
+      source={source}
       style={[StyleSheet.absoluteFill, { borderRadius }]}
       resizeMode="cover"
+      fadeDuration={0}
+      progressiveRenderingEnabled
+      resizeMethod="resize"
       accessibilityIgnoresInvertColors
+      onLoad={() => loadedThumbnailUrls.add(resolvedUrl)}
       onError={() => {
+        loadedThumbnailUrls.delete(resolvedUrl);
         traceImageFailure({
           screen,
           courseId,
@@ -2021,6 +2286,13 @@ function RemoteThumbnailImage({ imageUrl, screen, courseId, borderRadius = 8 }) 
     />
   );
 }
+
+const RemoteThumbnailImage = React.memo(RemoteThumbnailImageComponent, (previous, next) => (
+  previous.imageUrl === next.imageUrl
+  && previous.screen === next.screen
+  && previous.courseId === next.courseId
+  && previous.borderRadius === next.borderRadius
+));
 
 function SkillomateLogo({ size = "md", mode, style }) {
   const logoSize = {
@@ -2900,6 +3172,180 @@ function NavIcon({ icon, color, size = 20 }) {
   return <Ionicons name={`${icon}-outline`} size={size} color={color} />;
 }
 
+function GenieBackRoute({
+  children,
+  onBack,
+  gestureEnabled = true,
+  origin = null,
+  onTouchStartCapture,
+  motion = "default",
+  transparentHost = false,
+  animateOnMount = true,
+}) {
+  const { width, height } = useWindowDimensions();
+  const reduceMotion = useReducedMotion();
+  const originSnapshot = useRef(origin).current;
+  const routeOrigin = resolveRouteOrigin(originSnapshot, width, height);
+  const reveal = useRef(new Animated.Value(reduceMotion || !animateOnMount ? 1 : 0)).current;
+  const swipeX = useRef(new Animated.Value(0)).current;
+  const closingRef = useRef(false);
+  const mountedRef = useRef(true);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    closingRef.current = false;
+    swipeX.setValue(0);
+    reveal.stopAnimation();
+    if (reduceMotion || !animateOnMount) {
+      reveal.setValue(1);
+      return () => { mountedRef.current = false; };
+    }
+    reveal.setValue(0);
+    const opening = motion === "player"
+      ? Animated.timing(reveal, {
+        toValue: 1,
+        duration: 440,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+        isInteraction: false,
+      })
+      : Animated.spring(reveal, {
+        toValue: 1,
+        damping: 24,
+        stiffness: 290,
+        mass: 0.72,
+        restDisplacementThreshold: 0.001,
+        restSpeedThreshold: 0.01,
+        useNativeDriver: true,
+        isInteraction: false,
+      });
+    opening.start();
+    return () => {
+      mountedRef.current = false;
+      reveal.stopAnimation();
+      swipeX.stopAnimation();
+    };
+  }, [animateOnMount, motion, reduceMotion, reveal, swipeX]);
+
+  const finishBack = useCallback(() => {
+    if (!mountedRef.current) return;
+    onBack?.();
+  }, [onBack]);
+
+  const closeRoute = useCallback(() => {
+    if (closingRef.current) return;
+    closingRef.current = true;
+    if (reduceMotion) {
+      finishBack();
+      return;
+    }
+    Animated.timing(reveal, {
+      toValue: 0,
+      duration: 230,
+      easing: Easing.in(Easing.cubic),
+      useNativeDriver: true,
+      isInteraction: false,
+    }).start(({ finished }) => {
+      if (finished) finishBack();
+      else closingRef.current = false;
+    });
+  }, [finishBack, reduceMotion, reveal]);
+
+  const edgeBackResponder = useMemo(() => PanResponder.create({
+    onMoveShouldSetPanResponderCapture: (_event, gesture) => (
+      gestureEnabled && !closingRef.current && shouldCaptureBackSwipe(gesture)
+    ),
+    onPanResponderGrant: () => {
+      reveal.stopAnimation();
+      reveal.setValue(1);
+      swipeX.stopAnimation();
+    },
+    onPanResponderMove: (_event, gesture) => {
+      swipeX.setValue(clampBackSwipe(gesture.dx, width));
+    },
+    onPanResponderRelease: (_event, gesture) => {
+      if (shouldCompleteBackSwipe({ ...gesture, width })) {
+        closingRef.current = true;
+        Animated.timing(swipeX, {
+          toValue: width,
+          duration: Math.max(130, Math.min(260, (width - clampBackSwipe(gesture.dx, width)) * 0.55)),
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+          isInteraction: false,
+        }).start(({ finished }) => {
+          if (finished) finishBack();
+          else closingRef.current = false;
+        });
+        return;
+      }
+      Animated.spring(swipeX, {
+        toValue: 0,
+        damping: 25,
+        stiffness: 320,
+        mass: 0.7,
+        useNativeDriver: true,
+        isInteraction: false,
+      }).start();
+    },
+    onPanResponderTerminate: () => {
+      Animated.spring(swipeX, {
+        toValue: 0,
+        damping: 25,
+        stiffness: 320,
+        mass: 0.7,
+        useNativeDriver: true,
+        isInteraction: false,
+      }).start();
+    },
+    onPanResponderTerminationRequest: () => false,
+  }), [finishBack, gestureEnabled, reveal, swipeX, width]);
+
+  const scaleX = reveal.interpolate({
+    inputRange: [0, 0.66, 1], outputRange: [0.16, 1.035, 1], extrapolate: "clamp",
+  });
+  const scaleY = reveal.interpolate({
+    inputRange: [0, 0.72, 1], outputRange: [0.055, 1.014, 1], extrapolate: "clamp",
+  });
+  const opacity = reveal.interpolate({
+    inputRange: [0, 0.12, 0.3, 1], outputRange: [0, 0.5, 1, 1], extrapolate: "clamp",
+  });
+  const edgeTilt = reveal.interpolate({
+    inputRange: [0, 0.58, 1],
+    outputRange: [routeOrigin.x < width / 2 ? "-4deg" : "4deg", "0.5deg", "0deg"],
+    extrapolate: "clamp",
+  });
+  const rendered = typeof children === "function" ? children(closeRoute) : children;
+
+  return (
+    <View
+      style={[s.genieRouteHost, transparentHost && s.genieRouteHostTransparent]}
+      onTouchStartCapture={onTouchStartCapture}
+    >
+      <Animated.View
+        style={[
+          s.genieRouteSurface,
+          {
+            opacity,
+            transformOrigin: [routeOrigin.x, routeOrigin.y, 0],
+            transform: [
+              { perspective: 900 },
+              { translateX: swipeX },
+              { scaleX },
+              { scaleY },
+              { rotateY: edgeTilt },
+            ],
+          },
+        ]}
+        {...edgeBackResponder.panHandlers}
+      >
+        {rendered}
+      </Animated.View>
+    </View>
+  );
+}
+
+
+
 function BottomNav({
   active,
   onHome,
@@ -2914,11 +3360,61 @@ function BottomNav({
   searchPlaceholder = "Search this page",
 }) {
   const rootTabSwipe = React.useContext(RootTabSwipeContext);
+  const insets = useSafeAreaInsets();
+  const { width: windowWidth, height: windowHeight } = useWindowDimensions();
+  const compactLandscape = windowWidth > windowHeight && windowHeight < 520;
+  const [reduceMotion, setReduceMotion] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [navSearchText, setNavSearchText] = useState("");
+  const [navContentWidth, setNavContentWidth] = useState(0);
   const navSearchInputRef = useRef(null);
   const bottomNavRef = useRef(null);
+  const navTabsRef = useRef(null);
+  const navRowWindowXRef = useRef(null);
+  const navDragActiveRef = useRef(false);
+  const touchValidRef = useRef(false);
+  const lastDragSlotRef = useRef(0);
   const keyboardLiftAnim = useRef(new Animated.Value(0)).current;
+  const initialRootIndex = Math.max(0, ROOT_TAB_ORDER.indexOf(active));
+  const initialSlot = mapPagerProgressToNavSlot(initialRootIndex);
+  const [previewSlot, setPreviewSlot] = useState(initialSlot);
+  const [nativeSelection, setNativeSelection] = useState({ index: initialSlot, revision: 0 });
+  const navPosition = useRef(new Animated.Value(initialSlot)).current;
+  const navMagnify = useRef(new Animated.Value(0)).current;
+  const navStretch = useRef(new Animated.Value(0)).current;
+  const lensMotion = useMemo(() => createCapsuleMotion({
+    Animated, Easing, position: navPosition, expansion: navMagnify, stretch: navStretch, initialSlot,
+    onPreviewSlotChange: setPreviewSlot,
+  }), [navPosition, navMagnify, navStretch]);
+
+  useEffect(() => {
+    let mounted = true;
+    AccessibilityInfo.isReduceMotionEnabled?.().then(value => {
+      if (mounted) setReduceMotion(Boolean(value));
+    });
+    const subscription = AccessibilityInfo.addEventListener?.("reduceMotionChanged", value => {
+      setReduceMotion(Boolean(value));
+    });
+    return () => { mounted = false; subscription?.remove?.(); };
+  }, []);
+  useEffect(() => {
+    lensMotion.setReducedMotion(reduceMotion);
+  }, [lensMotion, reduceMotion]);
+  useEffect(() => () => lensMotion.dispose(), [lensMotion]);
+  useEffect(() => {
+    const index = ROOT_TAB_ORDER.indexOf(active);
+    if (index >= 0) {
+      const slot = mapPagerProgressToNavSlot(index);
+      lensMotion.sync(slot);
+      setNativeSelection(previous => previous.index === slot ? previous : { index: slot, revision: previous.revision + 1 });
+    }
+  }, [active, lensMotion]);
+  useEffect(() => {
+    if (!searchOpen) return;
+    touchValidRef.current = false;
+    navDragActiveRef.current = false;
+    lensMotion.reset(mapPagerProgressToNavSlot(Math.max(0, ROOT_TAB_ORDER.indexOf(active))));
+  }, [active, lensMotion, searchOpen]);
   const animateKeyboardLift = useCallback((lift = 0, duration = 180) => {
     Animated.timing(keyboardLiftAnim, {
       toValue: -Math.max(0, lift),
@@ -2977,7 +3473,8 @@ function BottomNav({
       hideSub.remove();
     };
   }, [animateKeyboardLift, searchOpen, updateKeyboardLift]);
-  const inactiveColor = forceDark ? "#AAA297" : C.slateGray;
+  const inactiveColor = forceDark || C.isDark ? "rgba(247,245,240,0.92)" : C.slateGray;
+  const activeNavColor = C.primary;
   const normalizedSearch = navSearchText.trim().toLowerCase().replace(/%20/g, " ");
   const searchTerms = normalizedSearch.split(/\s+/).filter(Boolean);
   const closeSearch = (clearText = true) => {
@@ -2997,7 +3494,6 @@ function BottomNav({
     });
     return () => subscription.remove();
   }, [searchOpen]);
-  if (rootTabSwipe?.hideEmbeddedNav && !persistent) return null;
   const tabs = [
     { key: "home", icon: "home", label: "Home", fn: onHome },
     { key: "courses", icon: "compass", label: "Courses", fn: onCourses },
@@ -3063,13 +3559,103 @@ function BottomNav({
   const submitSearch = () => {
     if (searchResults[0]) openSearchResult(searchResults[0]);
   };
+  const itemWidth = navContentWidth > 0 ? navContentWidth / tabs.length : 0;
+  const showCapsule = !searchOpen && ROOT_TAB_ORDER.includes(active);
+  const gestureRuntimeRef = useRef(null);
+  const activeSlot = mapPagerProgressToNavSlot(Math.max(0, ROOT_TAB_ORDER.indexOf(active)));
+  const commitNavSlot = (slot, dragged = false) => {
+    // Search is an action, not a root page. Dragging past it keeps the existing
+    // root-page mapping; tapping it opens the search field normally.
+    const destination = dragged
+      ? mapPagerProgressToNavSlot(Math.round(mapNavSlotToPagerProgress(slot)))
+      : slot;
+    if (destination === 2) {
+      lensMotion.reset(activeSlot);
+      toggleSearch();
+      return;
+    }
+    lensMotion.release(destination);
+    const allowed = tabs[destination]?.fn?.();
+    if (allowed === false) lensMotion.release(activeSlot);
+  };
+  gestureRuntimeRef.current = { itemWidth, activeSlot, searchOpen, commitNavSlot, compactLandscape, windowWidth, navContentWidth };
+  const navDragResponder = useMemo(() => {
+    const slotAt = event => {
+      const runtime = gestureRuntimeRef.current;
+      const rowX = navRowWindowXRef.current ?? (runtime.windowWidth - runtime.navContentWidth) / 2;
+      return (event.nativeEvent.pageX - rowX) / Math.max(1, runtime.itemWidth) - 0.5;
+    };
+    const cancel = () => {
+      touchValidRef.current = false;
+      navDragActiveRef.current = false;
+      lensMotion.release(gestureRuntimeRef.current.activeSlot);
+    };
+    return PanResponder.create({
+      onStartShouldSetPanResponderCapture: () => {
+        const runtime = gestureRuntimeRef.current;
+        return !runtime.searchOpen && runtime.itemWidth > 0;
+      },
+      onPanResponderGrant: event => {
+        touchValidRef.current = true;
+        navDragActiveRef.current = false;
+        const slot = Math.max(0, Math.min(4, Math.round(slotAt(event))));
+        lastDragSlotRef.current = slot;
+        lensMotion.press(slot);
+      },
+      onPanResponderMove: (event, gesture) => {
+        if (!touchValidRef.current) return;
+        if (Math.abs(gesture.dy) > 48) { cancel(); return; }
+        if (!navDragActiveRef.current && Math.abs(gesture.dx) < 3) return;
+        navDragActiveRef.current = true;
+        const slot = resistNavSlot(slotAt(event));
+        lastDragSlotRef.current = slot;
+        lensMotion.drag(slot, gesture.vx);
+      },
+      onPanResponderRelease: (_event, gesture) => {
+        if (!touchValidRef.current) return;
+        const runtime = gestureRuntimeRef.current;
+        const dragged = navDragActiveRef.current;
+        const slot = dragged
+          ? releaseNavSlot(lastDragSlotRef.current, gesture.vx, runtime.itemWidth)
+          : lastDragSlotRef.current;
+        touchValidRef.current = false;
+        navDragActiveRef.current = false;
+        runtime.commitNavSlot(slot, dragged);
+      },
+      onPanResponderTerminate: cancel,
+      onPanResponderTerminationRequest: () => true,
+    });
+  }, [lensMotion]);
+
+  if (rootTabSwipe?.hideEmbeddedNav && !persistent) return null;
   return (
+    <>
+    {hasNativeLiquidTabs && (
+      <NativeBottomNav
+        style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: (compactLandscape ? 66 : 82) + insets.bottom, zIndex: 50 }}
+        dark={forceDark || C.isDark}
+        barHidden={searchOpen}
+        selection={nativeSelection}
+        onTabPress={event => {
+          const slot = event.nativeEvent.index;
+          if (!Number.isInteger(slot) || slot < 0 || slot >= tabs.length) return;
+          const allowed = tabs[slot].fn?.();
+          const destination = slot === 2 || allowed === false ? activeSlot : slot;
+          setNativeSelection(previous => ({ index: destination, revision: previous.revision + 1 }));
+        }}
+      />
+    )}
     <Animated.View
       ref={bottomNavRef}
       style={[
         s.bottomNav,
-        { transform: [{ translateY: keyboardLiftAnim }] },
-        forceDark && { backgroundColor: "rgba(13,13,11,0.98)", borderTopColor: "#2E2C27" },
+        {
+          bottom: compactLandscape ? Math.max(4, insets.bottom + 2) : Math.max(8, insets.bottom + 6),
+          transform: [{ translateY: keyboardLiftAnim }],
+        },
+        compactLandscape && s.bottomNavCompact,
+        forceDark && { backgroundColor: "rgba(35,35,37,0.97)", borderColor: "rgba(255,255,255,0.20)" },
+        hasNativeLiquidTabs && !searchOpen && { display: "none" },
       ]}
     >
       {searchOpen ? (
@@ -3131,34 +3717,53 @@ function BottomNav({
             <Ionicons name={navSearchText ? "close-circle" : "close"} size={22} color={inactiveColor} />
           </TouchableOpacity>
         </View>
-      ) : tabs.map(t => (
-        <TouchableOpacity
-          key={t.key}
-          onPress={() => {
-            if (t.key !== "search") closeSearch();
-            t.fn?.();
+      ) : (
+        <View
+          ref={navTabsRef}
+          style={[s.bottomNavTabsRow, compactLandscape && s.bottomNavTabsRowCompact]}
+          onLayout={event => {
+            setNavContentWidth(event.nativeEvent.layout.width);
+            requestAnimationFrame(() => {
+              navTabsRef.current?.measureInWindow?.(x => { navRowWindowXRef.current = x; });
+            });
           }}
-          style={s.bottomTab}
-          accessibilityRole="button"
-          accessibilityLabel={t.label}
-          accessibilityState={{ selected: active === t.key }}
+          {...navDragResponder.panHandlers}
         >
-          <View style={[s.bottomTabIcon, active === t.key && s.bottomTabIconActive]}>
-            <NavIcon icon={t.icon} color={active === t.key ? C.primary : inactiveColor} />
-          </View>
-          <Text
-            style={[
-              s.bottomTabLabel,
-              forceDark && { color: "#AAA297" },
-              active === t.key && { color: C.primary },
-            ]}
-            numberOfLines={1}
-          >
-            {t.label}
-          </Text>
-        </TouchableOpacity>
-      ))}
+          <LiquidTabCapsule
+            position={navPosition}
+            itemWidth={itemWidth}
+            navMagnify={navMagnify}
+            stretch={navStretch}
+            dark={forceDark || C.isDark}
+            hidden={!showCapsule}
+            compact={compactLandscape}
+          />
+          {tabs.map((t, index) => (
+            <Pressable
+              key={t.key}
+              onPress={() => commitNavSlot(index)}
+              style={[s.bottomTab, compactLandscape && s.bottomTabCompact]}
+              hitSlop={{ top: 5, bottom: 5, left: 2, right: 2 }}
+              accessibilityRole="tab"
+              accessibilityLabel={t.label}
+              accessibilityState={{ selected: active === t.key }}
+            >
+              <LensTabVisual
+                tab={t}
+                index={index}
+                position={navPosition}
+                expansion={navMagnify}
+                previewSlot={previewSlot}
+                activeColor={activeNavColor}
+                inactiveColor={inactiveColor}
+                compact={compactLandscape}
+              />
+            </Pressable>
+          ))}
+        </View>
+      )}
     </Animated.View>
+    </>
   );
 }
 
@@ -3171,243 +3776,391 @@ const ROOT_TAB_LABELS = {
   profile: "Profile",
 };
 
-function StaticRootTabs({ activeTab, onNavigate, renderTab }) {
-  const swipeBoundary = useMemo(() => ({ hideEmbeddedNav: true }), []);
-  const stationaryNavActions = useMemo(() => ({
-    home: () => onNavigate?.("home"),
-    courses: () => onNavigate?.("courses"),
-    downloads: () => onNavigate?.("downloads"),
-    ai: () => onNavigate?.("ai"),
-    profile: () => onNavigate?.("profile"),
-  }), [onNavigate]);
+function PersistentAppHeader({ user, onOpenProfile }) {
+  const insets = useSafeAreaInsets();
+  const { height } = useWindowDimensions();
+  const safeTop = Platform.OS === "ios"
+    ? Math.max(Math.max(0, Number(insets.top) || 0), height >= 700 ? 50 : 0)
+    : Math.max(0, Number(insets.top) || 0);
+  return (
+    <View style={[s.persistentAppHeader, { paddingTop: safeTop }]}>
+      <View style={s.persistentAppHeaderInner}>
+        <SkillomateLogo size="sm" mode={C.isDark ? "dark" : undefined} />
+        {user && onOpenProfile ? (
+          <Pressable
+            onPress={onOpenProfile}
+            style={s.persistentHeaderProfile}
+            accessibilityRole="button"
+            accessibilityLabel="Open profile"
+            hitSlop={8}
+          >
+            <AvatarImage avatarId={user.avatar || "a1"} size={38} style={{ borderRadius: 19 }} />
+          </Pressable>
+        ) : null}
+      </View>
+    </View>
+  );
+}
+
+function StaticRootTabs({ activeTab, onNavigate, renderTab, headerUser, onOpenProfile, hideBottomNav = false }) {
+  const swipeBoundary = useMemo(() => ({ hideEmbeddedNav: false, suppressMainHeader: true }), []);
 
   return (
     <RootTabSwipeContext.Provider value={swipeBoundary}>
       <View style={s.swipePagerViewport}>
         <View style={s.staticRootTabPage}>
-          {renderTab(activeTab, { isActive: true })}
+          {renderTab(activeTab, { isActive: true, suppressHeader: false })}
         </View>
-        <BottomNav
+      </View>
+    </RootTabSwipeContext.Provider>
+  );
+}
+
+function StableSwipeableRootTabsPager({ activeTab, onNavigate, renderTab, headerUser, onOpenProfile, hideBottomNav = false }) {
+  const { width } = useWindowDimensions();
+  const activeIndex = Math.max(0, ROOT_TAB_ORDER.indexOf(activeTab));
+  const navigateRef = useRef(onNavigate);
+  const childSwipeActiveRef = useRef(false);
+  const transitionRunningRef = useRef(false);
+  const dragX = useRef(new Animated.Value(0)).current;
+  const [previewTab, setPreviewTab] = useState(null);
+
+  useEffect(() => {
+    navigateRef.current = onNavigate;
+  }, [onNavigate]);
+
+  const swipeBoundary = useMemo(() => ({
+    begin: () => { childSwipeActiveRef.current = true; },
+    end: () => { childSwipeActiveRef.current = false; },
+    hideEmbeddedNav: true,
+    suppressMainHeader: true,
+  }), []);
+
+  useEffect(() => {
+    transitionRunningRef.current = false;
+    dragX.stopAnimation();
+    dragX.setValue(0);
+    setPreviewTab(null);
+  }, [activeTab, dragX]);
+
+  const tabAtDrag = useCallback(dx => {
+    const direction = dx < 0 ? 1 : -1;
+    return ROOT_TAB_ORDER[activeIndex + direction] || null;
+  }, [activeIndex]);
+
+  const settleBack = useCallback(() => {
+    Animated.spring(dragX, {
+      toValue: 0,
+      damping: 25,
+      stiffness: 280,
+      mass: 0.72,
+      useNativeDriver: true,
+    }).start(() => {
+      transitionRunningRef.current = false;
+      setPreviewTab(null);
+    });
+  }, [dragX]);
+
+  const rootSwipeResponder = useMemo(() => PanResponder.create({
+    onMoveShouldSetPanResponderCapture: (_event, gesture) => {
+      if (childSwipeActiveRef.current || transitionRunningRef.current) return false;
+      const horizontal = Math.abs(gesture.dx) > 12 && Math.abs(gesture.dx) > Math.abs(gesture.dy) * 1.25;
+      return horizontal && Boolean(tabAtDrag(gesture.dx));
+    },
+    onPanResponderGrant: (_event, gesture) => {
+      transitionRunningRef.current = true;
+      dragX.stopAnimation();
+      setPreviewTab(tabAtDrag(gesture.dx));
+    },
+    onPanResponderMove: (_event, gesture) => {
+      const targetTab = tabAtDrag(gesture.dx);
+      if (!targetTab) {
+        dragX.setValue(gesture.dx * 0.18);
+        return;
+      }
+      setPreviewTab(current => current === targetTab ? current : targetTab);
+      dragX.setValue(Math.max(-width, Math.min(width, gesture.dx)));
+    },
+    onPanResponderRelease: (_event, gesture) => {
+      const targetTab = tabAtDrag(gesture.dx);
+      const shouldCommit = Boolean(targetTab) && (
+        Math.abs(gesture.dx) >= width * 0.22 || Math.abs(gesture.vx) >= 0.72
+      );
+      if (!shouldCommit) {
+        settleBack();
+        return;
+      }
+      const destination = gesture.dx < 0 ? -width : width;
+      Animated.timing(dragX, {
+        toValue: destination,
+        duration: 210,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }).start(({ finished }) => {
+        if (!finished) {
+          settleBack();
+          return;
+        }
+        dragX.setValue(0);
+        transitionRunningRef.current = false;
+        setPreviewTab(null);
+        Keyboard.dismiss();
+        navigateRef.current?.(targetTab);
+        AccessibilityInfo.announceForAccessibility(`${ROOT_TAB_LABELS[targetTab]} tab`);
+      });
+    },
+    onPanResponderTerminate: settleBack,
+    onPanResponderTerminationRequest: () => false,
+  }), [dragX, settleBack, tabAtDrag, width]);
+
+  const navActions = useMemo(() => ({
+    home: () => navigateRef.current?.("home"),
+    courses: () => navigateRef.current?.("courses"),
+    ai: () => navigateRef.current?.("ai"),
+    downloads: () => navigateRef.current?.("downloads"),
+    profile: () => navigateRef.current?.("profile"),
+  }), []);
+
+  return (
+    <RootTabSwipeContext.Provider value={swipeBoundary}>
+      <View style={s.swipePagerViewport}>
+        <View style={s.staticRootTabPage} {...rootSwipeResponder.panHandlers}>
+          {previewTab ? (
+            <View
+              style={s.staticRootTabUnderlay}
+              pointerEvents="none"
+              accessibilityElementsHidden
+              importantForAccessibility="no-hide-descendants"
+            >
+              {renderTab(previewTab, { isActive: false, suppressHeader: false })}
+            </View>
+          ) : null}
+          <Animated.View style={[s.staticRootTabForeground, { transform: [{ translateX: dragX }] }]}>
+            {renderTab(activeTab, { isActive: true, suppressHeader: false })}
+          </Animated.View>
+        </View>
+        {!hideBottomNav && <BottomNav
           persistent
           active={activeTab}
-          onHome={stationaryNavActions.home}
-          onCourses={stationaryNavActions.courses}
-          onDownloads={stationaryNavActions.downloads}
-          onAI={stationaryNavActions.ai}
-          onProfile={stationaryNavActions.profile}
-        />
+          onHome={navActions.home}
+          onCourses={navActions.courses}
+          onDownloads={navActions.downloads}
+          onAI={navActions.ai}
+          onProfile={navActions.profile}
+        />}
       </View>
     </RootTabSwipeContext.Provider>
   );
 }
 
 function SwipeableRootTabs(props) {
-  return ROOT_TAB_SWIPE_ENABLED ? <SwipeableRootTabsPager {...props} /> : <StaticRootTabs {...props} />;
+  return ROOT_TAB_SWIPE_ENABLED ? <StableSwipeableRootTabsPager {...props} /> : <StaticRootTabs {...props} />;
 }
 
-function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab }) {
-  const { width, height } = useWindowDimensions();
-  const pageGap = ROOT_TAB_PAGE_GAP;
-  const pageStride = width + pageGap;
+function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab, headerUser, onOpenProfile, hideBottomNav = false }) {
+  const { width } = useWindowDimensions();
   const activeIndex = ROOT_TAB_ORDER.indexOf(activeTab);
-  const trackX = useRef(new Animated.Value(-Math.max(activeIndex, 0) * pageStride)).current;
-  const pageChrome = useRef(new Animated.Value(0)).current;
+  const reduceMotion = useReducedMotion();
+  const pagerRef = useRef(null);
   const navigateRef = useRef(onNavigate);
-  const transitionInProgressRef = useRef(false);
+  const selectedNativeIndexRef = useRef(Math.max(0, activeIndex));
+  const gestureOriginRef = useRef(Math.max(0, activeIndex));
+  const pagerStateRef = useRef("idle");
+  const commandEpochRef = useRef(0);
+  const pendingCommandRef = useRef(null);
+  const idleRepairFrameRef = useRef(null);
   const horizontalChildActiveRef = useRef(false);
-  const pendingIndexRef = useRef(null);
-  const mountedTabs = ROOT_TAB_ORDER;
+  const tabProgress = useSharedValue(Math.max(0, activeIndex));
+  const gestureOrigin = useSharedValue(Math.max(0, activeIndex));
+  const pendingDestination = useSharedValue(-1);
+  const dragScale = useSharedValue(1);
 
   useEffect(() => {
     navigateRef.current = onNavigate;
   }, [onNavigate]);
 
-  React.useLayoutEffect(() => {
-    if (activeIndex < 0) return;
-    trackX.stopAnimation();
-    trackX.setValue(-activeIndex * pageStride);
-    pageChrome.stopAnimation();
-    pageChrome.setValue(0);
-    pendingIndexRef.current = null;
-    transitionInProgressRef.current = false;
-    horizontalChildActiveRef.current = false;
-  }, [activeIndex, pageChrome, pageStride, trackX]);
+  useEffect(() => () => {
+    commandEpochRef.current += 1;
+    if (idleRepairFrameRef.current != null) cancelAnimationFrame(idleRepairFrameRef.current);
+    cancelUiAnimation(tabProgress);
+    cancelUiAnimation(dragScale);
+  }, [dragScale, tabProgress]);
 
   const swipeBoundary = useMemo(() => ({
-    begin: () => { horizontalChildActiveRef.current = true; },
-    end: () => { horizontalChildActiveRef.current = false; },
+    begin: () => {
+      horizontalChildActiveRef.current = true;
+      pagerRef.current?.setScrollEnabled(false);
+    },
+    end: () => {
+      horizontalChildActiveRef.current = false;
+      pagerRef.current?.setScrollEnabled(true);
+    },
     hideEmbeddedNav: true,
+    suppressMainHeader: true,
   }), []);
 
-  const stationaryNavActions = useMemo(() => ({
-    home: () => navigateRef.current?.("home"),
-    courses: () => navigateRef.current?.("courses"),
-    downloads: () => navigateRef.current?.("downloads"),
-    ai: () => navigateRef.current?.("ai"),
-    profile: () => navigateRef.current?.("profile"),
-  }), []);
+  const pageScrollHandler = useNativePagerScrollHandler({
+    onPageScroll: event => {
+      "worklet";
+      const position = Number(event.position ?? event.nativeEvent?.position);
+      const offset = Number(event.offset ?? event.nativeEvent?.offset);
+      const origin = gestureOrigin.value;
+      const destination = pendingDestination.value;
+      if (!isPagerProgressSampleValid({ position, offset, origin, destination })) return;
+      tabProgress.value = clampRootTabProgress(position + offset);
+    },
+  }, []);
 
-  const settleChrome = useCallback(() => (
-    ROOT_TAB_CHROME_ENABLED
-      ? Animated.timing(pageChrome, {
-          toValue: 0,
-          duration: 180,
-          easing: Easing.out(Easing.cubic),
-          useNativeDriver: false,
-        })
-      : Animated.delay(0)
-  ), [pageChrome]);
-
-  const returnToActive = useCallback(() => {
-    if (activeIndex < 0) return;
-    transitionInProgressRef.current = true;
-    Animated.parallel([
-      Animated.timing(trackX, {
-        toValue: -activeIndex * pageStride,
-        duration: 170,
-        easing: Easing.out(Easing.cubic),
-        useNativeDriver: true,
-      }),
-      settleChrome(),
-    ]).start(() => {
-      transitionInProgressRef.current = false;
-      pendingIndexRef.current = null;
-    });
-  }, [activeIndex, pageStride, settleChrome, trackX]);
-
-  const navigateByDirection = useCallback((direction) => {
-    if (transitionInProgressRef.current || activeIndex < 0) return;
-    const targetIndex = activeIndex + direction;
+  const commandToIndex = useCallback(targetIndex => {
     const targetTab = ROOT_TAB_ORDER[targetIndex];
-    if (!targetTab) return;
-
-    transitionInProgressRef.current = true;
+    if (!targetTab || targetIndex === selectedNativeIndexRef.current) return;
     const canNavigate = navigateRef.current?.(targetTab, { validateOnly: true });
     if (canNavigate === false) {
       navigateRef.current?.(targetTab);
-      returnToActive();
+      return;
+    }
+    const epoch = ++commandEpochRef.current;
+    const origin = selectedNativeIndexRef.current;
+    pendingCommandRef.current = { target: targetIndex, origin, epoch };
+    gestureOriginRef.current = origin;
+    gestureOrigin.value = origin;
+    pendingDestination.value = targetIndex;
+    cancelUiAnimation(tabProgress);
+    const distance = Math.abs(targetIndex - origin);
+    if (distance > 1 || reduceMotion) {
+      tabProgress.value = reduceMotion
+        ? targetIndex
+        : withUiTiming(targetIndex, { duration: Platform.OS === "ios" ? 210 : 180 });
+      pagerRef.current?.setPageWithoutAnimation(targetIndex);
+    } else {
+      pagerRef.current?.setPage(targetIndex);
+    }
+    requestAnimationFrame(() => Keyboard.dismiss());
+  }, [gestureOrigin, pendingDestination, reduceMotion, tabProgress]);
+
+  const stationaryNavActions = useMemo(() => ({
+    home: () => commandToIndex(0),
+    courses: () => commandToIndex(1),
+    ai: () => commandToIndex(2),
+    downloads: () => commandToIndex(3),
+    profile: () => navigateRef.current?.("profile"),
+  }), [commandToIndex]);
+
+  useEffect(() => {
+    if (activeIndex < 0 || activeIndex === selectedNativeIndexRef.current || pendingCommandRef.current) return;
+    commandToIndex(activeIndex);
+  }, [activeIndex, commandToIndex]);
+
+  const handlePageScrollStateChanged = useCallback(event => {
+    const nextState = event.nativeEvent?.pageScrollState || "idle";
+    pagerStateRef.current = nextState;
+    if (nextState === "dragging") {
+      ++commandEpochRef.current;
+      pendingCommandRef.current = null;
+      pendingDestination.value = -1;
+      gestureOriginRef.current = selectedNativeIndexRef.current;
+      gestureOrigin.value = selectedNativeIndexRef.current;
+      cancelUiAnimation(dragScale);
+      dragScale.value = reduceMotion
+        ? 1
+        : withUiSpring(1.18, { damping: 24, stiffness: 250, mass: 0.7, overshootClamping: true });
+      return;
+    }
+    if (nextState !== "idle") return;
+    cancelUiAnimation(dragScale);
+    dragScale.value = reduceMotion
+      ? 1
+      : withUiSpring(1, { damping: 25, stiffness: 250, mass: 0.7, overshootClamping: true });
+    const pending = pendingCommandRef.current;
+    const finalIndex = pending?.target ?? selectedNativeIndexRef.current;
+    cancelUiAnimation(tabProgress);
+    tabProgress.value = reduceMotion
+      ? finalIndex
+      : withUiTiming(finalIndex, { duration: 90 });
+    if (selectedNativeIndexRef.current !== finalIndex) {
+      if (idleRepairFrameRef.current != null) cancelAnimationFrame(idleRepairFrameRef.current);
+      const epoch = pending?.epoch ?? commandEpochRef.current;
+      idleRepairFrameRef.current = requestAnimationFrame(() => {
+        if (epoch !== commandEpochRef.current) return;
+        pagerRef.current?.setPageWithoutAnimation(finalIndex);
+      });
+    }
+  }, [dragScale, gestureOrigin, pendingDestination, reduceMotion, tabProgress]);
+
+  const handlePageSelected = useCallback(event => {
+    const selectedIndex = Number(event.nativeEvent?.position);
+    if (!Number.isInteger(selectedIndex) || selectedIndex < 0 || selectedIndex >= ROOT_TAB_ORDER.length) return;
+    const pending = pendingCommandRef.current;
+    const origin = gestureOriginRef.current;
+    if (!isPagerSelectionValid({ selectedIndex, origin, pendingTarget: pending?.target ?? null })) {
+      const repairIndex = pending?.target ?? selectedNativeIndexRef.current;
+      requestAnimationFrame(() => pagerRef.current?.setPageWithoutAnimation(repairIndex));
       return;
     }
 
-    Animated.parallel([
-      Animated.timing(trackX, {
-        toValue: -targetIndex * pageStride,
-        duration: Math.max(140, Math.min(220, ROOT_TAB_SWITCH_DURATION_MS - Math.abs(direction) * 18)),
-        easing: Easing.out(Easing.cubic),
-        useNativeDriver: true,
-      }),
-      settleChrome(),
-    ]).start(({ finished }) => {
-      if (!finished) {
-        returnToActive();
-        return;
-      }
-      pendingIndexRef.current = targetIndex;
-      const didNavigate = navigateRef.current?.(targetTab);
-      if (didNavigate === false) {
-        pendingIndexRef.current = null;
-        returnToActive();
-        return;
-      }
-      AccessibilityInfo.announceForAccessibility(`${ROOT_TAB_LABELS[targetTab]} tab`);
-    });
-  }, [activeIndex, pageStride, returnToActive, settleChrome, trackX]);
+    const targetTab = ROOT_TAB_ORDER[selectedIndex];
+    const canNavigate = navigateRef.current?.(targetTab, { validateOnly: true });
+    if (canNavigate === false) {
+      navigateRef.current?.(targetTab);
+      const returnIndex = origin;
+      const epoch = ++commandEpochRef.current;
+      pendingCommandRef.current = { target: returnIndex, origin: selectedIndex, epoch };
+      pendingDestination.value = returnIndex;
+      requestAnimationFrame(() => pagerRef.current?.setPage(returnIndex));
+      return;
+    }
 
-  const panResponder = useMemo(() => PanResponder.create({
-    onStartShouldSetPanResponder: () => false,
-    onMoveShouldSetPanResponder: (_, gesture) => {
-      if (transitionInProgressRef.current || horizontalChildActiveRef.current) return false;
-      const horizontalDistance = Math.abs(gesture.dx);
-      const verticalDistance = Math.abs(gesture.dy);
-      const direction = gesture.dx < 0 ? 1 : -1;
-      const targetTab = ROOT_TAB_ORDER[activeIndex + direction];
-      const shouldStart = Boolean(targetTab)
-        && horizontalDistance > (Platform.OS === "android" ? 10 : 14)
-        && horizontalDistance > verticalDistance * (Platform.OS === "android" ? 1.55 : 1.35);
-      return shouldStart;
-    },
-    onPanResponderGrant: () => {
-      trackX.stopAnimation();
-      if (ROOT_TAB_CHROME_ENABLED) {
-        pageChrome.stopAnimation();
-        pageChrome.setValue(1);
-      }
-    },
-    onPanResponderMove: (_, gesture) => {
-      const direction = gesture.dx < 0 ? 1 : -1;
-      const hasTarget = Boolean(ROOT_TAB_ORDER[activeIndex + direction]);
-      const clampedDistance = Math.max(-pageStride, Math.min(pageStride, gesture.dx));
-      const resistedDistance = hasTarget ? clampedDistance : clampedDistance * 0.18;
-      trackX.setValue((-activeIndex * pageStride) + resistedDistance);
-    },
-    onPanResponderRelease: (_, gesture) => {
-      const distanceThreshold = Math.min(92, Math.max(54, width * 0.16));
-      const crossedDistance = Math.abs(gesture.dx) >= distanceThreshold;
-      const quickFlick = Math.abs(gesture.vx) >= 0.55 && Math.abs(gesture.dx) >= 24;
-      const direction = gesture.dx < 0 ? 1 : -1;
-      const hasTarget = Boolean(ROOT_TAB_ORDER[activeIndex + direction]);
-      if (!hasTarget || (!crossedDistance && !quickFlick)) {
-        returnToActive();
-        return;
-      }
-      navigateByDirection(direction);
-    },
-    onPanResponderTerminate: returnToActive,
-    onPanResponderTerminationRequest: () => true,
-    onShouldBlockNativeResponder: () => false,
-  }), [activeIndex, navigateByDirection, pageChrome, pageStride, returnToActive, trackX, width]);
-
-  const renderedTabs = mountedTabs;
-  const pageCornerRadius = ROOT_TAB_CHROME_ENABLED
-    ? pageChrome.interpolate({
-        inputRange: [0, 1],
-        outputRange: [0, 28],
-        extrapolate: "clamp",
-      })
-    : 0;
+    selectedNativeIndexRef.current = selectedIndex;
+    gestureOriginRef.current = selectedIndex;
+    gestureOrigin.value = selectedIndex;
+    pendingDestination.value = -1;
+    pendingCommandRef.current = null;
+    cancelUiAnimation(dragScale);
+    dragScale.value = reduceMotion
+      ? 1
+      : withUiSpring(1, { damping: 25, stiffness: 250, mass: 0.7, overshootClamping: true });
+    cancelUiAnimation(tabProgress);
+    tabProgress.value = selectedIndex;
+    navigateRef.current?.(targetTab, { nativeConfirmed: true });
+    AccessibilityInfo.announceForAccessibility(`${ROOT_TAB_LABELS[targetTab]} tab`);
+  }, [dragScale, gestureOrigin, pendingDestination, reduceMotion, tabProgress]);
 
   return (
     <RootTabSwipeContext.Provider value={swipeBoundary}>
       <View style={s.swipePagerViewport}>
-        <Animated.View
-          style={[
-            s.swipePagerTrack,
-            {
-              width: ROOT_TAB_ORDER.length * pageStride,
-              height,
-              transform: [{ translateX: trackX }],
-            },
-          ]}
+        <PersistentAppHeader user={headerUser} onOpenProfile={onOpenProfile} />
+        <AnimatedPagerView
+          ref={pagerRef}
+          style={s.nativeRootPager}
+          initialPage={Math.max(0, activeIndex)}
+          orientation="horizontal"
+          layoutDirection="ltr"
+          keyboardDismissMode="on-drag"
+          pageMargin={ROOT_TAB_PAGE_GAP}
+          overdrag
+          overScrollMode="never"
+          offscreenPageLimit={1}
+          scrollEnabled
+          onPageScroll={pageScrollHandler}
+          onPageSelected={handlePageSelected}
+          onPageScrollStateChanged={handlePageScrollStateChanged}
         >
-          {renderedTabs.map(tab => {
-            const tabIndex = ROOT_TAB_ORDER.indexOf(tab);
+          {ROOT_TAB_ORDER.map(tab => {
             const isInteractive = tab === activeTab;
             return (
-              <Animated.View
+              <View
                 key={tab}
-                {...(isInteractive ? panResponder.panHandlers : {})}
-                pointerEvents={isInteractive ? "auto" : "none"}
                 accessibilityElementsHidden={!isInteractive || undefined}
                 importantForAccessibility={!isInteractive ? "no-hide-descendants" : "auto"}
-                style={[
-                  s.swipePagerPage,
-                  {
-                    width,
-                    height,
-                    marginRight: tabIndex === ROOT_TAB_ORDER.length - 1 ? 0 : pageGap,
-                    borderRadius: pageCornerRadius,
-                  },
-                ]}
+                style={[s.swipePagerPage, { width }]}
                 collapsable={false}
-                renderToHardwareTextureAndroid={Platform.OS === "android"}
-                needsOffscreenAlphaCompositing={Platform.OS === "android"}
               >
-                {renderTab(tab, { isActive: tab === activeTab })}
-              </Animated.View>
+                {renderTab(tab, { isActive: tab === activeTab, suppressHeader: true })}
+              </View>
             );
           })}
-        </Animated.View>
-        <BottomNav
+        </AnimatedPagerView>
+        {!hideBottomNav && <BottomNav
           persistent
           active={activeTab}
           onHome={stationaryNavActions.home}
@@ -3415,7 +4168,9 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab }) {
           onDownloads={stationaryNavActions.downloads}
           onAI={stationaryNavActions.ai}
           onProfile={stationaryNavActions.profile}
-        />
+          progress={tabProgress}
+          dragScale={dragScale}
+        />}
       </View>
     </RootTabSwipeContext.Provider>
   );
@@ -3501,7 +4256,8 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   const preferEmbedPlayer = Platform.OS === "android" && !isOffline && !hasNativeVideo && hasEmbeddableVideo && video.provider !== "aws_cloudfront";
   const requestedInitialTime = normalizeResumeTime(initialTime, getVideoKnownDuration(video));
   const [nativePlaybackFailed, setNativePlaybackFailed] = useState(false);
-  const isNativeVideo = hasNativeVideo && !preferEmbedPlayer && !(nativePlaybackFailed && canFallbackToEmbed);
+  const shouldMountMediaSurface = Boolean(isActive && !suspendSurface);
+  const isNativeVideo = shouldMountMediaSurface && hasNativeVideo && !preferEmbedPlayer && !(nativePlaybackFailed && canFallbackToEmbed);
   const isBunny = !isNativeVideo && !!(bunnyGuid || video.videoUrl || video.embedUrl);
   const webViewRef = useRef(null);
   const seekBarWidth = useRef(0);
@@ -3555,6 +4311,17 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   const [playerChromeVisible, setPlayerChromeVisible] = useState(true);
   const [renderPlayerChrome, setRenderPlayerChrome] = useState(true);
   const [hasPlaybackStarted, setHasPlaybackStarted] = useState(false);
+  const [showBufferingIndicator, setShowBufferingIndicator] = useState(false);
+  const firstFrameCoverOpacityRef = useRef(new Animated.Value(1));
+  const [renderFirstFrameCover, setRenderFirstFrameCover] = useState(true);
+  useEffect(() => {
+    if (!isActive || !isBuffering || isEnded || suspendSurface) {
+      setShowBufferingIndicator(false);
+      return undefined;
+    }
+    const timer = setTimeout(() => setShowBufferingIndicator(true), hasPlaybackStarted ? 320 : 180);
+    return () => clearTimeout(timer);
+  }, [hasPlaybackStarted, isActive, isBuffering, isEnded, suspendSurface]);
   useEffect(() => {
     latestProgressValueRef.current = { currentTime, duration };
   }, [currentTime, duration]);
@@ -3563,6 +4330,31 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     return () => onSettingsOpenChange?.(false);
   }, [isActive, onSettingsOpenChange, showSettings]);
   const chromeSessionKey = video?._id || video?.id || videoProp?._id || videoProp?.id || video?.bunnyGuid || video?.bunnyVideoId || video?.youtubeId || videoIdProp || "video";
+  const firstFrameCoverOpacity = firstFrameCoverOpacityRef.current;
+  const firstFramePosterUrl = getLessonThumbnailUrl(video, course);
+  const revealFirstFrame = useCallback(() => {
+    if (!isActive || suspendSurface) return;
+    firstFrameCoverOpacity.stopAnimation();
+    Animated.timing(firstFrameCoverOpacity, {
+      toValue: 0,
+      duration: 280,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+      isInteraction: false,
+    }).start(({ finished }) => {
+      if (finished) setRenderFirstFrameCover(false);
+    });
+  }, [firstFrameCoverOpacity, isActive, suspendSurface]);
+  useEffect(() => {
+    firstFrameCoverOpacity.stopAnimation();
+    firstFrameCoverOpacity.setValue(1);
+    setRenderFirstFrameCover(true);
+  }, [chromeSessionKey, firstFrameCoverOpacity]);
+  useEffect(() => {
+    if (!hasPlaybackStarted || !isActive || suspendSurface) return undefined;
+    const timer = setTimeout(revealFirstFrame, 80);
+    return () => clearTimeout(timer);
+  }, [hasPlaybackStarted, isActive, revealFirstFrame, suspendSurface]);
   const playbackHasVisibleProgress = hasPlaybackStarted || currentTime > 0.05;
   const canAutoHideChrome = Boolean(isActive && !suspendSurface && !showSettings && !isEnded && isPlaying && playbackHasVisibleProgress);
   const localPlayerChromeHidden = canAutoHideChrome && !playerChromeVisible;
@@ -3645,12 +4437,13 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     }).start();
   }, [playerChromeHidden, playerChromeOpacity]);
   const nativeVideoSource = useMemo(() => (
-    videoSourceFromUri(nativeVideoUrl)
-  ), [nativeVideoUrl]);
+    shouldMountMediaSurface ? videoSourceFromUri(nativeVideoUrl) : null
+  ), [nativeVideoUrl, shouldMountMediaSurface]);
   const nativePlayer = useVideoPlayer(null, player => {
     player.loop = false;
     player.preservesPitch = true;
     player.timeUpdateEventInterval = VIDEO_TIME_UPDATE_INTERVAL;
+    player.bufferOptions = NATIVE_VIDEO_BUFFER_OPTIONS;
   });
   const playbackStateRef = useRef(null);
   playbackStateRef.current = { isActive, isPlaying, isBuffering, isMuted, playbackRate, isEnded };
@@ -3862,22 +4655,24 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
 
   useEffect(() => {
     const masterUrl = sourceUri(nativeVideoSource);
-    if (!isNativeVideo || !/\.m3u8(?:[?#]|$)/i.test(masterUrl)) {
+    if (!isActive || !isNativeVideo || !/\.m3u8(?:[?#]|$)/i.test(masterUrl)) {
       setHlsVariantTracks([]);
       return;
     }
     let cancelled = false;
-    fetch(masterUrl)
-      .then(response => response.ok ? response.text() : "")
-      .then(text => {
-        if (cancelled) return;
-        setHlsVariantTracks(parseHlsVariantTracks(text, masterUrl));
-      })
-      .catch(() => {
-        if (!cancelled) setHlsVariantTracks([]);
-      });
-    return () => { cancelled = true; };
-  }, [isNativeVideo, nativeVideoSource]);
+    const timer = setTimeout(() => {
+      fetch(masterUrl)
+        .then(response => response.ok ? response.text() : "")
+        .then(text => {
+          if (cancelled) return;
+          setHlsVariantTracks(parseHlsVariantTracks(text, masterUrl));
+        })
+        .catch(() => {
+          if (!cancelled) setHlsVariantTracks([]);
+        });
+    }, 1200);
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [isActive, isNativeVideo, nativeVideoSource]);
 
   useEffect(() => {
     setNativeMuted(isMuted);
@@ -4759,7 +5554,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   }
 
   if (video.provider === 'aws_cloudfront' && currentTime > 0) cloudResume.current = currentTime;
-  if (video.provider === 'aws_cloudfront' && (!validCloudLease || cloudError)) return (
+  if (isActive && video.provider === 'aws_cloudfront' && (!validCloudLease || cloudError)) return (
     <View style={[s.player, { height, justifyContent: "center", alignItems: "center" }]}>
       {!cloudError && <ActivityIndicator size="large" color="#fff" />}
       <Text style={{ color: "#fff", padding: 20, textAlign: "center" }}>{cloudError || "Preparing secure playback..."}</Text>
@@ -4780,8 +5575,8 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
       isNativeVideo ? availableNativeQualityOptions : availableEmbedQualityOptions
     ),
   ];
-  const showLiveSurface = !suspendSurface;
-  const suspendedPosterUrl = suspendSurface ? getLessonThumbnailUrl(video, course) : "";
+  const showLiveSurface = shouldMountMediaSurface;
+  const suspendedPosterUrl = !showLiveSurface ? getLessonThumbnailUrl(video, course) : "";
 
   return (
     <View style={[s.player, { height }]}>
@@ -4804,6 +5599,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
           nativeControls={false}
           allowsPictureInPicture={false}
           playsInline
+          onFirstFrameRender={revealFirstFrame}
         />
       ) : (
         <WebView
@@ -4819,7 +5615,24 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
           style={StyleSheet.absoluteFill}
         />
       )}
-      {showLiveSurface && isBuffering && !isEnded ? (
+      {showLiveSurface && renderFirstFrameCover ? (
+        <Animated.View
+          style={[s.playerFirstFrameCover, { opacity: firstFrameCoverOpacity }]}
+          pointerEvents="none"
+        >
+          {firstFramePosterUrl ? (
+            <Image source={{ uri: firstFramePosterUrl }} style={StyleSheet.absoluteFill} resizeMode="cover" />
+          ) : course ? (
+            <CourseThumbnailImage course={course} />
+          ) : null}
+          <View style={s.playerFirstFrameScrim} />
+          <View style={s.playerFirstFrameLoader}>
+            <ActivityIndicator size="small" color={C.primary} />
+            <Text style={s.playerFirstFrameText}>Opening lesson</Text>
+          </View>
+        </Animated.View>
+      ) : null}
+      {showLiveSurface && showBufferingIndicator && !isEnded ? (
         <View
           style={s.pauseOverlay}
           pointerEvents="none"
@@ -4890,7 +5703,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
           )}
         </>
       )}
-      {renderPlayerChrome && (
+      {showLiveSurface && renderPlayerChrome && (
         <Animated.View
           style={[StyleSheet.absoluteFill, playerChromeAnimatedStyle]}
           pointerEvents={showPlayerChrome ? "box-none" : "none"}
@@ -5097,7 +5910,7 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
     return () => { courseAiMounted.current = false; };
   }, []);
   const courseAiScrollRef = useRef(null);
-  const vcRef = useRef({ itemVisiblePercentThreshold: 70, minimumViewTime: 120 });
+  const vcRef = useRef({ itemVisiblePercentThreshold: 55, minimumViewTime: 60 });
   const flatListRef = useRef(null);
 
   const activeVideo = videos[activeIndex];
@@ -5393,13 +6206,16 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
         showsVerticalScrollIndicator={false}
         initialScrollIndex={initialIndex ?? 0}
         snapToInterval={listHeight} snapToAlignment="start"
+        pagingEnabled
         decelerationRate="fast" disableIntervalMomentum
+        bounces={false}
+        overScrollMode="never"
         scrollEnabled={reelScrollEnabled}
-        initialNumToRender={1}
-        maxToRenderPerBatch={2}
-        windowSize={3}
-        updateCellsBatchingPeriod={50}
-        removeClippedSubviews={ANDROID_CLIPPED_SUBVIEWS}
+        initialNumToRender={2}
+        maxToRenderPerBatch={3}
+        windowSize={5}
+        updateCellsBatchingPeriod={32}
+        removeClippedSubviews={false}
         scrollEventThrottle={16}
         renderItem={({ item, index }) => (
           <VideoItem video={item} courseId={courseId} course={course} user={user}
@@ -5859,6 +6675,10 @@ function VideoListScreen({
   course,
   onSelectVideo,
   onBack,
+  restoreScrollOffset = 0,
+  playlistLoading = false,
+  playlistError = "",
+  onRetryPlaylist,
   downloads,
   onDownload,
   onDeleteDownload,
@@ -5869,8 +6689,19 @@ function VideoListScreen({
   onGoToDownloads,
   onGoToProfile,
   aiRobotId,
+  showBottomNav = true,
 }) {
+  const insets = useSafeAreaInsets();
+  const navClearance = Platform.OS === "ios" ? 82 + insets.bottom : 94;
   const [showCourseNotes, setShowCourseNotes] = useState(false);
+  const lessonListRef = useRef(null);
+  const normalizedRestoreOffset = Math.max(0, Number(restoreScrollOffset) || 0);
+  const scrollOffsetRef = useRef(normalizedRestoreOffset);
+  const restoreScrollAppliedRef = useRef(normalizedRestoreOffset === 0);
+  const initialContentOffset = useMemo(
+    () => ({ x: 0, y: normalizedRestoreOffset }),
+    [normalizedRestoreOffset]
+  );
   const videos = useMemo(
     () => (course.videos || []).slice().sort((a, b) => a.order - b.order),
     [course.videos]
@@ -5885,6 +6716,14 @@ function VideoListScreen({
     () => [...new Set(videos.flatMap(video => getVideoPrompts(video)))].slice(0, 8),
     [videos]
   );
+  const openLessonAtIndex = useCallback((index) => {
+    onSelectVideo(index, scrollOffsetRef.current);
+  }, [onSelectVideo]);
+  const restoreLessonListScroll = useCallback(() => {
+    if (restoreScrollAppliedRef.current || normalizedRestoreOffset <= 0) return;
+    restoreScrollAppliedRef.current = true;
+    lessonListRef.current?.scrollToOffset({ offset: normalizedRestoreOffset, animated: false });
+  }, [normalizedRestoreOffset]);
   const lectureSearchReferences = useMemo(
     () => videos.map((video, index) => {
       const title = video.title || `Video ${index + 1}`;
@@ -5894,11 +6733,11 @@ function VideoListScreen({
         title,
         subtitle: `Lecture ${index + 1}${durationLabel ? ` · ${durationLabel}` : ""}`,
         icon: "play-circle",
-        fn: () => onSelectVideo(index),
+        fn: () => openLessonAtIndex(index),
         keywords: `${title} lecture ${index + 1} lesson ${index + 1}`,
       };
     }),
-    [onSelectVideo, videos]
+    [openLessonAtIndex, videos]
   );
   const courseResources = useMemo(() => {
     const resources = [];
@@ -5937,24 +6776,64 @@ function VideoListScreen({
       </SafeAreaView>
 
       {videos.length === 0 ? (
-        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 140 }}>
+        <ScrollView
+          style={{ marginBottom: navClearance }}
+          contentContainerStyle={{ padding: 16, paddingBottom: 24, gap: 10 }}
+        >
           <ExpandableCourseDescription description={courseDescription} />
-          <View style={[s.centered, { minHeight: 260 }]}>
-            <Text style={{ color: C.textSub }}>No videos in this course yet.</Text>
-          </View>
+          {playlistLoading ? (
+            <>
+              <View style={s.coursePlaylistLoadingCard} accessibilityRole="progressbar" accessibilityLabel="Loading course lessons">
+                <ActivityIndicator color={C.primary} />
+                <View style={{ flex: 1 }}>
+                  <Text style={s.coursePlaylistLoadingTitle}>Opening course</Text>
+                  <Text style={s.coursePlaylistLoadingText}>Preparing your lessons…</Text>
+                </View>
+              </View>
+              {[0, 1, 2, 3, 4].map(index => (
+                <View key={index} style={[s.videoRow, s.coursePlaylistSkeletonRow]}>
+                  <View style={[s.videoThumbSmall, s.coursePlaylistSkeletonBlock]} />
+                  <View style={{ flex: 1, gap: 8 }}>
+                    <View style={[s.coursePlaylistSkeletonLine, { width: index % 2 ? "68%" : "82%" }]} />
+                    <View style={[s.coursePlaylistSkeletonLine, { width: "34%", opacity: 0.65 }]} />
+                  </View>
+                </View>
+              ))}
+            </>
+          ) : playlistError ? (
+            <View style={s.coursePlaylistErrorCard}>
+              <Ionicons name="cloud-offline-outline" size={28} color={C.primary} />
+              <Text style={s.coursePlaylistLoadingTitle}>Lessons could not load</Text>
+              <Text style={s.coursePlaylistLoadingText}>{playlistError}</Text>
+              <TouchableOpacity style={[s.btn, s.btnFill, { marginTop: 6 }]} onPress={onRetryPlaylist} accessibilityRole="button" accessibilityLabel="Retry loading course lessons">
+                <Text style={s.btnText}>Retry</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={[s.centered, { minHeight: 260 }]}>
+              <Text style={{ color: C.textSub }}>No videos in this course yet.</Text>
+            </View>
+          )}
         </ScrollView>
       ) : (
         <FlatList
+          ref={lessonListRef}
           data={videos}
           keyExtractor={(item, i) => item._id || String(i)}
-          contentContainerStyle={{ padding: 16, paddingBottom: 140, gap: 10 }}
+          style={{ marginBottom: navClearance }}
+          contentContainerStyle={{ padding: 16, paddingBottom: 24, gap: 10 }}
           initialNumToRender={8}
           maxToRenderPerBatch={8}
           windowSize={7}
           updateCellsBatchingPeriod={40}
-          removeClippedSubviews={ANDROID_CLIPPED_SUBVIEWS}
+          removeClippedSubviews={false}
           keyboardShouldPersistTaps="handled"
           scrollEventThrottle={16}
+          contentOffset={initialContentOffset}
+          onContentSizeChange={restoreLessonListScroll}
+          onScroll={event => {
+            scrollOffsetRef.current = Math.max(0, event.nativeEvent.contentOffset.y);
+          }}
           ListHeaderComponent={courseDescription ? <ExpandableCourseDescription description={courseDescription} /> : null}
           renderItem={({ item, index }) => {
             const durationLabel = getVideoDurationLabel(item);
@@ -5965,7 +6844,7 @@ function VideoListScreen({
             return (
               <TouchableOpacity
                 style={s.videoRow}
-                onPress={() => onSelectVideo(index)}
+                onPress={() => openLessonAtIndex(index)}
                 accessibilityRole="button"
                 accessibilityLabel={`Play lesson ${index + 1}: ${item.title || `Video ${index + 1}`}${durationLabel ? `, ${durationLabel}` : ""}`}
                 accessibilityHint="Opens the lesson player"
@@ -6053,7 +6932,7 @@ function VideoListScreen({
         />
       )}
 
-      <BottomNav
+      {showBottomNav ? <BottomNav
         active="courses"
         onHome={onGoToHome || onBack}
         onCourses={onGoToCourses || (() => {})}
@@ -6065,7 +6944,7 @@ function VideoListScreen({
         persistent
         searchReferences={lectureSearchReferences}
         searchPlaceholder="Search lectures"
-      />
+      /> : null}
 
       <Modal visible={showCourseNotes} transparent animationType="slide" onRequestClose={() => setShowCourseNotes(false)}>
         <View style={s.courseNotesOverlay}>
@@ -6366,7 +7245,7 @@ function LessonCarousel({ course, lessons, cardWidth, onPressLesson }) {
       nestedScrollEnabled
       scrollEventThrottle={16}
       decelerationRate="fast"
-      removeClippedSubviews={ANDROID_CLIPPED_SUBVIEWS}
+      removeClippedSubviews={false}
     >
       {lessons.map((lesson, index) => (
         <HomeLessonCard
@@ -6456,7 +7335,7 @@ function ProjectCarousel({ course, projects, onPressProject }) {
       nestedScrollEnabled
       scrollEventThrottle={16}
       decelerationRate="fast"
-      removeClippedSubviews={ANDROID_CLIPPED_SUBVIEWS}
+      removeClippedSubviews={false}
     >
       {projects.map(project => (
         <TouchableOpacity
@@ -6530,7 +7409,9 @@ function ChallengeCard({ title, steps, completedCount, onPress }) {
 const homeStyles = StyleSheet.create({
   root: { flex: 1, backgroundColor: HOME_PALETTE.background },
   header: { paddingTop: ANDROID_STATUS_BAR_INSET, backgroundColor: HOME_PALETTE.background, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: HOME_PALETTE.border },
+  headerActionsOnly: { paddingTop: 0 },
   headerInner: { minHeight: 62, paddingHorizontal: 14, paddingVertical: 9, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  headerInnerActionsOnly: { minHeight: 52, justifyContent: "flex-end", paddingVertical: 4 },
   headerInnerCompact: { paddingHorizontal: 10 },
   brandRow: { flexDirection: "row", alignItems: "center", gap: 9 },
   brandCopy: { flexShrink: 1 },
@@ -7006,7 +7887,24 @@ function LegacyHomeScreenDraft({ session, user, onGoToCourses, onGoToAI, onGoToD
 }
 
 // Only public catalog metadata survives Home unmounts; never cache playback grants.
-let homeCatalogCourse = null;
+let homeCatalogCourse = selectHomeCatalogCourse(PRODUCTION_CATALOG_FALLBACK);
+
+function selectHomeCatalogCourse(courses) {
+  const candidates = [...courseArray(courses)];
+  candidates.sort((left, right) => {
+    const rightLessonCount = right.videos?.length || right.lessonCount || 0;
+    const leftLessonCount = left.videos?.length || left.lessonCount || 0;
+    const rightIsInfluencerMasterclass = rightLessonCount >= 35 && /ai\s*influencer/i.test(String(right?.title || "")) ? 1 : 0;
+    const leftIsInfluencerMasterclass = leftLessonCount >= 35 && /ai\s*influencer/i.test(String(left?.title || "")) ? 1 : 0;
+    if (rightIsInfluencerMasterclass !== leftIsInfluencerMasterclass) {
+      return rightIsInfluencerMasterclass - leftIsInfluencerMasterclass;
+    }
+    const lessonDifference = rightLessonCount - leftLessonCount;
+    if (lessonDifference) return lessonDifference;
+    return new Date(right.publishedAt || right.createdAt || 0).getTime() - new Date(left.publishedAt || left.createdAt || 0).getTime();
+  });
+  return candidates[0] || null;
+}
 
 function HomeScreen({
   session,
@@ -7025,6 +7923,7 @@ function HomeScreen({
   onReportProblem,
   courseProgress = {},
   aiRobotId,
+  suppressHeader = false,
 }) {
   const { width } = useWindowDimensions();
   const hasAccess = hasCourseAccess(user);
@@ -7053,6 +7952,7 @@ function HomeScreen({
 
   useEffect(() => {
     let cancelled = false;
+    let networkApplied = false;
 
     const homeAbort = new AbortController();
     async function loadPrimaryCourse() {
@@ -7060,31 +7960,23 @@ function HomeScreen({
       setLoadError("");
       setPrimaryCourse(homeCatalogCourse);
       try {
-        const richResponse = await fetchApiJson("/api/courses/top?limit=24", [], homeAbort.signal).catch(error => {
+        const richResponse = await fetchCourseCatalog(
+          TOP_COURSES_CACHE_KEY,
+          "/api/courses?summary=home",
+          { maxCacheAgeMs: 15000 }
+        ).catch(error => {
           if (homeAbort.signal.aborted) throw error;
           return [];
         });
         if (cancelled) return;
 
-        const richCourses = (Array.isArray(richResponse) ? richResponse : richResponse?.courses || []).filter(course => !course?.isMock);
-        const fallbackResponse = richCourses.length ? [] : await fetchApiJson("/api/courses", [], homeAbort.signal);
-        const fallbackCourses = (Array.isArray(fallbackResponse) ? fallbackResponse : fallbackResponse?.courses || []).filter(course => !course?.isMock);
-        const candidates = [...(richCourses.length ? richCourses : fallbackCourses)];
-        candidates.sort((left, right) => {
-          const rightLessonCount = right.videos?.length || right.lessonCount || 0;
-          const leftLessonCount = left.videos?.length || left.lessonCount || 0;
-          const rightIsInfluencerMasterclass = rightLessonCount >= 35 && /ai\s*influencer/i.test(String(right?.title || "")) ? 1 : 0;
-          const leftIsInfluencerMasterclass = leftLessonCount >= 35 && /ai\s*influencer/i.test(String(left?.title || "")) ? 1 : 0;
-          if (rightIsInfluencerMasterclass !== leftIsInfluencerMasterclass) {
-            return rightIsInfluencerMasterclass - leftIsInfluencerMasterclass;
-          }
-          const lessonDifference = rightLessonCount - leftLessonCount;
-          if (lessonDifference) return lessonDifference;
-          return new Date(right.publishedAt || right.createdAt || 0).getTime() - new Date(left.publishedAt || left.createdAt || 0).getTime();
-        });
-
-        let course = candidates[0] || null;
+        const richCourses = courseArray(richResponse);
+        const fallbackCourses = richCourses.length
+          ? []
+          : await fetchCourseCatalog(ALL_COURSES_CACHE_KEY, "/api/courses?summary=1");
+        let course = selectHomeCatalogCourse(richCourses.length ? richCourses : fallbackCourses);
         if (!course) {
+          networkApplied = true;
           homeCatalogCourse = null;
           setPrimaryCourse(null);
           setLoadError("No published course is available right now.");
@@ -7092,7 +7984,9 @@ function HomeScreen({
         }
 
         if (cancelled) return;
+        networkApplied = true;
         homeCatalogCourse = course;
+        prefetchHomeCourseThumbnails(course);
         setPrimaryCourse(course);
         setLoading(false);
         if (hasAccess && user?._id && user?.sessionId) {
@@ -7113,6 +8007,15 @@ function HomeScreen({
       }
     }
 
+    readCatalogCache(AsyncStorage, TOP_COURSES_CACHE_KEY).then(cached => {
+      if (cancelled || networkApplied || !cached?.courses?.length) return;
+      const cachedCourse = selectHomeCatalogCourse(cached.courses);
+      if (!cachedCourse) return;
+      homeCatalogCourse = cachedCourse;
+      prefetchHomeCourseThumbnails(cachedCourse);
+      setPrimaryCourse(cachedCourse);
+      setLoading(false);
+    }).catch(() => {});
     loadPrimaryCourse();
     return () => { cancelled = true; homeAbort.abort(); };
   }, [hasAccess, reloadKey, session, user?._id, user?.sessionId]);
@@ -7247,7 +8150,20 @@ function HomeScreen({
   return (
     <View style={homeStyles.root}>
       <StatusBar barStyle="light-content" backgroundColor={HOME_PALETTE.background} />
-      <View style={homeStyles.header}>
+      <View style={[homeStyles.header, suppressHeader && homeStyles.headerActionsOnly]}>
+        {suppressHeader ? (
+          <View style={[homeStyles.headerInner, homeStyles.headerInnerActionsOnly]}>
+            <View style={homeStyles.headerActions}>
+              <TouchableOpacity style={homeStyles.headerButton} onPress={openNotifications} accessibilityRole="button" accessibilityLabel="Open notifications">
+                <Ionicons name="notifications-outline" size={20} color={HOME_PALETTE.text} />
+                {hasUnreadNotifications ? <View style={homeStyles.headerDot} /> : null}
+              </TouchableOpacity>
+              <TouchableOpacity style={homeStyles.headerFlagButton} onPress={onReportProblem} accessibilityRole="button" accessibilityLabel="Report a problem">
+                <Ionicons name="flag-outline" size={19} color="#FF5656" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : (
         <SafeAreaView>
           <View style={[homeStyles.headerInner, width <= 340 && homeStyles.headerInnerCompact]}>
             <View style={homeStyles.brandRow}>
@@ -7274,6 +8190,7 @@ function HomeScreen({
             </View>
           </View>
         </SafeAreaView>
+        )}
       </View>
 
       <ScrollView
@@ -7432,16 +8349,151 @@ function HomeScreen({
   );
 }
 
+function CourseCatalogBackPreview({ selectedCourse, courseProgress = {}, restoreScrollOffset = 0 }) {
+  const cachedCourses = [
+    ...(peekCatalogCache(ALL_COURSES_CACHE_KEY)?.courses || []),
+    ...(peekCatalogCache(TOP_COURSES_CACHE_KEY)?.courses || []),
+    selectedCourse,
+    ...PRODUCTION_CATALOG_FALLBACK,
+  ];
+  const seen = new Set();
+  const courses = cachedCourses.filter(course => {
+    const id = String(course?._id || course?.id || "");
+    if (!id || seen.has(id)) return false;
+    seen.add(id);
+    return true;
+  });
+
+  return (
+    <View style={{ width: "100%", height: "100%", backgroundColor: C.white, overflow: "hidden" }}>
+      <SafeAreaView style={{ backgroundColor: C.white }}>
+        <View style={[s.pageHeader, s.pageHeaderLogoOnly]}>
+          <SkillomateLogo size="sm" />
+        </View>
+      </SafeAreaView>
+      <View style={s.searchBox}>
+        <Ionicons name="search-outline" size={18} color={C.textMuted} />
+        <Text style={{ flex: 1, color: C.textMuted, fontSize: 14 }}>Search courses here</Text>
+      </View>
+      <View style={{ flex: 1, overflow: "hidden" }}>
+        <View
+          style={{
+            paddingHorizontal: 16,
+            paddingTop: 12,
+            gap: 16,
+            transform: [{ translateY: -Math.max(0, Number(restoreScrollOffset) || 0) }],
+          }}
+        >
+          {courses.map((course, index) => {
+            const declaredCount = Number(course.lessonCount ?? course.videoCount);
+            const lessonCount = Number.isFinite(declaredCount)
+              ? declaredCount
+              : Array.isArray(course.videos) ? course.videos.length : 0;
+            const progressPct = getCourseProgressPercent(course, courseProgress);
+            return (
+              <View key={course._id || course.id || index} style={s.clCard}>
+                <View style={s.clThumb}>
+                  <View style={[StyleSheet.absoluteFill, { backgroundColor: C.primaryLight, alignItems: "center", justifyContent: "center" }]}>
+                    <Text style={{ color: C.primary, fontWeight: "900", fontSize: 64 }}>{course.title?.[0]?.toUpperCase()}</Text>
+                  </View>
+                  <CourseThumbnailImage course={course} />
+                </View>
+                <View style={s.clInfo}>
+                  <Text style={s.clTitle} numberOfLines={2}>{course.title}</Text>
+                  <View style={s.clMetaRow}>
+                    <Ionicons name="play-circle-outline" size={15} color={C.primary} />
+                    <Text style={s.clMetaText}>{lessonCount} {lessonCount === 1 ? "lesson" : "lessons"}</Text>
+                  </View>
+                  <View style={s.clProgressRow}>
+                    <Text style={s.clProgressLabel}>Progress</Text>
+                    <Text style={s.clProgressPct}>{progressPct}%</Text>
+                  </View>
+                  <View style={s.clProgressTrack}>
+                    <View style={[s.clProgressFill, { width: `${progressPct}%` }]} />
+                  </View>
+                </View>
+              </View>
+            );
+          })}
+        </View>
+      </View>
+    </View>
+  );
+}
+
+function CourseListSkeleton({ suppressHeader = false }) {
+  return (
+    <View style={{ flex: 1, backgroundColor: C.white }}>
+      <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.white} />
+      {!suppressHeader && <SafeAreaView style={{ backgroundColor: C.white }}>
+        <View style={[s.pageHeader, s.pageHeaderLogoOnly]}>
+          <SkillomateLogo size="sm" />
+        </View>
+      </SafeAreaView>}
+      <View style={[s.searchBox, { opacity: 0.55 }]}>
+        <View style={{ width: 18, height: 18, borderRadius: 9, backgroundColor: C.border }} />
+        <View style={{ width: "52%", height: 14, borderRadius: 7, backgroundColor: C.border }} />
+      </View>
+      <View style={{ paddingHorizontal: 16, paddingTop: 12, gap: 16 }}>
+        {[0, 1, 2].map(index => (
+          <View key={index} style={[s.clCard, { opacity: 0.62 }]}>
+            <View style={[s.clThumb, { backgroundColor: C.primaryLight }]} />
+            <View style={[s.clInfo, { gap: 12 }]}>
+              <View style={{ width: index === 1 ? "58%" : "74%", height: 17, borderRadius: 8, backgroundColor: C.border }} />
+              <View style={{ width: "44%", height: 13, borderRadius: 7, backgroundColor: C.border }} />
+              <View style={{ width: "100%", height: 7, borderRadius: 4, backgroundColor: C.border }} />
+            </View>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 // ── CourseListScreen ──────────────────────────────────────────────────────────
-function CourseListScreen({ onSelect, user, onGoToHome, onGoToCourses, onGoToAI, onGoToDownloads, onGoToProfile, onGoToSubscription, appleSubscription, onOpenTerms, onOpenPrivacy, wishlist = [], onToggleWishlist, courseProgress = {}, onRefreshProgress, aiRobotId, keepPreviewMounted = false, activeTab = "courses" }) {
+function CourseListScreen({ onSelect, onCourseIntent, user, onGoToHome, onGoToCourses, onGoToAI, onGoToDownloads, onGoToProfile, onGoToSubscription, appleSubscription, onOpenTerms, onOpenPrivacy, wishlist = [], onToggleWishlist, courseProgress = {}, onRefreshProgress, aiRobotId, keepPreviewMounted = false, activeTab = "courses", restoreScrollOffset = 0, suppressHeader = false, showBottomNav = true }) {
   const hasAccess = hasCourseAccess(user);
   const [showUpgrade, setShowUpgrade] = useState(false);
-  const [courses, setCourses] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const initialCatalogRef = useRef(undefined);
+  if (initialCatalogRef.current === undefined) {
+    initialCatalogRef.current = peekCatalogCache(ALL_COURSES_CACHE_KEY) || null;
+  }
+  const [courses, setCourses] = useState(() => initialCatalogRef.current?.courses?.length
+    ? initialCatalogRef.current.courses
+    : PRODUCTION_CATALOG_FALLBACK);
+  const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
   const [query, setQuery] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
+  const courseListRef = useRef(null);
+  const normalizedRestoreOffset = Math.max(0, Number(restoreScrollOffset) || 0);
+  const courseScrollOffsetRef = useRef(normalizedRestoreOffset);
+  const restoreCourseScrollAppliedRef = useRef(normalizedRestoreOffset === 0);
+  const courseListViewportHeightRef = useRef(0);
+  const courseListContentHeightRef = useRef(0);
+  const initialCourseContentOffset = useMemo(
+    () => ({ x: 0, y: normalizedRestoreOffset }),
+    [normalizedRestoreOffset]
+  );
+  const courseIntentRef = useRef(onCourseIntent);
+  const visibleCoursePrefetchTimerRef = useRef(null);
+  const visibleCourseViewabilityConfig = useRef({ itemVisiblePercentThreshold: 65, minimumViewTime: 250 }).current;
+  useEffect(() => { courseIntentRef.current = onCourseIntent; }, [onCourseIntent]);
+  useEffect(() => () => {
+    if (visibleCoursePrefetchTimerRef.current) clearTimeout(visibleCoursePrefetchTimerRef.current);
+  }, []);
+  const onVisibleCoursesChanged = useRef(({ viewableItems }) => {
+    if (visibleCoursePrefetchTimerRef.current) clearTimeout(visibleCoursePrefetchTimerRef.current);
+    const candidates = viewableItems
+      .filter(entry => entry.isViewable && entry.item?._id)
+      .slice(0, 2)
+      .map(entry => entry.item);
+    if (!candidates.length) return;
+    visibleCoursePrefetchTimerRef.current = setTimeout(() => {
+      candidates.forEach(course => courseIntentRef.current?.(course));
+    }, 420);
+  }).current;
 
   const loadCourses = useCallback(async (options = {}) => {
     const isRefresh = Boolean(options.refresh);
@@ -7449,10 +8501,8 @@ function CourseListScreen({ onSelect, user, onGoToHome, onGoToCourses, onGoToAI,
     else setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${API_BASE}/api/courses`);
-      const data = await response.json();
-      if (data.error) throw new Error(data.error);
-      setCourses(DEV_UI_QA_ENABLED && (!Array.isArray(data) || data.length === 0) ? UI_QA_COURSES : data);
+      const data = await fetchCourseCatalog(ALL_COURSES_CACHE_KEY, "/api/courses?summary=1");
+      setCourses(DEV_UI_QA_ENABLED && data.length === 0 ? UI_QA_COURSES : data);
     } catch (e) {
       if (DEV_UI_QA_ENABLED) {
         setCourses(UI_QA_COURSES);
@@ -7466,8 +8516,30 @@ function CourseListScreen({ onSelect, user, onGoToHome, onGoToCourses, onGoToAI,
   }, []);
 
   useEffect(() => {
-    loadCourses();
-  }, [loadCourses]);
+    let active = true;
+    async function hydrateAndRefreshCourses() {
+      let hasCachedCourses = Boolean(initialCatalogRef.current?.courses?.length || PRODUCTION_CATALOG_FALLBACK.length);
+      const cached = initialCatalogRef.current || await readCatalogCache(AsyncStorage, ALL_COURSES_CACHE_KEY);
+      if (active && cached?.courses?.length) {
+        hasCachedCourses = true;
+        prefetchCourseThumbnails(cached.courses);
+        setCourses(cached.courses);
+        setLoading(false);
+      }
+      try {
+        const fresh = await fetchCourseCatalog(ALL_COURSES_CACHE_KEY, "/api/courses?summary=1");
+        if (!active) return;
+        setCourses(DEV_UI_QA_ENABLED && fresh.length === 0 ? UI_QA_COURSES : fresh);
+        setError(null);
+      } catch (loadError) {
+        if (active && !hasCachedCourses) setError(loadError.message);
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+    hydrateAndRefreshCourses();
+    return () => { active = false; };
+  }, []);
 
   useEffect(() => {
     onRefreshProgress?.();
@@ -7499,13 +8571,22 @@ function CourseListScreen({ onSelect, user, onGoToHome, onGoToCourses, onGoToAI,
     if (!normalizedQuery) return courses;
     return courses.filter(c => c.title?.toLowerCase().includes(normalizedQuery));
   }, [courses, query]);
+  const restoreCourseListScroll = useCallback((contentWidth, contentHeight) => {
+    if (restoreCourseScrollAppliedRef.current || normalizedRestoreOffset <= 0) return;
+    if (Number.isFinite(contentHeight)) courseListContentHeightRef.current = contentHeight;
+    const viewportHeight = courseListViewportHeightRef.current;
+    const measuredContentHeight = courseListContentHeightRef.current;
+    if (!viewportHeight || !measuredContentHeight) return;
+    const maxOffset = Math.max(0, measuredContentHeight - viewportHeight);
+    if (maxOffset + 96 < normalizedRestoreOffset) return;
+    restoreCourseScrollAppliedRef.current = true;
+    courseListRef.current?.scrollToOffset({
+      offset: Math.min(normalizedRestoreOffset, maxOffset),
+      animated: false,
+    });
+  }, [normalizedRestoreOffset]);
 
-  if (loading) return (
-    <View style={{ flex: 1, backgroundColor: C.white }}>
-      <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.white} />
-      <View style={s.centered}><ActivityIndicator size="large" color={C.primary} /></View>
-    </View>
-  );
+  if (loading) return <CourseListSkeleton suppressHeader={suppressHeader} />;
 
   if (error) return (
     <View style={{ flex: 1, backgroundColor: C.white }}>
@@ -7520,18 +8601,18 @@ function CourseListScreen({ onSelect, user, onGoToHome, onGoToCourses, onGoToAI,
           <Text style={s.btnText}>Retry</Text>
         </TouchableOpacity>
       </View>
-      <BottomNav active={activeTab} onHome={onGoToHome} onCourses={onGoToCourses || (() => {})} onAI={onGoToAI} onDownloads={onGoToDownloads} onProfile={onGoToProfile} aiRobotId={aiRobotId} />
+      {showBottomNav ? <BottomNav active={activeTab} onHome={onGoToHome} onCourses={onGoToCourses || (() => {})} onAI={onGoToAI} onDownloads={onGoToDownloads} onProfile={onGoToProfile} aiRobotId={aiRobotId} /> : null}
     </View>
   );
 
   return (
     <View style={{ flex: 1, backgroundColor: C.white }}>
       <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.white} />
-      <SafeAreaView style={{ backgroundColor: C.white }}>
+      {!suppressHeader && <SafeAreaView style={{ backgroundColor: C.white }}>
         <View style={[s.pageHeader, s.pageHeaderLogoOnly]}>
           <SkillomateLogo size="sm" />
         </View>
-      </SafeAreaView>
+      </SafeAreaView>}
 
       <View style={s.searchBox}>
         <Ionicons name="search-outline" size={18} color={C.textMuted} />
@@ -7558,7 +8639,9 @@ function CourseListScreen({ onSelect, user, onGoToHome, onGoToCourses, onGoToAI,
         )}
       </View>
 
-<FlatList
+      <View style={{ flex: 1 }}>
+        <FlatList
+        ref={courseListRef}
         data={filtered}
         keyExtractor={item => item._id}
         contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 12, gap: 16, paddingBottom: 100 }}
@@ -7578,6 +8661,36 @@ function CourseListScreen({ onSelect, user, onGoToHome, onGoToCourses, onGoToAI,
         removeClippedSubviews={keepPreviewMounted ? false : ANDROID_CLIPPED_SUBVIEWS}
         keyboardShouldPersistTaps="handled"
         scrollEventThrottle={16}
+        contentOffset={initialCourseContentOffset}
+        onContentSizeChange={restoreCourseListScroll}
+        onLayout={event => {
+          courseListViewportHeightRef.current = event.nativeEvent.layout.height;
+          restoreCourseListScroll(undefined, courseListContentHeightRef.current);
+        }}
+        onScroll={event => {
+          courseScrollOffsetRef.current = Math.max(0, event.nativeEvent.contentOffset.y);
+        }}
+        onViewableItemsChanged={onVisibleCoursesChanged}
+        viewabilityConfig={visibleCourseViewabilityConfig}
+        ListEmptyComponent={(
+          <View style={[s.centered, { minHeight: 320, paddingHorizontal: 24 }]}>
+            <Ionicons name="cloud-download-outline" size={32} color={C.primary} />
+            <Text style={{ color: C.text, fontSize: 17, fontWeight: "800", textAlign: "center", marginTop: 12 }}>
+              Courses are refreshing
+            </Text>
+            <Text style={{ color: C.textSub, fontSize: 14, lineHeight: 20, textAlign: "center", marginTop: 6 }}>
+              Pull down or tap below to request the latest catalogue.
+            </Text>
+            <TouchableOpacity
+              style={[s.btn, s.btnFill, { marginTop: 16, minWidth: 140 }]}
+              onPress={loadCourses}
+              accessibilityRole="button"
+              accessibilityLabel="Reload course catalogue"
+            >
+              <Text style={s.btnText}>Reload Courses</Text>
+            </TouchableOpacity>
+          </View>
+        )}
         renderItem={({ item }) => {
           const declaredCount = Number(item.lessonCount ?? item.videoCount);
           const lessonCount = Number.isFinite(declaredCount)
@@ -7594,9 +8707,10 @@ function CourseListScreen({ onSelect, user, onGoToHome, onGoToCourses, onGoToAI,
               activeOpacity={0.93}
               accessibilityRole="button"
               accessibilityLabel={`${item.title}. ${lessonCount} ${lessonCount === 1 ? "lesson" : "lessons"}. ${progressPct}% complete`}
+              onPressIn={() => onCourseIntent?.(item)}
               onPress={() => {
                 if (!hasAccess) { setShowUpgrade(true); return; }
-                onSelect(item);
+                onSelect(item, courseScrollOffsetRef.current);
               }}
             >
               {/* Thumbnail */}
@@ -7675,9 +8789,10 @@ function CourseListScreen({ onSelect, user, onGoToHome, onGoToCourses, onGoToAI,
             </TouchableOpacity>
           </View>
         }
-      />
+        />
+      </View>
 
-      <BottomNav active={activeTab} onHome={onGoToHome} onCourses={onGoToCourses || (() => {})} onAI={onGoToAI} onDownloads={onGoToDownloads} onProfile={onGoToProfile} aiRobotId={aiRobotId} />
+      {showBottomNav ? <BottomNav active={activeTab} onHome={onGoToHome} onCourses={onGoToCourses || (() => {})} onAI={onGoToAI} onDownloads={onGoToDownloads} onProfile={onGoToProfile} aiRobotId={aiRobotId} /> : null}
       <UpgradeModal
         visible={showUpgrade && !hasAccess}
         onClose={() => setShowUpgrade(false)}
@@ -7691,25 +8806,36 @@ function CourseListScreen({ onSelect, user, onGoToHome, onGoToCourses, onGoToAI,
 }
 
 // ── WishlistScreen ────────────────────────────────────────────────────────────
-function WishlistScreen({ wishlist, onToggleWishlist, onSelect, onBack, user, onGoToSubscription, appleSubscription, onOpenTerms, onOpenPrivacy }) {
+function WishlistScreen({ wishlist, onToggleWishlist, onSelect, onCourseIntent, onBack, user, onGoToSubscription, appleSubscription, onOpenTerms, onOpenPrivacy }) {
   const hasAccess = hasCourseAccess(user);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (wishlist.length === 0) { setLoading(false); return; }
-    fetch(`${API_BASE}/api/courses`)
-      .then(r => r.json())
-      .then(d => {
-        if (d.error) throw new Error(d.error);
-        const next = d.filter(c => wishlist.includes(c._id));
-        setCourses(next.length || !DEV_UI_QA_ENABLED ? next : UI_QA_COURSES.filter(c => wishlist.includes(c._id)));
-      })
-      .catch(() => {
-        if (DEV_UI_QA_ENABLED) setCourses(UI_QA_COURSES.filter(c => wishlist.includes(c._id)));
-      })
-      .finally(() => setLoading(false));
+    if (wishlist.length === 0) { setCourses([]); setLoading(false); return; }
+    let active = true;
+    async function hydrateWishlist() {
+      const cached = await readCatalogCache(AsyncStorage, ALL_COURSES_CACHE_KEY);
+      if (active && cached?.courses) {
+        const cachedWishlist = cached.courses.filter(course => wishlist.includes(course._id));
+        prefetchCourseThumbnails(cachedWishlist);
+        setCourses(cachedWishlist);
+        setLoading(false);
+      }
+      try {
+        const catalog = await fetchCourseCatalog(ALL_COURSES_CACHE_KEY, "/api/courses?summary=1");
+        if (!active) return;
+        const next = catalog.filter(course => wishlist.includes(course._id));
+        setCourses(next.length || !DEV_UI_QA_ENABLED ? next : UI_QA_COURSES.filter(course => wishlist.includes(course._id)));
+      } catch (_) {
+        if (active && DEV_UI_QA_ENABLED) setCourses(UI_QA_COURSES.filter(course => wishlist.includes(course._id)));
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+    hydrateWishlist();
+    return () => { active = false; };
   }, [wishlist.join("|")]);
   const removeFromWishlist = useCallback((courseId) => {
     setCourses(prev => prev.filter(course => course._id !== courseId));
@@ -7751,13 +8877,14 @@ function WishlistScreen({ wishlist, onToggleWishlist, onSelect, onBack, user, on
           maxToRenderPerBatch={6}
           windowSize={7}
           updateCellsBatchingPeriod={40}
-          removeClippedSubviews={ANDROID_CLIPPED_SUBVIEWS}
+          removeClippedSubviews={false}
           keyboardShouldPersistTaps="handled"
           scrollEventThrottle={16}
           renderItem={({ item }) => (
             <View style={{ flex: 1, position: "relative" }}>
               <TouchableOpacity
                 style={[s.courseListCard, { flex: 1 }]}
+                onPressIn={() => onCourseIntent?.(item)}
                 onPress={() => {
                   if (!hasAccess) { setShowUpgrade(true); return; }
                   onSelect(item);
@@ -8895,6 +10022,7 @@ function AiAssistantScreen({
   onGoToProfile,
   onRobotChange,
   isRootTabActive = true,
+  suppressHeader = false,
 }) {
   const aiMounted = useRef(false);
   useEffect(() => { aiMounted.current = true; return () => { aiMounted.current = false; }; }, []);
@@ -9323,11 +10451,11 @@ function AiAssistantScreen({
   return (
     <View style={s.aiScreen}>
       <StatusBar barStyle="light-content" backgroundColor="#050505" />
-      <SafeAreaView style={s.aiTopSafe}>
-        <View style={s.aiTopHeader}>
+      <View style={[s.aiTopSafe, suppressHeader && s.aiTopSafeEmbedded]}>
+        {!suppressHeader && <View style={s.aiTopHeader}>
           <SkillomateLogo size="xs" mode="dark" />
           <View style={s.aiTopHeaderSpacer} />
-        </View>
+        </View>}
 
         <View style={s.aiIdentityBar}>
           <TouchableOpacity
@@ -9371,7 +10499,7 @@ function AiAssistantScreen({
             <Ionicons name="add" size={23} color="#F5F1E8" />
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
+      </View>
 
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -9785,7 +10913,7 @@ function LegalContentScreen({ page = "privacy", onBack }) {
 }
 
 // ── App ───────────────────────────────────────────────────────────────────────
-export default function App() {
+function AppContent() {
   const [isRestoring, setIsRestoring] = useState(true);
   const [user, setUserState] = useState(null);
   const userRef = useRef(null);
@@ -9830,6 +10958,12 @@ export default function App() {
   const [mainScreen, setMainScreen] = useState("home");
   const [legalPage, setLegalPage] = useState(null);
   const [selectedCourse, setSelectedCourse] = useState(null);
+  const [courseDetailLoading, setCourseDetailLoading] = useState(false);
+  const [courseDetailError, setCourseDetailError] = useState("");
+  const courseOpenRequestRef = useRef(0);
+  const courseOpenIntentRef = useRef(null);
+  const courseCatalogScrollOffsetRef = useRef(0);
+  const courseLessonListOffsetsRef = useRef(new Map());
   const [startIndex, setStartIndex] = useState(null);
   const [initialTime, setInitialTime] = useState(0);
   const [preloadedVideos, setPreloadedVideos] = useState(null);
@@ -9849,6 +10983,17 @@ export default function App() {
   const [certificates, setCertificates] = useState([]);
   const [certModal, setCertModal] = useState(null);
   const [profileRefreshing, setProfileRefreshing] = useState(false);
+  const routeOriginRef = useRef(null);
+  const captureRouteOrigin = useCallback(event => {
+    const pageX = Number(event?.nativeEvent?.pageX);
+    const pageY = Number(event?.nativeEvent?.pageY);
+    if (!Number.isFinite(pageX) || !Number.isFinite(pageY)) return;
+    routeOriginRef.current = { x: pageX, y: pageY, capturedAt: Date.now() };
+  }, []);
+  const getRecentRouteOrigin = useCallback(() => {
+    const captured = routeOriginRef.current;
+    return captured && Date.now() - captured.capturedAt <= 1800 ? captured : null;
+  }, []);
   const openLegalPage = useCallback(page => {
     if (page === "privacy") {
       openSafeExternalUrl("https://skillomate.in/privacy", "legal");
@@ -9944,6 +11089,9 @@ export default function App() {
   const navigateRootTab = useCallback((targetTab, options = {}) => {
     if (targetTab === "profile") {
       if (options.validateOnly) return true;
+      courseOpenRequestRef.current += 1;
+      setCourseDetailLoading(false);
+      setCourseDetailError("");
       setShowAppUpgrade(false);
       setSelectedCourse(null);
       setStartIndex(null);
@@ -9961,6 +11109,9 @@ export default function App() {
     }
     if (options.validateOnly) return true;
 
+    courseOpenRequestRef.current += 1;
+    setCourseDetailLoading(false);
+    setCourseDetailError("");
     setShowAppUpgrade(false);
     setSelectedCourse(null);
     setStartIndex(null);
@@ -9984,6 +11135,26 @@ export default function App() {
       if (Array.isArray(freshWishlist)) setWishlist(freshWishlist);
     } catch { /* Temporary network errors retain the current session. */ }
   }, [nativeSession, setUser]);
+
+  useEffect(() => {
+    let active = true;
+    const applyWarmCatalog = courses => {
+      if (!active) return;
+      const course = selectHomeCatalogCourse(courses);
+      if (!course) return;
+      homeCatalogCourse = course;
+      prefetchHomeCourseThumbnails(course);
+    };
+
+    readCatalogCache(AsyncStorage, TOP_COURSES_CACHE_KEY)
+      .then(cached => applyWarmCatalog(cached?.courses || []))
+      .catch(() => {});
+    fetchCourseCatalog(TOP_COURSES_CACHE_KEY, "/api/courses?summary=home")
+      .then(applyWarmCatalog)
+      .catch(() => {});
+
+    return () => { active = false; };
+  }, []);
 
   useEffect(() => {
     nativeSession.restore().then(async stored => {
@@ -10196,6 +11367,15 @@ export default function App() {
     setPreloadedVideos(Array.isArray(selectedCourse?.videos) ? selectedCourse.videos : null);
   }, [isPreviewOnly, selectedCourse, loadCourseProgress]);
 
+  const closeCourse = useCallback(() => {
+    courseOpenRequestRef.current += 1;
+    setCourseDetailLoading(false);
+    setCourseDetailError("");
+    loadCourseProgress();
+    setStartIndex(null);
+    setSelectedCourse(null);
+  }, [loadCourseProgress]);
+
   useEffect(() => {
     if (Platform.OS !== "android") return undefined;
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
@@ -10219,6 +11399,9 @@ export default function App() {
         return true;
       }
       if (mainScreen === "courses" && selectedCourse) {
+        courseOpenRequestRef.current += 1;
+        setCourseDetailLoading(false);
+        setCourseDetailError("");
         loadCourseProgress();
         setSelectedCourse(null);
         return true;
@@ -10228,6 +11411,9 @@ export default function App() {
         return true;
       }
       if (mainScreen !== "home") {
+        courseOpenRequestRef.current += 1;
+        setCourseDetailLoading(false);
+        setCourseDetailError("");
         setSelectedCourse(null);
         setStartIndex(null);
         setInitialTime(0);
@@ -10242,9 +11428,22 @@ export default function App() {
     return () => sub.remove();
   }, [screen, otpSent, resetVisible, legalPage, courseAiTarget, certModal, showAppUpgrade, mainScreen, startIndex, selectedCourse, isPreviewOnly, loadCourseProgress, backToLessons]);
 
+  const warmCoursePlaylist = useCallback((course) => {
+    const u = userRef.current;
+    if (!hasCourseAccess(u) || !course?._id) return;
+    if (hasPlayableCourseVideos(course)) {
+      writeCoursePlaylistCache(u, course._id, course.videos);
+      return;
+    }
+    requestCoursePlaylist(nativeSession, u, course._id).catch(() => {});
+  }, [nativeSession]);
+
   const openCourse = useCallback(async (course, options = {}) => {
     const u = userRef.current;
     if (!hasCourseAccess(u)) { setShowAppUpgrade(true); return; }
+    if (!course?._id) return;
+    const requestId = ++courseOpenRequestRef.current;
+    courseOpenIntentRef.current = { course, options };
     const prepareCourse = source => {
       const sourceVideos = sortLessons(source?.videos || []);
       const requestedIds = Array.isArray(options.videoIds) ? options.videoIds.map(String) : null;
@@ -10261,33 +11460,52 @@ export default function App() {
     const fixtureCourse = DEV_UI_QA_ENABLED
       ? UI_QA_COURSES.find(item => item._id === course?._id)
       : null;
-    if (fixtureCourse || course?.__homePlayableVideos || (DEV_UI_QA_ENABLED && Array.isArray(course?.videos) && course.videos.length > 0)) {
-      const nextCourse = prepareCourse(fixtureCourse || course);
-      setSelectedCourse(nextCourse);
-      setPreloadedVideos(nextCourse.videos);
-      setIsPreviewOnly(false);
-      setInitialTime(options.initialTime || 0);
-      setStartIndex(Number.isInteger(options.startIndex) ? options.startIndex : null);
-      setMainScreen("courses");
-      return;
-    }
+    const directCourse = fixtureCourse || (hasPlayableCourseVideos(course) ? course : null);
+    if (directCourse) writeCoursePlaylistCache(u, course._id, directCourse.videos);
+    const cachedVideos = directCourse?.videos || readCoursePlaylistCache(u, course._id);
+    const requestedStartIndex = Number.isInteger(options.startIndex) ? options.startIndex : null;
+    const immediateCourse = prepareCourse({ ...course, videos: cachedVideos || [] });
+
+    setSelectedCourse(immediateCourse);
+    setPreloadedVideos(cachedVideos ? immediateCourse.videos : null);
+    setIsPreviewOnly(false);
+    setInitialTime(options.initialTime || 0);
+    setStartIndex(cachedVideos ? requestedStartIndex : null);
+    setCourseDetailLoading(!cachedVideos);
+    setCourseDetailError("");
+    setMainScreen("courses");
+    if (cachedVideos) return;
+
     try {
-      const data = await nativeSession.requestJson(`/api/courses/${encodeURIComponent(course._id)}/videos`);
-      setSelectedCourse(prepareCourse({ ...course, videos: data.videos || [] }));
-      setPreloadedVideos(null);
-      setIsPreviewOnly(false);
-      setInitialTime(options.initialTime || 0);
-      setStartIndex(Number.isInteger(options.startIndex) ? options.startIndex : null);
-      setMainScreen("courses");
+      const videos = await requestCoursePlaylist(nativeSession, u, course._id, {
+        forceRefresh: Boolean(options.forceRefresh),
+      });
+      if (courseOpenRequestRef.current !== requestId) return;
+      const hydratedCourse = prepareCourse({ ...course, videos });
+      setSelectedCourse(hydratedCourse);
+      setPreloadedVideos(hydratedCourse.videos);
+      setCourseDetailLoading(false);
+      setCourseDetailError("");
+      setStartIndex(requestedStartIndex);
     } catch (e) {
+      if (courseOpenRequestRef.current !== requestId) return;
       const accessMessage = String(e?.message || "");
       if (/subscription|expired|course access|entitlement/i.test(accessMessage)) {
+        setCourseDetailLoading(false);
+        setSelectedCourse(null);
         setShowAppUpgrade(true);
         return;
       }
-      Alert.alert("Course unavailable", accessMessage || "Could not open course.");
+      setCourseDetailLoading(false);
+      setCourseDetailError(accessMessage || "Could not load the lessons. Check your connection and retry.");
     }
   }, [nativeSession]);
+
+  const retryCourseOpen = useCallback(() => {
+    const pending = courseOpenIntentRef.current;
+    if (!pending?.course) return;
+    openCourse(pending.course, { ...pending.options, forceRefresh: true });
+  }, [openCourse]);
 
   const openHeroPreview = useCallback(async (course, video, videoIndex = 0) => {
     const previewVideo = video || course?.videos?.[videoIndex] || course?.videos?.[0];
@@ -10296,6 +11514,9 @@ export default function App() {
       return;
     }
     const previewCourse = course || { _id: "hero-preview", title: "Preview" };
+    courseOpenRequestRef.current += 1;
+    setCourseDetailLoading(false);
+    setCourseDetailError("");
     setSelectedCourse({ ...previewCourse, videos: [previewVideo] });
     setPreloadedVideos([previewVideo]);
     setInitialTime(0);
@@ -10797,7 +12018,16 @@ export default function App() {
   }
 
   if (legalPage) {
-    return <LegalContentScreen page={legalPage} onBack={() => setLegalPage(null)} />;
+    return (
+      <GenieBackRoute
+        key={`legal-${legalPage}`}
+        origin={getRecentRouteOrigin()}
+        onTouchStartCapture={captureRouteOrigin}
+        onBack={() => setLegalPage(null)}
+      >
+        {close => <LegalContentScreen page={legalPage} onBack={close} />}
+      </GenieBackRoute>
+    );
   }
 
   // ── Auth screens ────────────────────────────────────────────────────────────
@@ -11177,136 +12407,122 @@ export default function App() {
   // ── Logged-in ───────────────────────────────────────────────────────────────
   if (courseAiTarget) {
     return (
-      <AiAssistantScreen
-        session={nativeSession}
-        mode="course"
-        fixedCourse={courseAiTarget}
-        user={user}
-        onBack={() => setCourseAiTarget(null)}
-      />
+      <GenieBackRoute key="course-ai" origin={getRecentRouteOrigin()} onTouchStartCapture={captureRouteOrigin} onBack={() => setCourseAiTarget(null)}>
+        {close => (
+          <AiAssistantScreen
+            session={nativeSession}
+            mode="course"
+            fixedCourse={courseAiTarget}
+            user={user}
+            onBack={close}
+          />
+        )}
+      </GenieBackRoute>
     );
   }
 
-  if (mainScreen === "courses" && selectedCourse && startIndex !== null) {
-    return (
-      <View style={{ flex: 1 }}>
-        <ReelsScreen
-          courseId={selectedCourse._id}
-          course={selectedCourse}
-          initialIndex={startIndex}
-          initialTime={initialTime}
-          downloads={downloads}
-          preloadedVideos={preloadedVideos || (DEV_UI_QA_ENABLED ? selectedCourse.videos : null)}
-          user={user}
-          session={nativeSession}
-          onVideoComplete={isPreviewOnly ? undefined : markVideoComplete}
-          onVideoProgress={isPreviewOnly ? undefined : saveVideoProgress}
-          onReportProblem={openProblemReport}
-          onGoToDownloads={() => navigateRootTab("downloads")}
-          onDownload={(video, courseId, courseTitle) => startDownload(video, courseId, courseTitle)}
-          onBack={backToLessons}
-        />
-        <CertificateModal cert={certModal} onClose={() => setCertModal(null)} />
-        <ProblemReportModal
-          visible={showProblemReport}
-          onClose={() => setShowProblemReport(false)}
-          user={user}
-          route={problemReportRoute}
-        />
-      </View>
-    );
-  }
-
-  if (mainScreen === "courses" && selectedCourse) {
-    return (
-      <VideoListScreen
-        course={selectedCourse}
-        onSelectVideo={idx => setStartIndex(idx)}
-        onBack={() => { loadCourseProgress(); setSelectedCourse(null); }}
-        downloads={downloads}
-        onDownload={(video, courseId, courseTitle) => startDownload(video, courseId, courseTitle)}
-        onDeleteDownload={deleteDownload}
-        hasAccess={hasCourseAccess(user)}
-        onGoToHome={() => { loadCourseProgress(); setSelectedCourse(null); navigateRootTab("home"); }}
-        onGoToCourses={() => { loadCourseProgress(); setSelectedCourse(null); navigateRootTab("courses"); }}
-        onGoToAI={() => { setSelectedCourse(null); navigateRootTab("ai"); }}
-        onGoToDownloads={() => { setSelectedCourse(null); navigateRootTab("downloads"); }}
-        onGoToProfile={() => { setSelectedCourse(null); navigateRootTab("profile"); }}
-        aiRobotId={aiRobotId}
-      />
-    );
-  }
+  const renderCourseLessonList = ({ onBack, onSelectVideo }) => (
+    <VideoListScreen
+      course={selectedCourse}
+      restoreScrollOffset={courseLessonListOffsetsRef.current.get(String(selectedCourse?._id)) || 0}
+      onSelectVideo={onSelectVideo}
+      playlistLoading={courseDetailLoading}
+      playlistError={courseDetailError}
+      onRetryPlaylist={retryCourseOpen}
+      onBack={onBack}
+      downloads={downloads}
+      onDownload={(video, courseId, courseTitle) => startDownload(video, courseId, courseTitle)}
+      onDeleteDownload={deleteDownload}
+      hasAccess={hasCourseAccess(user)}
+      onGoToHome={() => { loadCourseProgress(); setSelectedCourse(null); navigateRootTab("home"); }}
+      onGoToCourses={() => { loadCourseProgress(); setSelectedCourse(null); navigateRootTab("courses"); }}
+      onGoToAI={() => { setSelectedCourse(null); navigateRootTab("ai"); }}
+      onGoToDownloads={() => { setSelectedCourse(null); navigateRootTab("downloads"); }}
+      onGoToProfile={() => { setSelectedCourse(null); navigateRootTab("profile"); }}
+      aiRobotId={aiRobotId}
+      showBottomNav={false}
+    />
+  );
 
   if (mainScreen === "certificates") {
     return (
-      <CertificatesScreen
-        certificates={certificates}
-        onBack={() => setMainScreen("profile")}
-      />
+      <GenieBackRoute key="certificates" origin={getRecentRouteOrigin()} onTouchStartCapture={captureRouteOrigin} onBack={() => setMainScreen("profile")}>
+        {close => <CertificatesScreen certificates={certificates} onBack={close} />}
+      </GenieBackRoute>
     );
   }
 
   if (mainScreen === "subscription") {
     return (
-      <SubscriptionDetailsScreen
-        user={user}
-        session={nativeSession}
-        appleSubscription={storeSubscription}
-        onBack={() => setMainScreen("profile")}
-        onOpenTerms={() => setLegalPage("terms")}
-        onOpenPrivacy={() => openLegalPage("privacy")}
-      />
+      <GenieBackRoute key="subscription" origin={getRecentRouteOrigin()} onTouchStartCapture={captureRouteOrigin} onBack={() => setMainScreen("profile")}>
+        {close => (
+          <SubscriptionDetailsScreen
+            user={user}
+            session={nativeSession}
+            appleSubscription={storeSubscription}
+            onBack={close}
+            onOpenTerms={() => setLegalPage("terms")}
+            onOpenPrivacy={() => openLegalPage("privacy")}
+          />
+        )}
+      </GenieBackRoute>
     );
   }
 
   if (mainScreen === "help") {
     return (
-      <InfoPageScreen
-        page={HELP_SUPPORT_CONTENT}
-        onBack={() => setMainScreen("profile")}
-      />
+      <GenieBackRoute key="help" origin={getRecentRouteOrigin()} onTouchStartCapture={captureRouteOrigin} onBack={() => setMainScreen("profile")}>
+        {close => <InfoPageScreen page={HELP_SUPPORT_CONTENT} onBack={close} />}
+      </GenieBackRoute>
     );
   }
 
   if (mainScreen === "terms") {
     return (
-      <InfoPageScreen
-        page={TERMS_CONTENT}
-        onBack={() => setMainScreen("profile")}
-      />
+      <GenieBackRoute key="terms" origin={getRecentRouteOrigin()} onTouchStartCapture={captureRouteOrigin} onBack={() => setMainScreen("profile")}>
+        {close => <InfoPageScreen page={TERMS_CONTENT} onBack={close} />}
+      </GenieBackRoute>
     );
   }
 
   if (mainScreen === "privacy") {
     return (
-      <InfoPageScreen
-        page={PRIVACY_CONTENT}
-        onBack={() => setMainScreen("profile")}
-      />
+      <GenieBackRoute key="privacy" origin={getRecentRouteOrigin()} onTouchStartCapture={captureRouteOrigin} onBack={() => setMainScreen("profile")}>
+        {close => <InfoPageScreen page={PRIVACY_CONTENT} onBack={close} />}
+      </GenieBackRoute>
     );
   }
 
   if (mainScreen === "wishlist") {
     return (
-      <WishlistScreen
-        wishlist={wishlist}
-        onToggleWishlist={toggleWishlist}
-        onSelect={c => openCourse(c)}
-        onBack={() => navigateRootTab("profile")}
-        user={user}
-        onGoToSubscription={openSubscriptionDetails}
-        appleSubscription={storeSubscription}
-        onOpenTerms={openSubscriptionTerms}
-        onOpenPrivacy={openSubscriptionPrivacy}
-      />
+      <GenieBackRoute key="wishlist" origin={getRecentRouteOrigin()} onTouchStartCapture={captureRouteOrigin} onBack={() => navigateRootTab("profile")}>
+        {close => (
+          <WishlistScreen
+            wishlist={wishlist}
+            onToggleWishlist={toggleWishlist}
+            onSelect={c => openCourse(c)}
+            onCourseIntent={warmCoursePlaylist}
+            onBack={close}
+            user={user}
+            onGoToSubscription={openSubscriptionDetails}
+            appleSubscription={storeSubscription}
+            onOpenTerms={openSubscriptionTerms}
+            onOpenPrivacy={openSubscriptionPrivacy}
+          />
+        )}
+      </GenieBackRoute>
     );
   }
 
-  function renderRootTab(tab, { isActive = false } = {}) {
+  function renderRootTab(tab, { isActive = false, suppressHeader = false } = {}) {
     if (tab === "courses") {
       return (
         <CourseListScreen
-          onSelect={c => openCourse(c)}
+          onSelect={(course, scrollOffset) => {
+            courseCatalogScrollOffsetRef.current = Math.max(0, Number(scrollOffset) || 0);
+            openCourse(course);
+          }}
+          onCourseIntent={warmCoursePlaylist}
           user={user}
           courseProgress={courseProgress}
           onRefreshProgress={loadCourseProgress}
@@ -11324,6 +12540,8 @@ export default function App() {
           aiRobotId={aiRobotId}
           keepPreviewMounted
           activeTab="courses"
+          restoreScrollOffset={courseCatalogScrollOffsetRef.current}
+          suppressHeader={suppressHeader}
         />
       );
     }
@@ -11333,11 +12551,11 @@ export default function App() {
     return (
       <View style={{ flex: 1, backgroundColor: C.bg }}>
         <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.white} />
-        <SafeAreaView style={{ backgroundColor: C.white }}>
+        {!suppressHeader && <SafeAreaView style={{ backgroundColor: C.white }}>
           <View style={[s.pageHeader, s.pageHeaderLogoOnly]}>
             <SkillomateLogo size="sm" />
           </View>
-        </SafeAreaView>
+        </SafeAreaView>}
 
         {downloadItems.length === 0 ? (
           <ScrollView
@@ -11397,6 +12615,9 @@ export default function App() {
                 };
                 const offlineCourseId = item.courseId && /^[a-f0-9]{24}$/i.test(item.courseId)
                   ? item.courseId : "000000000000000000000000";
+                courseOpenRequestRef.current += 1;
+                setCourseDetailLoading(false);
+                setCourseDetailError("");
                 setSelectedCourse({ _id: offlineCourseId, title: item.courseTitle || "Downloaded Video", videos: [offlineVideo] });
                 setPreloadedVideos([offlineVideo]);
                 setStartIndex(0);
@@ -11532,6 +12753,7 @@ export default function App() {
         onGoToDownloads={() => navigateRootTab("downloads")}
         onGoToProfile={() => navigateRootTab("profile")}
         onRobotChange={id => setAiRobotId(id)}
+        suppressHeader={suppressHeader}
       />
     );
   }
@@ -11558,6 +12780,7 @@ export default function App() {
         onOpenHeroPreview={openHeroPreview}
         courseProgress={courseProgress}
         aiRobotId={aiRobotId}
+        suppressHeader={suppressHeader}
       />
     </View>
   );
@@ -11565,41 +12788,126 @@ export default function App() {
 
   if (mainScreen === "profile") {
     return (
-      <ProfileScreen
-        user={user}
-        onLogout={handleLogout}
-        onDeleteAccount={handleDeleteAccount}
-        wishlistCount={wishlist.length}
-        certificatesCount={certificates.length}
-        onGoToWishlist={() => setMainScreen("wishlist")}
-        onGoToCertificates={() => setMainScreen("certificates")}
-        onGoToSubscription={() => setMainScreen("subscription")}
-        onOpenLegal={setLegalPage}
-        onGoToHome={() => navigateRootTab("home")}
-        onGoToCourses={() => navigateRootTab("courses")}
-        onGoToAI={() => navigateRootTab("ai")}
-        onGoToDownloads={() => navigateRootTab("downloads")}
-        onAvatarChange={avatarId => {
-          setUser(prev => {
-            if (!prev) return prev;
-            return { ...prev, avatar: avatarId };
-          });
-        }}
-        aiRobotId={aiRobotId}
-        refreshing={profileRefreshing}
-        onRefresh={refreshProfile}
-      />
+      <GenieBackRoute key="profile" origin={getRecentRouteOrigin()} onTouchStartCapture={captureRouteOrigin} onBack={() => navigateRootTab("home")}>
+        <ProfileScreen
+          user={user}
+          onLogout={handleLogout}
+          onDeleteAccount={handleDeleteAccount}
+          wishlistCount={wishlist.length}
+          certificatesCount={certificates.length}
+          onGoToWishlist={() => setMainScreen("wishlist")}
+          onGoToCertificates={() => setMainScreen("certificates")}
+          onGoToSubscription={() => setMainScreen("subscription")}
+          onOpenLegal={setLegalPage}
+          onGoToHome={() => navigateRootTab("home")}
+          onGoToCourses={() => navigateRootTab("courses")}
+          onGoToAI={() => navigateRootTab("ai")}
+          onGoToDownloads={() => navigateRootTab("downloads")}
+          onAvatarChange={avatarId => {
+            setUser(prev => {
+              if (!prev) return prev;
+              return { ...prev, avatar: avatarId };
+            });
+          }}
+          aiRobotId={aiRobotId}
+          refreshing={profileRefreshing}
+          onRefresh={refreshProfile}
+        />
+      </GenieBackRoute>
     );
   }
 
   const activeRootTab = ROOT_TAB_ORDER.includes(mainScreen) ? mainScreen : "home";
+  const courseRouteVisible = mainScreen === "courses" && Boolean(selectedCourse);
+  const playerRouteVisible = courseRouteVisible && startIndex !== null;
   return (
-    <View style={{ flex: 1, backgroundColor: C.bg }}>
-      <SwipeableRootTabs
-        activeTab={activeRootTab}
-        onNavigate={navigateRootTab}
-        renderTab={renderRootTab}
-      />
+    <View style={{ flex: 1, backgroundColor: C.bg }} onTouchStartCapture={captureRouteOrigin}>
+      <View style={{ flex: 1 }}>
+        <SwipeableRootTabs
+          activeTab={activeRootTab}
+          onNavigate={navigateRootTab}
+          renderTab={renderRootTab}
+          headerUser={user}
+          onOpenProfile={() => navigateRootTab("profile")}
+          hideBottomNav
+        />
+      </View>
+
+      {courseRouteVisible ? (
+        <View style={s.routeStackForeground}>
+          <View style={StyleSheet.absoluteFill} pointerEvents="none">
+            <CourseCatalogBackPreview
+              selectedCourse={selectedCourse}
+              courseProgress={courseProgress}
+              restoreScrollOffset={courseCatalogScrollOffsetRef.current}
+            />
+          </View>
+          <View style={[StyleSheet.absoluteFill, { zIndex: 1 }]}>
+            <GenieBackRoute
+              key="course-lessons"
+              transparentHost
+              origin={getRecentRouteOrigin()}
+              onTouchStartCapture={captureRouteOrigin}
+              onBack={closeCourse}
+            >
+              {close => renderCourseLessonList({
+                onBack: close,
+                onSelectVideo: (idx, scrollOffset) => {
+                  courseLessonListOffsetsRef.current.set(
+                    String(selectedCourse._id),
+                    Math.max(0, Number(scrollOffset) || 0)
+                  );
+                  setStartIndex(idx);
+                },
+              })}
+            </GenieBackRoute>
+          </View>
+        </View>
+      ) : null}
+
+      {playerRouteVisible ? (
+        <View style={[s.routeStackForeground, { zIndex: 20, elevation: 20 }]}>
+          <GenieBackRoute
+            key="course-player"
+            motion="player"
+            transparentHost
+            origin={getRecentRouteOrigin()}
+            onTouchStartCapture={captureRouteOrigin}
+            onBack={backToLessons}
+          >
+            {close => (
+              <ReelsScreen
+                courseId={selectedCourse._id}
+                course={selectedCourse}
+                initialIndex={startIndex}
+                initialTime={initialTime}
+                downloads={downloads}
+                preloadedVideos={preloadedVideos || (DEV_UI_QA_ENABLED ? selectedCourse.videos : null)}
+                user={user}
+                session={nativeSession}
+                onVideoComplete={isPreviewOnly ? undefined : markVideoComplete}
+                onVideoProgress={isPreviewOnly ? undefined : saveVideoProgress}
+                onReportProblem={openProblemReport}
+                onGoToDownloads={() => navigateRootTab("downloads")}
+                onDownload={(video, courseId, courseTitle) => startDownload(video, courseId, courseTitle)}
+                onBack={close}
+              />
+            )}
+          </GenieBackRoute>
+        </View>
+      ) : null}
+
+      {!playerRouteVisible ? (
+        <BottomNav
+          persistent
+          active={activeRootTab}
+          onHome={() => navigateRootTab("home")}
+          onCourses={() => navigateRootTab("courses")}
+          onDownloads={() => navigateRootTab("downloads")}
+          onAI={() => navigateRootTab("ai")}
+          onProfile={() => navigateRootTab("profile")}
+        />
+      ) : null}
       <CertificateModal cert={certModal} onClose={() => setCertModal(null)} />
       <ProblemReportModal
         visible={showProblemReport}
@@ -11616,6 +12924,14 @@ export default function App() {
         onOpenPrivacy={openSubscriptionPrivacy}
       />
     </View>
+  );
+}
+
+export default function App() {
+  return (
+    <SafeAreaProvider>
+      <AppContent />
+    </SafeAreaProvider>
   );
 }
 
@@ -11813,6 +13129,30 @@ return StyleSheet.create({
   },
 
   // Navigation
+  genieRouteHost: {
+    width: "100%",
+    height: "100%",
+    overflow: "hidden",
+    backgroundColor: C.bg,
+  },
+  genieRouteHostTransparent: { backgroundColor: "transparent" },
+  genieRouteSurface: {
+    width: "100%",
+    height: "100%",
+    backgroundColor: C.bg,
+    shadowColor: "#000000",
+    shadowOpacity: C.isDark ? 0.34 : 0.16,
+    shadowRadius: 18,
+    shadowOffset: { width: -5, height: 0 },
+  },
+  routeStackForeground: {
+    ...StyleSheet.absoluteFillObject,
+    width: "100%",
+    height: "100%",
+    zIndex: 10,
+    elevation: 10,
+    backgroundColor: "transparent",
+  },
   pageHeader: {
     flexDirection: "row", alignItems: "center",
     paddingHorizontal: 16, paddingVertical: 12,
@@ -12237,39 +13577,70 @@ return StyleSheet.create({
     position: "absolute",
     left: 14,
     right: 14,
-    bottom: Platform.OS === "ios" ? 10 : 22,
+    bottom: 10,
     zIndex: 50,
     elevation: 20,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: C.isDark ? "rgba(18,18,17,0.96)" : "rgba(255,253,248,0.96)",
+    backgroundColor: C.isDark ? "rgba(35,35,37,0.97)" : "rgba(250,250,251,0.96)",
     borderWidth: 1,
-    borderColor: C.isDark ? "rgba(231,188,104,0.2)" : "rgba(30,24,16,0.12)",
-    borderRadius: 26,
+    borderColor: C.isDark ? "rgba(255,255,255,0.20)" : "rgba(30,24,16,0.12)",
+    borderRadius: 27,
     paddingHorizontal: 8,
-    paddingVertical: 7,
+    paddingVertical: 3,
     shadowColor: "#000",
-    shadowOpacity: C.isDark ? 0.34 : 0.12,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: C.isDark ? 0.18 : 0.08,
+    shadowRadius: 13,
+    shadowOffset: { width: 0, height: 5 },
+    overflow: "visible",
   },
+  bottomNavCompact: {
+    left: 20,
+    right: 20,
+    borderRadius: 21,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  bottomNavTabsRow: {
+    flex: 1,
+    minWidth: 0,
+    minHeight: 46,
+    flexDirection: "row",
+    alignItems: "center",
+    overflow: "visible",
+  },
+  bottomNavTabsRowCompact: {
+    minHeight: 36,
+  },
+
   bottomTab: {
     flex: 1,
     flexBasis: "20%",
     minWidth: 0,
-    minHeight: 58,
+    minHeight: 46,
     alignItems: "center",
     justifyContent: "center",
     gap: 3,
     borderRadius: 20,
+    zIndex: 3,
+  },
+  bottomTabCompact: {
+    minHeight: 36,
+    gap: 0,
+    borderRadius: 17,
   },
   bottomTabIcon: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+    width: 28,
+    height: 27,
+    borderRadius: 14,
     alignItems: "center",
     justifyContent: "center",
     overflow: "hidden",
+  },
+  bottomTabIconCompact: {
+    width: 23,
+    height: 22,
+    borderRadius: 11,
   },
   bottomTabIconActive: {
     backgroundColor: C.isDark ? "rgba(231,188,104,0.16)" : "rgba(197,139,42,0.14)",
@@ -12371,14 +13742,44 @@ return StyleSheet.create({
     width: "100%",
     textAlign: "center",
     fontSize: 10.5,
-    lineHeight: 14,
+    lineHeight: 12,
     color: C.slateGray,
     includeFontPadding: false,
+  },
+  bottomTabLabelCompact: {
+    fontSize: 8.5,
+    lineHeight: 10,
   },
   swipePagerViewport: {
     flex: 1,
     overflow: "hidden",
-    backgroundColor: "#000",
+    backgroundColor: C.bg,
+  },
+  persistentAppHeader: {
+    zIndex: 80,
+    backgroundColor: C.bg,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: C.border,
+  },
+  persistentAppHeaderInner: {
+    minHeight: 58,
+    paddingHorizontal: 14,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  persistentHeaderProfile: {
+    width: MIN_TOUCH_TARGET,
+    height: MIN_TOUCH_TARGET,
+    borderRadius: MIN_TOUCH_TARGET / 2,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1.5,
+    borderColor: C.primary,
+  },
+  nativeRootPager: {
+    flex: 1,
+    backgroundColor: C.bg,
   },
   swipePagerTrack: {
     position: "absolute",
@@ -12387,12 +13788,26 @@ return StyleSheet.create({
     flexDirection: "row",
   },
   swipePagerPage: {
-    zIndex: 1,
+    flex: 1,
     backgroundColor: C.bg,
     overflow: "hidden",
   },
   staticRootTabPage: {
     flex: 1,
+    position: "relative",
+    overflow: "hidden",
+    backgroundColor: C.bg,
+  },
+  staticRootTabUnderlay: {
+    ...StyleSheet.absoluteFillObject,
+    width: "100%",
+    height: "100%",
+    zIndex: 0,
+    backgroundColor: C.bg,
+  },
+  staticRootTabForeground: {
+    flex: 1,
+    zIndex: 1,
     backgroundColor: C.bg,
   },
   bottomTabAI: {
@@ -13168,6 +14583,33 @@ courseListCard: {
     borderWidth: 1, borderColor: C.border,
     ...ELEVATION.hairline,
   },
+  coursePlaylistLoadingCard: {
+    minHeight: 76,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+    padding: 16,
+    borderRadius: RADIUS.lg,
+    backgroundColor: C.cardBg,
+    borderWidth: 1,
+    borderColor: C.border,
+  },
+  coursePlaylistLoadingTitle: { ...TYPE.bodyMedium, color: C.text, fontWeight: "900" },
+  coursePlaylistLoadingText: { ...TYPE.caption, color: C.textSub, marginTop: 3 },
+  coursePlaylistErrorCard: {
+    minHeight: 240,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    padding: 24,
+    borderRadius: RADIUS.lg,
+    backgroundColor: C.cardBg,
+    borderWidth: 1,
+    borderColor: C.border,
+  },
+  coursePlaylistSkeletonRow: { opacity: 0.72 },
+  coursePlaylistSkeletonBlock: { backgroundColor: C.border },
+  coursePlaylistSkeletonLine: { height: 12, borderRadius: 6, backgroundColor: C.border },
   courseDescriptionCard: {
     backgroundColor: C.cardBg, borderRadius: RADIUS.lg, padding: 16,
     borderWidth: 1, borderColor: C.isDark ? "rgba(255,255,255,0.08)" : C.border,
@@ -13461,6 +14903,9 @@ courseListCard: {
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: "rgba(255,255,255,0.12)",
     paddingTop: Platform.OS === "android" ? Math.max(ANDROID_STATUS_BAR_INSET + 18, 42) : 0,
+  },
+  aiTopSafeEmbedded: {
+    paddingTop: 0,
   },
   aiTopHeader: {
     minHeight: 58,
@@ -13818,6 +15263,29 @@ courseListCard: {
   centered: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: C.bg },
   player: { width: "100%", flexGrow: 0, flexShrink: 0, position: "relative", overflow: "hidden", backgroundColor: "#000" },
   nativeVideoBalancedFill: { transform: [{ scale: 0.98 }] },
+  playerFirstFrameCover: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 2,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#050505",
+  },
+  playerFirstFrameScrim: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.42)",
+  },
+  playerFirstFrameLoader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 9,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    borderRadius: 18,
+    backgroundColor: "rgba(9,9,9,0.72)",
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: "rgba(231,188,104,0.48)",
+  },
+  playerFirstFrameText: { color: "#F5F1E8", fontSize: 12, fontWeight: "800" },
   suspendedVideoSurface: {
     ...StyleSheet.absoluteFillObject,
     alignItems: "center",

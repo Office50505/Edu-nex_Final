@@ -9,6 +9,7 @@ const GooglePlaySubscription = require('../models/GooglePlaySubscription');
 const User = require('../models/User');
 
 const LIGHT_COURSE_FIELDS = 'title slug description category status publishedAt createdAt thumbnail.mimeType thumbnailHorizontal.mimeType thumbnailVertical.mimeType thumbnailUrl thumbnailVerticalUrl notesUrl completionOrder videos._id videos.title videos.topic videos.description videos.provider videos.sourceType videos.videoUrl videos.embedUrl videos.bunnyVideoId videos.bunnyLibraryId videos.youtubeId videos.thumbnailUrl videos.thumbnailVerticalUrl videos.transcriptUrl videos.notesUrl videos.examplePrompt videos.duration videos.order';
+const TOP_COURSE_FIELDS = 'title slug description category status publishedAt createdAt thumbnail.mimeType thumbnailHorizontal.mimeType thumbnailVertical.mimeType thumbnailUrl thumbnailVerticalUrl videos._id videos.title videos.topic videos.duration videos.order';
 const API_BASE_URL = String(process.env.API_BASE_URL || '').replace(/\/+$/, '');
 const BUNNY_LIBRARY_ID = process.env.BUNNY_LIBRARY_ID || process.env.BUNNY_STREAM_LIBRARY_ID || '675520';
 const BUNNY_API_KEY = process.env.BUNNY_API_KEY || process.env.BUNNY_STREAM_API_KEY || '';
@@ -274,7 +275,7 @@ async function topCourses(limit = 6) {
   }, {});
 
   let courses = courseIds.length
-    ? await Course.find({ _id: { $in: courseIds }, status: 'published' }).select(LIGHT_COURSE_FIELDS).lean()
+    ? await Course.find({ _id: { $in: courseIds }, status: 'published' }).select(TOP_COURSE_FIELDS).lean()
     : [];
 
   courses = courses
@@ -283,7 +284,7 @@ async function topCourses(limit = 6) {
 
   if (courses.length < limit) {
     const existingIds = new Set(courses.map((course) => String(course._id)));
-    const extra = await Course.find({ status: 'published' }).select(LIGHT_COURSE_FIELDS)
+    const extra = await Course.find({ status: 'published' }).select(TOP_COURSE_FIELDS)
       .sort({ publishedAt: -1, createdAt: -1 })
       .limit(limit * 2)
       .lean();
